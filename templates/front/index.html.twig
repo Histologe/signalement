@@ -1,0 +1,200 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Un service public pour les locataires et propriétaires{% endblock %}
+
+{% block body %}
+    <main class="fr-container--fluid">
+        <section
+                class="fr-container--fluid fr-artwork-decorative--blue-france fr-background--blue-france fr-py-5w fr-py-md-10w">
+            <div class="fr-container">
+                <div class="fr-grid-row">
+                    <div class="fr-col-8">
+                        <h1 class="fr-h3 fr-text--white">Vous rencontrez des problèmes dans votre logement ?</h1>
+                        <h2 class="fr-h6 fr-text--white fr-text--xx-light">Histologe est un service public permettant
+                            d'accélérer <br> la prise
+                            en charge du “mal logement”.
+                        </h2>
+                        <div class="fr-grid-row">
+                            <div class="fr-col-6">
+                                <a href="#" role="button"
+                                   class="fr-btn fr-btn--orange fr-rounded fr-text-label--blue-france fr-btn--icon-right fr-fi-arrow-right-line"
+                                   id="goCp">
+                                    Signaler mon ou mes problèmes de logement
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-col-2 fr-col-offset-2">
+                        <img src="{{ asset('img/icon-house-alert.svg') }}" alt="Histologe mal logement"
+                             class="fr-responsive-img">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="fr-container fr-py-5w">
+            <header class="fr-pb-5w">
+                <h3 class="fr-text-label--blue-france fr-text--center">Comment ça marche ?</h3>
+            </header>
+            <div class="fr-grid-row fr-grid-row--gutters fr-text--center">
+                <figure class="fr-col-md-4 fr-m-0 ">
+                    <img src="{{ asset('img/icon-house-touch.svg') }}" width="100" height="100" alt="">
+                    <figcaption class="fr-text--bold">
+                        Signalez votre problème facilement
+                        <small class="fr-display-block fr-text--light">
+                            Décrivez les problèmes de votre logement (humidité, moisissures, ...) en quelques clics.
+                        </small>
+                    </figcaption>
+                </figure>
+                <figure class="fr-col-md-4 fr-m-0">
+                    <img src="{{ asset('img/icon-house-touch.svg') }}" width="100" height="100" alt="">
+                    <figcaption class="fr-text--bold">
+                        Signalez votre problème facilement
+                        <small class="fr-display-block fr-text--light">
+                            Décrivez les problèmes de votre logement (humidité, moisissures, ...) en quelques clics.
+                        </small>
+                    </figcaption>
+                </figure>
+                <figure class="fr-col-md-4 fr-m-0">
+                    <img src="{{ asset('img/icon-house-touch.svg') }}" width="100" height="100" alt="">
+                    <figcaption class="fr-text--bold">
+                        Signalez votre problème facilement
+                        <small class="fr-display-block fr-text--light">
+                            Décrivez les problèmes de votre logement (humidité, moisissures, ...) en quelques clics.
+                        </small>
+                    </figcaption>
+                </figure>
+            </div>
+        </section>
+        <section class="fr-container--fluid fr-background-alt--blue-france fr-py-5w">
+            <div class="fr-container">
+                <header class="fr-pb-5w">
+                    <h4 class="fr-text-label--blue-france fr-text--center">Une solution reconnue !</h4>
+                </header>
+                <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters fr-text--center">
+                    <div class="fr-col-md-3">
+                        <figure class="fr-m-2v">
+                            <img src="{{ asset('img/Logo_label_2021.png') }}" alt="label_innovant">
+                            <figcaption class="fr-col fr-mt-5w">
+                                <div class="fr-text--bold">Lauréat du label Territoire Innovant (interconnectés 2021)
+                                </div>
+                                <small>Le label « Territoire Innovant » est décerné aux collectivités qui ont mis en
+                                    œuvre des initiatives marquantes en termes d’usages ou de services, ce label se
+                                    différencie en reposant sur des valeurs comme critères d’attribution.</small>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="fr-col-md-3">
+                        <figure class="fr-m-2v">
+                            <img src="{{ asset('img/gazette.png') }}" alt="gazette">
+                            <figcaption class="fr-col fr-mt-5w">
+                                <div class="fr-text--bold">Prix Territorial 2020 de la Gazette des Communes.</div>
+                                <small>Ce prix récompense les projets locaux impliquant plusieurs métiers et
+                                    services.</small>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="fr-col-md-3">
+                        <figure class="fr-m-2v">
+                            <img src="{{ asset('img/exclusion-energetique.png') }}" alt="exclusion_energetique">
+                            <figcaption class="fr-col fr-mt-5w">
+                                <div class="fr-text--bold">Lauréat National de Stop Exclusion énergétique !</div>
+                                <small>Ce prix récompense les solutions qui améliorent la qualité des logements des
+                                    précaires (énergétique ou sanitaire).</small>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="fr-col-md-3">
+                        <figure class="fr-m-2v">
+                            <img src="{{ asset('img/itheasfp.png') }}" alt="inititive_locale">
+                            <figcaption class="fr-col fr-mt-5w">
+                                <div class="fr-text--bold">Prix de la grande enquête Initiatives Locales 2020</div>
+                                <small>Histologe a été primé dans la catégorie "Cadre de vie" parmi plus de 400
+                                    candidatures.</small>
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="fr-container--fluid fr-background--blue-france fr-py-5w">
+            <div class="fr-container">
+                <header class="fr-pb-5w">
+                    <h5 class="fr-text--white fr-text--center">Histologe en quelques chiffres</h5>
+                </header>
+                <div class="fr-grid-row fr-grid-row--center fr-text--white">
+                    <div class="fr-col-12 fr-col-md-4 fr-py-2v fr-py-md-0">
+                        <figure class="fr-grid-row fr-grid-row--middle">
+                            <img src="{{ asset('img/icon-house-info.svg') }}" alt="Info" class="fr-col-2">
+                            <figcaption class="fr-col-10 text-white fr-pl-2v">
+                                <strong class="fr-display-block">225</strong>
+                                signalements enregistrés
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-4 fr-py-2v fr-py-md-0">
+                        <figure class="fr-grid-row fr-grid-row--middle">
+                            <img src="{{ asset('img/icon-chart-bubble.svg') }}" alt="Info" class="fr-col-2">
+                            <figcaption class="fr-col-10 text-white fr-pl-2v">
+                                <strong class="fr-display-block">95%</strong>
+                                des signalements pris en charge
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-4 fr-py-2v fr-py-md-0">
+                        <figure class="fr-grid-row fr-grid-row--middle">
+                            <img src="{{ asset('img/icon-pass.svg') }}" alt="Info" class="fr-col-2">
+                            <figcaption class="fr-col-10 text-white fr-pl-2v">
+                                <strong class="fr-display-block">77%</strong>
+                                de résolutions déclenchées
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="fr-container fr-py-5w">
+            <div class="fr-grid-row fr-grid-row--center">
+                <header>
+                    <h6 class="fr-pb-5w fr-text--center fr-text-label--blue-france">Histologe améliore la prise en
+                        charge du mal-logement</h6>
+                </header>
+                <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters">
+                    <div class="fr-col-md-6">
+                        <figure class="fr-grid-row">
+                            <div>
+                                <img src="{{ asset('img/icon-user-comment.PNG') }}" alt="commentaire">
+                            </div>
+                            <figcaption class="fr-col">
+                                <blockquote class="fr-pl-5v fr-blockquote fr-text--alt">
+                                    Grâce à Histologe, je pense que je vais avoir droit à un meilleur logement que
+                                    celui-ci.
+                                </blockquote>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="fr-col-md-6">
+                        <figure class="fr-grid-row">
+                            <div>
+                                <img src="{{ asset('img/icon-user-comment.PNG') }}" alt="commentaire">
+                            </div>
+                            <figcaption class="fr-col">
+                                <blockquote class="fr-pl-5v fr-blockquote fr-text--alt">
+                                    On habitait dans un logement de 34 m² avec une seule chambre. C'est très petit pour
+                                    2
+                                    adultes et 4
+                                    enfants,
+                                    dont un bébé et une fille handicapée. On utilisé Histologe, ils nous ont accompagné
+                                    et
+                                    aidé
+                                    à
+                                    trouver une
+                                    solution. Aujourd'hui chaque enfant a sa chambre et se sent à l'aise.
+                                </blockquote>
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock %}

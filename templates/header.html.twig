@@ -1,0 +1,63 @@
+<header role="banner" class="fr-header">
+    <div class="fr-header__body">
+        <div class="fr-container">
+            <div class="fr-header__body-row">
+                <div class="fr-header__brand fr-enlarge-link">
+                    <div class="fr-header__brand-top">
+                        <div class="fr-header__logo">
+                            <div class="fr-logo">
+                                République
+                                <br/>Française
+                            </div>
+                        </div>
+                        <div class="fr-header__operator">
+                            <img src="{{ asset('img/logo_145.png') }}" class="fr-responsive-img" alt="HISTOLOGE">
+                        </div>
+                        <div class="fr-header__navbar">
+                            <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="modal-833" aria-haspopup="menu" title="Menu" id="fr-btn-menu-mobile">
+                                Menu
+                            </button>
+                        </div>
+                    </div>
+                    <div class="fr-header__service fr-displayed-md">
+                        <a href="Home" title="Accueil - HISTOLOGE" class="fr-header__service-title">
+                            <small class="fr-text--light d-block fr-text--sm fr-m-0">Signaler vos problèmes d'habitabilité.</small>
+                        </a>
+                    </div>
+                </div>
+                <div class="fr-header__tools">
+                    <div class="fr-header__tools-links">
+                        <ul class="fr-links-group">
+                            <li>
+                                <a class="fr-link" href="Home">Accueil</a>
+                            </li>
+                            <li>
+                                <a class="fr-link" href="Qui">Qui sommes-nous ?</a>
+                            </li>
+                            <li>
+                                <a class="fr-link" href="Contact">Contact</a>
+                            </li>
+                            <li>
+                                <a class="fr-link" href="Aide">Aide</a>
+                            </li>
+                            <li>
+                                <?php if (!isset($_SESSION['user'])) { ?>
+                                <a class="fr-link fr-fi-lock-line" href="Connexion">Se connecter</a>
+                                <?php } else { ?>
+                                <a class="fr-link fr-fi-lock-line" href="Deconnexion">Se déconnecter</a>
+                                <?php } ?>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Navigation principale -->
+    <div class="fr-header__menu fr-modal" id="modal-833" aria-labelledby="fr-btn-menu-mobile">
+        <div class="fr-container">
+            <button class="fr-link--close fr-link" aria-controls="modal-833">Fermer</button>
+            <div class="fr-header__menu-links"></div>
+        </div>
+    </div>
+</header>

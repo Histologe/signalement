@@ -1,0 +1,27 @@
+/*STYLE*/
+.fr-rounded {
+    border-radius: .25rem;
+}
+.fr-display-block {
+    display: block;
+}
+.fr-blockquote {
+    border-left: .3rem solid var(--border-plain-blue-france);
+}
+/*COLOR*/
+.fr-background--blue-france {
+    background-color: var(--border-plain-blue-france);
+}
+.fr-btn--orange {
+    background: #FF9940;
+}
+/*TEXT*/
+.fr-text--white {
+    color: white;
+}
+.fr-text--xx-light {
+    font-weight: 100!important;
+}
+.fr-text--center {
+    text-align: center;
+}
