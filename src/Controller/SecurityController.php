@@ -14,6 +14,7 @@ class SecurityController extends AbstractController
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
+        $title = 'Connexion';
         // if ($this->getUser()) {
         //     return $this->redirectToRoute('target_path');
         // }
@@ -23,7 +24,7 @@ class SecurityController extends AbstractController
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('back/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
+        return $this->render('back/login.html.twig', ['title'=>$title,'last_username' => $lastUsername, 'error' => $error]);
     }
 
     /**
