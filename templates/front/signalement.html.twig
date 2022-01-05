@@ -29,14 +29,14 @@
                 <li role="presentation">
                     <button id="signalement-step-4"
                             class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
-                            role="tab" aria-selected="false" aria-controls="signalement-step-3-panel" disabled>4.
+                            role="tab" aria-selected="false" aria-controls="signalement-step-4-panel" disabled>4.
                         Identité
                     </button>
                 </li>
                 <li role="presentation">
                     <button id="signalement-step-5"
                             class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
-                            role="tab" aria-selected="false" aria-controls="signalement-step-3-panel" disabled>5.
+                            role="tab" aria-selected="false" aria-controls="signalement-step-5-panel" disabled>5.
                         Validation
                     </button>
                 </li>
@@ -62,7 +62,9 @@
                             <li>
                                 <section class="fr-accordion fr-accordions-group">
                                     <h3 class="fr-accordion__title">
-                                        <text role="button" class="fr-accordion__btn fr-btn--icon-left fr-fi-question-fill" aria-expanded="false"
+                                        <text role="button"
+                                              class="fr-accordion__btn fr-btn--icon-left fr-fi-question-fill"
+                                              aria-expanded="false"
                                               aria-controls="accordion-situation-{{ situation.id }}">Votre signalement
                                             concerne-t-il {{ situation.label }}
                                         </text>
@@ -74,50 +76,28 @@
                                                     <div class="fr-toggle fr-toggle--border-bottom"
                                                          aria-expanded="false"
                                                          aria-controls="accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
-                                                        <input type="checkbox" name="signalement[situation][{{ situation.id }}]"
+                                                        <input type="checkbox"
+                                                               name="signalement[situation][{{ situation.id }}]"
                                                                class="fr-toggle__input"
                                                                id="group-1-toggle-hint-situation-{{ situation.id }}-critere-{{ critere.id }}">
                                                         <label class="fr-toggle__label fr-text--bold"
                                                                for="group-1-toggle-hint-situation-{{ situation.id }}-critere-{{ critere.id }}">{{ critere.label }}</label>
-                                                        <p class="fr-error-text fr-hidden">Texte
-                                                            d’aide pour clarifier l’action</p>
                                                     </div>
                                                     <div class="fr-collapse"
                                                          id="accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
-                                                        <strong>Quand tou va bien: </strong> {{ critere.description }}
+                                                        <strong>Quand tout va bien: </strong> {{ critere.description }}
                                                         {% for index,criticite in critere.criticites %}
                                                             <label class="toggle-criticite fr-grid-row fr-grid-row--middle fr-py-1v">
-                                                                <input class="{{ etats_classes[index] }} fr-col-1"
+                                                                <input class="{{ etats_classes[index] }} fr-col-3 fr-col-md-2 fr-col-lg-1"
                                                                        type="radio"
                                                                        name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]"
                                                                        value="{{ criticite.id }}">
-                                                                <text class="fr-col-11">
+                                                                <text class="fr-col-9 fr-col-md-10 fr-col-l-11">
                                                                     <strong>{{ etats[index] }}:</strong>
                                                                     {{ criticite.label }}
                                                                 </text>
-                                                                <text class="fr-error-text fr-hidden">Texte
-                                                                    d’aide pour clarifier l’action
-                                                                </text>
                                                             </label>
                                                         {% endfor %}
-                                                        {# <label class="toggle-criticite fr-display-block">
-                                                            <input class="grave" type="radio" name="criticite[id]"
-                                                                   value="2">
-                                                            <strong>Mauvais état:</strong>
-                                                            <text>La porte ferme à clef mais difficilement.</text>
-                                                            <text class="fr-error-text fr-hidden">Texte
-                                                                d’aide pour clarifier l’action
-                                                            </text>
-                                                        </label>
-                                                        <label class="toggle-criticite fr-display-block">
-                                                            <input class="tres-grave" type="radio" name="criticite[id]"
-                                                                   value="3">
-                                                            <strong>Très mauvais état:</strong>
-                                                            <text>La porte ferme à clef mais difficilement.</text>
-                                                            <text class="fr-error-text fr-hidden">Texte
-                                                                d’aide pour clarifier l’action
-                                                            </text>
-                                                        </label> #}
                                                     </div>
                                                 </li>
                                             {% endfor %}
@@ -143,7 +123,8 @@
                         documents
                         et photos.
                     </p>
-                    <em class="fr-fi-information-line fr-text--light fr-text-label--blue-france"> Les champs marqués d'un
+                    <em class="fr-fi-information-line fr-text--light fr-text-label--blue-france"> Les champs marqués
+                        d'un
                         astérisque
                         (*) sont obligatoires.</em>
                 </header>
@@ -153,22 +134,28 @@
                             Décrivez le ou les problème(s) rencontré(s)<sup class="fr-text-default--error">*</sup>
                             <span class="fr-hint-text">Proposer une rapide description du ou des problème(s).</span>
                         </label>
-                        <textarea class="fr-input fr-input--no-resize" id="signalement-details" name="signalement[details]" required></textarea>
+                        <textarea class="fr-input fr-input--no-resize" id="signalement-details"
+                                  name="signalement[details]" required></textarea>
                         <p class="fr-error-text fr-hidden">
                             Merci de proposer une rapide description (minimum 10 caractères).
                         </p>
                     </div>
-                    <fieldset class="fr-fieldset fr-fieldset--inline fr-grid-row--middle">
-                        <legend class="fr-label fr-pl-0">Téléverser des photos du/des problème(s)</legend>
-                        <span class="fr-error-text fr-my-1v">Les photos ne doivent pas contenir de vues de personnes ou d'objets personnels. Pour les photos des parties communes, certaines restrictions sont à respecter.</span>
-                        {% for i in 1..6  %}
-                            <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-instagram-line">
-                                <img src="#" alt="Aperçu" class="fr-hidden fr-rounded" width="100">
-                                <input type="file" accept="image/*" name="signalement[photos][]" class="fr-hidden">
-                            </label>
-                        {% endfor %}
-                    </fieldset>
-                    <div class="fr-grid-row fr-mt-5w">
+                    <div class="fr-form-group">
+                        <fieldset class="fr-fieldset fr-fieldset--inline fr-grid-row--middle fr-grid-row--gutters">
+                            <legend class="fr-label fr-pl-0">Téléverser des photos du/des problème(s)</legend>
+                            <span class="fr-hint-text">Les photos <u>ne doivent pas contenir de vues de personnes ou d'objets personnels</u>. <br> Pour les photos des parties communes, <a
+                                        href="#">certaines restrictions sont à respecter</a>.</span>
+                            {% for i in 1..6 %}
+                                <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-instagram-line">
+                                    <img src="#" alt="Aperçu" class="fr-hidden fr-rounded" width="100">
+                                    <input type="file" accept="image/*" name="signalement[photos][]" class="fr-hidden">
+                                </label>
+                            {% endfor %}
+                            <small class="fr-fi-information-fill fr-text-label--blue-france">Cliquez sur l'appareil
+                                photo pour téléverser une photo.</small>
+                        </fieldset>
+                    </div>
+                    <div class="fr-grid-row">
                         <div class="fr-col-12 fr-text--center">
                             <button class="fr-btn fr-fi-arrow-right-line fr-btn--icon-right">Continuer</button>
                         </div>
@@ -177,8 +164,268 @@
             </section>
             <section id="signalement-step-3-panel" class="fr-tabs__panel" role="tabpanel"
                      aria-labelledby="signalement-step-3" tabindex="0">
-                <!-- données de test -->
-                <p>Contenu 3</p>
+                <header class="fr-callout bg-light fr-mb-5v">
+                    <p class="fr-callout__title">Je donne des informations sur mon logement</p>
+                    <p class="fr-callout__text fr-mb-5v">
+                        Pour continuer, nous avons besoin d'informations complémentaires sur votre logement.
+                    </p>
+                    <em class="fr-fi-information-line fr-text--light text-blue-france"> Les champs marqués d'un
+                        astérisque
+                        (*) sont obligatoires.</em>
+                </header>
+                <form action="#" name="signalement" class="needs-validation" novalidate>
+                    <div class="fr-form-group">
+                        <fieldset class="fr-fieldset fr-fieldset--inline">
+                            <legend class="fr-fieldset__legend fr-text--regular" id='prop-averti'>
+                                Avez-vous informé le propriétaire ou gestionnaire de ces nuisances ?<sup
+                                        class="fr-text-default--error">*</sup>
+                                <span class="fr-hint-text">Le cas échéant merci de précisez la ou les méthodes de contact.</span>
+                            </legend>
+                            <div class="fr-fieldset__content">
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="prop-averti-1" value="true"
+                                           name="signalement[isProprioAverti]" required>
+                                    <label class="fr-label" for="prop-averti-1">Oui</label>
+                                </div>
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="prop-averti-2" value="false"
+                                           name="signalement[isProprioAverti]">
+                                    <label class="fr-label" for="prop-averti-2">Non</label>
+                                </div>
+                            </div>
+                            <p class="fr-error-text fr-hidden">
+                                Veuillez précisez si vous avez pris contact.
+                            </p>
+                        </fieldset>
+                    </div>
+                    <div class="fr-form-group fr-hidden" id="methode-contact">
+                        <fieldset class="fr-fieldset fr-fieldset--inline fr-fieldset--error" role="group">
+                            <legend class="fr-fieldset__legend fr-text--regular" id="checkboxes-inline-legend">
+                                Comment avez-vous averti le propriétaire ou gestionnaire ?<sup
+                                        class="fr-text-default--error">*</sup>
+                            </legend>
+                            <div class="fr-fieldset__content">
+                                <div class="fr-checkbox-group">
+                                    <input type="checkbox" id="optionProprio_cr"
+                                           name="signalement[modeContactProprio]" value="reccommande">
+                                    <label class="fr-label" for="optionProprio_cr">Courrier recommandé
+                                    </label>
+                                </div>
+                                <div class="fr-checkbox-group">
+                                    <input type="checkbox" id="optionProprio_m"
+                                           name="signalement[modeContactProprio]" value="courriel">
+                                    <label class="fr-label" for="optionProprio_m">Courriel
+                                    </label>
+                                </div>
+                                <div class="fr-checkbox-group">
+                                    <input type="checkbox" id="optionProprio_sms"
+                                           name="signalement[modeContactProprio]" value="sms">
+                                    <label class="fr-label" for="optionProprio_sms">SMS
+                                    </label>
+                                </div>
+                                <div class="fr-checkbox-group">
+                                    <input type="checkbox" id="optionProprio_t"
+                                           name="signalement[modeContactProprio]" value="message">
+                                    <label class="fr-label" for="optionProprio_t">Message téléphonique
+                                    </label>
+                                </div>
+                            </div>
+                            <p class="fr-error-text fr-hidden">
+                                Veuillez précisez la ou les methode(s) de contact.
+                            </p>
+                        </fieldset>
+                    </div>
+                    <div class="fr-form-group">
+                        <fieldset class="fr-fieldset">
+                            <legend class="fr-fieldset__legend fr-text--regular">
+                                Qui habite ce logement ?<sup class="fr-text-default--error">*</sup>
+                                <span class="fr-hint-text">Indiquer la composition du logement en précisant le nombre d'enfants.</span>
+                            </legend>
+                            <div class="fr-select-group fr-mb-0">
+                                <label class="fr-label" for="signalement-nb-adulte">
+                                    Nombre d'adultes<sup class="fr-text-default--error">*</sup>
+                                </label>
+                                <select class="fr-select" id="signalement-nb-adulte"
+                                        name="signalement[nbAdultes]" required>
+                                    <option value="" selected disabled hidden>Selectionnez une option</option>
+                                    <option value="1">1 enfant</option>
+                                    <option value="2">2 enfants</option>
+                                    <option value="3">3 enfants</option>
+                                    <option value="4">4 enfants</option>
+                                    <option value="4+">Plus de 4 enfants</option>
+                                </select>
+                                <p class="fr-error-text fr-hidden">
+                                    Veuillez renseigner le nombre d'adultes dans le logement.
+                                </p>
+                            </div>
+                            <div class="fr-select-group">
+                                <label class="fr-label" for="signalement-nb-enfants-m6">
+                                    Nombre d'enfants de <strong>moins de 6 ans</strong>
+                                </label>
+                                <select class="fr-select" id="signalement-nb-enfants-m6"
+                                        name="signalement[nbEnfantsM6]">
+                                    <option value="0" selected>Selectionnez une option</option>
+                                    <option value="1">1 enfant</option>
+                                    <option value="2">2 enfants</option>
+                                    <option value="3">3 enfants</option>
+                                    <option value="4">4 enfants</option>
+                                    <option value="4+">Plus de 4 enfants</option>
+                                </select>
+                            </div>
+                            <div class="fr-select-group">
+                                <label class="fr-label" for="signalement-nb-enfants-p6">
+                                    Nombre d'enfants de <strong>plus de 6 ans</strong>
+                                </label>
+                                <select class="fr-select" id="signalement-nb-enfants-p6"
+                                        name="signalement[nbEnfantsP6]">
+                                    <option value="0" selected>Selectionnez une option</option>
+                                    <option value="1">1 enfant</option>
+                                    <option value="2">2 enfants</option>
+                                    <option value="3">3 enfants</option>
+                                    <option value="4">4 enfants</option>
+                                    <option value="4+">Plus de 4 enfants</option>
+                                </select>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="fr-form-group">
+                        <fieldset class="fr-fieldset fr-fieldset--inline">
+                            <legend class="fr-fieldset__legend fr-text--regular">
+                                Êtes-vous allocataire ?<sup
+                                        class="fr-text-default--error">*</sup>
+                                <span class="fr-hint-text">Le cas échéant, merci de renseigner votre numéro d'allocataire.</span>
+                            </legend>
+                            <div class="fr-fieldset__content">
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="is-allocataire" value="true"
+                                           name="signalement[isAllocataire]" required>
+                                    <label class="fr-label" for=is-allocataire">Oui</label>
+                                </div>
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="is-not-allocataire" value="false"
+                                           name="signalement[isAllocataire]">
+                                    <label class="fr-label" for="is-not-allocataire">Non</label>
+                                </div>
+                            </div>
+                            <p class="fr-error-text fr-hidden">
+                                Veuillez précisez si vous êtes allocataire.
+                            </p>
+                        </fieldset>
+                        <div class="fr-form-group">
+                            <label class="fr-label" for="signalement-num-alloc">
+                                Numéro d'allocataire<sup class="fr-text-default--error">*</sup>
+                                <span class="fr-hint-text">Merci de renseigner votre numéro d'allocataire tel qu'il apparait sur vos document.</span>
+                            </label>
+                            <input class="fr-input" id="signalement-num-alloc"
+                                   name="signalement[numAllocataire]">
+                        </div>
+                    </div>
+                    <div class="fr-form-group">
+                        <fieldset class="fr-fieldset fr-fieldset--inline">
+                            <legend class="fr-fieldset__legend fr-text--regular" id='prop-averti'>
+                                Nature du logement concerné ?<sup
+                                        class="fr-text-default--error">*</sup>
+                                <span class="fr-hint-text">Cette information nous permet d'informer le ou les service(s) concerné(s).</span>
+                            </legend>
+                            <div class="fr-fieldset__content">
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="nature-logement-1" value="maison"
+                                           name="signalement[natureLogement]" required>
+                                    <label class="fr-label" for="nature-logement-1">Maison</label>
+                                </div>
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="nature-logement-2" value="appartement"
+                                           name="signalement[natureLogement]">
+                                    <label class="fr-label" for="nature-logement-2">Appartement</label>
+                                </div>
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="nature-logement-3" value="autre"
+                                           name="signalement[natureLogement]">
+                                    <label class="fr-label" for="nature-logement-3">Autre</label>
+                                </div>
+                            </div>
+                            <p class="fr-error-text fr-hidden">
+                                Veuillez précisez la nature du logement concerné.
+                            </p>
+                        </fieldset>
+                    </div>
+                    <div class="fr-form-group">
+                        <fieldset class="fr-fieldset">
+                            <legend class="fr-fieldset__legend fr-text--regular">
+                                Carracteristiques du logement<sup class="fr-text-default--error">*</sup>
+                                <span class="fr-hint-text">Indiquer la typologie et la superficie du logement en mètres carrés (m²).</span>
+                            </legend>
+                            <div class="fr-select-group fr-mb-0">
+                                <label class="fr-label" for="signalement-type-logement">
+                                    Typologie<sup class="fr-text-default--error">*</sup>
+                                </label>
+                                <select class="fr-select" id="signalement-type-logement"
+                                        name="signalement[typeLogement]" required>
+                                    <option value="" selected disabled hidden>Selectionnez une option</option>
+                                    <option value="chambre">Chambre</option>
+                                    <option value="studio">Studio</option>
+                                    <option value="T1">T1</option>
+                                    <option value="T2">T2</option>
+                                    <option value="T3">T3</option>
+                                    <option value="T4">T4</option>
+                                    <option value="T5">T5</option>
+                                    <option value="T6">T6</option>
+                                    <option value="plus">Plus</option>
+                                </select>
+                                <p class="fr-error-text fr-hidden">
+                                    Veuillez renseigner la typologie du logement.
+                                </p>
+                            </div>
+                            <div class="fr-form-group">
+                                <label class="fr-label" for="signalement-superficie">
+                                   Superficie estimée (m²)<sup class="fr-text-default--error">*</sup>
+                                </label>
+                                <input class="fr-input" type="number" id="signalement-superficie"
+                                       name="signalement[superficie]" required>
+                                <p class="fr-error-text fr-hidden">
+                                    Veuillez renseigner la superficie en mètres carrés du logement.
+                                </p>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="fr-form-group">
+                        <fieldset class="fr-fieldset fr-fieldset--inline">
+                            <legend class="fr-fieldset__legend fr-text--regular">
+                                Le bail est-il en cours ?<sup
+                                        class="fr-text-default--error">*</sup>
+                                <span class="fr-hint-text">Que la bail soit en cours ou non, merci de renseigner la date d'entrée dans le logement.</span>
+                            </legend>
+                            <div class="fr-fieldset__content">
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="is-bail-en-cours-1" value="true"
+                                           name="signalement[isBailEnCours]" required>
+                                    <label class="fr-label" for="is-bail-en-cours-1">Oui</label>
+                                </div>
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="is-bail-en-cours-2" value="false"
+                                           name="signalement[isBailEnCours]">
+                                    <label class="fr-label" for="is-bail-en-cours-2">Non</label>
+                                </div>
+                            </div>
+                            <p class="fr-error-text fr-hidden">
+                                Veuillez précisez si le bail est en cours.
+                            </p>
+                        </fieldset>
+                        <div class="fr-form-group">
+                            <label class="fr-label" for="signalement-date-entree">
+                                Date d'entrée ?<sup class="fr-text-default--error">*</sup>
+                                <span class="fr-hint-text">La date d'entrée dans le logement doit être renseignée au format (JJ/MM/AAAA).</span>
+                            </label>
+                            <input class="fr-input" type="date" id="signalement-date-entree"
+                                   name="signalement[dateEntree]" required>
+                        </div>
+                    </div>
+                    <div class="fr-grid-row">
+                        <div class="fr-col-12 fr-text--center">
+                            <button class="fr-btn fr-fi-arrow-right-line fr-btn--icon-right">Continuer</button>
+                        </div>
+                    </div>
+                </form>
             </section>
             <section id="signalement-step-4-panel" class="fr-tabs__panel" role="tabpanel"
                      aria-labelledby="signalement-step-4" tabindex="0">

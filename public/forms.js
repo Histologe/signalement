@@ -10,6 +10,17 @@ serializeArray = (form) => {
         }, {})
 };
 forms.forEach((form) => {
+    form.addEventListener('change',(event)=>{
+        if(event.target.name==="signalement[proprietaire][averti]")
+        {
+            if(event.target.value === "true")
+                form.querySelector('#methode-contact').classList.remove('fr-hidden')
+            else
+                form.querySelector('#methode-contact').classList.add('fr-hidden')
+
+        }
+
+    })
     form.querySelectorAll('input[type="file"]').forEach((file) => {
         file.addEventListener('change', (event) => {
             if (event.target.files.length > 0) {
@@ -31,19 +42,25 @@ forms.forEach((form) => {
             } else {
                 form.querySelectorAll('input,textarea,select').forEach((field) => {
                     if (!field.checkValidity()) {
-                        [field.classList, field.parentElement.classList].forEach((f) => {
+                        let parent = field.parentElement;
+                        if(field.type === 'radio')
+                            parent = field.parentElement.parentElement.parentElement;
+                        [field.classList, parent.classList].forEach((f) => {
                             f.add(f[0] + '--error');
                         })
-                        field.parentElement.querySelector('.fr-error-text').classList.remove('fr-hidden');
+                        parent?.querySelector('.fr-error-text').classList.remove('fr-hidden');
                     }
                 })
             }
         } else {
             form.querySelectorAll('input,textarea,select').forEach((field) => {
-                [field.classList, field.parentElement.classList].forEach((f) => {
+                let parent = field.parentElement;
+                if(field.type === 'radio')
+                    parent = field.parentElement.parentElement.parentElement;
+                [field.classList, parent.classList].forEach((f) => {
                     f.remove(f[0] + '--error');
                 })
-                field.parentElement.querySelector('.fr-error-text')?.classList.add('fr-hidden');
+                parent.querySelector('.fr-error-text')?.classList.add('fr-hidden');
             })
             if (form.name !== 'signalement')
                 form.submit();
