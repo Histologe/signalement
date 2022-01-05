@@ -1,7 +1,7 @@
 const forms = document.querySelectorAll('form.needs-validation');
 const localStorage = window.localStorage;
 let savedData = [];
-let serializeArray = function (form) {
+serializeArray = (form) => {
     return Array.from(new FormData(form)
         .entries())
         .reduce(function (response, current) {
@@ -10,6 +10,18 @@ let serializeArray = function (form) {
         }, {})
 };
 forms.forEach((form) => {
+    form.querySelectorAll('input[type="file"]').forEach((file) => {
+        file.addEventListener('change', (event) => {
+            if (event.target.files.length > 0) {
+                if (event.target.parentElement.classList.contains('fr-fi-instagram-line'))
+                    ['fr-fi-instagram-line', 'fr-py-7v'].map(v => event.target.parentElement.classList.toggle(v))
+                let src = URL.createObjectURL(event.target.files[0]);
+                let preview = event.target.parentElement.querySelector('img')
+                preview.src = src;
+                preview.classList.remove('fr-hidden')
+            }
+        })
+    })
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         if (!form.checkValidity() || form.id === "signalement-step-1" && null === form.querySelector('[type="radio"]:checked')) {

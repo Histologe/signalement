@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Qui sommes-nous ?{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block body %}
     <main class="fr-container fr-py-5w">
@@ -43,7 +43,7 @@
             </ul>
             <section id="signalement-step-1-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel"
                      aria-labelledby="signalement-step-1" tabindex="0">
-                <header class="fr-callout bg-light">
+                <header class="fr-callout bg-light fr-mb-5v">
                     <p class="fr-callout__title">Signaler un problème dans votre logement</p>
                     <p class="fr-callout__text fr-mb-5v">
                         Sélectionnez le ou les problèmes que vous rencontrez et indiquez la gravité.
@@ -53,7 +53,7 @@
                         plusieurs</em>
                 </header>
                 <form action="#" name="signalement" id="signalement-step-1" class="needs-validation" novalidate>
-                    <div role="alert" class="fr-alert fr-alert--error fr-alert--sm fr-my-5v fr-hidden">
+                    <div role="alert" class="fr-alert fr-alert--error fr-alert--sm fr-mb-5v fr-hidden">
                         <p class="fr-alert__title">Réponse incomplète</p>
                         <p>Vous devez selectionner <u>au moins une</u> situation pour continuer</p>
                     </div>
@@ -74,7 +74,7 @@
                                                     <div class="fr-toggle fr-toggle--border-bottom"
                                                          aria-expanded="false"
                                                          aria-controls="accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
-                                                        <input type="checkbox" name="situation[{{ situation.id }}]"
+                                                        <input type="checkbox" name="signalement[situation][{{ situation.id }}]"
                                                                class="fr-toggle__input"
                                                                id="group-1-toggle-hint-situation-{{ situation.id }}-critere-{{ critere.id }}">
                                                         <label class="fr-toggle__label fr-text--bold"
@@ -89,7 +89,7 @@
                                                             <label class="toggle-criticite fr-grid-row fr-grid-row--middle fr-py-1v">
                                                                 <input class="{{ etats_classes[index] }} fr-col-1"
                                                                        type="radio"
-                                                                       name="situation[{{ situation.id }}][critere][{{ critere.id }}][criticite]"
+                                                                       name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]"
                                                                        value="{{ criticite.id }}">
                                                                 <text class="fr-col-11">
                                                                     <strong>{{ etats[index] }}:</strong>
@@ -136,7 +136,7 @@
             </section>
             <section id="signalement-step-2-panel" class="fr-tabs__panel" role="tabpanel"
                      aria-labelledby="signalement-step-2" tabindex="0">
-                <header class="fr-callout bg-light">
+                <header class="fr-callout bg-light fr-mb-5v">
                     <p class="fr-callout__title">Je donne des détails sur les problèmes rencontrés</p>
                     <p class="fr-callout__text fr-mb-5v">
                         Décrivez ici en détails le problème rencontré dans votre logement. Vous pouvez ajouter des
@@ -147,6 +147,33 @@
                         astérisque
                         (*) sont obligatoires.</em>
                 </header>
+                <form action="#" name="signalement" class="needs-validation" novalidate>
+                    <div class="fr-input-group">
+                        <label class="fr-label" for="signalement-details">
+                            Décrivez le ou les problème(s) rencontré(s)<sup class="fr-text-default--error">*</sup>
+                            <span class="fr-hint-text">Proposer une rapide description du ou des problème(s).</span>
+                        </label>
+                        <textarea class="fr-input fr-input--no-resize" id="signalement-details" name="signalement[details]" required></textarea>
+                        <p class="fr-error-text fr-hidden">
+                            Merci de proposer une rapide description (minimum 10 caractères).
+                        </p>
+                    </div>
+                    <fieldset class="fr-fieldset fr-fieldset--inline fr-grid-row--middle">
+                        <legend class="fr-label fr-pl-0">Téléverser des photos du/des problème(s)</legend>
+                        <span class="fr-error-text fr-my-1v">Les photos ne doivent pas contenir de vues de personnes ou d'objets personnels. Pour les photos des parties communes, certaines restrictions sont à respecter.</span>
+                        {% for i in 1..6  %}
+                            <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-instagram-line">
+                                <img src="#" alt="Aperçu" class="fr-hidden fr-rounded" width="100">
+                                <input type="file" accept="image/*" name="signalement[photos][]" class="fr-hidden">
+                            </label>
+                        {% endfor %}
+                    </fieldset>
+                    <div class="fr-grid-row fr-mt-5w">
+                        <div class="fr-col-12 fr-text--center">
+                            <button class="fr-btn fr-fi-arrow-right-line fr-btn--icon-right">Continuer</button>
+                        </div>
+                    </div>
+                </form>
             </section>
             <section id="signalement-step-3-panel" class="fr-tabs__panel" role="tabpanel"
                      aria-labelledby="signalement-step-3" tabindex="0">

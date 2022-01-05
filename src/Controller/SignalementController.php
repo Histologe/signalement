@@ -12,10 +12,12 @@ class SignalementController extends AbstractController
     #[Route('/signalement', name: 'signalement')]
     public function index(SituationRepository $situationRepository): Response
     {
-        $etats = ["Etat moyen","Mauvais état","Très mauvais état"];
-        $etats_classes = ["moyen","grave","tres-grave"];
+        $title = "Signalez vos problèmes de logement";
+        $etats = ["Etat moyen", "Mauvais état", "Très mauvais état"];
+        $etats_classes = ["moyen", "grave", "tres-grave"];
         return $this->render('front/signalement.html.twig', [
-            'situations' => $situationRepository->findAllActive(['isActive'=>true]),
+            'title'=>$title,
+            'situations' => $situationRepository->findAllActive(),
             'etats' => $etats,
             'etats_classes' => $etats_classes
         ]);

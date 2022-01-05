@@ -26,6 +26,9 @@
     text-align: center;
 }
 /*INPUTS*/
+.fr-input--no-resize {
+    resize: vertical;
+}
 .toggle-criticite > input[type="radio"]
 {
     width: 60px;
