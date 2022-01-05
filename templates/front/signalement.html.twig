@@ -1,0 +1,168 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Qui sommes-nous ?{% endblock %}
+
+{% block body %}
+    <main class="fr-container fr-py-5w">
+        <div class="fr-tabs">
+            <ul class="fr-tabs__list" role="tablist" aria-label="Etapes signalement">
+                <li role="presentation">
+                    <button id="signalement-step-1"
+                            class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="0"
+                            role="tab" aria-selected="true" aria-controls="signalement-step-1-panel">1. Problèmes
+                    </button>
+                </li>
+                <li role="presentation">
+                    <button id="signalement-step-2"
+                            class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
+                            role="tab" aria-selected="false" aria-controls="signalement-step-2-panel" disabled>2.
+                        Détails
+                    </button>
+                </li>
+                <li role="presentation">
+                    <button id="signalement-step-3"
+                            class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
+                            role="tab" aria-selected="false" aria-controls="signalement-step-3-panel" disabled>3.
+                        Logement
+                    </button>
+                </li>
+                <li role="presentation">
+                    <button id="signalement-step-4"
+                            class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
+                            role="tab" aria-selected="false" aria-controls="signalement-step-3-panel" disabled>4.
+                        Identité
+                    </button>
+                </li>
+                <li role="presentation">
+                    <button id="signalement-step-5"
+                            class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
+                            role="tab" aria-selected="false" aria-controls="signalement-step-3-panel" disabled>5.
+                        Validation
+                    </button>
+                </li>
+            </ul>
+            <section id="signalement-step-1-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel"
+                     aria-labelledby="signalement-step-1" tabindex="0">
+                <header class="fr-callout bg-light">
+                    <p class="fr-callout__title">Signaler un problème dans votre logement</p>
+                    <p class="fr-callout__text fr-mb-5v">
+                        Sélectionnez le ou les problèmes que vous rencontrez et indiquez la gravité.
+                    </p>
+                    <em class="fr-fi-information-line fr-text--light fr-text-label--blue-france"> Vous pouvez en
+                        selectionner
+                        plusieurs</em>
+                </header>
+                <form action="#" name="signalement" id="signalement-step-1" class="needs-validation" novalidate>
+                    <div role="alert" class="fr-alert fr-alert--error fr-alert--sm fr-my-5v fr-hidden">
+                        <p class="fr-alert__title">Réponse incomplète</p>
+                        <p>Vous devez selectionner <u>au moins une</u> situation pour continuer</p>
+                    </div>
+                    <ul class="fr-accordions-group">
+                        {% for situation in situations %}
+                            <li>
+                                <section class="fr-accordion fr-accordions-group">
+                                    <h3 class="fr-accordion__title">
+                                        <text role="button" class="fr-accordion__btn fr-btn--icon-left fr-fi-question-fill" aria-expanded="false"
+                                              aria-controls="accordion-situation-{{ situation.id }}">Votre signalement
+                                            concerne-t-il {{ situation.label }}
+                                        </text>
+                                    </h3>
+                                    <div class="fr-collapse" id="accordion-situation-{{ situation.id }}">
+                                        <ul class="fr-toggle__list">
+                                            {% for critere in situation.criteres %}
+                                                <li>
+                                                    <div class="fr-toggle fr-toggle--border-bottom"
+                                                         aria-expanded="false"
+                                                         aria-controls="accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
+                                                        <input type="checkbox" name="situation[{{ situation.id }}]"
+                                                               class="fr-toggle__input"
+                                                               id="group-1-toggle-hint-situation-{{ situation.id }}-critere-{{ critere.id }}">
+                                                        <label class="fr-toggle__label fr-text--bold"
+                                                               for="group-1-toggle-hint-situation-{{ situation.id }}-critere-{{ critere.id }}">{{ critere.label }}</label>
+                                                        <p class="fr-error-text fr-hidden">Texte
+                                                            d’aide pour clarifier l’action</p>
+                                                    </div>
+                                                    <div class="fr-collapse"
+                                                         id="accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
+                                                        <strong>Quand tou va bien: </strong> {{ critere.description }}
+                                                        {% for index,criticite in critere.criticites %}
+                                                            <label class="toggle-criticite fr-grid-row fr-grid-row--middle fr-py-1v">
+                                                                <input class="{{ etats_classes[index] }} fr-col-1"
+                                                                       type="radio"
+                                                                       name="situation[{{ situation.id }}][critere][{{ critere.id }}][criticite]"
+                                                                       value="{{ criticite.id }}">
+                                                                <text class="fr-col-11">
+                                                                    <strong>{{ etats[index] }}:</strong>
+                                                                    {{ criticite.label }}
+                                                                </text>
+                                                                <text class="fr-error-text fr-hidden">Texte
+                                                                    d’aide pour clarifier l’action
+                                                                </text>
+                                                            </label>
+                                                        {% endfor %}
+                                                        {# <label class="toggle-criticite fr-display-block">
+                                                            <input class="grave" type="radio" name="criticite[id]"
+                                                                   value="2">
+                                                            <strong>Mauvais état:</strong>
+                                                            <text>La porte ferme à clef mais difficilement.</text>
+                                                            <text class="fr-error-text fr-hidden">Texte
+                                                                d’aide pour clarifier l’action
+                                                            </text>
+                                                        </label>
+                                                        <label class="toggle-criticite fr-display-block">
+                                                            <input class="tres-grave" type="radio" name="criticite[id]"
+                                                                   value="3">
+                                                            <strong>Très mauvais état:</strong>
+                                                            <text>La porte ferme à clef mais difficilement.</text>
+                                                            <text class="fr-error-text fr-hidden">Texte
+                                                                d’aide pour clarifier l’action
+                                                            </text>
+                                                        </label> #}
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </section>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="fr-grid-row fr-mt-5w">
+                        <div class="fr-col-12 fr-text--center">
+                            <button class="fr-btn fr-fi-arrow-right-line fr-btn--icon-right">Continuer</button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <section id="signalement-step-2-panel" class="fr-tabs__panel" role="tabpanel"
+                     aria-labelledby="signalement-step-2" tabindex="0">
+                <header class="fr-callout bg-light">
+                    <p class="fr-callout__title">Je donne des détails sur les problèmes rencontrés</p>
+                    <p class="fr-callout__text fr-mb-5v">
+                        Décrivez ici en détails le problème rencontré dans votre logement. Vous pouvez ajouter des
+                        documents
+                        et photos.
+                    </p>
+                    <em class="fr-fi-information-line fr-text--light fr-text-label--blue-france"> Les champs marqués d'un
+                        astérisque
+                        (*) sont obligatoires.</em>
+                </header>
+            </section>
+            <section id="signalement-step-3-panel" class="fr-tabs__panel" role="tabpanel"
+                     aria-labelledby="signalement-step-3" tabindex="0">
+                <!-- données de test -->
+                <p>Contenu 3</p>
+            </section>
+            <section id="signalement-step-4-panel" class="fr-tabs__panel" role="tabpanel"
+                     aria-labelledby="signalement-step-4" tabindex="0">
+                <!-- données de test -->
+                <p>Contenu 3</p>
+            </section>
+            <section id="signalement-step-5-panel" class="fr-tabs__panel" role="tabpanel"
+                     aria-labelledby="signalement-step-5" tabindex="0">
+                <!-- données de test -->
+                <p>Contenu 3</p>
+            </section>
+        </div>
+    </main>
+{% endblock %}
