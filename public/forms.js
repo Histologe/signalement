@@ -11,12 +11,20 @@ serializeArray = (form) => {
 };
 forms.forEach((form) => {
     form.addEventListener('change',(event)=>{
-        if(event.target.name==="signalement[proprietaire][averti]")
+        if(event.target.name==="signalement[isProprioAverti]")
         {
             if(event.target.value === "true")
                 form.querySelector('#methode-contact').classList.remove('fr-hidden')
             else
                 form.querySelector('#methode-contact').classList.add('fr-hidden')
+
+        }
+        if(event.target.name==="signalement[isOkIntervention]")
+        {
+            if(event.target.value === "true")
+                form.querySelector('#raison-refus').classList.remove('fr-hidden')
+            else
+                form.querySelector('#raison-refus').classList.add('fr-hidden')
 
         }
 

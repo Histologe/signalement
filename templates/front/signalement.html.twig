@@ -353,7 +353,7 @@
                         <fieldset class="fr-fieldset">
                             <legend class="fr-fieldset__legend fr-text--regular">
                                 Carracteristiques du logement<sup class="fr-text-default--error">*</sup>
-                                <span class="fr-hint-text">Indiquer la typologie et la superficie du logement en mètres carrés (m²).</span>
+                                <span class="fr-hint-text">Indiquer la typologie et la superficie du logement en mètres carrés (m²) ainsi que le loyer mensuel en euros (€).</span>
                             </legend>
                             <div class="fr-select-group fr-mb-0">
                                 <label class="fr-label" for="signalement-type-logement">
@@ -376,14 +376,24 @@
                                     Veuillez renseigner la typologie du logement.
                                 </p>
                             </div>
-                            <div class="fr-form-group">
+                            <div class="fr-form-group fr-mb-0">
                                 <label class="fr-label" for="signalement-superficie">
-                                   Superficie estimée (m²)<sup class="fr-text-default--error">*</sup>
+                                    Superficie estimée (m²)<sup class="fr-text-default--error">*</sup>
                                 </label>
                                 <input class="fr-input" type="number" id="signalement-superficie"
                                        name="signalement[superficie]" required>
                                 <p class="fr-error-text fr-hidden">
                                     Veuillez renseigner la superficie en mètres carrés du logement.
+                                </p>
+                            </div>
+                            <div class="fr-form-group">
+                                <label class="fr-label" for="signalement-loyer">
+                                    Loyer mensuel (€)<sup class="fr-text-default--error">*</sup>
+                                </label>
+                                <input class="fr-input" type="number" min="1" step="0.01" id="signalement-loyer"
+                                       name="signalement[loyer]" required>
+                                <p class="fr-error-text fr-hidden">
+                                    Veuillez renseigner le loyer mensuel du logement en euros.
                                 </p>
                             </div>
                         </fieldset>
@@ -423,6 +433,148 @@
                             </p>
                         </div>
                     </div>
+                    <div class="fr-form-group">
+                        <fieldset class="fr-fieldset fr-fieldset--inline">
+                            <legend class="fr-fieldset__legend fr-text--regular">
+                                Propriétaire ou Gestionnaire Bailleur
+                                <span class="fr-hint-text">Que la bail soit en cours ou non, merci de renseigner la date d'entrée dans le logement.</span>
+                            </legend>
+                            <div class="fr-fieldset__content fr-grid-row fr-grid-row--gutters">
+                                <div class="fr-input-group fr-col-12 fr-col-md-6 fr-pl-0">
+                                    <label class="fr-label" for="signalement-nom-proprio">
+                                        Nom et prénom ou raison sociale
+                                    </label>
+                                    <input class="fr-input fr-input--no-resize" id="signalement-nom-proprio"
+                                           name="signalement[nomProprio]">
+                                    <label class="fr-label" for="signalement-adresse-proprio">
+                                        Adresse
+                                    </label>
+                                    <input class="fr-input fr-input--no-resize" id="signalement-adresse-proprio"
+                                           name="signalement[adresseProprio]">
+                                </div>
+                                <div class="fr-input-group fr-col-12 fr-col-md-6 fr-pr-0">
+                                    <label class="fr-label" for="signalement-nom-proprio">
+                                        N° de téléphone
+                                    </label>
+                                    <input class="fr-input fr-input--no-resize" id="signalement-nom-proprio"
+                                           name="signalement[telProprio]">
+                                    <label class="fr-label" for="signalement-adresse-proprio">
+                                        Courriel
+                                    </label>
+                                    <input class="fr-input fr-input--no-resize" id="signalement-adresse-proprio"
+                                           name="signalement[mailProprio]">
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="fr-form-group">
+                        <fieldset class="fr-fieldset fr-fieldset--inline">
+                            <legend class="fr-fieldset__legend fr-text--regular" id='prop-averti'>
+                                Le logement est-il un logement social ?<sup
+                                        class="fr-text-default--error">*</sup>
+                                <span class="fr-hint-text">Cette information nous aide à optimiser le temps de traitement de votre signalement.</span>
+                            </legend>
+                            <div class="fr-fieldset__content">
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="signalement-logement-social-1" value="true"
+                                           name="signalement[isLogementSocial]" required>
+                                    <label class="fr-label" for="signalement-logement-social-1">Oui</label>
+                                </div>
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="signalement-logement-social-2" value="false"
+                                           name="signalement[isLogementSocial]">
+                                    <label class="fr-label" for="signalement-logement-social-2">Non</label>
+                                </div>
+                            </div>
+                            <p class="fr-error-text fr-hidden">
+                                Veuillez précisez si le logement est un logement social ou non.
+                            </p>
+                        </fieldset>
+                    </div>
+                    <div class="fr-form-group">
+                        <fieldset class="fr-fieldset fr-fieldset--inline">
+                            <legend class="fr-fieldset__legend fr-text--regular" id='prop-averti'>
+                                Avez-vous déposé un préavis de départ pour ce logement ?<sup
+                                        class="fr-text-default--error">*</sup>
+                                <span class="fr-hint-text">Cette information nous aide également à optimiser le temps de traitement de votre signalement.</span>
+                            </legend>
+                            <div class="fr-fieldset__content">
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="signalement-preavis-1" value="true"
+                                           name="signalement[isPreavisDepart]" required>
+                                    <label class="fr-label" for="signalement-preavis-1">Oui</label>
+                                </div>
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="signalement-preavis-2" value="false"
+                                           name="signalement[isPreavisDepart]">
+                                    <label class="fr-label" for="signalement-preavis-2">Non</label>
+                                </div>
+                            </div>
+                            <p class="fr-error-text fr-hidden">
+                                Veuillez précisez si vous avez déposé un préavis de départ.
+                            </p>
+                        </fieldset>
+                    </div>
+                    <div class="fr-form-group">
+                        <fieldset class="fr-fieldset fr-fieldset--inline">
+                            <legend class="fr-fieldset__legend fr-text--regular" id='prop-averti'>
+                                Avez-vous engagé une démarche de relogement ?<sup
+                                        class="fr-text-default--error">*</sup>
+                                <span class="fr-hint-text">Nos services pourrons vous accompagner dans cette demarche le cas échéant.</span>
+                            </legend>
+                            <div class="fr-fieldset__content">
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="signalement-relogement-1" value="true"
+                                           name="signalement[isRelogement]" required>
+                                    <label class="fr-label" for="signalement-relogement-1">Oui</label>
+                                </div>
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="signalement-relogement-2" value="false"
+                                           name="signalement[isRelogement]">
+                                    <label class="fr-label" for="signalement-relogement-2">Non</label>
+                                </div>
+                            </div>
+                            <p class="fr-error-text fr-hidden">
+                                Veuillez précisez si vous avez engagé une démarche ou non.
+                            </p>
+                        </fieldset>
+                    </div>
+                    <div class="fr-form-group">
+                        <fieldset class="fr-fieldset fr-fieldset--inline">
+                            <legend class="fr-fieldset__legend fr-text--regular" id='prop-averti'>
+                                Si cela est nécessaire, l'occupant accepte la visite d’un personne qualifiée et la mise
+                                en place de travaux d'amélioration ?<sup
+                                        class="fr-text-default--error">*</sup>
+                                <span class="fr-hint-text">Le cas échéant, veuillez précisez la raison de votre refus d'intervention.</span>
+                            </legend>
+                            <div class="fr-fieldset__content">
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="signalement-intervention-1" value="true"
+                                           name="signalement[isOkIntervention]" required>
+                                    <label class="fr-label" for="signalement-intervention-1">Oui</label>
+                                </div>
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="signalement-intervention-2" value="false"
+                                           name="signalement[isOkIntervention]">
+                                    <label class="fr-label" for="signalement-intervention-2">Non</label>
+                                </div>
+                            </div>
+                            <p class="fr-error-text fr-hidden">
+                                Veuillez précisez si vous acceptez une intervention dans le logement ou non.
+                            </p>
+                        </fieldset>
+                    </div>
+                    <div class="fr-form-group fr-hidden" id="raison-refus">
+                        <label class="fr-label" for="signalement-raison-refus">
+                            Précisez la raison de votre refus<sup class="fr-text-default--error">*</sup>
+                            <span class="fr-hint-text">Proposer une rapide description du ou des problème(s).</span>
+                        </label>
+                        <textarea class="fr-input fr-input--no-resize" id="signalement-raison-refus"
+                                  name="signalement[raisonRefusIntervention]" minlength="10"></textarea>
+                        <p class="fr-error-text fr-hidden">
+                            Merci de proposer une rapide description (minimum 10 caractères).
+                        </p>
+                    </div>
                     <div class="fr-grid-row">
                         <div class="fr-col-12 fr-text--center">
                             <button class="fr-btn fr-fi-arrow-right-line fr-btn--icon-right">Continuer</button>
@@ -432,8 +584,32 @@
             </section>
             <section id="signalement-step-4-panel" class="fr-tabs__panel" role="tabpanel"
                      aria-labelledby="signalement-step-4" tabindex="0">
-                <!-- données de test -->
-                <p>Contenu 4</p>
+                <form action="#" name="signalement" class="needs-validation" novalidate>
+                    <div class="fr-form-group">
+                        <fieldset class="fr-fieldset fr-fieldset--inline">
+                            <legend class="fr-fieldset__legend fr-text--regular" id='prop-averti'>
+                                Êtes-vous l'occupant du logement concerné ?<sup
+                                        class="fr-text-default--error">*</sup>
+                                <span class="fr-hint-text">Si vous déposez ce signalement pour le compte de quelqu'un d'autres, merci de nous le faire savoir.</span>
+                            </legend>
+                            <div class="fr-fieldset__content">
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="signalement-occupant-1" value="true"
+                                           name="signalement[isOccupant]" required>
+                                    <label class="fr-label" for="signalement-occupant-1">Oui</label>
+                                </div>
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="signalement-occupant-2" value="false"
+                                           name="signalement[isOccupant]">
+                                    <label class="fr-label" for="signalement-occupant-2">Non</label>
+                                </div>
+                            </div>
+                            <p class="fr-error-text fr-hidden">
+                                Veuillez précisez si vous êtes l'occupant du logement.
+                            </p>
+                        </fieldset>
+                    </div>
+                </form>
             </section>
             <section id="signalement-step-5-panel" class="fr-tabs__panel" role="tabpanel"
                      aria-labelledby="signalement-step-5" tabindex="0">
