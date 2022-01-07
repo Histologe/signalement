@@ -10,26 +10,13 @@ serializeArray = (form) => {
         }, {})
 };
 forms.forEach((form) => {
-    form.addEventListener('change',(event)=>{
-        if(event.target.name==="signalement[isProprioAverti]")
-        {
-            if(event.target.value === "true")
-                form.querySelector('#methode-contact').classList.remove('fr-hidden')
-            else
-                form.querySelector('#methode-contact').classList.add('fr-hidden')
-
-        }
-        if(event.target.name==="signalement[isOkIntervention]")
-        {
-            if(event.target.value === "true")
-                form.querySelector('#raison-refus').classList.remove('fr-hidden')
-            else
-                form.querySelector('#raison-refus').classList.add('fr-hidden')
-
-        }
-
+    form?.querySelectorAll('[data-fr-toggle]')?.forEach((toggle) => {
+        toggle.addEventListener('change', (event) => {
+            let target = form.querySelector('#' + toggle.getAttribute('data-fr-toggle'));
+            "true" === event.target.value ? target.classList.remove('fr-hidden') : target.classList.add('fr-hidden');
+        })
     })
-    form.querySelectorAll('input[type="file"]').forEach((file) => {
+    form?.querySelectorAll('input[type="file"]')?.forEach((file) => {
         file.addEventListener('change', (event) => {
             if (event.target.files.length > 0) {
                 if (event.target.parentElement.classList.contains('fr-fi-instagram-line'))
@@ -39,6 +26,29 @@ forms.forEach((form) => {
                 preview.src = src;
                 preview.classList.remove('fr-hidden')
             }
+        })
+    })
+    form?.querySelectorAll('[data-fr-adresse-autocomplete]').forEach((autocomplete) => {
+        autocomplete.addEventListener('keyup', () => {
+            if (autocomplete.value.length > 3)
+                fetch('https://api-adresse.data.gouv.fr/search/?q=' + autocomplete.value).then((res) => {
+                    res.json().then((r) => {
+                        let container = form.querySelector('#signalement-adresse-suggestion')
+                        container.innerHTML = '';
+                        for (let feature of r.features) {
+                            let suggestion = document.createElement('div');
+                            suggestion.classList.add('fr-col-12','fr-p-3v', 'fr-text-label--blue-france', 'fr-adresse-suggestion');
+                            suggestion.innerHTML = feature.properties.label;
+                            suggestion.addEventListener('click',()=>{
+                                form.querySelector('#signalement-adresse-occupant').value = feature.properties.name;
+                                form.querySelector('#signalement-cp-occupant').value = feature.properties.postcode;
+                                form.querySelector('#signalement-ville-occupant').value = feature.properties.city;
+                                container.innerHTML = '';
+                            })
+                            container.appendChild(suggestion)
+                        }
+                    })
+                })
         })
     })
     form.addEventListener('submit', (event) => {
@@ -51,7 +61,7 @@ forms.forEach((form) => {
                 form.querySelectorAll('input,textarea,select').forEach((field) => {
                     if (!field.checkValidity()) {
                         let parent = field.parentElement;
-                        if(field.type === 'radio')
+                        if (field.type === 'radio')
                             parent = field.parentElement.parentElement.parentElement;
                         [field.classList, parent.classList].forEach((f) => {
                             f.add(f[0] + '--error');
@@ -63,7 +73,7 @@ forms.forEach((form) => {
         } else {
             form.querySelectorAll('input,textarea,select').forEach((field) => {
                 let parent = field.parentElement;
-                if(field.type === 'radio')
+                if (field.type === 'radio')
                     parent = field.parentElement.parentElement.parentElement;
                 [field.classList, parent.classList].forEach((f) => {
                     f.remove(f[0] + '--error');

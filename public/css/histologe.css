@@ -26,6 +26,10 @@
     text-align: center;
 }
 /*INPUTS*/
+.fr-adresse-suggestion:hover {
+    background-color: var(--artwork-minor-blue-cumulus);
+    color:white!important;
+}
 .fr-input--no-resize {
     resize: vertical;
 }
