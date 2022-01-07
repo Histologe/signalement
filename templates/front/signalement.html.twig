@@ -822,15 +822,15 @@
                     <div class="fr-form-group">
                         <div class="fr-toggle fr-toggle--border-bottom">
                             <input type="checkbox" class="fr-toggle__input" id="signalement-accept-cgu" name="signalement[isCguAccepted]" required>
-                            <label class="fr-toggle__label" for="signalement-accept-cgu" data-fr-checked-label="Activé" data-fr-unchecked-label="Désactivé"><b>J'ai bien pris connaissance des <a href="CGU" target="_new">CGU</a>.</b></label>
+                            <label class="fr-toggle__label" for="signalement-accept-cgu" data-fr-checked-label="Activé" data-fr-unchecked-label="Désactivé"><b>J'ai bien pris connaissance des <a href="{{ path('cgu') }}" target="_blank">CGU</a></b> et je les acceptent.</label>
                             <p class="fr-error-text fr-hidden">
                                 Vous devez accepter les Conditions Générales d'Utilisation pour transmettre votre
                                 signalement.
                             </p>
                         </div>
                     </div>
-                    <div class="fr-form-group">
-                        <iframe src="{#{{ include('front/cgu.html.twig') }}#}"></iframe>
+                    <div class="fr-grid-row">
+                        <iframe src="{{path('cgu')}}" class="fr-col-12"></iframe>
                     </div>
                     <div class="fr-grid-row">
                         <div class="fr-col-12 fr-text--center">

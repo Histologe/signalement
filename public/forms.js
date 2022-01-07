@@ -146,11 +146,17 @@ forms.forEach((form) => {
                         if (r.ok) {
                             r.json().then((res) => {
                                 if (res.response === "success") {
-                                    alert('Signalement envoyé !')
-                                    window.location.refresh(true);
-                                } else
+                                    document.querySelector('main').innerHTML = "Ok"
+                                } else {
+                                    event.submitter.disabled = true;
+                                    ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v => event.submitter.classList.toggle(v));
                                     alert('Erreur signalement !')
+                                }
                             })
+                        } else {
+                            event.submitter.disabled = true;
+                            ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v => event.submitter.classList.toggle(v));
+                            alert('Erreur signalement !')
                         }
                     })
                 }

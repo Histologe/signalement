@@ -45,26 +45,27 @@ class SignalementController extends AbstractController
             $files_array = [];
             if ($files = $request->files->get('signalement')) {
                 foreach ($files as $key => $file) {
-                        foreach ($file as $file_)
-                        {
-                            $originalFilename = pathinfo($file_->getClientOriginalName(), PATHINFO_FILENAME);
-                            // this is needed to safely include the file name as part of the URL
-                            $safeFilename = $slugger->slug($originalFilename);
-                            $newFilename = $safeFilename . '-' . uniqid() . '.' . $file_->guessExtension();
-                            try {
-                                $file_->move(
-                                    $this->getParameter('uploads_dir'),
-                                    $newFilename
-                                );
-                            } catch (FileException $e) {
-                                // ... handle exception if something happens during file upload
-                            }
-                            $files_array[$key][] = $newFilename;
+                    foreach ($file as $file_) {
+                        $originalFilename = pathinfo($file_->getClientOriginalName(), PATHINFO_FILENAME);
+                        // this is needed to safely include the file name as part of the URL
+                        $safeFilename = $slugger->slug($originalFilename);
+                        $newFilename = $safeFilename . '-' . uniqid() . '.' . $file_->guessExtension();
+                        try {
+                            $file_->move(
+                                $this->getParameter('uploads_dir'),
+                                $newFilename
+                            );
+                        } catch (FileException $e) {
+                            // ... handle exception if something happens during file upload
                         }
+                        $files_array[$key][] = $newFilename;
+                    }
 
                 }
-                $signalement->setDocuments($files_array['documents']);
-                $signalement->setPhotos($files_array['photos']);
+                if (isset($files_array['documents']))
+                    $signalement->setDocuments($files_array['documents']);
+                if (isset($files_array['photos']))
+                    $signalement->setPhotos($files_array['photos']);
             }
             foreach ($data as $key => $value) {
                 $method = 'set' . ucfirst($key);

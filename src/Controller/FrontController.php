@@ -25,4 +25,28 @@ class FrontController extends AbstractController
             'title'=>$title
         ]);
     }
+    #[Route('/contact', name: 'contact')]
+    public function contact(): Response
+    {
+        $title = "Conditions Générales d'Utilisation";
+        return $this->render('front/cgu.html.twig',[
+            'title'=>$title
+        ]);
+    }
+    #[Route('/faq', name: 'faq')]
+    public function faq(): Response
+    {
+        $title = "Conditions Générales d'Utilisation";
+        return $this->render('front/cgu.html.twig',[
+            'title'=>$title
+        ]);
+    }
+    #[Route('/cgu', name: 'cgu')]
+    public function cgu(): Response
+    {
+        $title = "Conditions Générales d'Utilisation";
+        return $this->render('front/cgu.html.twig',[
+            'title'=>$title
+        ]);
+    }
 }

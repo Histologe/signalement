@@ -21,7 +21,7 @@
                         </div>
                     </div>
                     <div class="fr-header__service fr-displayed-md">
-                        <a href="Home" title="Accueil - HISTOLOGE" class="fr-header__service-title">
+                        <a href="{{ path('home') }}" title="Accueil - HISTOLOGE" class="fr-header__service-title">
                             <small class="fr-text--light d-block fr-text--sm fr-m-0">Signaler vos problèmes
                                 d'habitabilité.</small>
                         </a>
@@ -31,20 +31,20 @@
                     <div class="fr-header__tools-links">
                         <ul class="fr-links-group">
                             <li>
-                                <a class="fr-link" href="{{ path('home') }}">Accueil</a>
+                                <a class="fr-link fr-fi-refresh-line" href="{{ path('home') }}">Accueil</a>
                             </li>
                             <li>
-                                <a class="fr-link" href="Qui">Qui sommes-nous ?</a>
+                                <a class="fr-link fr-fi-eye-line" href="{{ path('about') }}">Qui sommes-nous ?</a>
                             </li>
                             <li>
-                                <a class="fr-link" href="Contact">Contact</a>
+                                <a class="fr-link fr-fi-chat-quote-line" href="{{ path('contact') }}">Contact</a>
                             </li>
                             <li>
-                                <a class="fr-link" href="Aide">Aide</a>
+                                <a class="fr-link fr-fi-question-line" href="{{ path('faq') }}">Aide</a>
                             </li>
                             <li>
                                 {% if app.user %}
-                                    <a class="fr-link fr-fi-lock-line" href="{{ path('app_logout') }}">Déconnexion</a>
+                                    <a class="fr-link fr-fi-logout-box-r-line" href="{{ path('app_logout') }}">Déconnexion</a>
                                 {% else %}
                                     <a class="fr-link fr-fi-lock-line" href="{{ path('app_login') }}">Se connecter</a>
                                 {% endif %}
