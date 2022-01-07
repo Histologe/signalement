@@ -17,14 +17,17 @@ forms.forEach((form) => {
         })
     })
     form?.querySelectorAll('input[type="file"]')?.forEach((file) => {
+
         file.addEventListener('change', (event) => {
             if (event.target.files.length > 0) {
-                if (event.target.parentElement.classList.contains('fr-fi-instagram-line'))
-                    ['fr-fi-instagram-line', 'fr-py-7v'].map(v => event.target.parentElement.classList.toggle(v))
-                let src = URL.createObjectURL(event.target.files[0]);
-                let preview = event.target.parentElement.querySelector('img')
-                preview.src = src;
-                preview.classList.remove('fr-hidden')
+                if (event.target.parentElement.classList.contains('fr-fi-instagram-line')) {
+                    ['fr-fi-instagram-line', 'fr-py-7v'].map(v => event.target.parentElement.classList.toggle(v));
+                    let src = URL.createObjectURL(event.target.files[0]);
+                    let preview = event.target.parentElement.querySelector('img')
+                    preview.src = src;
+                    preview.classList.remove('fr-hidden')
+                } else if (event.target.parentElement.classList.contains('fr-fi-attachment-fill'))
+                    ['fr-fi-attachment-fill', 'fr-fi-checkbox-circle-fill'].map(v => event.target.parentElement.classList.toggle(v))
             }
         })
     })
@@ -37,9 +40,9 @@ forms.forEach((form) => {
                         container.innerHTML = '';
                         for (let feature of r.features) {
                             let suggestion = document.createElement('div');
-                            suggestion.classList.add('fr-col-12','fr-p-3v', 'fr-text-label--blue-france', 'fr-adresse-suggestion');
+                            suggestion.classList.add('fr-col-12', 'fr-p-3v', 'fr-text-label--blue-france', 'fr-adresse-suggestion');
                             suggestion.innerHTML = feature.properties.label;
-                            suggestion.addEventListener('click',()=>{
+                            suggestion.addEventListener('click', () => {
                                 form.querySelector('#signalement-adresse-occupant').value = feature.properties.name;
                                 form.querySelector('#signalement-cp-occupant').value = feature.properties.postcode;
                                 form.querySelector('#signalement-ville-occupant').value = feature.properties.city;
@@ -67,6 +70,14 @@ forms.forEach((form) => {
                             f.add(f[0] + '--error');
                         })
                         parent?.querySelector('.fr-error-text').classList.remove('fr-hidden');
+                        field.addEventListener('change', () => {
+                            if (field.checkValidity()) {
+                                [field.classList, parent.classList].forEach((f) => {
+                                    f.remove(f[0] + '--error');
+                                })
+                                parent.querySelector('.fr-error-text')?.classList.add('fr-hidden');
+                            }
+                        })
                     }
                 })
             }
@@ -85,10 +96,50 @@ forms.forEach((form) => {
             else {
                 let currentTabBtn = document.querySelector('.fr-tabs__list>li>button[aria-selected="true"]'),
                     nextTabBtn = currentTabBtn.parentElement?.nextElementSibling?.querySelector('button');
-                nextTabBtn.disabled = false;
-                nextTabBtn.click();
-                savedData.push(serializeArray(form));
-                console.log(savedData)
+                if (nextTabBtn) {
+                    if (nextTabBtn.hasAttribute('data-fr-last-step')) {
+                        document.querySelector('#recap-signalement-situation')
+                        forms.forEach((form) => {
+                            form.querySelectorAll('input,textarea,select').forEach((input) => {
+                                if (document.querySelector('#recap-' + input.id))
+                                    document.querySelector('#recap-' + input.id).innerHTML = input.value;
+                                else if (input.classList.contains('signalement-situation') && input.checked)
+                                    document.querySelector('#recap-signalement-situation').innerHTML += '- ' + input.labels[0].textContent + '<br>';
+                            })
+                        })
+                    }
+                    nextTabBtn.disabled = false;
+                    nextTabBtn.click();
+                }
+                if (!nextTabBtn) {
+                    event.submitter.disabled = true;
+                    ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v => event.submitter.classList.toggle(v));
+                    event.submitter.innerHTML = "En cours d'envoi..."
+                    let formData = new FormData();
+                    forms.forEach((form) => {
+                        let data = serializeArray(form);
+                        for (let i = 0; i < Object.keys(data).length; i++) {
+                            let x = Object.keys(data)[i];
+                            let y = Object.values(data)[i];
+                            formData.append(x, y);
+                        }
+                    })
+                    fetch('envoi', {
+                        method: "POST",
+                        body: formData
+                    }).then((r) => {
+                        if (r.ok) {
+                            r.json().then((res) => {
+                                if(res.response === "success")
+                                {
+                                    alert('Signalement envoyé !')
+                                    window.location.refresh(true);
+                                } else
+                                    alert('Erreru signalement !')
+                            })
+                        }
+                    })
+                }
             }
         }
     })

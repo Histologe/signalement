@@ -34,9 +34,13 @@ class Critere
     #[ORM\OneToMany(mappedBy: 'critere', targetEntity: Criticite::class, orphanRemoval: true)]
     private $criticites;
 
+    #[ORM\ManyToMany(targetEntity: Signalement::class, mappedBy: 'criteres')]
+    private $signalements;
+
     public function __construct()
     {
         $this->criticites = new ArrayCollection();
+        $this->signalements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -129,6 +133,33 @@ class Critere
             if ($criticite->getCritere() === $this) {
                 $criticite->setCritere(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Signalement[]
+     */
+    public function getSignalements(): Collection
+    {
+        return $this->signalements;
+    }
+
+    public function addSignalement(Signalement $signalement): self
+    {
+        if (!$this->signalements->contains($signalement)) {
+            $this->signalements[] = $signalement;
+            $signalement->addCritere($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSignalement(Signalement $signalement): self
+    {
+        if ($this->signalements->removeElement($signalement)) {
+            $signalement->removeCritere($this);
         }
 
         return $this;

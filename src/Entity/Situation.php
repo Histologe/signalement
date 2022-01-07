@@ -33,9 +33,13 @@ class Situation
     #[ORM\Column(type: 'boolean')]
     private $isActive;
 
+    #[ORM\ManyToMany(targetEntity: Signalement::class, mappedBy: 'situations')]
+    private $signalements;
+
     public function __construct()
     {
         $this->criteres = new ArrayCollection();
+        $this->signalements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -129,6 +133,33 @@ class Situation
     public function setIsActive(bool $isActive): self
     {
         $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Signalement[]
+     */
+    public function getSignalements(): Collection
+    {
+        return $this->signalements;
+    }
+
+    public function addSignalement(Signalement $signalement): self
+    {
+        if (!$this->signalements->contains($signalement)) {
+            $this->signalements[] = $signalement;
+            $signalement->addSituation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSignalement(Signalement $signalement): self
+    {
+        if ($this->signalements->removeElement($signalement)) {
+            $signalement->removeSituation($this);
+        }
 
         return $this;
     }

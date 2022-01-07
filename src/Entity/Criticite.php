@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CriticiteRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CriticiteRepository::class)]
@@ -25,6 +27,14 @@ class Criticite
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private $modifiedAt;
+
+    #[ORM\ManyToMany(targetEntity: Signalement::class, mappedBy: 'criticites')]
+    private $signalements;
+
+    public function __construct()
+    {
+        $this->signalements = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -75,6 +85,33 @@ class Criticite
     public function setModifiedAt(?\DateTimeImmutable $modifiedAt): self
     {
         $this->modifiedAt = $modifiedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Signalement[]
+     */
+    public function getSignalements(): Collection
+    {
+        return $this->signalements;
+    }
+
+    public function addSignalement(Signalement $signalement): self
+    {
+        if (!$this->signalements->contains($signalement)) {
+            $this->signalements[] = $signalement;
+            $signalement->addCriticite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSignalement(Signalement $signalement): self
+    {
+        if ($this->signalements->removeElement($signalement)) {
+            $signalement->removeCriticite($this);
+        }
 
         return $this;
     }

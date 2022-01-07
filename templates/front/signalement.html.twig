@@ -34,9 +34,9 @@
                     </button>
                 </li>
                 <li role="presentation">
-                    <button id="signalement-step-5"
+                    <button id="signalement-step-last"
                             class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
-                            role="tab" aria-selected="false" aria-controls="signalement-step-5-panel" disabled>5.
+                            role="tab" aria-selected="false" aria-controls="signalement-step-last-panel" disabled data-fr-last-step="true">5.
                         Validation
                     </button>
                 </li>
@@ -65,33 +65,33 @@
                                         <text role="button"
                                               class="fr-accordion__btn fr-btn--icon-left fr-fi-question-fill"
                                               aria-expanded="false"
-                                              aria-controls="accordion-situation-{{ situation.id }}">Votre signalement
+                                              aria-controls="signalement-accordion-situation-{{ situation.id }}">Votre signalement
                                             concerne-t-il {{ situation.label }}
                                         </text>
                                     </h3>
-                                    <div class="fr-collapse" id="accordion-situation-{{ situation.id }}">
+                                    <div class="fr-collapse" id="signalement-accordion-situation-{{ situation.id }}">
                                         <ul class="fr-toggle__list">
                                             {% for critere in situation.criteres %}
                                                 <li>
                                                     <div class="fr-toggle fr-toggle--border-bottom"
                                                          aria-expanded="false"
-                                                         aria-controls="accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
+                                                         aria-controls="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
                                                         <input type="checkbox"
                                                                name="signalement[situation][{{ situation.id }}]"
-                                                               class="fr-toggle__input"
-                                                               id="group-1-toggle-hint-situation-{{ situation.id }}-critere-{{ critere.id }}">
+                                                               class="fr-toggle__input signalement-situation"
+                                                               id="signalement-situation-{{ situation.id }}-critere-{{ critere.id }}">
                                                         <label class="fr-toggle__label fr-text--bold"
-                                                               for="group-1-toggle-hint-situation-{{ situation.id }}-critere-{{ critere.id }}">{{ critere.label }}</label>
+                                                               for="signalement-situation-{{ situation.id }}-critere-{{ critere.id }}">{{ critere.label }}</label>
                                                     </div>
                                                     <div class="fr-collapse"
-                                                         id="accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
+                                                         id="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
                                                         <strong>Quand tout va bien: </strong> {{ critere.description }}
                                                         {% for index,criticite in critere.criticites %}
                                                             <label class="toggle-criticite fr-grid-row fr-grid-row--middle fr-py-1v">
                                                                 <input class="{{ etats_classes[index] }} fr-col-3 fr-col-md-2 fr-col-lg-1"
                                                                        type="radio"
                                                                        name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]"
-                                                                       value="{{ criticite.id }}">
+                                                                       value="{{ criticite.id }}" id="signalement-critere-{{ critere.id }}">
                                                                 <text class="fr-col-9 fr-col-md-10 fr-col-l-11">
                                                                     <strong>{{ etats[index] }}:</strong>
                                                                     {{ criticite.label }}
@@ -141,18 +141,30 @@
                         </p>
                     </div>
                     <div class="fr-form-group">
-                        <fieldset class="fr-fieldset fr-fieldset--inline fr-grid-row--middle fr-grid-row--gutters">
+                        <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-label fr-pl-0">Téléverser des photos du/des problème(s)</legend>
                             <span class="fr-hint-text">Les photos <u>ne doivent pas contenir de vues de personnes ou d'objets personnels</u>. <br> Pour les photos des parties communes, <a
                                         href="#">certaines restrictions sont à respecter</a>.</span>
-                            {% for i in 1..6 %}
+                            {% for i in 0..5 %}
                                 <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-instagram-line">
                                     <img src="#" alt="Aperçu" class="fr-hidden fr-rounded" width="100">
-                                    <input type="file" accept="image/*" name="signalement[photos][]" class="fr-hidden">
+                                    <input type="file" accept="image/*" name="signalement[photos][{{ i }}]" class="fr-hidden">
                                 </label>
                             {% endfor %}
-                            <small class="fr-fi-information-fill fr-text-label--blue-france">Cliquez sur l'appareil
+                            <small class="fr-fi-information-fill fr-text-label--blue-france fr-display-block fr-mt-5v">Cliquez sur l'appareil
                                 photo pour téléverser une photo.</small>
+                        </fieldset>
+                    </div>
+                    <div class="fr-form-group">
+                        <fieldset class="fr-fieldset fr-fieldset--inline">
+                            <legend class="fr-label fr-pl-0">Téléverser des documents complémentaires</legend>
+                            <span class="fr-hint-text">Les documents ne doivent pas excéder <u>6Mo par document</u></span>
+                            {% for i in 0..1 %}
+                                <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-attachment-fill">
+                                    <input type="file" name="signalement[documents][{{ i }}]" class="fr-hidden">
+                                </label>
+                            {% endfor %}
+                            <small class="fr-fi-information-fill fr-text-label--blue-france fr-display-block fr-mt-5v">Cliquez sur l'icone pour téléverser un document.</small>
                         </fieldset>
                     </div>
                     <div class="fr-grid-row">
@@ -248,11 +260,11 @@
                                 <select class="fr-select" id="signalement-nb-adulte"
                                         name="signalement[nbAdultes]" required>
                                     <option value="" selected disabled hidden>Selectionnez une option</option>
-                                    <option value="1">1 enfant</option>
-                                    <option value="2">2 enfants</option>
-                                    <option value="3">3 enfants</option>
-                                    <option value="4">4 enfants</option>
-                                    <option value="4+">Plus de 4 enfants</option>
+                                    <option value="1">1 adulte</option>
+                                    <option value="2">2 adultes</option>
+                                    <option value="3">3 adultes</option>
+                                    <option value="4">4 adultes</option>
+                                    <option value="4+">Plus de 4 adultes</option>
                                 </select>
                                 <p class="fr-error-text fr-hidden">
                                     Veuillez renseigner le nombre d'adultes dans le logement.
@@ -584,6 +596,15 @@
             </section>
             <section id="signalement-step-4-panel" class="fr-tabs__panel" role="tabpanel"
                      aria-labelledby="signalement-step-4" tabindex="0">
+                <header class="fr-callout bg-light fr-mb-5v">
+                    <p class="fr-callout__title">Je renseigne mes coordonnées</p>
+                    <p class="fr-callout__text fr-mb-5v">
+                        Pour traiter votre demande, nous avons besoin de vos coordonnées.
+                    </p>
+                    <em class="fr-fi-information-line fr-text-label--blue-francee"> Les champs marqués d'un
+                        astérisque
+                        (*) sont obligatoires.</em>
+                </header>
                 <form action="#" name="signalement" class="needs-validation" novalidate>
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
@@ -691,7 +712,7 @@
                                     <label class="fr-label" for="signalement-adresse-occupant">
                                         Adresse du logement<sup class="fr-text-default--error">*</sup>
                                     </label>
-                                    <span class="fr-hint-text">Commencez à entrer votre adresse et cliquez sur l'une des suggestion. <br>Si vous ne trouvez pas votre adresse entrez-la manuellement </span>
+                                    <span class="fr-hint-text">Commencez à entrer votre adresse et cliquez sur l'une des suggestion. Si vous ne trouvez pas votre adresse entrez-la manuellement </span>
                                     <input class="fr-input fr-input--no-resize" id="signalement-adresse-occupant"
                                            name="signalement[adresseOccupant]" data-fr-adresse-autocomplete required>
                                     <div class="fr-grid-row fr-background-alt--blue-france fr-text-label--blue-france" id="signalement-adresse-suggestion">
@@ -730,10 +751,93 @@
                     </div>
                 </form>
             </section>
-            <section id="signalement-step-5-panel" class="fr-tabs__panel" role="tabpanel"
-                     aria-labelledby="signalement-step-5" tabindex="0">
-                <!-- données de test -->
-                <p>Contenu 5</p>
+            <section id="signalement-step-last-panel" class="fr-tabs__panel" role="tabpanel"
+                     aria-labelledby="signalement-step-last" tabindex="0">
+                <header class="fr-callout bg-light fr-mb-5v">
+                    <p class="fr-callout__title">Je valide mon signalement</p>
+                    <p class="fr-callout__text fr-mb-5v">
+                        Vérifiez les informations ci-dessous.
+                    </p>
+                    <em class="fr-fi-information-line fr-text-label--blue-france"> Acceptez les conditions
+                        d'utilisation du service et validez votre signalement.</em>
+                </header>
+                <div class="fr-grid-row">
+                    <div class="fr-col-12 fr-col-md-4">
+                        <ul>
+                            <li>
+                                <strong>Coordonées</strong>
+                                <p>
+                                    <span id="recap-signalement-nom-occupant"></span> <span id="recap-signalement-prenom-occupant"></span> <br>
+                                    <span id="recap-signalement-courriel-occupant"></span> <br>
+                                    <span id="recap-signalement-tel-occupant"></span>
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-4">
+                        <ul>
+                            <li>
+                                <strong>Adresse du logement</strong>
+                                <p>
+                                    <span id="recap-signalement-adresse-occupant"></span> <br>
+                                    <span id="recap-signalement-cp-occupant"></span>, <span id="recap-signalement-ville-occupant"></span>
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="fr-col-12 fr-col-md-4">
+                        <ul>
+                            <li>
+                                <strong>Composition du logement</strong>
+                                <p>
+                                    <span id="recap-signalement-nb-adulte"></span> Adulte(s) <br>
+                                    <span id="recap-signalement-nb-enfants-m6"></span> Enfant(s) de moins de 6 ans <br>
+                                    <span id="recap-signalement-nb-enfants-p6"></span> Enfant(s) de plus de 6 ans <br>
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="fr-col-12">
+                        <ul>
+                            <li>
+                                <strong>Problème(s) signalé(s)</strong>
+                                <p>
+                                    <span id="recap-signalement-situation"></span>
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="fr-col-12">
+                        <ul>
+                            <li>
+                                <strong>Description du ou des problème(s)</strong>
+                                <p>
+                                    <span id="recap-signalement-details"></span>
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <form action="#" name="signalement" class="needs-validation" novalidate>
+                    <div class="fr-form-group">
+                        <div class="fr-toggle fr-toggle--border-bottom">
+                            <input type="checkbox" class="fr-toggle__input" id="signalement-accept-cgu" name="signalement[isCguAccepted]" required>
+                            <label class="fr-toggle__label" for="signalement-accept-cgu" data-fr-checked-label="Activé" data-fr-unchecked-label="Désactivé"><b>J'ai bien pris connaissance des <a href="CGU" target="_new">CGU</a>.</b></label>
+                            <p class="fr-error-text fr-hidden">
+                                Vous devez accepter les Conditions Générales d'Utilisation pour transmettre votre
+                                signalement.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="fr-form-group">
+                        <iframe src="{#{{ include('front/cgu.html.twig') }}#}"></iframe>
+                    </div>
+                    <div class="fr-grid-row">
+                        <div class="fr-col-12 fr-text--center">
+                            <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-right" type="submit">Envoyer</button>
+                        </div>
+                    </div>
+                </form>
             </section>
         </div>
     </main>

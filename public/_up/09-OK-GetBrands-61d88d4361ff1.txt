@@ -1,0 +1,36 @@
+TraceToken: c4893789-be38-4ad5-8ca4-199e7bec5df3
+Timestamp: 2021-11-27T22:00:02.3967130Z
+
+GET https://demo-app.docusign.net:7801/restapi/v2.1/accounts/54b395b3-aec5-4b5c-bf7e-35c966cd5c01/brands?include_logos=true
+Content-Length: 0
+Connection: close
+Accept: application/json;text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
+Accept-Encoding: gzip; deflate; br
+Accept-Language: en-US; en; q=0.9; fr; q=0.8
+Authorization: Bearer [omitted]
+Host: demo-app.docusign.net
+Referer: https://appdemo.docusign.com/preferences/general
+User-Agent: Mozilla/5.0; (Windows NT 10.0; Win64; x64); AppleWebKit/537.36; (KHTML, like Gecko); Chrome/91.0.4472.106; Safari/537.36
+X-DocuSign-ClientTransactionId: c10da14a-4f31-4db6-af4c-4446747daf90
+sec-fetch-site: same-origin
+sec-fetch-mode: cors
+x-forwarded-for: 95.131.46.12, 64.207.219.8
+x-docusign-prettyprint: false
+x-docusign-correlationtoken: c10da14a-4f31-4db6-af4c-4446747daf90
+x-forwarded-for-martini: 95.131.46.12
+x-docusign-diagnostics: {"storedProcedureEventLogThreshold":"300"}
+x-docusign-timetrack: CONN_START,2021-11-27T22:00:02.120Z;;REQ_SENT,2021-11-27T22:00:02.132Z;; REST0_Start,2021-11-27T22:00:02.3186001Z
+HPX: YES
+X-SecurityProtocol-Version: TLSv1.2
+X-SecurityProtocol-CipherSuite: ECDHE-RSA-AES256-GCM-SHA384
+Strict-Transport-Security: max-age=15768000
+
+200 OK
+
+Content-Type: application/json; charset=utf-8
+Content-Length: 2
+X-DocuSign-ClientTransactionId: c10da14a-4f31-4db6-af4c-4446747daf90
+X-DocuSign-TimeTrack: CONN_START,2021-11-27T22:00:02.120Z;;REQ_SENT,2021-11-27T22:00:02.132Z;;REST0_Start,2021-11-27T22:00:02.3186001Z;REST0_End,2021-11-27T22:00:02.3967130Z
+X-DocuSign-TraceToken: c4893789-be38-4ad5-8ca4-199e7bec5df3
+
+{}
