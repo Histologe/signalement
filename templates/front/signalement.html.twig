@@ -72,7 +72,7 @@
                                     <div class="fr-collapse" id="signalement-accordion-situation-{{ situation.id }}">
                                         <ul class="fr-toggle__list">
                                             {% for critere in situation.criteres %}
-                                                <li>
+                                                <li class="fr-toggle--parent">
                                                     <div class="fr-toggle fr-toggle--border-bottom"
                                                          aria-expanded="false"
                                                          aria-controls="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">

@@ -1,4 +1,15 @@
 /*STYLE*/
+.fr-toggle--parent,.fr-accordion__title,.toggle-criticite {
+    cursor: pointer!important;
+    user-select: none;
+}
+.fr-toggle--parent:hover,.fr-accordion__title:hover {
+    background-color: var(--background-alt-grey);
+}
+.toggle-criticite:hover {
+    border-radius: .25rem;
+    background-color: white;
+}
 .fr-rounded {
     border-radius: .25rem;
 }

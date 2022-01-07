@@ -10,6 +10,21 @@ serializeArray = (form) => {
         }, {})
 };
 forms.forEach((form) => {
+    form?.querySelectorAll('.toggle-criticite input[type="radio"]')?.forEach((criticite) => {
+        criticite.addEventListener('change', (event) => {
+            event.currentTarget.parentElement.parentElement.parentElement.querySelector('.fr-toggle__input').checked = true;
+            // parent.querySelector('[type="checkbox"]').checked = !parent.querySelector('[type="checkbox"]').checked;
+        })
+    })
+    form?.querySelectorAll('.fr-toggle')?.forEach((t) => {
+        t.addEventListener('change', (event) => {
+            console.log('toggle')
+            if (!event.target.checked)
+                event.currentTarget.parentElement.querySelectorAll('.fr-collapse input[type="radio"]').forEach((radio) => {
+                    radio.checked = false
+                })
+        })
+    })
     form?.querySelectorAll('[data-fr-toggle]')?.forEach((toggle) => {
         toggle.addEventListener('change', (event) => {
             let target = form.querySelector('#' + toggle.getAttribute('data-fr-toggle'));
@@ -130,12 +145,11 @@ forms.forEach((form) => {
                     }).then((r) => {
                         if (r.ok) {
                             r.json().then((res) => {
-                                if(res.response === "success")
-                                {
+                                if (res.response === "success") {
                                     alert('Signalement envoyé !')
                                     window.location.refresh(true);
                                 } else
-                                    alert('Erreru signalement !')
+                                    alert('Erreur signalement !')
                             })
                         }
                     })
