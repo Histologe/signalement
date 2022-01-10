@@ -36,7 +36,8 @@
                 <li role="presentation">
                     <button id="signalement-step-last"
                             class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
-                            role="tab" aria-selected="false" aria-controls="signalement-step-last-panel" disabled data-fr-last-step="true">5.
+                            role="tab" aria-selected="false" aria-controls="signalement-step-last-panel" disabled
+                            data-fr-last-step="true">5.
                         Validation
                     </button>
                 </li>
@@ -65,7 +66,8 @@
                                         <text role="button"
                                               class="fr-accordion__btn fr-btn--icon-left fr-fi-question-fill"
                                               aria-expanded="false"
-                                              aria-controls="signalement-accordion-situation-{{ situation.id }}">Votre signalement
+                                              aria-controls="signalement-accordion-situation-{{ situation.id }}">Votre
+                                            signalement
                                             concerne-t-il {{ situation.label }}
                                         </text>
                                     </h3>
@@ -91,7 +93,8 @@
                                                                 <input class="{{ etats_classes[index] }} fr-col-3 fr-col-md-2 fr-col-lg-1"
                                                                        type="radio"
                                                                        name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]"
-                                                                       value="{{ criticite.id }}" id="signalement-critere-{{ critere.id }}">
+                                                                       value="{{ criticite.id }}"
+                                                                       id="signalement-critere-{{ critere.id }}">
                                                                 <text class="fr-col-9 fr-col-md-10 fr-col-l-11">
                                                                     <strong>{{ etats[index] }}:</strong>
                                                                     {{ criticite.label }}
@@ -148,10 +151,12 @@
                             {% for i in 0..5 %}
                                 <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-instagram-line">
                                     <img src="#" alt="Aperçu" class="fr-hidden fr-rounded" width="100">
-                                    <input type="file" accept="image/*" name="signalement[photos][{{ i }}]" class="fr-hidden">
+                                    <input type="file" accept="image/*" name="signalement[photos][{{ i }}]"
+                                           class="fr-hidden">
                                 </label>
                             {% endfor %}
-                            <small class="fr-fi-information-fill fr-text-label--blue-france fr-display-block fr-mt-5v">Cliquez sur l'appareil
+                            <small class="fr-fi-information-fill fr-text-label--blue-france fr-display-block fr-mt-5v">Cliquez
+                                sur l'appareil
                                 photo pour téléverser une photo.</small>
                         </fieldset>
                     </div>
@@ -164,7 +169,8 @@
                                     <input type="file" name="signalement[documents][{{ i }}]" class="fr-hidden">
                                 </label>
                             {% endfor %}
-                            <small class="fr-fi-information-fill fr-text-label--blue-france fr-display-block fr-mt-5v">Cliquez sur l'icone pour téléverser un document.</small>
+                            <small class="fr-fi-information-fill fr-text-label--blue-france fr-display-block fr-mt-5v">Cliquez
+                                sur l'icone pour téléverser un document.</small>
                         </fieldset>
                     </div>
                     <div class="fr-grid-row">
@@ -196,12 +202,14 @@
                             <div class="fr-fieldset__content">
                                 <div class="fr-radio-group">
                                     <input type="radio" id="signalement-proprio-averti-1" value="true"
-                                           name="signalement[isProprioAverti]" required  data-fr-toggle="signalement-methode-contact">
+                                           name="signalement[isProprioAverti]" required
+                                           data-fr-toggle="signalement-methode-contact">
                                     <label class="fr-label" for="signalement-proprio-averti-1">Oui</label>
                                 </div>
                                 <div class="fr-radio-group">
                                     <input type="radio" id="signalement-proprio-averti-2" value="false"
-                                           name="signalement[isProprioAverti]" data-fr-toggle="signalement-methode-contact">
+                                           name="signalement[isProprioAverti]"
+                                           data-fr-toggle="signalement-methode-contact">
                                     <label class="fr-label" for="signalement-proprio-averti-2">Non</label>
                                 </div>
                             </div>
@@ -473,7 +481,8 @@
                                     <label class="fr-label" for="signalement-courriel-proprio">
                                         Courriel
                                     </label>
-                                    <input class="fr-input fr-input--no-resize" type="email" id="signalement-courriel-proprio"
+                                    <input class="fr-input fr-input--no-resize" type="email"
+                                           id="signalement-courriel-proprio"
                                            name="signalement[mailProprio]">
                                 </div>
                             </div>
@@ -562,12 +571,14 @@
                             <div class="fr-fieldset__content">
                                 <div class="fr-radio-group">
                                     <input type="radio" id="signalement-intervention-1" value="false"
-                                           name="signalement[isRefusIntervention]" required data-fr-toggle="signalement-raison-refus">
+                                           name="signalement[isRefusIntervention]" required
+                                           data-fr-toggle="signalement-raison-refus">
                                     <label class="fr-label" for="signalement-intervention-1">Oui</label>
                                 </div>
                                 <div class="fr-radio-group">
                                     <input type="radio" id="signalement-intervention-2" value="true"
-                                           name="signalement[isRefusIntervention]" data-fr-toggle="signalement-raison-refus">
+                                           name="signalement[isRefusIntervention]"
+                                           data-fr-toggle="signalement-raison-refus">
                                     <label class="fr-label" for="signalement-intervention-2">Non</label>
                                 </div>
                             </div>
@@ -616,7 +627,8 @@
                             <div class="fr-fieldset__content">
                                 <div class="fr-radio-group">
                                     <input type="radio" id="signalement-occupant-1" value="false"
-                                           name="signalement[isNotOccupant]" data-fr-toggle="signalement-pas-occupant" required>
+                                           name="signalement[isNotOccupant]" data-fr-toggle="signalement-pas-occupant"
+                                           required>
                                     <label class="fr-label" for="signalement-occupant-1">Oui</label>
                                 </div>
                                 <div class="fr-radio-group">
@@ -653,12 +665,14 @@
                                     <label class="fr-label" for="signalement-tel-declarant">
                                         N° de téléphone
                                     </label>
-                                    <input class="fr-input fr-input--no-resize" type="tel" id="signalement-tel-declarant"
+                                    <input class="fr-input fr-input--no-resize" type="tel"
+                                           id="signalement-tel-declarant"
                                            name="signalement[telDeclarant]">
                                     <label class="fr-label" for="signalement-courriel-declarant">
                                         Courriel
                                     </label>
-                                    <input class="fr-input fr-input--no-resize" type="email" id="signalement-courriel-declarant"
+                                    <input class="fr-input fr-input--no-resize" type="email"
+                                           id="signalement-courriel-declarant"
                                            name="signalement[mailDeclarant]">
                                 </div>
                                 <div class="fr-input-group fr-col-12 fr-p-0">
@@ -702,7 +716,8 @@
                                     <label class="fr-label" for="signalement-courriel-occupant">
                                         Courriel<sup class="fr-text-default--error">*</sup>
                                     </label>
-                                    <input class="fr-input fr-input--no-resize" type="email" id="signalement-courriel-occupant"
+                                    <input class="fr-input fr-input--no-resize" type="email"
+                                           id="signalement-courriel-occupant"
                                            name="signalement[mailOccupant]" required>
                                     <p class="fr-error-text fr-hidden">
                                         Veuillez renseigner le téléphone et courriel de l'occupant.
@@ -715,7 +730,8 @@
                                     <span class="fr-hint-text">Commencez à entrer votre adresse et cliquez sur l'une des suggestion. Si vous ne trouvez pas votre adresse entrez-la manuellement </span>
                                     <input class="fr-input fr-input--no-resize" id="signalement-adresse-occupant"
                                            name="signalement[adresseOccupant]" data-fr-adresse-autocomplete required>
-                                    <div class="fr-grid-row fr-background-alt--blue-france fr-text-label--blue-france" id="signalement-adresse-suggestion">
+                                    <div class="fr-grid-row fr-background-alt--blue-france fr-text-label--blue-france"
+                                         id="signalement-adresse-suggestion">
                                     </div>
                                     <p class="fr-error-text fr-hidden">
                                         Veuillez renseigner l'adresse du logement.
@@ -725,7 +741,8 @@
                                     <label class="fr-label" for="signalement-cp-occupant">
                                         Code postal<sup class="fr-text-default--error">*</sup>
                                     </label>
-                                    <input class="fr-input fr-input--no-resize" type="number" min="0" max="99000" minlength="5" id="signalement-cp-occupant"
+                                    <input class="fr-input fr-input--no-resize" type="number" min="0" max="99000"
+                                           minlength="5" id="signalement-cp-occupant"
                                            name="signalement[cpOccupant]" required>
                                     <p class="fr-error-text fr-hidden">
                                         Veuillez renseigner le code postal du logement.
@@ -735,7 +752,8 @@
                                     <label class="fr-label" for="signalement-ville-occupant">
                                         Ville<sup class="fr-text-default--error">*</sup>
                                     </label>
-                                    <input class="fr-input fr-input--no-resize" minlength="2" id="signalement-ville-occupant"
+                                    <input class="fr-input fr-input--no-resize" minlength="2"
+                                           id="signalement-ville-occupant"
                                            name="signalement[villeOccupant]" required>
                                     <p class="fr-error-text fr-hidden">
                                         Veuillez renseigner le code postal du logement.
@@ -767,7 +785,8 @@
                             <li>
                                 <strong>Coordonées</strong>
                                 <p>
-                                    <span id="recap-signalement-nom-occupant"></span> <span id="recap-signalement-prenom-occupant"></span> <br>
+                                    <span id="recap-signalement-nom-occupant"></span> <span
+                                            id="recap-signalement-prenom-occupant"></span> <br>
                                     <span id="recap-signalement-courriel-occupant"></span> <br>
                                     <span id="recap-signalement-tel-occupant"></span>
                                 </p>
@@ -780,7 +799,8 @@
                                 <strong>Adresse du logement</strong>
                                 <p>
                                     <span id="recap-signalement-adresse-occupant"></span> <br>
-                                    <span id="recap-signalement-cp-occupant"></span>, <span id="recap-signalement-ville-occupant"></span>
+                                    <span id="recap-signalement-cp-occupant"></span>, <span
+                                            id="recap-signalement-ville-occupant"></span>
                                 </p>
                             </li>
                         </ul>
@@ -821,8 +841,12 @@
                 <form action="#" name="signalement" class="needs-validation" novalidate>
                     <div class="fr-form-group">
                         <div class="fr-toggle fr-toggle--border-bottom">
-                            <input type="checkbox" class="fr-toggle__input" id="signalement-accept-cgu" name="signalement[isCguAccepted]" required>
-                            <label class="fr-toggle__label" for="signalement-accept-cgu" data-fr-checked-label="Activé" data-fr-unchecked-label="Désactivé"><b>J'ai bien pris connaissance des <a href="{{ path('cgu') }}" target="_blank">CGU</a></b> et je les acceptent.</label>
+                            <input type="checkbox" class="fr-toggle__input" id="signalement-accept-cgu"
+                                   name="signalement[isCguAccepted]" required>
+                            <label class="fr-toggle__label" for="signalement-accept-cgu" data-fr-checked-label="Activé"
+                                   data-fr-unchecked-label="Désactivé"><b>J'ai bien pris connaissance des <a
+                                            href="{{ path('cgu') }}" target="_blank">CGU</a></b> et je les
+                                acceptent.</label>
                             <p class="fr-error-text fr-hidden">
                                 Vous devez accepter les Conditions Générales d'Utilisation pour transmettre votre
                                 signalement.
@@ -830,11 +854,12 @@
                         </div>
                     </div>
                     <div class="fr-grid-row">
-                        <iframe src="{{path('cgu')}}" class="fr-col-12"></iframe>
+                        <iframe src="{{ path('cgu') }}" class="fr-col-12"></iframe>
                     </div>
                     <div class="fr-grid-row">
                         <div class="fr-col-12 fr-text--center">
-                            <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-right" type="submit">Envoyer</button>
+                            <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-right" type="submit">Envoyer
+                            </button>
                         </div>
                     </div>
                 </form>

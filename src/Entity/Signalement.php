@@ -10,6 +10,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: SignalementRepository::class)]
 class Signalement
 {
+    const STATUS_NEW = 'new';
+    const STATUS_AWAIT = 'await';
+    const STATUS_NEED_REVIEW= 'review';
+    const STATUS_CLOSED = 'closed';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -147,13 +152,26 @@ class Signalement
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'signalements')]
     private $modifiedBy;
 
+    #[ORM\Column(type: 'string', length: 25)]
+    private $statut;
+
+    #[ORM\Column(type: 'string', length: 100, unique: true)]
+    private $reference;
+
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'affectations')]
+    private $affectations;
+
+
     public function __construct()
     {
         $this->situations = new ArrayCollection();
         $this->criteres = new ArrayCollection();
         $this->criticites = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
+        $this->statut = self::STATUS_NEW;
+        $this->affectations = new ArrayCollection();
     }
+
 
     public function getId(): ?int
     {
@@ -721,6 +739,54 @@ class Signalement
     public function setModifiedBy(?User $modifiedBy): self
     {
         $this->modifiedBy = $modifiedBy;
+
+        return $this;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(string $statut): self
+    {
+        $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getReference(): ?string
+    {
+        return $this->reference;
+    }
+
+    public function setReference(string $reference): self
+    {
+        $this->reference = $reference;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getAffectations(): Collection
+    {
+        return $this->affectations;
+    }
+
+    public function addAffectation(User $user): self
+    {
+        if (!$this->affectations->contains($user)) {
+            $this->affectations[] = $user;
+        }
+
+        return $this;
+    }
+
+    public function removeAffectation(User $user): self
+    {
+        $this->affectations->removeElement($user);
 
         return $this;
     }

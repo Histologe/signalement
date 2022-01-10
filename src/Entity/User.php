@@ -29,9 +29,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'modifiedBy', targetEntity: Signalement::class)]
     private $signalements;
 
+    #[ORM\ManyToMany(targetEntity: Signalement::class, mappedBy: 'affectations')]
+    private $affectations;
+
     public function __construct()
     {
         $this->signalements = new ArrayCollection();
+        $this->affectations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -129,6 +133,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             if ($signalement->getModifiedBy() === $this) {
                 $signalement->setModifiedBy(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Signalement[]
+     */
+    public function getAffectations(): Collection
+    {
+        return $this->affectations;
+    }
+
+    public function addAffectation(Signalement $affectation): self
+    {
+        if (!$this->affectations->contains($affectation)) {
+            $this->affectations[] = $affectation;
+            $affectation->addAffectation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAffectation(Signalement $affectation): self
+    {
+        if ($this->affectations->removeElement($affectation)) {
+            $affectation->removeAffectation($this);
         }
 
         return $this;

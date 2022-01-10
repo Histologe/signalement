@@ -51,6 +51,7 @@ class SignalementController extends AbstractController
                         $safeFilename = $slugger->slug($originalFilename);
                         $newFilename = $safeFilename . '-' . uniqid() . '.' . $file_->guessExtension();
                         try {
+                            //TODO: Resize
                             $file_->move(
                                 $this->getParameter('uploads_dir'),
                                 $newFilename
@@ -60,7 +61,6 @@ class SignalementController extends AbstractController
                         }
                         $files_array[$key][] = $newFilename;
                     }
-
                 }
                 if (isset($files_array['documents']))
                     $signalement->setDocuments($files_array['documents']);
@@ -85,6 +85,7 @@ class SignalementController extends AbstractController
                         $signalement->$method($value);
                 }
             }
+            $signalement->setReference((new \DateTime())->format('Ymd').'-'.$em->getRepository(Signalement::class)->findOneBy([],['id' => 'DESC'])->getId()+1);
             $em->persist($signalement);
             $em->flush();
             return $this->json(['response' => 'success']);

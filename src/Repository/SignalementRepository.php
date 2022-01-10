@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Signalement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -18,6 +19,7 @@ class SignalementRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Signalement::class);
     }
+
 
     // /**
     //  * @return Signalement[] Returns an array of Signalement objects
@@ -35,6 +37,52 @@ class SignalementRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findAlls()
+    {
+        return $this->createQueryBuilder('s')
+            ->leftJoin('s.situations', 'situations')
+            ->leftJoin('situations.criteres', 'criteres')
+            ->leftJoin('criteres.criticites', 'criticites')
+            ->addSelect('situations')
+            ->addSelect('criteres')
+            ->addSelect('criticites')
+            ->orderBy('s.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByStatusAndOrCity($status = null, $city = null)
+    {
+        $qb = $this->createQueryBuilder('s')
+            ->leftJoin('s.affectations', 'affectations')
+            ->leftJoin('s.situations', 'situations')
+            ->leftJoin('situations.criteres', 'criteres')
+            ->leftJoin('criteres.criticites', 'criticites')
+            ->addSelect('affectations')
+            ->addSelect('situations')
+            ->addSelect('criteres')
+            ->addSelect('criticites');
+        if ($status)
+            $qb->andWhere('s.statut = :statut')
+                ->setParameter('statut', $status);
+        if ($city)
+            $qb->andWhere('s.villeOccupant =:city')
+                ->setParameter('city', $city);
+        return $qb->orderBy('s.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findCities()
+    {
+        return $this->createQueryBuilder('s')
+            ->select('s.villeOccupant ville')
+            ->groupBy('s.villeOccupant')
+            ->getQuery()
+            ->getSingleColumnResult();
+    }
+
 
     /*
     public function findOneBySomeField($value): ?Signalement

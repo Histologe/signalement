@@ -3,12 +3,14 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block body %}
+{#    {{ dump(signalements) }}#}
     <main class="fr-container-fluid">
         <div class="fr-grid-row">
-            <nav class="fr-sidemenu fr-py-5v fr-pl-5v fr-pr-0  fr-text--center fr-col-2" aria-label="Menu latéral">
+            <nav class="fr-sidemenu fr-py-5v fr-pl-md-5v fr-pr-0  fr-text--center fr-col-12 fr-col-md-3 fr-col-lg-2 fr-ml-0 fr-pl-0"
+                 aria-label="Menu latéral">
                 <div class="fr-sidemenu__inner">
-                    <button class="fr-sidemenu__btn" hidden aria-controls="fr-sidemenu-wrapper" aria-expanded="false">Dans
-                        cette rubrique
+                    <button class="fr-sidemenu__btn" hidden aria-controls="fr-sidemenu-wrapper" aria-expanded="false">
+                        Menu administration principal
                     </button>
                     <div class="fr-collapse" id="fr-sidemenu-wrapper">
                         <div class="fr-sidemenu__title">Tableau de bord<br>
@@ -28,7 +30,8 @@
 
                         <ul class="fr-sidemenu__list">
                             <li class="fr-sidemenu__item fr-sidemenu__item--active">
-                                <a class="fr-sidemenu__link" href="#" target="_self" aria-current="page">Vue Générale</a>
+                                <a class="fr-sidemenu__link" href="#" target="_self" aria-current="page">Vue
+                                    Générale</a>
                             </li>
                             <li class="fr-sidemenu__item">
                                 <a class="fr-sidemenu__link" href="#" target="_self">Cartographie</a>
@@ -44,34 +47,110 @@
                     </div>
                 </div>
             </nav>
-            <div class="fr-col">
-                <section class="fr-col-12 bg-light  fr-p-5v">
+            <div class="fr-col-12 fr-col-md-9 fr-col-lg-10">
+                <section class="fr-col-12 fr-col-md fr-background-alt--grey fr-p-5v">
                     <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
-                        <div class="fr-col">
-                            <div class="fr-rounded fr-highlight fr-p-3v fr-text-center bloc-stat">
-                                <span class="fr-display-xs">0</span><br>
+                        <div class="fr-col-3">
+                            <div class="fr-rounded fr-highlight fr-p-3v fr-text--center bloc-stat">
+                                <span class="fr-display-xs">{{ signalements.counts.new }}</span><br>
                                 <strong class="text-blue-france">Nouveaux</strong>
                             </div>
                         </div>
-                        <div class="fr-col">
-                            <div class="fr-rounded  fr-highlight fr-p-3v fr-text-center bloc-stat">
-                                <span class="fr-display-xs">0</span><br>
-                                <strong class="text-blue-france">En attente</strong>
+                        <div class="fr-col-3">
+                            <div class="fr-rounded  fr-highlight fr-p-3v fr-text--center bloc-stat">
+                                <span class="fr-display-xs">{{ signalements.counts.await }}</span><br>
+                                <strong class="text-blue-france">Attente</strong>
                             </div>
                         </div>
-                        <div class="fr-col">
-                            <div class="fr-rounded  fr-highlight fr-p-3v fr-text-center bloc-stat">
-                                <span class="fr-display-xs">0</span><br>
-                                <strong class="text-blue-france">A revoir</strong>
+                        <div class="fr-col-3">
+                            <div class="fr-rounded  fr-highlight fr-p-3v fr-text--center bloc-stat">
+                                <span class="fr-display-xs">{{ signalements.counts.review }}</span><br>
+                                <strong class="text-blue-france">Revoir</strong>
                             </div>
                         </div>
-                        <div class="fr-col">
-                            <div class="fr-col fr-rounded  fr-highlight fr-p-3v fr-text-center bloc-stat">
-                                <span class="fr-display-xs">0</span><br>
+                        <div class="fr-col-3">
+                            <div class="fr-col fr-rounded  fr-highlight fr-p-3v fr-text--center bloc-stat">
+                                <span class="fr-display-xs">{{ signalements.counts.closed }}</span><br>
                                 <strong class="text-blue-france">Fermés</strong>
                             </div>
                         </div>
                     </div>
+                </section>
+                <section class="fr-col-12 fr-p-5v">
+                    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+                        <div class="fr-col-6">
+                            <label class="fr-label" for="filter_ville"><strong>Filter par ville</strong></label>
+                            <select name="bo-filter-ville" id="filter_ville" class="fr-select">
+                                {% for ville in signalements.villes %}
+                                    <option value="{{ ville }}">{{ ville|upper }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="fr-col-6">
+                            <label class="fr-label" for="filter_statut"><strong>Filter par statut</strong></label>
+                            <select name="bo-filter-statut" id="filter_statut" class="fr-select">
+                                <option value="new">Nouveaux</option>
+                                <option value="wait">En attente</option>
+                                <option value="review">A revoir</option>
+                                <option value="closed">Fermés</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+                <section class="fr-col-12">
+                    <table class="fr-w-100 fr-table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>#Ref.</th>
+                            <th>Date</th>
+                            <th>Situations</th>
+                            <th>Alert.</th>
+                            <th>Action</th>
+                            <th>Desc.</th>
+                            <th>Ville</th>
+                            <th>Affecté à</th>
+                            <th>Etat</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for index,signalement in signalements.list %}
+                            <tr>
+                                <td>{{ index+1 }}</td>
+                                <td><a href="#" >{{ signalement.reference }}</a></td>
+                                <td>{{ signalement.createdAt|date('d/m/Y') }}</td>
+                                <td>{% for situation in signalement.situations %}
+                                        {{ situation.id }}
+                                    {% endfor %}
+                                </td>
+                                <td>{# {{ signalement.hasAlert ? 'Oui' : 'Non' }} #}</td>
+                                <td></td>
+                                <td>{{ signalement.details }}</td>
+                                <td>{{ signalement.villeOccupant|upper }} <br>
+                                    <small>[{{ signalement.adresseOccupant }}]</small>
+                                </td>
+                                <td>
+                                    {% for user in signalement.affectations %}
+                                        {{ user.userIdentifier }}
+                                    {% else %}
+                                        Personne
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% if signalement.statut is same as('new') %}
+                                        Nouveau
+                                    {% elseif signalement.statut is same as('await') %}
+                                        En attente d'info. complémentaire
+                                    {% elseif signalement.statut is same as('review') %}
+                                        A revoir
+                                    {% else %}
+                                        Fermé
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </section>
             </div>
         </div>
