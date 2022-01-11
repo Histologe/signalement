@@ -71,21 +71,48 @@ class SignalementController extends AbstractController
                 $method = 'set' . ucfirst($key);
                 switch ($key) {
                     case 'situation':
-                        $idSituation = array_keys($value)[0];
-                        $idCritere = array_keys($value[$idSituation]['critere'])[0];
-                        $signalement->addSituation($em->getRepository(Situation::class)->find($idSituation));
-                        $signalement->addCritere($em->getRepository(Critere::class)->find($idCritere));
-                        $signalement->addCriticite($em->getRepository(Criticite::class)->find($value[$idSituation]['critere'][$idCritere]['criticite']));
+                        foreach ($data[$key] as $idSituation => $criteres) {
+                            $situation = $em->getRepository(Situation::class)->find($idSituation);
+                            $signalement->addSituation($situation);
+                            $data[$key][$idSituation]['label'] = $situation->getLabel();
+                            foreach ($criteres as $critere) {
+                                foreach ($critere as $idCritere => $criticites) {
+                                    $critere = $em->getRepository(Critere::class)->find($idCritere);
+                                    $signalement->addCritere($critere);
+                                    $data[$key][$idSituation]['critere'][$idCritere]['label'] = $critere->getLabel();
+                                    foreach ($criticites as $criticite) {
+                                        foreach ($criticite as $idCriticite => $null) {
+                                            $criticite = $em->getRepository(Criticite::class)->find($idCriticite);
+                                            $signalement->addCriticite($criticite);
+                                            $data[$key][$idSituation]['critere'][$idCritere]['criticite'][$idCriticite]['label'] = $criticite->getLabel();
+                                        }
+                                    }
+                                    /*var_dump(array_keys($critere));echo "----critere-----";*/
+                                    /*$signalement->addCritere($em->getRepository(Critere::class)->find($idCritere));
+                                    $signalement->addCriticite($em->getRepository(Criticite::class)->find($v['critere'][$idCritere]['criticite']));*/
+                                }
+                            }
+                        }
+                        $signalement->setJsonContent($data[$key]);
+//                        die;
                         break;
-                    case 'dateEntree':
+                    case
+                    'dateEntree':
                         $value = new \DateTimeImmutable($value);
                         $signalement->$method($value);
                         break;
                     default:
+                        if($value === "" || $value === " ")
+                            $value = null;
                         $signalement->$method($value);
                 }
             }
-            $signalement->setReference((new \DateTime())->format('Ymd').'-'.$em->getRepository(Signalement::class)->findOneBy([],['id' => 'DESC'])->getId()+1);
+            if ($em->getRepository(Signalement::class)->findOneBy([], ['id' => 'DESC'])) {
+                $id = $em->getRepository(Signalement::class)->findOneBy([], ['id' => 'DESC'])->getId() + 1;
+            } else {
+                $id = 1;
+            }
+            $signalement->setReference((new \DateTime())->format('Ymd') . '-' . $id);
             $em->persist($signalement);
             $em->flush();
             return $this->json(['response' => 'success']);

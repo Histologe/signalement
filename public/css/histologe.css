@@ -22,6 +22,12 @@
 .fr-blockquote {
     border-left: .3rem solid var(--border-plain-blue-france);
 }
+.fr-list--icon-img {
+   list-style: none;
+}
+.fr-list--icon-img li>img {
+    padding-inline-start: .25rem;
+}
 /*COLOR*/
 .fr-background--blue-france {
     background-color: var(--border-plain-blue-france);
@@ -37,7 +43,10 @@
     font-weight: 100!important;
 }
 .fr-text--center {
-    text-align: center;
+    text-align: center!important;
+}
+.fr-text--right {
+    text-align: right!important;
 }
 /*INPUTS*/
 .fr-adresse-suggestion:hover {

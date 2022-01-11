@@ -31,6 +31,9 @@ class Criticite
     #[ORM\ManyToMany(targetEntity: Signalement::class, mappedBy: 'criticites')]
     private $signalements;
 
+    #[ORM\Column(type: 'integer')]
+    private $score;
+
     public function __construct()
     {
         $this->signalements = new ArrayCollection();
@@ -112,6 +115,18 @@ class Criticite
         if ($this->signalements->removeElement($signalement)) {
             $signalement->removeCriticite($this);
         }
+
+        return $this;
+    }
+
+    public function getScore(): ?int
+    {
+        return $this->score;
+    }
+
+    public function setScore(int $score): self
+    {
+        $this->score = $score;
 
         return $this;
     }

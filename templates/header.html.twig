@@ -33,22 +33,29 @@
                             <li>
                                 <a class="fr-link fr-fi-refresh-line" href="{{ path('home') }}">Accueil</a>
                             </li>
-                            <li>
-                                <a class="fr-link fr-fi-eye-line" href="{{ path('about') }}">Qui sommes-nous ?</a>
-                            </li>
-                            <li>
-                                <a class="fr-link fr-fi-chat-quote-line" href="{{ path('contact') }}">Contact</a>
-                            </li>
-                            <li>
-                                <a class="fr-link fr-fi-question-line" href="{{ path('faq') }}">Aide</a>
-                            </li>
-                            <li>
-                                {% if app.user %}
-                                    <a class="fr-link fr-fi-logout-box-r-line" href="{{ path('app_logout') }}">Déconnexion</a>
-                                {% else %}
+                            {% if app.user %}
+                                <li>
+                                    <a class="fr-link fr-fi-account-line"
+                                       href="{{ path('back_index') }}">Dashbboard</a>
+                                </li>
+                                <li>
+                                    <a class="fr-link fr-fi-logout-box-r-line"
+                                       href="{{ path('app_logout') }}">Déconnexion</a>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <a class="fr-link fr-fi-eye-line" href="{{ path('about') }}">Qui sommes-nous ?</a>
+                                </li>
+                                <li>
+                                    <a class="fr-link fr-fi-chat-quote-line" href="{{ path('contact') }}">Contact</a>
+                                </li>
+                                <li>
+                                    <a class="fr-link fr-fi-question-line" href="{{ path('faq') }}">Aide</a>
+                                </li>
+                                <li>
                                     <a class="fr-link fr-fi-lock-line" href="{{ path('app_login') }}">Se connecter</a>
-                                {% endif %}
-                            </li>
+                                </li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>

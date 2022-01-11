@@ -161,6 +161,9 @@ class Signalement
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'affectations')]
     private $affectations;
 
+    #[ORM\Column(type: 'json')]
+    private $jsonContent = [];
+
 
     public function __construct()
     {
@@ -787,6 +790,30 @@ class Signalement
     public function removeAffectation(User $user): self
     {
         $this->affectations->removeElement($user);
+
+        return $this;
+    }
+
+    public function getSituationsCriteresCriticites()
+    {
+        $arr = [];
+        while (count($arr) <= count($this->situations)) {
+            $arr[] = [
+                'situation'=>$this->situations[count($arr)],
+                'critereres'=>$this->situations[count($arr)],
+                'situation'=>$this->situations[count($arr)],
+            ];
+        }
+    }
+
+    public function getJsonContent(): ?array
+    {
+        return $this->jsonContent;
+    }
+
+    public function setJsonContent(array $jsonContent): self
+    {
+        $this->jsonContent = $jsonContent;
 
         return $this;
     }

@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+    {# {{ dump(signalements) }} #}
+    <main class="fr-container-fluid">
+        <div class="fr-grid-row">
+            <nav class="fr-sidemenu fr-py-5v fr-pl-md-5v fr-pr-0  fr-text--center fr-col-12 fr-col-md-3 fr-col-lg-2 fr-ml-0 fr-pl-0"
+                 aria-label="Menu latéral">
+                <div class="fr-sidemenu__inner">
+                    <button class="fr-sidemenu__btn" hidden aria-controls="fr-sidemenu-wrapper" aria-expanded="false">
+                        Menu administration principal
+                    </button>
+                    <div class="fr-collapse" id="fr-sidemenu-wrapper">
+                        <div class="fr-sidemenu__title">Tableau de bord<br>
+                            <small class="fr-text-label--blue-france">{{ app.user.userIdentifier }}</small></div>
+
+                        <form action="#" method="POST" id="searchForm" class="fr-form-group">
+                            <div class="fr-search-bar" id="header-search">
+                                <label class="fr-label" for="header-search-input">Rechercher</label>
+                                <input class="fr-input" placeholder="Rechercher" type="search" id="header-search-input"
+                                       name="searchTermsMain" value="">
+
+                                <button class="fr-btn" title="Rechercher" id="histoSearch">
+                                    Rechercher
+                                </button>
+                            </div>
+                        </form>
+
+                        <ul class="fr-sidemenu__list">
+                            <li class="fr-sidemenu__item fr-sidemenu__item--active">
+                                <a class="fr-sidemenu__link" href="{{ path('back_index') }}" target="_self" aria-current="page">Vue
+                                    Générale</a>
+                            </li>
+                            <li class="fr-sidemenu__item">
+                                <a class="fr-sidemenu__link" href="#" target="_self">Cartographie</a>
+                            </li>
+                            <li class="fr-sidemenu__item">
+                                <a class="fr-sidemenu__link" href="#" target="_self">Statistiques</a>
+                            </li>
+                            <?php echo $compMenu; ?>
+                            <li class="fr-sidemenu__item">
+                                <a class="fr-sidemenu__link" href="#" target="_self">Export</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <div class="fr-col-12 fr-col-md-9 fr-col-lg-10">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </main>
+{% endblock %}

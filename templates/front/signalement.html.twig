@@ -92,8 +92,8 @@
                                                             <label class="toggle-criticite fr-grid-row fr-grid-row--middle fr-py-1v">
                                                                 <input class="{{ etats_classes[index] }} fr-col-3 fr-col-md-2 fr-col-lg-1"
                                                                        type="radio"
-                                                                       name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]"
-                                                                       value="{{ criticite.id }}"
+                                                                       name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite][{{ criticite.id }}][score]"
+                                                                       value="{{ criticite.score }}"
                                                                        id="signalement-critere-{{ critere.id }}">
                                                                 <text class="fr-col-9 fr-col-md-10 fr-col-l-11">
                                                                     <strong>{{ etats[index] }}:</strong>
@@ -207,7 +207,7 @@
                                     <label class="fr-label" for="signalement-proprio-averti-1">Oui</label>
                                 </div>
                                 <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-proprio-averti-2" value="false"
+                                    <input type="radio" id="signalement-proprio-averti-2" value="0"
                                            name="signalement[isProprioAverti]"
                                            data-fr-toggle="signalement-methode-contact">
                                     <label class="fr-label" for="signalement-proprio-averti-2">Non</label>
@@ -322,7 +322,7 @@
                                     <label class="fr-label" for="is-allocataire">Oui</label>
                                 </div>
                                 <div class="fr-radio-group">
-                                    <input type="radio" id="is-not-allocataire" value="false"
+                                    <input type="radio" id="is-not-allocataire" value="0"
                                            name="signalement[isAllocataire]">
                                     <label class="fr-label" for="is-not-allocataire">Non</label>
                                 </div>
@@ -432,7 +432,7 @@
                                     <label class="fr-label" for="is-bail-en-cours-1">Oui</label>
                                 </div>
                                 <div class="fr-radio-group">
-                                    <input type="radio" id="is-bail-en-cours-2" value="false"
+                                    <input type="radio" id="is-bail-en-cours-2" value="0"
                                            name="signalement[isBailEnCours]">
                                     <label class="fr-label" for="is-bail-en-cours-2">Non</label>
                                 </div>
@@ -502,7 +502,7 @@
                                     <label class="fr-label" for="signalement-logement-social-1">Oui</label>
                                 </div>
                                 <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-logement-social-2" value="false"
+                                    <input type="radio" id="signalement-logement-social-2" value="0"
                                            name="signalement[isLogementSocial]">
                                     <label class="fr-label" for="signalement-logement-social-2">Non</label>
                                 </div>
@@ -526,7 +526,7 @@
                                     <label class="fr-label" for="signalement-preavis-1">Oui</label>
                                 </div>
                                 <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-preavis-2" value="false"
+                                    <input type="radio" id="signalement-preavis-2" value="0"
                                            name="signalement[isPreavisDepart]">
                                     <label class="fr-label" for="signalement-preavis-2">Non</label>
                                 </div>
@@ -550,7 +550,7 @@
                                     <label class="fr-label" for="signalement-relogement-1">Oui</label>
                                 </div>
                                 <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-relogement-2" value="false"
+                                    <input type="radio" id="signalement-relogement-2" value="0"
                                            name="signalement[isRelogement]">
                                     <label class="fr-label" for="signalement-relogement-2">Non</label>
                                 </div>
@@ -570,7 +570,7 @@
                             </legend>
                             <div class="fr-fieldset__content">
                                 <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-intervention-1" value="false"
+                                    <input type="radio" id="signalement-intervention-1" value="0"
                                            name="signalement[isRefusIntervention]" required
                                            data-fr-toggle="signalement-raison-refus">
                                     <label class="fr-label" for="signalement-intervention-1">Oui</label>
@@ -626,7 +626,7 @@
                             </legend>
                             <div class="fr-fieldset__content">
                                 <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-occupant-1" value="false"
+                                    <input type="radio" id="signalement-occupant-1" value="0"
                                            name="signalement[isNotOccupant]" data-fr-toggle="signalement-pas-occupant"
                                            required>
                                     <label class="fr-label" for="signalement-occupant-1">Oui</label>

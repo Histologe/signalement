@@ -63,10 +63,10 @@ class SignalementRepository extends ServiceEntityRepository
             ->addSelect('situations')
             ->addSelect('criteres')
             ->addSelect('criticites');
-        if ($status)
+        if ($status !== 'all')
             $qb->andWhere('s.statut = :statut')
                 ->setParameter('statut', $status);
-        if ($city)
+        if ($city !== 'all')
             $qb->andWhere('s.villeOccupant =:city')
                 ->setParameter('city', $city);
         return $qb->orderBy('s.id', 'ASC')
