@@ -12330,7 +12330,7 @@ textarea.fr-input {
     }
 
     .fr-sidemenu--sticky, .fr-sidemenu--sticky-full-height {
-        height: 100vh;
+        height: 100%;
         overflow: auto;
         position: sticky;
         top: 0

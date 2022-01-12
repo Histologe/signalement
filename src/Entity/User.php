@@ -27,15 +27,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $password;
 
     #[ORM\OneToMany(mappedBy: 'modifiedBy', targetEntity: Signalement::class)]
-    private $signalements;
+    private $signalementsModified;
 
     #[ORM\ManyToMany(targetEntity: Signalement::class, mappedBy: 'affectations')]
     private $affectations;
 
+    #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Suivi::class, orphanRemoval: true)]
+    private $suivis;
+
+    #[ORM\ManyToMany(targetEntity: Signalement::class, mappedBy: 'acceptedBy')]
+    private $signalementsAccepted;
+
+    #[ORM\ManyToMany(targetEntity: Signalement::class, mappedBy: 'refusedBy')]
+    private $signalementsRefused;
+
+    #[ORM\ManyToOne(targetEntity: Partenaire::class, inversedBy: 'users')]
+    private $partenaire;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $nom;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $prenom;
+
+
     public function __construct()
     {
-        $this->signalements = new ArrayCollection();
         $this->affectations = new ArrayCollection();
+        $this->suivis = new ArrayCollection();
+        $this->signalementsAccepted = new ArrayCollection();
+        $this->signalementsRefused = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -111,24 +132,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection|Signalement[]
      */
-    public function getSignalements(): Collection
+    public function getSignalementsModified(): Collection
     {
-        return $this->signalements;
+        return $this->signalementsModified;
     }
 
-    public function addSignalement(Signalement $signalement): self
+    public function addSignalementModified(Signalement $signalement): self
     {
-        if (!$this->signalements->contains($signalement)) {
-            $this->signalements[] = $signalement;
+        if (!$this->signalementsModified->contains($signalement)) {
+            $this->signalementsModified[] = $signalement;
             $signalement->setModifiedBy($this);
         }
 
         return $this;
     }
 
-    public function removeSignalement(Signalement $signalement): self
+    public function removeSignalementModified(Signalement $signalement): self
     {
-        if ($this->signalements->removeElement($signalement)) {
+        if ($this->signalementsModified->removeElement($signalement)) {
             // set the owning side to null (unless already changed)
             if ($signalement->getModifiedBy() === $this) {
                 $signalement->setModifiedBy(null);
@@ -164,4 +185,130 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    /**
+     * @return Collection|Suivi[]
+     */
+    public function getSuivis(): Collection
+    {
+        return $this->suivis;
+    }
+
+    public function addSuivi(Suivi $suivi): self
+    {
+        if (!$this->suivis->contains($suivi)) {
+            $this->suivis[] = $suivi;
+            $suivi->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSuivi(Suivi $suivi): self
+    {
+        if ($this->suivis->removeElement($suivi)) {
+            // set the owning side to null (unless already changed)
+            if ($suivi->getCreatedBy() === $this) {
+                $suivi->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Signalement[]
+     */
+    public function getSignalementsAccepted(): Collection
+    {
+        return $this->signalementsAccepted;
+    }
+
+    public function addSignalementsAccepted(Signalement $signalementsAccepted): self
+    {
+        if (!$this->signalementsAccepted->contains($signalementsAccepted)) {
+            $this->signalementsAccepted[] = $signalementsAccepted;
+            $signalementsAccepted->addAcceptedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSignalementsAccepted(Signalement $signalementsAccepted): self
+    {
+        if ($this->signalementsAccepted->removeElement($signalementsAccepted)) {
+            $signalementsAccepted->removeAcceptedBy($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Signalement[]
+     */
+    public function getSignalementsRefused(): Collection
+    {
+        return $this->signalementsRefused;
+    }
+
+    public function addSignalementsRefused(Signalement $signalementsRefused): self
+    {
+        if (!$this->signalementsRefused->contains($signalementsRefused)) {
+            $this->signalementsRefused[] = $signalementsRefused;
+            $signalementsRefused->addRefusedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSignalementsRefused(Signalement $signalementsRefused): self
+    {
+        if ($this->signalementsRefused->removeElement($signalementsRefused)) {
+            $signalementsRefused->removeRefusedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function getPartenaire(): ?Partenaire
+    {
+        return $this->partenaire;
+    }
+
+    public function setPartenaire(?Partenaire $partenaire): self
+    {
+        $this->partenaire = $partenaire;
+
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(?string $nom): self
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(?string $prenom): self
+    {
+        $this->prenom = $prenom;
+
+        return $this;
+    }
+
+    public function getNomComplet()
+    {
+        return mb_strtoupper($this->nom).' '.ucfirst($this->prenom);
+    }
+
 }

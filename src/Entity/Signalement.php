@@ -20,6 +20,9 @@ class Signalement
     #[ORM\Column(type: 'integer')]
     private $id;
 
+    #[ORM\Column(type: 'string', length: 255)]
+    private $uuid;
+
     #[ORM\ManyToMany(targetEntity: Situation::class, inversedBy: 'signalements')]
     private $situations;
 
@@ -149,8 +152,6 @@ class Signalement
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private $modifiedAt;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'signalements')]
-    private $modifiedBy;
 
     #[ORM\Column(type: 'string', length: 25)]
     private $statut;
@@ -158,11 +159,38 @@ class Signalement
     #[ORM\Column(type: 'string', length: 100, unique: true)]
     private $reference;
 
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'affectations')]
-    private $affectations;
-
     #[ORM\Column(type: 'json')]
     private $jsonContent = [];
+
+    #[ORM\Column(type: 'json')]
+    private $geoloc = [];
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private $dateVisite;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $isOccupantPresentVisite;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private $montantAllocation;
+
+    #[ORM\Column(type: 'boolean')]
+    private $isSituationHandicap;
+
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'affectations')]
+    #[ORM\JoinTable(name: 'signalement_user_affectation')]
+    private $affectations;
+
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'signalementsAccepted')]
+    #[ORM\JoinTable(name: 'signalement_user_accept')]
+    private $acceptedBy;
+
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'signalementsRefused')]
+    #[ORM\JoinTable(name: 'signalement_user_refus')]
+    private $refusedBy;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'signalementsModified')]
+    private $modifiedBy;
 
 
     public function __construct()
@@ -173,6 +201,9 @@ class Signalement
         $this->createdAt = new \DateTimeImmutable();
         $this->statut = self::STATUS_NEW;
         $this->affectations = new ArrayCollection();
+        $this->uuid = uniqid();
+        $this->acceptedBy = new ArrayCollection();
+        $this->refusedBy = new ArrayCollection();
     }
 
 
@@ -794,17 +825,6 @@ class Signalement
         return $this;
     }
 
-    public function getSituationsCriteresCriticites()
-    {
-        $arr = [];
-        while (count($arr) <= count($this->situations)) {
-            $arr[] = [
-                'situation'=>$this->situations[count($arr)],
-                'critereres'=>$this->situations[count($arr)],
-                'situation'=>$this->situations[count($arr)],
-            ];
-        }
-    }
 
     public function getJsonContent(): ?array
     {
@@ -814,6 +834,126 @@ class Signalement
     public function setJsonContent(array $jsonContent): self
     {
         $this->jsonContent = $jsonContent;
+
+        return $this;
+    }
+
+    public function getGeoloc(): ?array
+    {
+        return $this->geoloc;
+    }
+
+    public function setGeoloc(array $geoloc): self
+    {
+        $this->geoloc = $geoloc;
+
+        return $this;
+    }
+
+    public function getUuid(): ?string
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(string $uuid): self
+    {
+        $this->uuid = $uuid;
+
+        return $this;
+    }
+
+    public function getDateVisite(): ?\DateTimeImmutable
+    {
+        return $this->dateVisite;
+    }
+
+    public function setDateVisite(?\DateTimeImmutable $dateVisite): self
+    {
+        $this->dateVisite = $dateVisite;
+
+        return $this;
+    }
+
+    public function getIsOccupantPresentVisite(): ?bool
+    {
+        return $this->isOccupantPresentVisite;
+    }
+
+    public function setIsOccupantPresentVisite(?bool $isOccupantPresentVisite): self
+    {
+        $this->isOccupantPresentVisite = $isOccupantPresentVisite;
+
+        return $this;
+    }
+
+    public function getMontantAllocation(): ?float
+    {
+        return $this->montantAllocation;
+    }
+
+    public function setMontantAllocation(?float $montantAllocation): self
+    {
+        $this->montantAllocation = $montantAllocation;
+
+        return $this;
+    }
+
+    public function getIsSituationHandicap(): ?bool
+    {
+        return $this->isSituationHandicap;
+    }
+
+    public function setIsSituationHandicap(bool $isSituationHandicap): self
+    {
+        $this->isSituationHandicap = $isSituationHandicap;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getAcceptedBy(): Collection
+    {
+        return $this->acceptedBy;
+    }
+
+    public function addAcceptedBy(User $acceptedBy): self
+    {
+        if (!$this->acceptedBy->contains($acceptedBy)) {
+            $this->acceptedBy[] = $acceptedBy;
+        }
+
+        return $this;
+    }
+
+    public function removeAcceptedBy(User $acceptedBy): self
+    {
+        $this->acceptedBy->removeElement($acceptedBy);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getRefusedBy(): Collection
+    {
+        return $this->refusedBy;
+    }
+
+    public function addRefusedBy(User $refusedBy): self
+    {
+        if (!$this->refusedBy->contains($refusedBy)) {
+            $this->refusedBy[] = $refusedBy;
+        }
+
+        return $this;
+    }
+
+    public function removeRefusedBy(User $refusedBy): self
+    {
+        $this->refusedBy->removeElement($refusedBy);
 
         return $this;
     }

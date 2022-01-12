@@ -1,4 +1,9 @@
 security:
+    role_hierarchy:
+        ROLE_USER_PATENAIRE: ROLE_USER
+        ROLE_ADMIN_PARTENAIRE: ROLE_USER_PARTENAIRE
+        ROLE_ADMIN: ROLE_ADMIN_PARTENAIRE
+
     enable_authenticator_manager: true
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:

@@ -58,9 +58,12 @@ forms.forEach((form) => {
                             suggestion.classList.add('fr-col-12', 'fr-p-3v', 'fr-text-label--blue-france', 'fr-adresse-suggestion');
                             suggestion.innerHTML = feature.properties.label;
                             suggestion.addEventListener('click', () => {
+                                // console.log(feature.geometry.coordinates)
                                 form.querySelector('#signalement-adresse-occupant').value = feature.properties.name;
                                 form.querySelector('#signalement-cp-occupant').value = feature.properties.postcode;
                                 form.querySelector('#signalement-ville-occupant').value = feature.properties.city;
+                                form.querySelector('#signalement-geoloc-lat-occupant').value = feature.geometry.coordinates[0];
+                                form.querySelector('#signalement-geoloc-lng-occupant').value = feature.geometry.coordinates[1];
                                 container.innerHTML = '';
                             })
                             container.appendChild(suggestion)

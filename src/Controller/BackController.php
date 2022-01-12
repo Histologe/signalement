@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Signalement;
+use App\Entity\User;
+use App\Repository\PartenaireRepository;
 use App\Repository\SignalementRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,13 +35,30 @@ class BackController extends AbstractController
         ]);
     }
     #[Route('/s/{id}', name: 'back_signalement_view')]
-    public function viewSignalement(Signalement $signalement,Request $request): Response
+    public function viewSignalement(Signalement $signalement,PartenaireRepository $partenaireRepository): Response
     {
         $title = 'Administration - Signalement #'.$signalement->getReference();
         return $this->render('back/signalement/view.html.twig',[
             'title'=>$title,
-            'signalement'=>$signalement
+            'signalement'=>$signalement,
+            'partenaires'=>$partenaireRepository->findAlls()
         ]);
+    }
+    #[Route('/s/{id}/affectation', name: 'back_signalement_affectation_return',methods: "GET")]
+    public function affectationReturnSignalement(Signalement $signalement,Request $request,ManagerRegistry $doctrine): Response
+    {
+        if($this->isCsrfTokenValid('signalement_affectation_return',$request->get('_token')))
+        {
+            $affection = $request->get('signalement-affectation-return');
+            if(isset($affection['accept']))
+                $signalement->addAcceptedBy($doctrine->getManager()->getRepository(User::class)->find($affection['accept']));
+            if(isset($affection['deny']))
+                $signalement->addRefusedBy($doctrine->getManager()->getRepository(User::class)->find($affection['deny']));
+            $doctrine->getManager()->persist($signalement);
+            $doctrine->getManager()->flush();
+            $this->addFlash('success','Affectation mise à jour avec succès !');
+        }
+        return $this->redirectToRoute('back_signalement_view',['id'=>$signalement->getId()]);
     }
     #[Route('/s/{id}/delete', name: 'back_signalement_delete',methods: "DELETE")]
     public function deleteSignalement(Signalement $signalement,Request $request,ManagerRegistry $doctrine): Response

@@ -101,6 +101,10 @@ class SignalementController extends AbstractController
                         $value = new \DateTimeImmutable($value);
                         $signalement->$method($value);
                         break;
+                    case
+                    'geoloc':
+                        $signalement->setGeoloc(["lat"=>$data[$key]['lat'],"lng"=>$data[$key]['lng']]);
+                        break;
                     default:
                         if($value === "" || $value === " ")
                             $value = null;

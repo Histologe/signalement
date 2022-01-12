@@ -2,7 +2,7 @@
 .fr-w-100 {
     width: 100%;
 }
-.fr-toggle--parent,.fr-accordion__title,.toggle-criticite {
+.fr-toggle--parent,.fr-accordion__title,.toggle-criticite,div[role="button"],.fr-list--hover li {
     cursor: pointer!important;
     user-select: none;
 }
@@ -22,6 +22,9 @@
 .fr-blockquote {
     border-left: .3rem solid var(--border-plain-blue-france);
 }
+.fr-list--hover li:hover {
+    background-color: white;
+}
 .fr-list--icon-img {
    list-style: none;
 }
@@ -34,6 +37,9 @@
 }
 .fr-btn--orange {
     background: #FF9940;
+}
+.fr-btn--danger {
+    background:#F60700;
 }
 /*TEXT*/
 .fr-text--white {
