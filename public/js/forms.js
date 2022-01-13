@@ -11,6 +11,7 @@ serializeArray = (form) => {
 };
 forms.forEach((form) => {
     form?.querySelectorAll('.toggle-criticite input[type="radio"]')?.forEach((criticite) => {
+        //TODO: Forcer choix criticite sur chaque situation
         criticite.addEventListener('change', (event) => {
             event.currentTarget.parentElement.parentElement.parentElement.querySelector('.fr-toggle__input').checked = true;
             // parent.querySelector('[type="checkbox"]').checked = !parent.querySelector('[type="checkbox"]').checked;
@@ -32,7 +33,7 @@ forms.forEach((form) => {
         })
     })
     form?.querySelectorAll('input[type="file"]')?.forEach((file) => {
-
+        //TODO: Resize avant upload
         file.addEventListener('change', (event) => {
             if (event.target.files.length > 0) {
                 if (event.target.parentElement.classList.contains('fr-fi-instagram-line')) {

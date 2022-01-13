@@ -51,7 +51,7 @@ class SignalementController extends AbstractController
                         $safeFilename = $slugger->slug($originalFilename);
                         $newFilename = $safeFilename . '-' . uniqid() . '.' . $file_->guessExtension();
                         try {
-                            //TODO: Resize
+                            //TODO: Resize coté client
                             $file_->move(
                                 $this->getParameter('uploads_dir'),
                                 $newFilename
@@ -80,21 +80,26 @@ class SignalementController extends AbstractController
                                     $critere = $em->getRepository(Critere::class)->find($idCritere);
                                     $signalement->addCritere($critere);
                                     $data[$key][$idSituation]['critere'][$idCritere]['label'] = $critere->getLabel();
-                                    foreach ($criticites as $criticite) {
-                                        foreach ($criticite as $idCriticite => $null) {
+                                    $criticite = $em->getRepository(Criticite::class)->find($data[$key][$idSituation]['critere'][$idCritere]['criticite']);
+                                    $signalement->addCriticite($criticite);
+                                    $data[$key][$idSituation]['critere'][$idCritere]['criticite']= [$criticite->getId() => ['label' => $criticite->getLabel(),'score'=>$criticite->getScore()]];
+                                    /*foreach ($data[$key][$idSituation]['critere'][$idCritere] as $idCriticite) {
+//                                        $criticite = $em->getRepository(Criticite::class)->find($idCriticite);
+//                                        var_dump(array_values($data[$key][$idSituation]['critere'][$idCritere]));
+//                                        $signalement->addCriticite($criticite);
+//                                        $data[$key][$idSituation]['critere'][$idCritere]['criticite']= [$idCriticite => ['label' => $criticite->getLabel()]];
+//                                        dd($signalement);
+                                        /*foreach ($criticite as $idCriticite => $null) {
                                             $criticite = $em->getRepository(Criticite::class)->find($idCriticite);
                                             $signalement->addCriticite($criticite);
-                                            $data[$key][$idSituation]['critere'][$idCritere]['criticite'][$idCriticite]['label'] = $criticite->getLabel();
+
                                         }
-                                    }
-                                    /*var_dump(array_keys($critere));echo "----critere-----";*/
-                                    /*$signalement->addCritere($em->getRepository(Critere::class)->find($idCritere));
-                                    $signalement->addCriticite($em->getRepository(Criticite::class)->find($v['critere'][$idCritere]['criticite']));*/
+                                    }*/
                                 }
                             }
+                           /* die;*/
                         }
                         $signalement->setJsonContent($data[$key]);
-//                        die;
                         break;
                     case
                     'dateEntree':
@@ -103,19 +108,21 @@ class SignalementController extends AbstractController
                         break;
                     case
                     'geoloc':
-                        $signalement->setGeoloc(["lat"=>$data[$key]['lat'],"lng"=>$data[$key]['lng']]);
+                        $signalement->setGeoloc(["lat" => $data[$key]['lat'], "lng" => $data[$key]['lng']]);
                         break;
                     default:
-                        if($value === "" || $value === " ")
+                        if ($value === "" || $value === " ")
                             $value = null;
                         $signalement->$method($value);
                 }
             }
+            //TODO: Si proprio pas averti mail avec lettre type
             if ($em->getRepository(Signalement::class)->findOneBy([], ['id' => 'DESC'])) {
                 $id = $em->getRepository(Signalement::class)->findOneBy([], ['id' => 'DESC'])->getId() + 1;
             } else {
                 $id = 1;
             }
+            //TODO: Repartir a zéro pour chaque année
             $signalement->setReference((new \DateTime())->format('Ymd') . '-' . $id);
             $em->persist($signalement);
             $em->flush();

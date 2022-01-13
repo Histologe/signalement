@@ -6,6 +6,7 @@ use App\Repository\SignalementRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 
 #[ORM\Entity(repositoryClass: SignalementRepository::class)]
 class Signalement
@@ -14,6 +15,7 @@ class Signalement
     const STATUS_AWAIT = 'await';
     const STATUS_NEED_REVIEW= 'review';
     const STATUS_CLOSED = 'closed';
+    const STATUS_ARCHIVED = 'archive';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -177,16 +179,13 @@ class Signalement
     #[ORM\Column(type: 'boolean')]
     private $isSituationHandicap;
 
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'affectations')]
-    #[ORM\JoinTable(name: 'signalement_user_affectation')]
+    #[ORM\OneToMany(mappedBy: 'signalement', targetEntity: SignalementUserAffectation::class)]
     private $affectations;
 
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'signalementsAccepted')]
-    #[ORM\JoinTable(name: 'signalement_user_accept')]
+    #[ORM\OneToMany(mappedBy: 'signalement', targetEntity: SignalementUserAccept::class)]
     private $acceptedBy;
 
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'signalementsRefused')]
-    #[ORM\JoinTable(name: 'signalement_user_refus')]
+    #[ORM\OneToMany(mappedBy: 'signalement', targetEntity: SignalementUserRefus::class)]
     private $refusedBy;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'signalementsModified')]
@@ -194,6 +193,9 @@ class Signalement
 
     #[ORM\OneToMany(mappedBy: 'signalement', targetEntity: Suivi::class, orphanRemoval: true)]
     private $suivis;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $codeProcedure;
 
 
     public function __construct()
@@ -991,5 +993,29 @@ class Signalement
         }
 
         return $this;
+    }
+
+    public function getCodeProcedure(): ?string
+    {
+        return $this->codeProcedure;
+    }
+
+    public function setCodeProcedure(?string $codeProcedure): self
+    {
+        $this->codeProcedure = $codeProcedure;
+
+        return $this;
+    }
+
+    public function getAffectationsByPartenaire(): ArrayCollection
+    {
+        $affectationsPartenaire = new ArrayCollection();
+        /** @var SignalementUserAffectation $affectation */
+        foreach ($this->affectations as $affectation)
+        {
+           if(!$affectationsPartenaire->contains($affectation->getUser()->getPartenaire()))
+               $affectationsPartenaire->add($affectation->getUser()->getPartenaire());
+        }
+        return $affectationsPartenaire;
     }
 }

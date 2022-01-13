@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\SignalementUserAffectationRepository;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -29,16 +30,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'modifiedBy', targetEntity: Signalement::class)]
     private $signalementsModified;
 
-    #[ORM\ManyToMany(targetEntity: Signalement::class, mappedBy: 'affectations')]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: SignalementUserAffectation::class)]
     private $affectations;
 
     #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Suivi::class, orphanRemoval: true)]
     private $suivis;
 
-    #[ORM\ManyToMany(targetEntity: Signalement::class, mappedBy: 'acceptedBy')]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: SignalementUserAccept::class)]
     private $signalementsAccepted;
 
-    #[ORM\ManyToMany(targetEntity: Signalement::class, mappedBy: 'refusedBy')]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: SignalementUserRefus::class)]
     private $signalementsRefused;
 
     #[ORM\ManyToOne(targetEntity: Partenaire::class, inversedBy: 'users')]

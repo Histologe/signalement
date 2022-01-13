@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Signalement;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Persistence\ManagerRegistry;
@@ -52,14 +53,20 @@ class SignalementRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findByStatusAndOrCity($status = null, $city = null)
+    public function findByStatusAndOrCityForUser(User $user = null, $status = null, $city = null)
     {
         $qb = $this->createQueryBuilder('s')
+            ->where('s.statut != :archive')
+            ->setParameter('archive',Signalement::STATUS_ARCHIVED)
             ->leftJoin('s.affectations', 'affectations')
+            ->leftJoin('s.refusedBy', 'refusedBy')
+            ->leftJoin('s.acceptedBy', 'acceptedBy')
             ->leftJoin('s.situations', 'situations')
             ->leftJoin('situations.criteres', 'criteres')
             ->leftJoin('criteres.criticites', 'criticites')
             ->addSelect('affectations')
+            ->addSelect('refusedBy')
+            ->addSelect('acceptedBy')
             ->addSelect('situations')
             ->addSelect('criteres')
             ->addSelect('criticites');
@@ -69,6 +76,9 @@ class SignalementRepository extends ServiceEntityRepository
         if ($city !== 'all')
             $qb->andWhere('s.villeOccupant =:city')
                 ->setParameter('city', $city);
+        if($user)
+            $qb->andWhere(":user MEMBER OF s.affectations")
+                ->setParameter('user',$user);
         return $qb->orderBy('s.id', 'ASC')
             ->getQuery()
             ->getResult();

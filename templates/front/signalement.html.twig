@@ -92,8 +92,8 @@
                                                             <label class="toggle-criticite fr-grid-row fr-grid-row--middle fr-py-1v">
                                                                 <input class="{{ etats_classes[index] }} fr-col-3 fr-col-md-2 fr-col-lg-1"
                                                                        type="radio"
-                                                                       name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite][{{ criticite.id }}][score]"
-                                                                       value="{{ criticite.score }}"
+                                                                       name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]"
+                                                                       value="{{ criticite.id }}"
                                                                        id="signalement-critere-{{ critere.id }}">
                                                                 <text class="fr-col-9 fr-col-md-10 fr-col-l-11">
                                                                     <strong>{{ etats[index] }}:</strong>
@@ -654,12 +654,13 @@
                                         Nom
                                     </label>
                                     <input class="fr-input fr-input--no-resize" id="signalement-nom-declarant"
-                                           name="signalement[nomDeclarant]">
+                                           name="signalement[nomDeclarant]" value="{{ app.user ? app.user.nom : '' }}">
                                     <label class="fr-label" for="signalement-prenom-declarant">
                                         Prénom
                                     </label>
                                     <input class="fr-input fr-input--no-resize" id="signalement-prenom-declarant"
-                                           name="signalement[prenomDeclarant]">
+                                           name="signalement[prenomDeclarant]"
+                                           value="{{ app.user ? app.user.prenom : '' }}">
                                 </div>
                                 <div class="fr-input-group fr-col-12 fr-col-md-6 fr-px-0 fr-pr-md-0 fr-pl-md-1v">
                                     <label class="fr-label" for="signalement-tel-declarant">
@@ -673,14 +674,16 @@
                                     </label>
                                     <input class="fr-input fr-input--no-resize" type="email"
                                            id="signalement-courriel-declarant"
-                                           name="signalement[mailDeclarant]">
+                                           name="signalement[mailDeclarant]"
+                                           value="{{ app.user ? app.user.email : '' }}">
                                 </div>
                                 <div class="fr-input-group fr-col-12 fr-p-0">
                                     <label class="fr-label" for="signalement-structure-declarant">
                                         Structure [ADIL, CCAS, SDIS, ...]
                                     </label>
                                     <input class="fr-input fr-input--no-resize" id="signalement-structure-declarant"
-                                           name="signalement[structureDeclarant]">
+                                           name="signalement[structureDeclarant]"
+                                           value="{{ app.user ? (app.user.partenaire ? app.user.partenaire.nom : ''):'' }}">
                                 </div>
                             </div>
                         </fieldset>
@@ -759,8 +762,10 @@
                                         Veuillez renseigner le code postal du logement.
                                     </p>
                                 </div>
-                                <input type="hidden" name="signalement[geoloc][lat]" id="signalement-geoloc-lat-occupant">
-                                <input type="hidden" name="signalement[geoloc][lng]" id="signalement-geoloc-lng-occupant">
+                                <input type="hidden" name="signalement[geoloc][lat]"
+                                       id="signalement-geoloc-lat-occupant">
+                                <input type="hidden" name="signalement[geoloc][lng]"
+                                       id="signalement-geoloc-lng-occupant">
                             </div>
                         </fieldset>
                     </div>
