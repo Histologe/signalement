@@ -74,7 +74,42 @@
                                     <div class="fr-collapse" id="signalement-accordion-situation-{{ situation.id }}">
                                         <ul class="fr-toggle__list">
                                             {% for critere in situation.criteres %}
-                                                <li class="fr-toggle--parent">
+                                                <div class="fr-toggle"
+                                                     aria-expanded="false"
+                                                     aria-controls="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
+                                                    <input type="checkbox"
+                                                           name="signalement[situation][{{ situation.id }}]"
+                                                           class="fr-toggle__input signalement-situation"
+                                                           id="signalement-situation-{{ situation.id }}-critere-{{ critere.id }}">
+                                                    <label class="fr-toggle__label fr-text--bold"
+                                                           for="signalement-situation-{{ situation.id }}-critere-{{ critere.id }}">
+                                                        <div class="fr-form-group fr-mb-0">
+                                                            <fieldset class="fr-fieldset">
+                                                                <legend class="fr-fieldset__legend">
+                                                                    {{ critere.label }}
+                                                                    <span class="fr-hint-text fr-display-block"><strong class="fr-text-default--info">Quand tout va bien:</strong> {{ critere.description }}</span>
+                                                                </legend>
+                                                            </fieldset>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                                <div class="fr-fieldset__content fr-collapse" id="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
+                                                    {% for index,criticite in critere.criticites %}
+                                                        <div class="fr-radio-group fr-radio-rich fr-mb-5v">
+                                                            <input type="radio" id="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"
+                                                                   name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]">
+                                                            <label class="fr-label" for="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"><strong>{{ etats[index] }}</strong>
+                                                                <span class="fr-hint-text">{{ criticite.label }}</span>
+                                                            </label>
+                                                            <div class="fr-radio-rich__img">
+                                                                <img src="{{ asset('img/'~etats_classes[index]~'.png') }}" alt="" width="100%" class="fr-p-2v"/>
+                                                                <!-- L’alternative de l’image (attribut alt) doit rester vide car l’image est illustrative et ne doit pas être restituée aux technologies d’assistance -->
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+
+                                                {# <li class="fr-toggle--parent">
                                                     <div class="fr-toggle fr-toggle--border-bottom"
                                                          aria-expanded="false"
                                                          aria-controls="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
@@ -89,7 +124,7 @@
                                                          id="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
                                                         <strong>Quand tout va bien: </strong> {{ critere.description }}
                                                         {% for index,criticite in critere.criticites %}
-                                                            <label class="toggle-criticite fr-grid-row fr-grid-row--middle fr-py-1v">
+                                                #}{# <label class="toggle-criticite fr-grid-row fr-grid-row--middle fr-py-1v">
                                                                 <input class="{{ etats_classes[index] }} fr-col-3 fr-col-md-2 fr-col-lg-1"
                                                                        type="radio"
                                                                        name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]"
@@ -99,10 +134,10 @@
                                                                     <strong>{{ etats[index] }}:</strong>
                                                                     {{ criticite.label }}
                                                                 </text>
-                                                            </label>
-                                                        {% endfor %}
-                                                    </div>
-                                                </li>
+                                                            </label> #}{#
+                                            {% endfor %}
+                                        </div>
+                                    </li> #}
                                             {% endfor %}
                                         </ul>
                                     </div>

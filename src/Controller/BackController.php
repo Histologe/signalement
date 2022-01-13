@@ -75,7 +75,7 @@ class BackController extends AbstractController
             $this->addFlash('success', 'Suivi publié avec succès !');
         } else
             $this->addFlash('error', 'Une erreur est survenu lors de la publication');
-        return $this->redirectToRoute('back_signalement_view', ['id' => $signalement->getId()]);
+        return $this->redirectToRoute('back_signalement_view', ['uuid' => $signalement->getUuid()]);
     }
 
     #[Route('/s/{id}/affectation/{user}/toggle', name: 'back_signalement_toggle_affectation')]
