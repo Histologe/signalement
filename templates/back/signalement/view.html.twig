@@ -38,7 +38,7 @@
                         <strong class="fr-text-label--green-emeraude fr-fi-checkbox-circle-fill"> Vous avez
                             <u>accepté</u> ce
                             signalement</strong>
-                    {% else %}
+                    {% else if app.user in signalement.refusedBy %}
                         <strong class="fr-text-label--red-marianne fr-fi-checkbox-circle-fill"> Vous avez <u>refusé</u>
                             ce
                             signalement</strong>
