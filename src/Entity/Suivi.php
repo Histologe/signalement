@@ -26,6 +26,15 @@ class Suivi
     #[ORM\Column(type: 'boolean')]
     private $isPublic;
 
+    #[ORM\ManyToOne(targetEntity: Signalement::class, inversedBy: 'suivis')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $signalement;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -75,6 +84,18 @@ class Suivi
     public function setIsPublic(bool $isPublic): self
     {
         $this->isPublic = $isPublic;
+
+        return $this;
+    }
+
+    public function getSignalement(): ?Signalement
+    {
+        return $this->signalement;
+    }
+
+    public function setSignalement(?Signalement $signalement): self
+    {
+        $this->signalement = $signalement;
 
         return $this;
     }

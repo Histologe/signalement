@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Signalement;
+use App\Entity\Suivi;
 use App\Entity\User;
 use App\Repository\PartenaireRepository;
 use App\Repository\SignalementRepository;
@@ -34,41 +35,62 @@ class BackController extends AbstractController
             'signalements' => $signalements,
         ]);
     }
+
     #[Route('/s/{id}', name: 'back_signalement_view')]
-    public function viewSignalement(Signalement $signalement,PartenaireRepository $partenaireRepository): Response
+    public function viewSignalement(Signalement $signalement, PartenaireRepository $partenaireRepository): Response
     {
-        $title = 'Administration - Signalement #'.$signalement->getReference();
-        return $this->render('back/signalement/view.html.twig',[
-            'title'=>$title,
-            'signalement'=>$signalement,
-            'partenaires'=>$partenaireRepository->findAlls()
+        $title = 'Administration - Signalement #' . $signalement->getReference();
+        return $this->render('back/signalement/view.html.twig', [
+            'title' => $title,
+            'signalement' => $signalement,
+            'partenaires' => $partenaireRepository->findAlls()
         ]);
     }
-    #[Route('/s/{id}/affectation', name: 'back_signalement_affectation_return',methods: "GET")]
-    public function affectationReturnSignalement(Signalement $signalement,Request $request,ManagerRegistry $doctrine): Response
+
+    #[Route('/s/{id}/suivi/add', name: 'back_signalement_add_suivi', methods: "POST")]
+    public function addSuiviSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
     {
-        if($this->isCsrfTokenValid('signalement_affectation_return',$request->get('_token')))
-        {
-            $affection = $request->get('signalement-affectation-return');
-            if(isset($affection['accept']))
+        if ($this->isCsrfTokenValid('signalement_add_suivi', $request->get('_token'))
+            && $form = $request->get('signalement-add-suivi')) {
+            $suivi = new Suivi();
+            $suivi->setDescription($form['content']);
+            $suivi->setIsPublic($form['isPublic']);
+            $suivi->setSignalement($signalement);
+            $suivi->setCreatedBy($this->getUser());
+            $doctrine->getManager()->persist($suivi);
+            $doctrine->getManager()->flush();
+            $this->addFlash('success', 'Suivi publié avec succès !');
+        } else
+            $this->addFlash('error', 'Une erreur est survenu lors de la publication');
+        return $this->redirectToRoute('back_signalement_view', ['id' => $signalement->getId()]);
+    }
+
+    #[Route('/s/{id}/affectation', name: 'back_signalement_affectation_return', methods: "GET")]
+    public function affectationReturnSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
+    {
+        if ($this->isCsrfTokenValid('signalement_affectation_return', $request->get('_token'))
+            && $affection = $request->get('signalement-affectation-return')) {
+            if (isset($affection['accept']))
                 $signalement->addAcceptedBy($doctrine->getManager()->getRepository(User::class)->find($affection['accept']));
-            if(isset($affection['deny']))
+            if (isset($affection['deny']))
                 $signalement->addRefusedBy($doctrine->getManager()->getRepository(User::class)->find($affection['deny']));
             $doctrine->getManager()->persist($signalement);
             $doctrine->getManager()->flush();
-            $this->addFlash('success','Affectation mise à jour avec succès !');
-        }
-        return $this->redirectToRoute('back_signalement_view',['id'=>$signalement->getId()]);
+            $this->addFlash('success', 'Affectation mise à jour avec succès !');
+        } else
+            $this->addFlash('error', "Une erreur est survenu lors de l'affectation");
+        return $this->redirectToRoute('back_signalement_view', ['id' => $signalement->getId()]);
     }
-    #[Route('/s/{id}/delete', name: 'back_signalement_delete',methods: "DELETE")]
-    public function deleteSignalement(Signalement $signalement,Request $request,ManagerRegistry $doctrine): Response
+
+    #[Route('/s/{id}/delete', name: 'back_signalement_delete', methods: "DELETE")]
+    public function deleteSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
     {
-        if($this->isCsrfTokenValid('signalement_delete',$request->get('_token')))
-        {
+        if ($this->isCsrfTokenValid('signalement_delete', $request->get('_token'))) {
             $doctrine->getManager()->remove($signalement);
             $doctrine->getManager()->flush();
-            $this->addFlash('success','Signalement supprimé ave succès !');
-        }
+            $this->addFlash('success', 'Signalement supprimé ave succès !');
+        } else
+            $this->addFlash('error', 'Une erreur est survenu lors de la suppression');
         return $this->redirectToRoute('back_index');
     }
 }

@@ -302,13 +302,16 @@
         <div class="fr-grid-row fr-py-5v fr-grid-row--gutters">
             {% for user in signalement.acceptedBy %}
                 <div class="fr-col-4">
-                    <div class="fr-background-contrast--success fr-rounded fr-p-2v"><strong>{{ user.nom[:1]|upper~'. '~user.prenom|capitalize }}</strong> à accepté l'affectation</div>
+                    <div class="fr-background-contrast--success fr-rounded fr-p-2v">
+                        <strong>{{ user.nom[:1]|upper~'. '~user.prenom|capitalize }}</strong> à accepté l'affectation
+                    </div>
                 </div>
             {% endfor %}
             {% for user in signalement.refusedBy %}
                 <div class="fr-col-4">
-                    <div class="fr-background-contrast--error fr-rounded fr-p-2v"><strong>{{ user.nom[:1]|upper~'. '~user.prenom|capitalize }}</strong> à refusé l'affectation
-                    <span class="fr-hint-text"><strong>Motif:</strong> Non  concerné</span>
+                    <div class="fr-background-contrast--error fr-rounded fr-p-2v">
+                        <strong>{{ user.nom[:1]|upper~'. '~user.prenom|capitalize }}</strong> à refusé l'affectation
+                        <span class="fr-hint-text"><strong>Motif:</strong> Non  concerné</span>
                     </div>
                 </div>
             {% endfor %}
@@ -327,9 +330,12 @@
                         <ul class="fr-list--icon-img fr-list--hover ">
                             {% for user in partenaire.users %}
                                 <li class="{% if user in signalement.affectations %}fr-fi-checkbox-circle-fill fr-text-label--green-emeraude{% else %}fr-fi-close-circle-fill fr-text-label--red-marianne{% endif %}">
-                                    <label for="signalement-affectation-{{ user.id }}" class="fr-text--sm">{{ user.nom[:1]|upper~'. '~user.prenom|capitalize }}
-                                        <input type="checkbox" class="fr-checkbox-affectation" name="signalement-affectation[]"
-                                               id="signalement-affectation-{{ user.id }}" multiple {% if user in signalement.affectations %}checked{% endif %}>
+                                    <label for="signalement-affectation-{{ user.id }}"
+                                           class="fr-text--sm">{{ user.nom[:1]|upper~'. '~user.prenom|capitalize }}
+                                        <input type="checkbox" class="fr-checkbox-affectation"
+                                               name="signalement-affectation[]"
+                                               id="signalement-affectation-{{ user.id }}" multiple
+                                               {% if user in signalement.affectations %}checked{% endif %}>
                                     </label>
                                 </li>
                             {% endfor %}
@@ -344,22 +350,49 @@
                 <strong class="fr-fi-calendar-fill fr-text-label--blue-france"> Suivis du signalement</strong>
                 <span class="fr-hint-text">Ci-dessous l'historique des changements d'états et interventions du signalement.</span>
                 <strong>Nouveau suivi:</strong>
-                <form action="#" class="needs-validation" name="signalement-suivi" novalidate>
+                <form method="POST"
+                      action="{{ path('back_signalement_add_suivi',{id:signalement.id}) }}"{# class="needs-validation" #}
+                      name="signalement-add-suivi" novalidate>
                     <div class="fr-input-group">
-                        <label class="fr-label" for="signalement-suivi-content">
+                        <label class="fr-label" for="signalement-add-suivi-content">
                             <span class="fr-hint-text"> Décrivez la ou les action(s) menée(s)<sup
                                         class="fr-text-default--error">*</sup></span>
                         </label>
-                        <textarea class="fr-input fr-input--no-resize" id="signalement-suivi-content"
-                                  name="signalement-suivi[content]" required></textarea>
+                        <textarea class="fr-input fr-input--no-resize" id="signalement-add-suivi-content"
+                                  name="signalement-add-suivi[content]" required></textarea>
                         <p class="fr-error-text fr-hidden">
                             Merci de proposer une rapide description (minimum 10 caractères).
                         </p>
                     </div>
-                    <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"> Publier</button>
+                    <button type="submit" class="fr-btn fr-fi-eye-off-fill fr-btn--icon-left"
+                            name="signalement-add-suivi[isPublic]" value="0"> Publication privée
+                    </button>
+                    <button type="submit" class="fr-btn fr-btn--secondary fr-fi-eye-fill fr-btn--icon-left"
+                            name="signalement-add-suivi[isPublic]" value="1"> Publication publique (visible par usager)
+                    </button>
+                    <input type="hidden" name="_token" value="{{ csrf_token('signalement_add_suivi') }}">
                 </form>
             </div>
         </div>
+        <hr>
+        {% for suivi in signalement.suivis %}
+            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-2v">
+                <div class="fr-col-2">
+                    <strong> {{ suivi.createdBy.nom[:1]|upper~'. '~ suivi.createdBy.prenom|capitalize }}</strong> <br>
+                    <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
+                </div>
+                <div class="fr-col-9">
+                    {{ suivi.description|capitalize }}
+                </div>
+                <div class="fr-col-1 fr-text--right">
+                    {% if suivi.isPublic %}
+                        <span class="fr-fi-eye-fill" title="Visible par l'usage"></span>
+                    {% else %}
+                        <span class="fr-fi-eye-off-fill" title="Non visible par l'usager"></span>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
     </section>
 {% endblock %}
 {% block javascripts %}

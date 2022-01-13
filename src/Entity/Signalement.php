@@ -192,6 +192,9 @@ class Signalement
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'signalementsModified')]
     private $modifiedBy;
 
+    #[ORM\OneToMany(mappedBy: 'signalement', targetEntity: Suivi::class, orphanRemoval: true)]
+    private $suivis;
+
 
     public function __construct()
     {
@@ -205,6 +208,7 @@ class Signalement
         $this->acceptedBy = new ArrayCollection();
         $this->refusedBy = new ArrayCollection();
         $this->isSituationHandicap = false;
+        $this->suivis = new ArrayCollection();
     }
 
 
@@ -955,6 +959,36 @@ class Signalement
     public function removeRefusedBy(User $refusedBy): self
     {
         $this->refusedBy->removeElement($refusedBy);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Suivi[]
+     */
+    public function getSuivis(): Collection
+    {
+        return $this->suivis;
+    }
+
+    public function addSuivi(Suivi $suivi): self
+    {
+        if (!$this->suivis->contains($suivi)) {
+            $this->suivis[] = $suivi;
+            $suivi->setSignalement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSuivi(Suivi $suivi): self
+    {
+        if ($this->suivis->removeElement($suivi)) {
+            // set the owning side to null (unless already changed)
+            if ($suivi->getSignalement() === $this) {
+                $suivi->setSignalement(null);
+            }
+        }
 
         return $this;
     }

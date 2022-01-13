@@ -2,6 +2,9 @@
 .fr-w-100 {
     width: 100%;
 }
+.fr-stripped:nth-child(odd) {
+    background-color: rgba(191, 204, 251, 0.37);
+}
 .fr-toggle--parent,.fr-accordion__title,.toggle-criticite,div[role="button"],.fr-list--hover li {
     cursor: pointer!important;
     user-select: none;
