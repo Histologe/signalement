@@ -204,6 +204,7 @@ class Signalement
         $this->uuid = uniqid();
         $this->acceptedBy = new ArrayCollection();
         $this->refusedBy = new ArrayCollection();
+        $this->isSituationHandicap = false;
     }
 
 
