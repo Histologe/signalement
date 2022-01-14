@@ -41,6 +41,7 @@ class SignalementUserAffectation
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->statut = SignalementUserAffectation::STATUS_AWAIT;
     }
 
     public function getId(): ?int
