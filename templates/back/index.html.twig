@@ -36,7 +36,6 @@
             <div class="fr-col-6">
                 <label class="fr-label" for="filter_ville"><strong>Filter par ville</strong></label>
                 <select name="bo-filter-ville" id="filter_ville" class="fr-select">
-                    <option>--- Selectionnez ---</option>
                     <option value="all">TOUTES</option>
                     {% for ville in signalements.villes %}
                         <option value="{{ ville }}">{{ ville|upper }}</option>
@@ -55,15 +54,14 @@
             </div>
         </form>
     </section>
-    <section class="fr-col-12">
-        <table class="fr-w-100 fr-table">
+    <section class="fr-col-12 fr-table fr-table--bordered">
+        <table class="fr-display-inline-table">
             <thead>
             <tr>
-                <th>#</th>
                 <th>#Ref.</th>
                 <th>Date</th>
                 <th>Situation(s)</th>
-                <th>Alert.</th>
+                {# <th>Alert.</th> #}
                 <th>Procédure</th>
                 <th>Desc.</th>
                 <th>Ville</th>
@@ -75,7 +73,6 @@
             <tbody>
             {% for index,signalement in signalements.list %}
                 <tr>
-                    <td>{{ index+1 }}</td>
                     <td>
                         <span class="fr-fi-links-fill fr-link--icon-right"></span> <a
                                 href="{{ path('back_signalement_view',{uuid:signalement.uuid}) }}">{{ signalement.reference }}</a>
@@ -86,28 +83,26 @@
                                  alt="{{ situation.label }}" title="{{ situation.label }}">
                         {% endfor %}
                     </td>
-                    <td>{# {{ signalement.hasAlert ? 'Oui' : 'Non' }} #}</td>
+                    {# <td> #}{# {{ signalement.hasAlert ? 'Oui' : 'Non' }} #}{# </td> #}
                     <td>{{ signalement.codeProcedure ? signalement.codeProcedure : 'Aucune' }}</td>
-                    <td><small><strong>[ {{ signalement.nomOccupant|upper~' '~signalement.prenomOccupant|capitalize }}
-                                ]</strong></small><br>{{ signalement.details }}</td>
+                    <td class="text">
+                        <small><strong>[ {{ signalement.nomOccupant|upper~' '~signalement.prenomOccupant|capitalize }}
+                                ]</strong></small><br>{{ signalement.details[:40] }}</td>
                     <td>{{ signalement.villeOccupant|upper }} <br>
                         <small>[{{ signalement.adresseOccupant }}]</small>
                     </td>
                     <td>
-                        {% for partenaire in signalement.affectationsByPartenaire %}
-                            {{ partenaire.nom }}
+                        {% for affectation in signalement.affectationStatusByPartenaire %}
+                                {{ affectation.partenaire }}
                             {% set statut = '' %}
-                            {% for user in partenaire.users %}
-                                {% if user in signalement.acceptedBy %}
-                                    {% set statut = 'Accepté' %}
-                                {% elseif user in signalement.refusedBy %}
-                                    {% set statut = 'Refusé' %}
-                                {% else %}
-                                    {% set statut = 'En attente' %}
-                                {% endif %}
-                            {% endfor %}
-                            <small class="fr-display-block">[{{ statut }}]</small>
-                            {# {{ user.nom[:1]|upper~'. '~user.prenom|capitalize }} #}
+                            {% if affectation.statut is same as (0) %}
+                                {% set statut = '<span class=" fr-text-label--orange-terre-battue">En attente</span>' %}
+                            {% elseif affectation.statut is same as (1) %}
+                                {% set statut = '<span class="fr-text-label--green-emeraude">Accepté</span>' %}
+                            {% elseif affectation.statut is same as (2) %}
+                                {% set statut = '<span class="fr-text-label--red-marianne">Refusé</span>' %}
+                            {% endif %}
+                            <small class="fr-display-block">[{{ statut|raw }}]</small>
                         {% else %}
                             Aucune
                         {% endfor %}
@@ -125,7 +120,7 @@
                     </td>
                     <td class="fr-text--right">
                         <form method="post" action="{{ path('back_signalement_delete',{id:signalement.id}) }}"
-                              onsubmit="return confirm('Supprimer ce signalement ?')">
+                              onsubmit="return confirm('Êtes-vous sûre de vouloir supprimer ce signalement ?')">
                             <button class="fr-btn fr-btn--orange fr-btn--sm fr-fi-delete-fill"></button>
                             <input type="hidden" name="_token" value="{{ csrf_token('signalement_delete') }}">
                         </form>

@@ -8,6 +8,10 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: SignalementUserAffectationRepository::class)]
 class SignalementUserAffectation
 {
+    const STATUS_AWAIT = 0;
+    const STATUS_ACCEPTED = 1;
+    const STATUS_REFUSED = 2;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -21,8 +25,18 @@ class SignalementUserAffectation
     #[ORM\JoinColumn(nullable: false)]
     private $user;
 
+    #[ORM\ManyToOne(targetEntity: Partenaire::class,inversedBy: 'affectations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $partenaire;
+
     #[ORM\Column(type: 'datetime_immutable')]
     private $createdAt;
+
+    #[ORM\Column(type: 'integer')]
+    private $statut;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private $answeredAt;
 
     public function __construct()
     {
@@ -58,6 +72,18 @@ class SignalementUserAffectation
         return $this;
     }
 
+    public function getPartenaire(): ?Partenaire
+    {
+        return $this->partenaire;
+    }
+
+    public function setPartenaire(?Partenaire $partenaire): self
+    {
+        $this->partenaire = $partenaire;
+
+        return $this;
+    }
+
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -69,4 +95,29 @@ class SignalementUserAffectation
 
         return $this;
     }
+
+    public function getStatut(): ?int
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(int $statut): self
+    {
+        $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getAnsweredAt(): ?\DateTimeImmutable
+    {
+        return $this->answeredAt;
+    }
+
+    public function setAnsweredAt(?\DateTimeImmutable $answeredAt): self
+    {
+        $this->answeredAt = $answeredAt;
+
+        return $this;
+    }
+
 }

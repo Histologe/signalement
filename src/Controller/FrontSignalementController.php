@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/signalement')]
-class SignalementController extends AbstractController
+class FrontSignalementController extends AbstractController
 {
     #[Route('/', name: 'signalement')]
     public function index(SituationRepository $situationRepository): Response

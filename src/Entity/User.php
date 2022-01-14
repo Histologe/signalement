@@ -36,12 +36,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Suivi::class, orphanRemoval: true)]
     private $suivis;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: SignalementUserAccept::class)]
-    private $signalementsAccepted;
-
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: SignalementUserRefus::class)]
-    private $signalementsRefused;
-
     #[ORM\ManyToOne(targetEntity: Partenaire::class, inversedBy: 'users')]
     private $partenaire;
 
@@ -84,7 +78,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -166,25 +160,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getAffectations(): Collection
     {
         return $this->affectations;
-    }
-
-    public function addAffectation(Signalement $affectation): self
-    {
-        if (!$this->affectations->contains($affectation)) {
-            $this->affectations[] = $affectation;
-            $affectation->addAffectation($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAffectation(Signalement $affectation): self
-    {
-        if ($this->affectations->removeElement($affectation)) {
-            $affectation->removeAffectation($this);
-        }
-
-        return $this;
     }
 
     /**
@@ -309,7 +284,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getNomComplet()
     {
-        return mb_strtoupper($this->nom).' '.ucfirst($this->prenom);
+        return mb_strtoupper($this->nom) . ' ' . ucfirst($this->prenom);
     }
 
+    public function isAffected(Signalement $signalement)
+    {
+        /** @var SignalementUserAffectation $affectation */
+        foreach ($this->affectations as $affectation)
+            if ($affectation->getSignalement() === $signalement)
+                return true;
+        return false;
+    }
 }

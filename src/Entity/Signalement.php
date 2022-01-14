@@ -13,7 +13,7 @@ class Signalement
 {
     const STATUS_NEW = 'new';
     const STATUS_AWAIT = 'await';
-    const STATUS_NEED_REVIEW= 'review';
+    const STATUS_NEED_REVIEW = 'review';
     const STATUS_CLOSED = 'closed';
     const STATUS_ARCHIVED = 'archive';
 
@@ -182,12 +182,6 @@ class Signalement
     #[ORM\OneToMany(mappedBy: 'signalement', targetEntity: SignalementUserAffectation::class)]
     private $affectations;
 
-    #[ORM\OneToMany(mappedBy: 'signalement', targetEntity: SignalementUserAccept::class)]
-    private $acceptedBy;
-
-    #[ORM\OneToMany(mappedBy: 'signalement', targetEntity: SignalementUserRefus::class)]
-    private $refusedBy;
-
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'signalementsModified')]
     private $modifiedBy;
 
@@ -197,7 +191,6 @@ class Signalement
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $codeProcedure;
 
-
     public function __construct()
     {
         $this->situations = new ArrayCollection();
@@ -206,6 +199,7 @@ class Signalement
         $this->createdAt = new \DateTimeImmutable();
         $this->statut = self::STATUS_NEW;
         $this->affectations = new ArrayCollection();
+        $this->affectationsByPartenaire = new ArrayCollection();
         $this->uuid = uniqid();
         $this->acceptedBy = new ArrayCollection();
         $this->refusedBy = new ArrayCollection();
@@ -809,27 +803,11 @@ class Signalement
     }
 
     /**
-     * @return Collection|User[]
+     * @return Collection
      */
     public function getAffectations(): Collection
     {
         return $this->affectations;
-    }
-
-    public function addAffectation(User $user): self
-    {
-        if (!$this->affectations->contains($user)) {
-            $this->affectations[] = $user;
-        }
-
-        return $this;
-    }
-
-    public function removeAffectation(User $user): self
-    {
-        $this->affectations->removeElement($user);
-
-        return $this;
     }
 
 
@@ -918,54 +896,6 @@ class Signalement
     }
 
     /**
-     * @return Collection|User[]
-     */
-    public function getAcceptedBy(): Collection
-    {
-        return $this->acceptedBy;
-    }
-
-    public function addAcceptedBy(User $acceptedBy): self
-    {
-        if (!$this->acceptedBy->contains($acceptedBy)) {
-            $this->acceptedBy[] = $acceptedBy;
-        }
-
-        return $this;
-    }
-
-    public function removeAcceptedBy(User $acceptedBy): self
-    {
-        $this->acceptedBy->removeElement($acceptedBy);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|User[]
-     */
-    public function getRefusedBy(): Collection
-    {
-        return $this->refusedBy;
-    }
-
-    public function addRefusedBy(User $refusedBy): self
-    {
-        if (!$this->refusedBy->contains($refusedBy)) {
-            $this->refusedBy[] = $refusedBy;
-        }
-
-        return $this;
-    }
-
-    public function removeRefusedBy(User $refusedBy): self
-    {
-        $this->refusedBy->removeElement($refusedBy);
-
-        return $this;
-    }
-
-    /**
      * @return Collection|Suivi[]
      */
     public function getSuivis(): Collection
@@ -1007,15 +937,19 @@ class Signalement
         return $this;
     }
 
-    public function getAffectationsByPartenaire(): ArrayCollection
+
+    public function getAffectationStatusByPartenaire()
     {
-        $affectationsPartenaire = new ArrayCollection();
-        /** @var SignalementUserAffectation $affectation */
-        foreach ($this->affectations as $affectation)
-        {
-           if(!$affectationsPartenaire->contains($affectation->getUser()->getPartenaire()))
-               $affectationsPartenaire->add($affectation->getUser()->getPartenaire());
+        $result = [];
+        foreach ($this->affectations as $affectation) {
+            if (!array_keys($result, $affectation->getPartenaire()->getNom()))
+                if (!isset($result[$affectation->getPartenaire()->getNom()]['statut'])) {
+                    $result[$affectation->getPartenaire()->getId()]['partenaire'] = $affectation->getPartenaire()->getNom();
+                    $result[$affectation->getPartenaire()->getId()]['statuses'][] = $affectation->getStatut();
+                }
+            $result[$affectation->getPartenaire()->getId()]['statut'] = max($result[$affectation->getPartenaire()->getId()]['statuses']);
         }
-        return $affectationsPartenaire;
+        return $result;
     }
+
 }

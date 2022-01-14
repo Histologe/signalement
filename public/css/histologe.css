@@ -26,6 +26,23 @@ html, body {
 .fr-display-block {
     display: block;
 }
+.fr-display-inline-table {
+    display: inline-table!important;
+    display: -moz-inline-table!important;
+}
+
+.fr-display-block {
+    display: block;
+}
+*, :after, :before {
+    box-sizing: inherit;
+}
+small {
+    font-size: smaller;
+}
+.fr-table td, .fr-table th {
+    line-height: 1rem;
+}
 .fr-blockquote {
     border-left: .3rem solid var(--border-plain-blue-france);
 }

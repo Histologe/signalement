@@ -34,8 +34,19 @@ class SignalementUserAffectationRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
-    */
 
+    */
+    public function countForUser($status, $user)
+    {
+        return $this->createQueryBuilder('s')
+            ->leftJoin('s.signalement','signalement','WITH','signalement.statut = :statut AND s.user = :user')
+            ->setParameter('statut', $status)
+            ->setParameter('user', $user)
+            ->select('COUNT(signalement.id)')
+            ->getQuery()
+            ->getSingleScalarResult()
+            ;
+    }
     /*
     public function findOneBySomeField($value): ?SignalementUserAffectation
     {

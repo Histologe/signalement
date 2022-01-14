@@ -3,13 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Signalement;
-use App\Entity\SignalementUserAccept;
 use App\Entity\SignalementUserAffectation;
-use App\Entity\SignalementUserRefus;
 use App\Entity\Suivi;
 use App\Entity\User;
 use App\Repository\PartenaireRepository;
 use App\Repository\SignalementRepository;
+use App\Repository\SignalementUserAffectationRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,8 +20,9 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/bo')]
 class BackController extends AbstractController
 {
+
     #[Route('/', name: 'back_index')]
-    public function index(SignalementRepository $signalementRepository, Request $request): Response
+    public function index(SignalementRepository $signalementRepository, SignalementUserAffectationRepository $affectationRepository, Request $request): Response
     {
         $title = 'Administration';
         $user = null;
@@ -30,123 +30,27 @@ class BackController extends AbstractController
             $user = $this->getUser();
         $signalements = [
             'list' => $signalementRepository->findByStatusAndOrCityForUser($user, $request->get('bo-filter-statut') ?? Signalement::STATUS_NEW, $request->get('bo-filter-ville') ?? 'all'),
-            'counts' => [
+            'villes' => $signalementRepository->findCities($user)
+        ];
+        if (!$user) {
+            $signalements['counts'] = [
                 Signalement::STATUS_NEW => $signalementRepository->count(['statut' => Signalement::STATUS_NEW]),
                 Signalement::STATUS_AWAIT => $signalementRepository->count(['statut' => Signalement::STATUS_AWAIT]),
                 Signalement::STATUS_NEED_REVIEW => $signalementRepository->count(['statut' => Signalement::STATUS_NEED_REVIEW]),
                 Signalement::STATUS_CLOSED => $signalementRepository->count(['statut' => Signalement::STATUS_CLOSED]),
-            ],
-            'villes' => $signalementRepository->findCities()
-        ];
+            ];
+        } else {
+            $signalements['counts'] = [
+                Signalement::STATUS_NEW => $affectationRepository->countForUser(Signalement::STATUS_NEW, $user),
+                Signalement::STATUS_AWAIT => $affectationRepository->countForUser(Signalement::STATUS_AWAIT, $user),
+                Signalement::STATUS_NEED_REVIEW => $affectationRepository->countForUser(Signalement::STATUS_NEED_REVIEW, $user),
+                Signalement::STATUS_CLOSED => $affectationRepository->countForUser(Signalement::STATUS_CLOSED, $user),
+            ];
+        }
         return $this->render('back/index.html.twig', [
             'title' => $title,
             'signalements' => $signalements,
         ]);
     }
 
-    #[Route('/s/{uuid}', name: 'back_signalement_view')]
-    public function viewSignalement(Signalement $signalement, PartenaireRepository $partenaireRepository): Response
-    {
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$signalement->getAffectations()->contains($this->getUser()))
-            return $this->redirectToRoute('back_index');
-        $title = 'Administration - Signalement #' . $signalement->getReference();
-        $isAffected=$isRefused=$isAccepted=null;
-        foreach ($signalement->getAffectations() as $affectation)
-            if($this->getUser() === $affectation->getUser())
-                $isAffected = $affectation;
-        foreach ($signalement->getRefusedBy() as $refus)
-            if($this->getUser() === $refus->getUser())
-                $isRefused = $refus;
-        foreach ($signalement->getAcceptedBy() as $accept)
-            if($this->getUser() === $accept->getUser())
-                $isAccepted = $accept;
-        return $this->render('back/signalement/view.html.twig', [
-            'title' => $title,
-            'isAffected' => $isAffected,
-            'isAccepted' => $isAccepted,
-            'isRefused' => $isRefused,
-            'signalement' => $signalement,
-            'partenaires' => $partenaireRepository->findAlls()
-        ]);
-    }
-
-    #[Route('/s/{id}/suivi/add', name: 'back_signalement_add_suivi', methods: "POST")]
-    public function addSuiviSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
-    {
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$signalement->getAffectations()->contains($this->getUser()))
-            return $this->redirectToRoute('back_index');
-        if ($this->isCsrfTokenValid('signalement_add_suivi', $request->get('_token'))
-            && $form = $request->get('signalement-add-suivi')) {
-            $suivi = new Suivi();
-            $suivi->setDescription($form['content']);
-            $suivi->setIsPublic($form['isPublic']);
-            $suivi->setSignalement($signalement);
-            $suivi->setCreatedBy($this->getUser());
-            $doctrine->getManager()->persist($suivi);
-            $doctrine->getManager()->flush();
-            $this->addFlash('success', 'Suivi publié avec succès !');
-        } else
-            $this->addFlash('error', 'Une erreur est survenu lors de la publication');
-        return $this->redirectToRoute('back_signalement_view', ['uuid' => $signalement->getUuid()]);
-    }
-
-    #[Route('/s/{id}/affectation/{user}/toggle', name: 'back_signalement_toggle_affectation')]
-    public function toggleAffectationSignalement(Signalement $signalement, User $user, ManagerRegistry $doctrine): RedirectResponse|JsonResponse
-    {
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$signalement->getAffectations()->contains($this->getUser()))
-            return $this->json(['status' => 'denied'], 400);
-        if ($affectation =$doctrine->getRepository(SignalementUserAffectation::class)->findOneBy(['user'=>$user,'signalement'=>$signalement])) {
-            $doctrine->getManager()->remove($affectation);
-        } else {
-            $affectation = new SignalementUserAffectation();
-            $affectation->setUser($user);
-            $affectation->setSignalement($signalement);
-            $doctrine->getManager()->persist($affectation);
-        }
-        $doctrine->getManager()->flush();
-        return $this->json(['status' => 'success']);
-    }
-
-    #[Route('/s/{id}/affectation/{user}/response', name: 'back_signalement_affectation_response', methods: "GET")]
-    public function affectationReturnSignalement(Signalement $signalement,User $user, Request $request, ManagerRegistry $doctrine): Response
-    {
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$signalement->getAffectations()->contains($this->getUser()))
-            return $this->redirectToRoute('back_index');
-        if ($this->isCsrfTokenValid('signalement_affectation_response', $request->get('_token'))
-            && $response = $request->get('signalement-affectation-response')) {
-            if(isset($response['accept']))
-                $class = SignalementUserAccept::class;
-            else
-                $class = SignalementUserRefus::class;
-            if ($acceptation = $doctrine->getRepository($class)->findOneBy(['user'=>$user,'signalement'=>$signalement])) {
-                $doctrine->getManager()->remove($acceptation);
-            } else {
-                $acceptation = new $class;
-                $acceptation->setUser($user);
-                $acceptation->setSignalement($signalement);
-                $doctrine->getManager()->persist($acceptation);
-            }
-           if( $affectation = $doctrine->getRepository(SignalementUserAffectation::class)->findOneBy(['user'=>$user,'signalement'=>$signalement]))
-               $doctrine->getManager()->remove($affectation);
-            $doctrine->getManager()->flush();
-            $this->addFlash('success', 'Affectation mise à jour avec succès !');
-        } else
-            $this->addFlash('error', "Une erreur est survenu lors de l'affectation");
-        return $this->redirectToRoute('back_signalement_view', ['uuid' => $signalement->getUuid()]);
-    }
-
-    #[Route('/s/{id}/delete', name: 'back_signalement_delete', methods: "POST")]
-    public function deleteSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
-    {
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$signalement->getAffectations()->contains($this->getUser()))
-            return $this->redirectToRoute('back_index');
-        if ($this->isCsrfTokenValid('signalement_delete', $request->get('_token'))) {
-            $signalement->setStatut(Signalement::STATUS_ARCHIVED);
-            $doctrine->getManager()->persist($signalement);
-            $doctrine->getManager()->flush();
-            $this->addFlash('success', 'Signalement supprimé avec succès !');
-        } else
-            $this->addFlash('error', 'Une erreur est survenu lors de la suppression');
-        return $this->redirectToRoute('back_index');
-    }
 }

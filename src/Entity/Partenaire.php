@@ -21,6 +21,9 @@ class Partenaire
     #[ORM\OneToMany(mappedBy: 'partenaire', targetEntity: User::class)]
     private $users;
 
+    #[ORM\OneToMany(mappedBy: 'partenaire', targetEntity: SignalementUserAffectation::class)]
+    private $affectations;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -71,5 +74,13 @@ class Partenaire
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection|Signalement[]
+     */
+    public function getAffectations(): Collection
+    {
+        return $this->affectations;
     }
 }
