@@ -82,7 +82,10 @@ forms.forEach((form) => {
     })
     form.addEventListener('submit', (event) => {
         event.preventDefault();
-        if (!form.checkValidity() || form.id === "signalement-step-1" && null === form.querySelector('[type="radio"]:checked')) {
+    /*    console.log(form.querySelectorAll('[type="checkbox"]:checked').length)*/
+        if (!form.checkValidity()
+            || form.id === "signalement-step-1" && null === form.querySelector('[type="radio"]:checked')
+            || form.id === "signalement-step-1" && form.querySelectorAll('[type="checkbox"]:checked').length !== form.querySelectorAll('[type="radio"]:checked').length ) {
             event.stopPropagation();
             if (form.id === "signalement-step-1") {
                 form.querySelector('[role="alert"]').classList.remove('fr-hidden')
