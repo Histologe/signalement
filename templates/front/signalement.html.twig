@@ -346,14 +346,19 @@
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-fieldset__legend fr-text--regular">
-                                Êtes-vous allocataire ?
+                                Recevez-vous une allocation logement de la CAF ou de la MSA ?
                                 <span class="fr-hint-text">Le cas échéant, merci de renseigner votre numéro d'allocataire.</span>
                             </legend>
                             <div class="fr-fieldset__content">
                                 <div class="fr-radio-group">
-                                    <input type="radio" id="is-allocataire" value="true"
+                                    <input type="radio" id="is-allocataire-caf" value="CAF"
                                            name="signalement[isAllocataire]" required>
-                                    <label class="fr-label" for="is-allocataire">Oui</label>
+                                    <label class="fr-label" for="is-allocataire-caf">CAF</label>
+                                </div>
+                                <div class="fr-radio-group">
+                                    <input type="radio" id="is-allocataire-msa" value="MSA"
+                                           name="signalement[isAllocataire]" >
+                                    <label class="fr-label" for="is-allocataire-msa">MSA</label>
                                 </div>
                                 <div class="fr-radio-group">
                                     <input type="radio" id="is-not-allocataire" value="0"
@@ -362,13 +367,13 @@
                                 </div>
                             </div>
                             <p class="fr-error-text fr-hidden">
-                                Veuillez précisez si vous êtes allocataire.
+                                Veuillez précisez si vous êtes allocataire
                             </p>
                         </fieldset>
                         <div class="fr-form-group">
                             <label class="fr-label" for="signalement-num-alloc">
-                                Numéro d'allocataire<sup class="fr-text-default--error">*</sup>
-                                <span class="fr-hint-text">Merci de renseigner votre numéro d'allocataire tel qu'il apparait sur vos document.</span>
+                                Numéro d'allocataire
+                                <span class="fr-hint-text">Merci de renseigner votre numéro d'allocataire tel qu'il apparait sur vos documents.</span>
                             </label>
                             <input class="fr-input" id="signalement-num-alloc"
                                    name="signalement[numAllocataire]">

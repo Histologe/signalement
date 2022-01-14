@@ -18,29 +18,29 @@
                     {% endif %}
                     <text><strong>Déposé le:</strong> {{ signalement.createdAt|date('d/m/Y à H:i') }}</text>
                 </div>
-                <div class="fr-col-12 fr-col-md-6 fr-pb-5v fr-text--right">
+                <div class="fr-col-12 fr-col-md-6 fr-text--right">
                     {% if isAffected %}
                         <form action="{{ path('back_signalement_affectation_response',{id:signalement.id,user:app.user.id}) }}">
                             <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
-                                    name="signalement-affectation-response[accept]" value="1">Je m'en
+                                    name="signalement-affectation-response[accept]" value="1" onclick="return confirm('Êtes-vous certain de vouloir acccepter ce signalement ?')">Je m'en
                                 occupe
                             </button>
                             <button class="fr-btn fr-btn--danger fr-fi-close-circle-fill fr-btn--icon-left"
-                                    name="signalement-affectation-response[deny]" value="1">Ce n'est pas
+                                    name="signalement-affectation-response[deny]" value="1" onclick="return confirm('Êtes-vous certain de vouloir refuser ce signalement ?')">Ce n'est pas
                                 pour
                                 moi
                             </button>
                             <input type="hidden" name="_token"
                                    value="{{ csrf_token('signalement_affectation_response') }}">
                         </form>
-                        <span class="fr-hint-text fr-fi-calendar-line fr-tag--icon-right"><strong>&nbsp;&nbsp;Le :</strong> {{isAffected.createdAt|date('d/m/Y') }}</span>
+                        <span class="fr-hint-text fr-fi-calendar-line fr-tag--icon-right"><strong>&nbsp;&nbsp;Vous à été attribué le :</strong> {{isAffected.createdAt|date('d/m/Y') }}</span>
                     {% endif %}
                     {% if isAccepted %}
                         <strong class="fr-text-label--green-emeraude fr-fi-checkbox-circle-fill"> Vous avez
                             <u>accepté</u> ce
                             signalement</strong>
                         <span class="fr-hint-text fr-fi-calendar-line fr-tag--icon-right"><strong>&nbsp;&nbsp;Le :</strong> {{ isAccepted.createdAt|date('d/m/Y') }}</span>
-                    {% else %}
+                    {% elseif isRefused %}
                         <strong class="fr-text-label--red-marianne fr-fi-checkbox-circle-fill"> Vous avez
                             <u>refusé</u>
                             ce

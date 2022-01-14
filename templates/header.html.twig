@@ -30,22 +30,22 @@
                 <div class="fr-header__tools">
                     <div class="fr-header__tools-links">
                         <ul class="fr-links-group">
-                            <li>
-                                <a class="fr-link fr-fi-refresh-line" href="{{ path('home') }}">Accueil</a>
-                            </li>
-                            <li>
-                                <a class="fr-link fr-fi-error-warning-line" href="{{ path('signalement') }}">Signalement</a>
-                            </li>
                             {% if app.user %}
                                 <li>
                                     <a class="fr-link fr-fi-account-line"
-                                       href="{{ path('back_index') }}">Dashbboard</a>
+                                       href="{{ path('back_index') }}">Dashboard</a>
+                                </li>
+                                <li>
+                                    <a class="fr-link fr-fi-add-circle-line" href="{{ path('signalement') }}">Créer signalement</a>
                                 </li>
                                 <li>
                                     <a class="fr-link fr-fi-logout-box-r-line"
                                        href="{{ path('app_logout') }}">Déconnexion</a>
                                 </li>
                             {% else %}
+                                <li>
+                                    <a class="fr-link fr-fi-refresh-line" href="{{ path('home') }}">Accueil</a>
+                                </li>
                                 <li>
                                     <a class="fr-link fr-fi-eye-line" href="{{ path('about') }}">Qui sommes-nous ?</a>
                                 </li>
