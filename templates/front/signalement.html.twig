@@ -97,7 +97,7 @@
                                                     {% for index,criticite in critere.criticites %}
                                                         <div class="fr-radio-group fr-radio-rich fr-mb-5v">
                                                             <input type="radio" id="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"
-                                                                   name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]">
+                                                                   name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]" value="{{ criticite.id }}">
                                                             <label class="fr-label" for="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"><strong>{{ etats[index] }}</strong>
                                                                 <span class="fr-hint-text">{{ criticite.label }}</span>
                                                             </label>
