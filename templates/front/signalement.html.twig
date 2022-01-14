@@ -285,7 +285,7 @@
                                     </label>
                                 </div>
                             </div>
-                            <p class="fr-error-text fr-hidden">
+                            <p class="fr-error-text">
                                 Veuillez précisez la ou les methode(s) de contact.
                             </p>
                         </fieldset>
@@ -696,6 +696,9 @@
                                     <input class="fr-input fr-input--no-resize" id="signalement-prenom-declarant"
                                            name="signalement[prenomDeclarant]"
                                            value="{{ app.user ? app.user.prenom : '' }}">
+                                    <p class="fr-error-text fr-hidden">
+                                        Veuillez renseigner votre nom et prenom.
+                                    </p>
                                 </div>
                                 <div class="fr-input-group fr-col-12 fr-col-md-6 fr-px-0 fr-pr-md-0 fr-pl-md-1v">
                                     <label class="fr-label" for="signalement-tel-declarant">
@@ -711,6 +714,9 @@
                                            id="signalement-courriel-declarant"
                                            name="signalement[mailDeclarant]"
                                            value="{{ app.user ? app.user.email : '' }}">
+                                    <p class="fr-error-text fr-hidden">
+                                        Veuillez renseigner votre n° de téléphone et votre courriel.
+                                    </p>
                                 </div>
                                 <div class="fr-input-group fr-col-12 fr-p-0">
                                     <label class="fr-label" for="signalement-structure-declarant">
@@ -719,6 +725,9 @@
                                     <input class="fr-input fr-input--no-resize" id="signalement-structure-declarant"
                                            name="signalement[structureDeclarant]"
                                            value="{{ app.user ? (app.user.partenaire ? app.user.partenaire.nom : ''):'' }}">
+                                    <p class="fr-error-text fr-hidden">
+                                        Veuillez renseigner votre structure.
+                                    </p>
                                 </div>
                             </div>
                         </fieldset>

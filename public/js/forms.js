@@ -21,22 +21,24 @@ forms.forEach((form) => {
         t.addEventListener('change', (event) => {
             console.log('toggle')
             if (!event.target.checked)
-                event.currentTarget.parentElement.querySelectorAll('.fr-collapse input[type="radio"]').forEach((radio) => {
+                event.currentTarget.nextElementSibling.querySelectorAll('.fr-collapse input[type="radio"]').forEach((radio) => {
                     radio.checked = false
                 })
         })
     })
-    form?.querySelectorAll('.fr-accordion__situation .fr-collapse')?.forEach((situation) => {
-        situation.addEventListener('dsfr.conceal', (event) => {
-            event.target.querySelectorAll('[type="radio"],[type="checkbox"]').forEach((ipt)=>{
-                ipt.checked = false;
-            })
+    /*let handleTabConceal = (event) => {
+        // console.log(event)
+        event.target.querySelectorAll('[type="radio"],[type="checkbox"]').forEach((ipt)=>{
+            ipt.checked = false;
         })
-    })
+    }
+    form?.querySelectorAll('.fr-accordion__situation .fr-collapse')?.forEach((situation) => {
+        situation.addEventListener('dsfr.conceal', handleTabConceal)
+    })*/
     form?.querySelectorAll('[data-fr-toggle]')?.forEach((toggle) => {
         toggle.addEventListener('change', (event) => {
             let target = form.querySelector('#' + toggle.getAttribute('data-fr-toggle'));
-            "true" === event.target.value ? target.classList.remove('fr-hidden') : target.classList.add('fr-hidden');
+            "true" === event.target.value ? (target.classList.remove('fr-hidden'),target.querySelectorAll('input:not([type="checkbox"])').forEach((ipt)=>{ipt.required = true})) : (target.classList.add('fr-hidden'),target.querySelectorAll('input:not([type="checkbox"])').forEach((ipt)=>{ipt.required = false}),target.querySelectorAll('input[type="checkbox"]').forEach((ipt)=>{ipt.checked = false}));
         })
     })
     form?.querySelectorAll('input[type="file"]')?.forEach((file) => {
@@ -138,6 +140,9 @@ forms.forEach((form) => {
                         })
                     }
                     nextTabBtn.disabled = false;
+                    /*form?.querySelectorAll('.fr-accordion__situation .fr-collapse')?.forEach((situation) => {
+                        situation.removeEventListener("dsfr.conceal", handleTabConceal, true);
+                    })*/
                     nextTabBtn.click();
                 }
                 if (!nextTabBtn) {
