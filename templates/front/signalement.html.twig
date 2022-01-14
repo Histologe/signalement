@@ -180,7 +180,7 @@
                     </div>
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
-                            <legend class="fr-label fr-pl-0">Téléverser des photos du/des problème(s)</legend>
+                            <legend class="fr-label fr-pl-0">Joindre des photos du/des problème(s)</legend>
                             <span class="fr-hint-text">Les photos <u>ne doivent pas contenir de vues de personnes ou d'objets personnels</u>. <br> Pour les photos des parties communes, <a
                                         href="#">certaines restrictions sont à respecter</a>.</span>
                             {% for i in 0..5 %}
@@ -192,12 +192,12 @@
                             {% endfor %}
                             <small class="fr-fi-information-fill fr-text-label--blue-france fr-display-block fr-mt-5v">Cliquez
                                 sur l'appareil
-                                photo pour téléverser une photo.</small>
+                                photo pour joindre une photo.</small>
                         </fieldset>
                     </div>
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
-                            <legend class="fr-label fr-pl-0">Téléverser des documents complémentaires</legend>
+                            <legend class="fr-label fr-pl-0">Joindre des documents complémentaires</legend>
                             <span class="fr-hint-text">Les documents ne doivent pas excéder <u>6Mo par document</u></span>
                             {% for i in 0..1 %}
                                 <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-attachment-fill">
@@ -205,7 +205,7 @@
                                 </label>
                             {% endfor %}
                             <small class="fr-fi-information-fill fr-text-label--blue-france fr-display-block fr-mt-5v">Cliquez
-                                sur l'icone pour téléverser un document.</small>
+                                sur l'icone pour joindre un document.</small>
                         </fieldset>
                     </div>
                     <div class="fr-grid-row">
@@ -346,8 +346,7 @@
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-fieldset__legend fr-text--regular">
-                                Êtes-vous allocataire ?<sup
-                                        class="fr-text-default--error">*</sup>
+                                Êtes-vous allocataire ?
                                 <span class="fr-hint-text">Le cas échéant, merci de renseigner votre numéro d'allocataire.</span>
                             </legend>
                             <div class="fr-fieldset__content">
@@ -788,11 +787,10 @@
                                     <label class="fr-label" for="signalement-cp-occupant">
                                         Code postal<sup class="fr-text-default--error">*</sup>
                                     </label>
-                                    <input class="fr-input fr-input--no-resize" type="number" min="0" max="99000"
-                                           minlength="5" id="signalement-cp-occupant"
+                                    <input class="fr-input fr-input--no-resize" type="text" pattern="[0-9]{5}" id="signalement-cp-occupant"
                                            name="signalement[cpOccupant]" required>
                                     <p class="fr-error-text fr-hidden">
-                                        Veuillez renseigner le code postal du logement.
+                                        Veuillez renseigner le code postal a 5 chiffres du logement (ex: 75000).
                                     </p>
                                 </div>
                                 <div class="fr-input-group fr-col-12 fr-p-0">

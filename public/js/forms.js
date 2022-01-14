@@ -1,5 +1,9 @@
 const forms = document.querySelectorAll('form.needs-validation');
 const localStorage = window.localStorage;
+Node.prototype.addEventListeners = function(eventNames, eventFunction){
+    for (eventName of eventNames.split(' '))
+        this.addEventListener(eventName, eventFunction);
+}
 let savedData = [];
 serializeArray = (form) => {
     return Array.from(new FormData(form)
@@ -19,22 +23,20 @@ forms.forEach((form) => {
     })
     form?.querySelectorAll('.fr-toggle')?.forEach((t) => {
         t.addEventListener('change', (event) => {
-            console.log('toggle')
+            // console.log('toggle')
             if (!event.target.checked)
                 event.currentTarget.nextElementSibling.querySelectorAll('.fr-collapse input[type="radio"]').forEach((radio) => {
                     radio.checked = false
                 })
         })
     })
-    /*let handleTabConceal = (event) => {
-        // console.log(event)
-        event.target.querySelectorAll('[type="radio"],[type="checkbox"]').forEach((ipt)=>{
-            ipt.checked = false;
+    form?.querySelectorAll('.fr-accordion__title')?.forEach((situation) => {
+        situation.addEventListeners("click touchdown",(event) => {
+            event.target.parentElement.parentElement.querySelectorAll('[type="radio"],[type="checkbox"]').forEach((ipt)=>{
+                ipt.checked = false;
+            })
         })
-    }
-    form?.querySelectorAll('.fr-accordion__situation .fr-collapse')?.forEach((situation) => {
-        situation.addEventListener('dsfr.conceal', handleTabConceal)
-    })*/
+    })
     form?.querySelectorAll('[data-fr-toggle]')?.forEach((toggle) => {
         toggle.addEventListener('change', (event) => {
             let target = form.querySelector('#' + toggle.getAttribute('data-fr-toggle'));
@@ -84,6 +86,7 @@ forms.forEach((form) => {
     })
     form.addEventListener('submit', (event) => {
         event.preventDefault();
+        let invalid;
     /*    console.log(form.querySelectorAll('[type="checkbox"]:checked').length)*/
         if (!form.checkValidity()
             || form.id === "signalement-step-1" && null === form.querySelector('[type="radio"]:checked')
@@ -91,6 +94,7 @@ forms.forEach((form) => {
             event.stopPropagation();
             if (form.id === "signalement-step-1") {
                 form.querySelector('[role="alert"]').classList.remove('fr-hidden')
+                invalid = document.querySelector("div[role='alert']");
             } else {
                 form.querySelectorAll('input,textarea,select').forEach((field) => {
                     if (!field.checkValidity()) {
@@ -101,7 +105,7 @@ forms.forEach((form) => {
                             f.add(f[0] + '--error');
                         })
                         parent?.querySelector('.fr-error-text').classList.remove('fr-hidden');
-                        field.addEventListener('change', () => {
+                        field.addEventListener('input', () => {
                             if (field.checkValidity()) {
                                 [field.classList, parent.classList].forEach((f) => {
                                     f.remove(f[0] + '--error');
@@ -111,6 +115,15 @@ forms.forEach((form) => {
                         })
                     }
                 })
+                invalid = form?.querySelector('input:invalid:first-of-type')?.parentElement;
+            }
+            if(invalid)
+            {
+                const y = invalid.getBoundingClientRect().top + window.scrollY;
+                window.scroll({
+                    top: y,
+                    behavior: 'smooth'
+                });
             }
         } else {
             form.querySelectorAll('input,textarea,select').forEach((field) => {

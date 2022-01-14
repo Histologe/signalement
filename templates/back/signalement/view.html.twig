@@ -19,7 +19,7 @@
                     <text><strong>Déposé le:</strong> {{ signalement.createdAt|date('d/m/Y à H:i') }}</text>
                 </div>
                 <div class="fr-col-12 fr-col-md-6 fr-pb-5v fr-text--right">
-                    {% if (app.user not in signalement.acceptedBy) and (app.user not in signalement.refusedBy) %}
+                    {% if isAffected %}
                         <form action="{{ path('back_signalement_affectation_response',{id:signalement.id,user:app.user.id}) }}">
                             <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
                                     name="signalement-affectation-response[accept]" value="1">Je m'en
@@ -33,15 +33,19 @@
                             <input type="hidden" name="_token"
                                    value="{{ csrf_token('signalement_affectation_response') }}">
                         </form>
+                        <span class="fr-hint-text fr-fi-calendar-line fr-tag--icon-right"><strong>&nbsp;&nbsp;Le :</strong> {{isAffected.createdAt|date('d/m/Y') }}</span>
                     {% endif %}
-                    {% if app.user in signalement.acceptedBy %}
+                    {% if isAccepted %}
                         <strong class="fr-text-label--green-emeraude fr-fi-checkbox-circle-fill"> Vous avez
                             <u>accepté</u> ce
                             signalement</strong>
-                    {% elseif app.user in signalement.refusedBy %}
-                        <strong class="fr-text-label--red-marianne fr-fi-checkbox-circle-fill"> Vous avez <u>refusé</u>
+                        <span class="fr-hint-text fr-fi-calendar-line fr-tag--icon-right"><strong>&nbsp;&nbsp;Le :</strong> {{ isAccepted.createdAt|date('d/m/Y') }}</span>
+                    {% else %}
+                        <strong class="fr-text-label--red-marianne fr-fi-checkbox-circle-fill"> Vous avez
+                            <u>refusé</u>
                             ce
                             signalement</strong>
+                        <span class="fr-hint-text fr-fi-calendar-line fr-tag--icon-right"><strong>&nbsp;&nbsp;Le :</strong> {{ isRefused.createdAt|date('d/m/Y') }}</span>
                     {% endif %}
                 </div>
             </div>
@@ -191,8 +195,7 @@
                                     <li><strong>{{ critere.label|capitalize }}</strong>
                                         <ul class="fr-list fr-skiplinks__list fr-list--icon-img">
                                             {% for criticite in critere.criticite %}
-                                                <li><img src="{{ asset('img/s'~criticite.score~'.png') }}"
-                                                         alt="Criticite" width="20"> - {{ criticite.label|capitalize }}
+                                                <li>- {{ criticite.label|capitalize }}
                                                 </li>
                                             {% endfor %}
                                         </ul>
@@ -315,7 +318,8 @@
                 <div class="fr-col-md-2">
                     <div class="fr-background-contrast--success fr-rounded fr-p-2v">
                         <small>[{{ accept.user.partenaire ? accept.user.partenaire.nom : 'AUCUN' }}] <br>
-                            <strong class="fr-fi-checkbox-circle-line fr-tag--icon-right">&nbsp;&nbsp;{{ accept.user.nom[:1]|upper~'. '~accept.user.prenom|capitalize }}</strong> à
+                            <strong class="fr-fi-checkbox-circle-line fr-tag--icon-right">&nbsp;&nbsp;{{ accept.user.nom[:1]|upper~'. '~accept.user.prenom|capitalize }}</strong>
+                            à
                             accepté.</small>
                         <span class="fr-hint-text fr-fi-calendar-line fr-tag--icon-right"><strong>&nbsp;&nbsp;Le :</strong> {{ accept.createdAt|date('d/m/Y') }}</span>
 
@@ -325,14 +329,15 @@
             {% for refus in signalement.refusedBy %}
                 <div class="fr-col-md-2">
                     <div class="fr-background-contrast--error fr-rounded fr-p-2v">
-                        <small>[{{ refus.user.partenaire ? refus.user.partenaire.nom : 'AUCUN'}}] <br>
-                            <strong class="fr-fi-close-circle-line fr-tag--icon-right">&nbsp;&nbsp;{{ refus.user.nom[:1]|upper~'. '~refus.user.prenom|capitalize }}</strong> à refusé.</small>
+                        <small>[{{ refus.user.partenaire ? refus.user.partenaire.nom : 'AUCUN' }}] <br>
+                            <strong class="fr-fi-close-circle-line fr-tag--icon-right">&nbsp;&nbsp;{{ refus.user.nom[:1]|upper~'. '~refus.user.prenom|capitalize }}</strong>
+                            à refusé.</small>
                         <span class="fr-hint-text fr-fi-calendar-line fr-tag--icon-right"><strong>&nbsp;&nbsp;Le :</strong> {{ refus.createdAt|date('d/m/Y') }}</span>
                     </div>
                 </div>
             {% endfor %}
         </div>
-        {% if is_granted('ROLE_ADMIN_PARTENAIRE') %}
+        {% if is_granted('ROLE_ADMIN_PARTENAIRE') and signalement.statut != "closed" %}
             <div class="fr-grid-row">
                 <div class="fr-col-12">
                     <strong class="fr-fi-user-fill fr-text-label--blue-france"> Affectation(s)</strong>
@@ -346,12 +351,13 @@
                             <strong>{{ partenaire.nom }}</strong> <br>
                             <ul class="fr-list--icon-img fr-list--hover ">
                                 {% for user in partenaire.users %}
-                                    <li class="{% for affectation in signalement.affectations %}{% if user is same as (affectation.user) %}fr-fi-checkbox-circle-fill fr-text-label--green-emeraude{% else %}fr-fi-close-circle-fill fr-text-label--red-marianne{% endif %}{% else %}fr-fi-close-circle-fill fr-text-label--red-marianne{% endfor %}">
+                                    <li class="fr-checkbox-affectation__parent {% for affectation in signalement.affectations %}{% if user is same as (affectation.user) %}fr-fi-checkbox-circle-fill fr-text-label--green-emeraude{% else %}fr-fi-close-circle-fill fr-text-label--red-marianne{% endif %}{% else %}fr-fi-close-circle-fill fr-text-label--red-marianne{% endfor %}">
                                         <label for="signalement-affectation-{{ user.id }}"
                                                class="fr-text--sm">{{ user.nom[:1]|upper~'. '~user.prenom|capitalize }}
-                                            <input type="checkbox" class="fr-checkbox-affectation"
-                                                   id="signalement-affectation-{{ user.id }}" multiple
-                                                   {% if user in signalement.affectations %}checked{% endif %}
+                                            {#{% for affectation in signalement.affectations %}{% if user is same as (affectation.user) %}<span class="fr-hint-text fr-fi-calendar-line fr-tag--icon-right">&nbsp; {{ affectation.createdAt|date('d/m/Y') }}</small></span>{% endif %}{% endfor %}#}
+                                            <input type="checkbox" class="fr-checkbox-affectation fr-hidden"
+                                                   id="signalement-affectation-{{ user.id }}"
+                                                   {% for affectation in signalement.affectations %}{% if user is same as (affectation.user) %}checked{% endif %}{% endfor %}
                                                    data-toggle-fetch="{{ path('back_signalement_toggle_affectation',{id:signalement.id,user:user.id}) }}">
                                         </label>
                                     </li>

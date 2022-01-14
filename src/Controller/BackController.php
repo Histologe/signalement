@@ -50,8 +50,21 @@ class BackController extends AbstractController
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$signalement->getAffectations()->contains($this->getUser()))
             return $this->redirectToRoute('back_index');
         $title = 'Administration - Signalement #' . $signalement->getReference();
+        $isAffected=$isRefused=$isAccepted=null;
+        foreach ($signalement->getAffectations() as $affectation)
+            if($this->getUser() === $affectation->getUser())
+                $isAffected = $affectation;
+        foreach ($signalement->getRefusedBy() as $refus)
+            if($this->getUser() === $refus->getUser())
+                $isRefused = $refus;
+        foreach ($signalement->getAcceptedBy() as $accept)
+            if($this->getUser() === $accept->getUser())
+                $isAccepted = $accept;
         return $this->render('back/signalement/view.html.twig', [
             'title' => $title,
+            'isAffected' => $isAffected,
+            'isAccepted' => $isAccepted,
+            'isRefused' => $isRefused,
             'signalement' => $signalement,
             'partenaires' => $partenaireRepository->findAlls()
         ]);
@@ -113,8 +126,8 @@ class BackController extends AbstractController
                 $acceptation->setSignalement($signalement);
                 $doctrine->getManager()->persist($acceptation);
             }
-            $affectation = $doctrine->getRepository(SignalementUserAffectation::class)->findOneBy(['user'=>$user,'signalement'=>$signalement]);
-            $doctrine->getManager()->remove($affectation);
+           if( $affectation = $doctrine->getRepository(SignalementUserAffectation::class)->findOneBy(['user'=>$user,'signalement'=>$signalement]))
+               $doctrine->getManager()->remove($affectation);
             $doctrine->getManager()->flush();
             $this->addFlash('success', 'Affectation mise à jour avec succès !');
         } else
