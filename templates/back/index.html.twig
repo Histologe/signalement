@@ -83,7 +83,7 @@
                     <td>{{ signalement.createdAt|date('d/m/Y') }}</td>
                     <td>{% for situation in signalement.situations %}
                             <img src="{{ asset('img/p_'~ situation.id~'.png') }}"
-                                 alt="{{ situation.label }}">
+                                 alt="{{ situation.label }}" title="{{ situation.label }}">
                         {% endfor %}
                     </td>
                     <td>{# {{ signalement.hasAlert ? 'Oui' : 'Non' }} #}</td>
