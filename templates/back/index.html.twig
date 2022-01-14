@@ -36,7 +36,8 @@
             <div class="fr-col-6">
                 <label class="fr-label" for="filter_ville"><strong>Filter par ville</strong></label>
                 <select name="bo-filter-ville" id="filter_ville" class="fr-select">
-                    <option value="all">--- Selectionnez ---</option>
+                    <option>--- Selectionnez ---</option>
+                    <option value="all">TOUTES</option>
                     {% for ville in signalements.villes %}
                         <option value="{{ ville }}">{{ ville|upper }}</option>
                     {% endfor %}
@@ -45,7 +46,7 @@
             <div class="fr-col-6">
                 <label class="fr-label" for="filter_statut"><strong>Filter par statut</strong></label>
                 <select name="bo-filter-statut" id="filter_statut" class="fr-select">
-                    <option value="all">--- Selectionnez ---</option>
+                    <option value="all">TOUS</option>
                     <option value="new">Nouveaux</option>
                     <option value="wait">En attente</option>
                     <option value="review">A revoir</option>

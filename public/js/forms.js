@@ -26,6 +26,13 @@ forms.forEach((form) => {
                 })
         })
     })
+    form?.querySelectorAll('.fr-accordion__situation .fr-collapse')?.forEach((situation) => {
+        situation.addEventListener('dsfr.conceal', (event) => {
+            event.target.querySelectorAll('[type="radio"],[type="checkbox"]').forEach((ipt)=>{
+                ipt.checked = false;
+            })
+        })
+    })
     form?.querySelectorAll('[data-fr-toggle]')?.forEach((toggle) => {
         toggle.addEventListener('change', (event) => {
             let target = form.querySelector('#' + toggle.getAttribute('data-fr-toggle'));
@@ -117,13 +124,13 @@ forms.forEach((form) => {
                     nextTabBtn = currentTabBtn.parentElement?.nextElementSibling?.querySelector('button');
                 if (nextTabBtn) {
                     if (nextTabBtn.hasAttribute('data-fr-last-step')) {
-                        document.querySelector('#recap-signalement-situation')
+                        document.querySelector('#recap-signalement-situation').innerHTML = '';
                         forms.forEach((form) => {
                             form.querySelectorAll('input,textarea,select').forEach((input) => {
                                 if (document.querySelector('#recap-' + input.id))
                                     document.querySelector('#recap-' + input.id).innerHTML = input.value;
                                 else if (input.classList.contains('signalement-situation') && input.checked)
-                                    document.querySelector('#recap-signalement-situation').innerHTML += '- ' + input.labels[0].textContent + '<br>';
+                                    document.querySelector('#recap-signalement-situation').innerHTML += '- ' + input.value + '<br>';
                             })
                         })
                     }

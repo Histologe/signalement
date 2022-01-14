@@ -11,7 +11,6 @@ use App\Entity\User;
 use App\Repository\PartenaireRepository;
 use App\Repository\SignalementRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;

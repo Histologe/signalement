@@ -79,7 +79,7 @@ class SignalementRepository extends ServiceEntityRepository
         if($user)
             $qb->andWhere(":user MEMBER OF s.affectations")
                 ->setParameter('user',$user);
-        return $qb->orderBy('s.id', 'ASC')
+        return $qb->orderBy('s.id', 'DESC')
             ->getQuery()
             ->getResult();
     }

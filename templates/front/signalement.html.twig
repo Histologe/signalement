@@ -61,7 +61,7 @@
                     <ul class="fr-accordions-group">
                         {% for situation in situations %}
                             <li>
-                                <section class="fr-accordion fr-accordions-group">
+                                <section class="fr-accordion fr-accordions-group fr-accordion__situation">
                                     <h3 class="fr-accordion__title">
                                         <text role="button"
                                               class="fr-accordion__btn fr-btn--icon-left fr-fi-question-fill"
@@ -74,13 +74,13 @@
                                     <div class="fr-collapse" id="signalement-accordion-situation-{{ situation.id }}">
                                         <ul class="fr-toggle__list">
                                             {% for critere in situation.criteres %}
-                                                <div class="fr-toggle"
+                                                <div class="fr-toggle fr-pb-0"
                                                      aria-expanded="false"
                                                      aria-controls="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
                                                     <input type="checkbox"
                                                            name="signalement[situation][{{ situation.id }}]"
                                                            class="fr-toggle__input signalement-situation"
-                                                           id="signalement-situation-{{ situation.id }}-critere-{{ critere.id }}">
+                                                           id="signalement-situation-{{ situation.id }}-critere-{{ critere.id }}" value="{{ critere.label }}">
                                                     <label class="fr-toggle__label fr-text--bold"
                                                            for="signalement-situation-{{ situation.id }}-critere-{{ critere.id }}">
                                                         <div class="fr-form-group fr-mb-0">
