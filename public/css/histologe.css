@@ -6,6 +6,9 @@ html, body {
 .fr-w-100 {
     width: 100%;
 }
+.fr-border {
+    border: 1px solid #000091;
+}
 .fr-stripped:nth-child(odd) {
     background-color: rgba(191, 204, 251, 0.37);
 }

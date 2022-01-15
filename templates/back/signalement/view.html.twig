@@ -20,7 +20,7 @@
                 </div>
                 <div class="fr-col-12 fr-col-md-6 fr-text--right">
                     {% if isAffected and not isAccepted and not isRefused %}
-                        <form action="{{ path('back_signalement_affectation_response',{id:signalement.id,user:app.user.id}) }}">
+                        <form action="{{ path('back_signalement_affectation_response',{uuid:signalement.uuid,user:app.user.id}) }}">
                             <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
                                     name="signalement-affectation-response[accept]" value="1"
                                     onclick="return confirm('Êtes-vous certain de vouloir acccepter ce signalement ?')">
@@ -272,29 +272,47 @@
                 </ul>
             </div>
         </div>
-        <hr>
+        <hr id="documents">
         <div class="fr-grid-row fr-grid-row--middle">
             <div class="fr-col-12 fr-col-md-6">
                 <strong class="fr-fi-upload-2-fill fr-text-label--blue-france"> Photos et documents</strong>
-                <span class="fr-hint-text">Ci-dessous les informations concernant le proprétaire ou gestionnaire bailleur du logement.</span>
+                <span class="fr-hint-text">Ci-dessous les photos et documents fournis par le déclarant et/ou les partenaires.</span>
             </div>
             <div class="fr-col-12 fr-col-md-6 fr-text--right">
-                <button class="fr-btn fr-fi-file-fill fr-btn--icon-left"> Ajouter un/des document(s)</button>
-                <button class="fr-btn fr-btn--danger fr-fi-instagram-fill fr-btn--icon-left"> Ajouter un/des photo(s)
-                </button>
+               <div class="fr-grid-row fr-grid-row--right">
+                   <form method="POST" enctype="multipart/form-data" action="{{ path('back_signalement_add_file',{uuid:signalement.uuid}) }}">
+                       <label class="fr-btn fr-fi-file-fill fr-btn--icon-left"> Ajouter un/des document(s)
+                           <input type="file" accept="application/*" name="signalement-add-file[documents][]" class="fr-hidden fr-input--file-signalement" multiple>
+                       </label>
+                       <input type="hidden" name="_token" value="{{ csrf_token('signalement_add_file') }}">
+                   </form>
+                   <form method="POST" enctype="multipart/form-data" action="{{ path('back_signalement_add_file',{uuid:signalement.uuid}) }}">
+                       <label class="fr-btn fr-btn--secondary fr-fi-instagram-fill fr-btn--icon-left"> Ajouter un/des photo(s)
+                           <input type="file" accept="image/*" name="signalement-add-file[photos][]" class="fr-hidden fr-input--file-signalement" multiple>
+                       </label>
+                       <input type="hidden" name="_token" value="{{ csrf_token('signalement_add_file') }}">
+                   </form>
+
+               </div>
             </div>
         </div>
         <div class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters fr-mt-3v">
-            {% for photo in signalement.photos %}
-                <div role="button" class="fr-col-6 fr-col-md-2 fr-rounded" title="Cliquez pour voir la photo">
-                    <div class="fr-px-5w fr-py-10w fr-rounded"
-                         style="background: url('{{ asset('_up/'~photo) }}')no-repeat center center/cover"></div>
+            {% for index,photo in signalement.photos %}
+                <div class="fr-col-6 fr-col-md-2 fr-rounded">
+                    <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center"
+                         style="background: url('{{ asset('_up/'~photo) }}')no-repeat center center/cover">
+                        <button class="fr-btn fr-btn--sm fr-fi-eye-line" title="Voir la photo"></button>
+                        <button title="Supprimer la photo"  data-file-delete="{{ path('back_signalement_delete_file',{uuid:signalement.uuid,type:'photos',file:photo}) }}" data-token="{{ csrf_token('signalement_delete_file') }}" class="fr-btn fr-btn--sm fr-btn--danger fr-fi-delete-line"></button>
+                    </div>
                 </div>
             {% endfor %}
             {% for document in signalement.documents %}
-                <div role="button" class="fr-col-6 fr-col-md-2 fr-rounded" title="Cliquez pour voir le document">
-                    <div class="fr-px-5w fr-py-10w fr-rounded"
-                         style="background: url('{{ asset('img/document.png') }}')no-repeat center center/contain"></div>
+                <div class="fr-col-6 fr-col-md-2 fr-rounded">
+                    <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center"
+                         style="background: url('{{ asset('img/document.png') }}')no-repeat center center/50%">
+                        <button class="fr-btn fr-btn--sm fr-fi-eye-line" title="Voir le document"></button>
+                        <button title="Supprimer le document"  data-file-delete="{{ path('back_signalement_delete_file',{uuid:signalement.uuid,type:'documents',file:document}) }}" data-token="{{ csrf_token('signalement_delete_file') }}" class="fr-btn fr-btn--sm fr-btn--danger fr-fi-delete-line"></button>
+                    </div>
                 </div>
             {% endfor %}
         </div>
@@ -365,7 +383,7 @@
                                             <input type="checkbox" class="fr-checkbox-affectation fr-hidden"
                                                    id="signalement-affectation-{{ user.id }}"
                                                    {% for u in signalement.affectations|filter(v => v.user is same as(user)) %}checked{% endfor %}
-                                                   data-toggle-fetch="{{ path('back_signalement_toggle_affectation',{id:signalement.id,user:user.id}) }}">
+                                                   data-toggle-fetch="{{ path('back_signalement_toggle_affectation',{uuid:signalement.uuid,user:user.id}) }}">
                                         </label>
                                     </li>
                                 {% endfor %}
@@ -375,22 +393,22 @@
                 {% endfor %}
             </div>
         {% endif %}
-        <hr>
+        <hr id="suivis">
         <div class="fr-grid-row">
             <div class="fr-col-12">
                 <strong class="fr-fi-calendar-fill fr-text-label--blue-france"> Suivis du signalement</strong>
                 <span class="fr-hint-text">Ci-dessous l'historique des changements d'états et interventions du signalement.</span>
                 <strong>Nouveau suivi:</strong>
                 <form method="POST"
-                      action="{{ path('back_signalement_add_suivi',{id:signalement.id}) }}"{# class="needs-validation" #}
-                      name="signalement-add-suivi" novalidate>
+                      action="{{ path('back_signalement_add_suivi',{uuid:signalement.uuid}) }}"
+                      name="signalement-add-suivi">
                     <div class="fr-input-group">
                         <label class="fr-label" for="signalement-add-suivi-content">
                             <span class="fr-hint-text"> Décrivez la ou les action(s) menée(s)<sup
                                         class="fr-text-default--error">*</sup></span>
                         </label>
                         <textarea class="fr-input fr-input--no-resize" id="signalement-add-suivi-content"
-                                  name="signalement-add-suivi[content]" required></textarea>
+                                  name="signalement-add-suivi[content]" minlength="10" required></textarea>
                         <p class="fr-error-text fr-hidden">
                             Merci de proposer une rapide description (minimum 10 caractères).
                         </p>

@@ -1,9 +1,5 @@
-const forms = document.querySelectorAll('form.needs-validation');
+const forms = document.querySelectorAll('form.needs-validation:not([name="bug-report"])');
 const localStorage = window.localStorage;
-Node.prototype.addEventListeners = function(eventNames, eventFunction){
-    for (eventName of eventNames.split(' '))
-        this.addEventListener(eventName, eventFunction);
-}
 let savedData = [];
 serializeArray = (form) => {
     return Array.from(new FormData(form)

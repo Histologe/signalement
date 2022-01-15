@@ -38,10 +38,15 @@
 </head>
 <body>
 {% include "header.html.twig" %}
+<!-- Report de bug -->
+{% include 'bug_report/modal_bug.html.twig' %}
 {% block body %}{% endblock %}
-{% include "footer.html.twig" %}
+{% if not 'back_' in app.request('_route') %}
+    {% include "footer.html.twig" %}
+{% endif %}
 <script type="module" src="{{ asset('dsfr/dsfr.module.min.js') }}"></script>
 <script type="text/javascript" nomodule src="{{ asset('dsfr/dsfr.nomodule.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/screencapture.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/app.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/forms.js') }}"></script>
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"

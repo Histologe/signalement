@@ -45,6 +45,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $prenom;
 
+    #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: UserReport::class)]
+    private $userReports;
+
 
     public function __construct()
     {
@@ -52,6 +55,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->suivis = new ArrayCollection();
         $this->signalementsAccepted = new ArrayCollection();
         $this->signalementsRefused = new ArrayCollection();
+        $this->userReports = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -294,5 +298,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             if ($affectation->getSignalement() === $signalement)
                 return true;
         return false;
+    }
+
+    /**
+     * @return Collection|UserReport[]
+     */
+    public function getUserReports(): Collection
+    {
+        return $this->userReports;
+    }
+
+    public function addUserReport(UserReport $userReport): self
+    {
+        if (!$this->userReports->contains($userReport)) {
+            $this->userReports[] = $userReport;
+            $userReport->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserReport(UserReport $userReport): self
+    {
+        if ($this->userReports->removeElement($userReport)) {
+            // set the owning side to null (unless already changed)
+            if ($userReport->getCreatedBy() === $this) {
+                $userReport->setCreatedBy(null);
+            }
+        }
+
+        return $this;
     }
 }

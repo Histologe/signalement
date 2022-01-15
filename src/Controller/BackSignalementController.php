@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints\Positive;
 
 #[Route('/bo/s')]
@@ -59,7 +60,7 @@ class BackSignalementController extends AbstractController
         ]);
     }
 
-    #[Route('/s/{id}/suivi/add', name: 'back_signalement_add_suivi', methods: "POST")]
+    #[Route('/s/{uuid}/suivi/add', name: 'back_signalement_add_suivi', methods: "POST")]
     public function addSuiviSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
@@ -76,10 +77,10 @@ class BackSignalementController extends AbstractController
             $this->addFlash('success', 'Suivi publié avec succès !');
         } else
             $this->addFlash('error', 'Une erreur est survenu lors de la publication');
-        return $this->redirectToRoute('back_signalement_view', ['uuid' => $signalement->getUuid()]);
+        return $this->redirect($this->generateUrl('back_signalement_view', ['uuid' => $signalement->getUuid()]) . '#suivis');
     }
 
-    #[Route('/{id}/affectation/{user}/toggle', name: 'back_signalement_toggle_affectation')]
+    #[Route('/{uuid}/affectation/{user}/toggle', name: 'back_signalement_toggle_affectation')]
     public function toggleAffectationSignalement(Signalement $signalement, User $user, ManagerRegistry $doctrine): RedirectResponse|JsonResponse
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
@@ -97,8 +98,38 @@ class BackSignalementController extends AbstractController
         return $this->json(['status' => 'success']);
     }
 
-    #[Route('/{id}/affectation/{user}/response', name: 'back_signalement_affectation_response', methods: "GET")]
-    public function affectationReturnSignalement(Signalement $signalement, User $user, Request $request, ManagerRegistry $doctrine): Response
+    #[Route('/s/{uuid}/file/add', name: 'back_signalement_add_file')]
+    public function addFileSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger)
+    {
+        if ($this->isCsrfTokenValid('signalement_add_file', $request->get('_token')) && $files = $request->files->get('signalement-add-file')) {
+            if (isset($files['documents']))
+                $type = 'documents';
+            if (isset($files['photos']))
+                $type = 'photos';
+            $setMethod = 'set' . ucfirst($type);
+            $getMethod = 'get' . ucfirst($type);
+            $$type = $signalement->$getMethod();
+            foreach ($files[$type] as $file) {
+                $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
+                $file->move(
+                    $this->getParameter('uploads_dir'),
+                    $newFilename
+                );
+                array_push($$type, $newFilename);
+            }
+            $signalement->$setMethod($$type);
+            $doctrine->getManager()->persist($signalement);
+            $doctrine->getManager()->flush();
+            $this->addFlash('success', 'Envoi de ' . ucfirst($type) . ' effectué avec succès !');
+        } else
+            $this->addFlash('error', "Une erreur est survenu lors du téléchargement");
+        return $this->redirect($this->generateUrl('back_signalement_view', ['uuid' => $signalement->getUuid()]) . '#documents');
+    }
+
+    #[Route('/{uuid}/affectation/{user}/response', name: 'back_signalement_affectation_response', methods: "GET")]
+    public function affectationResponseSignalement(Signalement $signalement, User $user, Request $request, ManagerRegistry $doctrine): Response
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
             return $this->redirectToRoute('back_index');
@@ -119,7 +150,26 @@ class BackSignalementController extends AbstractController
         return $this->redirectToRoute('back_signalement_view', ['uuid' => $signalement->getUuid()]);
     }
 
-    #[Route('/{id}/delete', name: 'back_signalement_delete', methods: "POST")]
+    #[Route('/s/{uuid}/file/{type}/{file}/delete', name: 'back_signalement_delete_file')]
+    public function deleteFileSignalement(Signalement $signalement, $type, $file, Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger)
+    {
+        if ($this->isCsrfTokenValid('signalement_delete_file', $request->get('_token'))) {
+            $setMethod = 'set' . ucfirst($type);
+            $getMethod = 'get' . ucfirst($type);
+            $$type = $signalement->$getMethod();
+            if (($key = array_search($file, $$type)) !== false) {
+                unlink($this->getParameter('uploads_dir') . $file);
+                unset($$type[$key]);
+            }
+            $signalement->$setMethod($$type);
+            $doctrine->getManager()->persist($signalement);
+            $doctrine->getManager()->flush();
+            return $this->json(['response' => 'success']);
+        } else
+            return $this->json(['response' => 'error'],400);
+    }
+
+    #[Route('/{uuid}/delete', name: 'back_signalement_delete', methods: "POST")]
     public function deleteSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
