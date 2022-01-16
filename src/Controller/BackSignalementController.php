@@ -65,7 +65,7 @@ class BackSignalementController extends AbstractController
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
             return $this->redirectToRoute('back_index');
-        if ($this->isCsrfTokenValid('signalement_add_suivi', $request->get('_token'))
+        if ($this->isCsrfTokenValid('signalement_add_suivi_'.$signalement->getId(), $request->get('_token'))
             && $form = $request->get('signalement-add-suivi')) {
             $suivi = new Suivi();
             $suivi->setDescription($form['content']);
@@ -101,7 +101,7 @@ class BackSignalementController extends AbstractController
     #[Route('/s/{uuid}/file/add', name: 'back_signalement_add_file')]
     public function addFileSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger)
     {
-        if ($this->isCsrfTokenValid('signalement_add_file', $request->get('_token')) && $files = $request->files->get('signalement-add-file')) {
+        if ($this->isCsrfTokenValid('signalement_add_file_'.$signalement->getId(), $request->get('_token')) && $files = $request->files->get('signalement-add-file')) {
             if (isset($files['documents']))
                 $type = 'documents';
             if (isset($files['photos']))
@@ -133,7 +133,7 @@ class BackSignalementController extends AbstractController
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
             return $this->redirectToRoute('back_index');
-        if ($this->isCsrfTokenValid('signalement_affectation_response', $request->get('_token'))
+        if ($this->isCsrfTokenValid('signalement_affectation_response_'.$signalement->getId(), $request->get('_token'))
             && $response = $request->get('signalement-affectation-response')) {
             if (isset($response['accept']))
                 $statut = SignalementUserAffectation::STATUS_ACCEPTED;
@@ -153,7 +153,7 @@ class BackSignalementController extends AbstractController
     #[Route('/s/{uuid}/file/{type}/{file}/delete', name: 'back_signalement_delete_file')]
     public function deleteFileSignalement(Signalement $signalement, $type, $file, Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger)
     {
-        if ($this->isCsrfTokenValid('signalement_delete_file', $request->get('_token'))) {
+        if ($this->isCsrfTokenValid('signalement_delete_file_'.$signalement->getId(), $request->get('_token'))) {
             $setMethod = 'set' . ucfirst($type);
             $getMethod = 'get' . ucfirst($type);
             $$type = $signalement->$getMethod();
@@ -174,7 +174,7 @@ class BackSignalementController extends AbstractController
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
             return $this->redirectToRoute('back_index');
-        if ($this->isCsrfTokenValid('signalement_delete', $request->get('_token'))) {
+        if ($this->isCsrfTokenValid('signalement_delete_'.$signalement->getId(), $request->get('_token'))) {
             $signalement->setStatut(Signalement::STATUS_ARCHIVED);
             $doctrine->getManager()->persist($signalement);
             $doctrine->getManager()->flush();

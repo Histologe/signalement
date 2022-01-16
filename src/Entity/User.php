@@ -13,6 +13,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    const STATUS_INACTIVE = 0;
+    const STATUS_ACTIVE = 1;
+    const STATUS_ARCHIVE = 2;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -48,14 +52,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: UserReport::class)]
     private $userReports;
 
+    #[ORM\Column(type: 'integer')]
+    private $statut;
+
 
     public function __construct()
     {
         $this->affectations = new ArrayCollection();
         $this->suivis = new ArrayCollection();
-        $this->signalementsAccepted = new ArrayCollection();
-        $this->signalementsRefused = new ArrayCollection();
         $this->userReports = new ArrayCollection();
+        $this->statut = self::STATUS_INACTIVE;
     }
 
     public function getId(): ?int
@@ -291,15 +297,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return mb_strtoupper($this->nom) . ' ' . ucfirst($this->prenom);
     }
 
-    public function isAffected(Signalement $signalement)
-    {
-        /** @var SignalementUserAffectation $affectation */
-        foreach ($this->affectations as $affectation)
-            if ($affectation->getSignalement() === $signalement)
-                return true;
-        return false;
-    }
-
     /**
      * @return Collection|UserReport[]
      */
@@ -326,6 +323,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $userReport->setCreatedBy(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStatut(): ?int
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(int $statut): self
+    {
+        $this->statut = $statut;
 
         return $this;
     }

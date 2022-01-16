@@ -25,6 +25,7 @@ class PartenaireRepository extends ServiceEntityRepository
     public function findAlls()
     {
         return $this->createQueryBuilder('p')
+            ->where('p.isArchive != 1')
             ->leftJoin('p.users','users')
             ->addSelect('users')
             ->orderBy('users.roles')

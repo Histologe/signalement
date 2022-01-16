@@ -24,9 +24,13 @@ class Partenaire
     #[ORM\OneToMany(mappedBy: 'partenaire', targetEntity: SignalementUserAffectation::class)]
     private $affectations;
 
+    #[ORM\Column(type: 'boolean')]
+    private $isArchive;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->isArchive = false;
     }
 
     public function getId(): ?int
@@ -51,7 +55,10 @@ class Partenaire
      */
     public function getUsers(): Collection
     {
-        return $this->users;
+        return $this->users->filter(function (User $user){
+            if($user->getStatut() !== User::STATUS_ARCHIVE)
+                return $user;
+        });
     }
 
     public function addUser(User $user): self
@@ -82,5 +89,17 @@ class Partenaire
     public function getAffectations(): Collection
     {
         return $this->affectations;
+    }
+
+    public function getIsArchive(): ?bool
+    {
+        return $this->isArchive;
+    }
+
+    public function setIsArchive(bool $isArchive): self
+    {
+        $this->isArchive = $isArchive;
+
+        return $this;
     }
 }

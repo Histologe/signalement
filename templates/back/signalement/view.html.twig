@@ -35,7 +35,7 @@
                                 moi
                             </button>
                             <input type="hidden" name="_token"
-                                   value="{{ csrf_token('signalement_affectation_response') }}">
+                                   value="{{ csrf_token('signalement_affectation_response_'~signalement.id) }}">
                         </form>
                         <span class="fr-hint-text fr-fi-calendar-line fr-tag--icon-right"><strong>&nbsp;&nbsp;Vous à été attribué le :</strong> {{ isAffected.createdAt|date('d/m/Y') }}</span>
                     {% elseif isAccepted %}
@@ -198,7 +198,14 @@
                                     <li><strong>{{ critere.label|capitalize }}</strong>
                                         <ul class="fr-list fr-skiplinks__list fr-list--icon-img">
                                             {% for criticite in critere.criticite %}
-                                                <li>- {{ criticite.label|capitalize }}
+                                                {% if criticite.score is same as(2) %}
+                                                    {% set icon = 'moyen' %}
+                                                {% elseif criticite.score is same as(4) %}
+                                                    {% set icon = 'grave' %}
+                                                {% else %}
+                                                    {% set icon = 'tres-grave' %}
+                                                {% endif %}
+                                                <li class="fr-grid-row fr-grid-row--middle"><img src="{{ asset('img/'~icon~'-actif.svg') }}" alt="" width="30">- {{ criticite.label|capitalize }}
                                                 </li>
                                             {% endfor %}
                                         </ul>
@@ -281,16 +288,16 @@
             <div class="fr-col-12 fr-col-md-6 fr-text--right">
                <div class="fr-grid-row fr-grid-row--right">
                    <form method="POST" enctype="multipart/form-data" action="{{ path('back_signalement_add_file',{uuid:signalement.uuid}) }}">
-                       <label class="fr-btn fr-fi-file-fill fr-btn--icon-left"> Ajouter un/des document(s)
+                       <label class="fr-btn fr-fi-file-fill fr-btn--icon-left"> Ajouter des documents
                            <input type="file" accept="application/*" name="signalement-add-file[documents][]" class="fr-hidden fr-input--file-signalement" multiple>
                        </label>
                        <input type="hidden" name="_token" value="{{ csrf_token('signalement_add_file') }}">
                    </form>
                    <form method="POST" enctype="multipart/form-data" action="{{ path('back_signalement_add_file',{uuid:signalement.uuid}) }}">
-                       <label class="fr-btn fr-btn--secondary fr-fi-instagram-fill fr-btn--icon-left"> Ajouter un/des photo(s)
+                       <label class="fr-btn fr-btn--secondary fr-fi-instagram-fill fr-btn--icon-left"> Ajouter des photos
                            <input type="file" accept="image/*" name="signalement-add-file[photos][]" class="fr-hidden fr-input--file-signalement" multiple>
                        </label>
-                       <input type="hidden" name="_token" value="{{ csrf_token('signalement_add_file') }}">
+                       <input type="hidden" name="_token" value="{{ csrf_token('signalement_add_file_'~signalement.id) }}">
                    </form>
 
                </div>
@@ -301,8 +308,8 @@
                 <div class="fr-col-6 fr-col-md-2 fr-rounded">
                     <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center"
                          style="background: url('{{ asset('_up/'~photo) }}')no-repeat center center/cover">
-                        <button class="fr-btn fr-btn--sm fr-fi-eye-line" title="Voir la photo"></button>
-                        <button title="Supprimer la photo"  data-file-delete="{{ path('back_signalement_delete_file',{uuid:signalement.uuid,type:'photos',file:photo}) }}" data-token="{{ csrf_token('signalement_delete_file') }}" class="fr-btn fr-btn--sm fr-btn--danger fr-fi-delete-line"></button>
+                        <button class="fr-btn fr-btn--sm fr-fi-eye-line" title="Voir la photo" onclick="img_box('{{ asset('_up/'~photo) }}')"></button>
+                        <button title="Supprimer la photo"  data-file-delete="{{ path('back_signalement_delete_file',{uuid:signalement.uuid,type:'photos',file:photo}) }}" data-token="{{ csrf_token('signalement_delete_file_'~signalement.id) }}" class="fr-btn fr-btn--sm fr-btn--danger fr-fi-delete-line"></button>
                     </div>
                 </div>
             {% endfor %}
@@ -311,7 +318,7 @@
                     <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center"
                          style="background: url('{{ asset('img/document.png') }}')no-repeat center center/50%">
                         <button class="fr-btn fr-btn--sm fr-fi-eye-line" title="Voir le document"></button>
-                        <button title="Supprimer le document"  data-file-delete="{{ path('back_signalement_delete_file',{uuid:signalement.uuid,type:'documents',file:document}) }}" data-token="{{ csrf_token('signalement_delete_file') }}" class="fr-btn fr-btn--sm fr-btn--danger fr-fi-delete-line"></button>
+                        <button title="Supprimer le document"  data-file-delete="{{ path('back_signalement_delete_file',{uuid:signalement.uuid,type:'documents',file:document}) }}" data-token="{{ csrf_token('signalement_delete_file_'~signalement.id) }}" class="fr-btn fr-btn--sm fr-btn--danger fr-fi-delete-line"></button>
                     </div>
                 </div>
             {% endfor %}
@@ -419,7 +426,7 @@
                     <button type="submit" class="fr-btn fr-btn--secondary fr-fi-eye-fill fr-btn--icon-left"
                             name="signalement-add-suivi[isPublic]" value="1"> Enregistrer (visible par usager)
                     </button>
-                    <input type="hidden" name="_token" value="{{ csrf_token('signalement_add_suivi') }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('signalement_add_suivi_'~signalement.id) }}">
                 </form>
             </div>
         </div>
@@ -445,6 +452,10 @@
     </section>
 {% endblock %}
 {% block javascripts %}
+    <script src="{{ asset('js/img_box.js') }}"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
     <script>
         let map = L.map('map-signalement-view').setView([{{ signalement.geoloc.lng }}, {{ signalement.geoloc.lat }}], 13);
 

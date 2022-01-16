@@ -122,7 +122,7 @@
                         <form method="post" action="{{ path('back_signalement_delete',{uuid:signalement.uuid}) }}"
                               onsubmit="return confirm('Êtes-vous sûre de vouloir supprimer ce signalement ?')">
                             <button class="fr-btn fr-btn--orange fr-btn--sm fr-fi-delete-fill"></button>
-                            <input type="hidden" name="_token" value="{{ csrf_token('signalement_delete') }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('signalement_delete_'~signalement.id) }}">
                         </form>
                     </td>
                 </tr>
