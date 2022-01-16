@@ -8,13 +8,13 @@
             <div class="fr-sidemenu__title">Tableau de bord<br>
                 <small class="fr-text-label--blue-france">{{ app.user.userIdentifier }}</small></div>
 
-            <form action="#" method="POST" id="searchForm" class="fr-form-group">
+            <form action="{{ path('back_index') }}" method="POST" class="fr-form-group">
                 <div class="fr-search-bar" id="header-search">
                     <label class="fr-label" for="header-search-input">Rechercher</label>
                     <input class="fr-input" placeholder="Rechercher" type="search" id="header-search-input"
-                           name="searchTermsMain" value="">
+                           name="search" value="">
 
-                    <button class="fr-btn" title="Rechercher" id="histoSearch">
+                    <button class="fr-btn" title="Rechercher" >
                         Rechercher
                     </button>
                 </div>

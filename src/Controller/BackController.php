@@ -20,13 +20,12 @@ class BackController extends AbstractController
     public function index(SignalementRepository $signalementRepository, SignalementUserAffectationRepository $affectationRepository, Request $request): Response
     {
 
-        //TODO: Formulaire de recherche
         $title = 'Administration';
         $user = null;
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
             $user = $this->getUser();
         $signalements = [
-            'list' => $signalementRepository->findByStatusAndOrCityForUser($user, $request->get('bo-filter-statut') ?? 'all', $request->get('bo-filter-ville') ?? 'all'),
+            'list' => $signalementRepository->findByStatusAndOrCityForUser($user, $request->get('bo-filter-statut') ?? 'all', $request->get('bo-filter-ville') ?? 'all',$request->get('search')),
             'villes' => $signalementRepository->findCities($user)
         ];
         if (!$user) {

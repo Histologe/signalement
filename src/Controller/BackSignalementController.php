@@ -86,6 +86,7 @@ class BackSignalementController extends AbstractController
             $suivi->setDescription('Modification du signalement par un partenaire');
             $entityManager->persist($suivi);
             $entityManager->flush();
+            $this->addFlash('success','Signalement modifé avec succés !');
             return $this->redirectToRoute('back_signalement_view', [
                 'uuid' => $signalement->getUuid()
             ]);

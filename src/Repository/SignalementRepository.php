@@ -55,7 +55,7 @@ class SignalementRepository extends ServiceEntityRepository
              ->getResult();
      }*/
 
-    public function findByStatusAndOrCityForUser(User $user = null, $status = null, $city = null)
+    public function findByStatusAndOrCityForUser(User $user = null, $status = null, $city = null,$search=null)
     {
         $qb = $this->createQueryBuilder('s')
             ->where('s.statut != :status')
@@ -88,6 +88,9 @@ class SignalementRepository extends ServiceEntityRepository
         if ($user)
             $qb->andWhere('user = :user')
                 ->setParameter('user', $user);
+        if($search)
+            $qb->andWhere('LOWER(s.nomOccupant) LIKE :search OR LOWER(s.prenomOccupant) LIKE :search OR LOWER(s.reference) LIKE :search')
+                ->setParameter('search',"%".strtolower($search)."%");
         return $qb->orderBy('s.id', 'DESC')
             ->getQuery()
             ->getResult();
