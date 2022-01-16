@@ -123,7 +123,7 @@ class FrontSignalementController extends AbstractController
                 $id = 1;
             }
             //TODO: Repartir a zéro pour chaque année
-            $signalement->setReference((new \DateTime())->format('Ymd') . '-' . $id);
+            $signalement->setReference((new \DateTime())->format('Y') . '-' . $id);
             $em->persist($signalement);
             $em->flush();
             return $this->json(['response' => 'success']);

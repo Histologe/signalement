@@ -8,7 +8,6 @@ use App\Entity\Suivi;
 use App\Entity\User;
 use App\Form\SignalementType;
 use App\Repository\PartenaireRepository;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
