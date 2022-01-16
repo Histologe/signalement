@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -25,6 +26,14 @@ class SecurityController extends AbstractController
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('back/login.html.twig', ['title'=>$title,'last_username' => $lastUsername, 'error' => $error]);
+    }
+
+    #[Route('/_up/{file}',name:'show_uploaded_file')]
+    public function showUploadedFile($file)
+    {
+        if(!$this->isGranted('ROLE_USER_PARTENAIRE'))
+            return $this->redirectToRoute('home');
+        return new BinaryFileResponse($this->getParameter('uploads_dir').$file);
     }
 
     /**

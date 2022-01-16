@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/bo/partenaire')]
-class PartenaireController extends AbstractController
+class BackPartenaireController extends AbstractController
 {
     private static function checkFormExtraData(FormInterface $form,Partenaire $partenaire,EntityManagerInterface $entityManager)
     {
@@ -36,6 +36,7 @@ class PartenaireController extends AbstractController
                     {
                         $user = new User();
                         $user->setPartenaire($partenaire);
+                        //TODO: Generate pass & send mail
                         $user->setPassword('123-456-789');
                         self::setUserData($user,$newUserData['nom'],$newUserData['prenom'],$newUserData['roles'],$newUserData['email']);
                         $entityManager->persist($user);
@@ -55,6 +56,8 @@ class PartenaireController extends AbstractController
     #[Route('/', name: 'back_partenaire_index', methods: ['GET'])]
     public function index(PartenaireRepository $partenaireRepository): Response
     {
+        if (!$this->isGranted('ROLE_ADMIN'))
+            return $this->redirectToRoute('back_index');
         return $this->render('back/partenaire/index.html.twig', [
             'partenaires' => $partenaireRepository->findAlls(),
         ]);
@@ -63,6 +66,8 @@ class PartenaireController extends AbstractController
     #[Route('/new', name: 'back_partenaire_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isGranted('ROLE_ADMIN'))
+            return $this->redirectToRoute('back_index');
         $partenaire = new Partenaire();
         $form = $this->createForm(PartenaireType::class, $partenaire);
         $form->handleRequest($request);
@@ -83,6 +88,8 @@ class PartenaireController extends AbstractController
     #[Route('/{id}/edit', name: 'back_partenaire_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Partenaire $partenaire, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
+            return $this->redirectToRoute('back_index');
         $form = $this->createForm(PartenaireType::class, $partenaire);
         $form->handleRequest($request);
 
@@ -102,6 +109,8 @@ class PartenaireController extends AbstractController
     #[Route('/{user}/delete', name: 'back_partenaire_user_delete', methods: ['POST'])]
     public function deleteUser(Request $request,User $user, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isGranted('ROLE_ADMIN'))
+            return $this->redirectToRoute('back_index');
         if ($this->isCsrfTokenValid('partenaire_user_delete_'.$user->getId(), $request->request->get('_token'))) {
             $user->setStatut(User::STATUS_ARCHIVE);
             $entityManager->persist($user);
@@ -114,6 +123,8 @@ class PartenaireController extends AbstractController
     #[Route('/{id}', name: 'back_partenaire_delete', methods: ['POST'])]
     public function delete(Request $request, Partenaire $partenaire, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isGranted('ROLE_ADMIN'))
+            return $this->redirectToRoute('back_index');
         if ($this->isCsrfTokenValid('partenaire_delete_' . $partenaire->getId(), $request->request->get('_token'))) {
             $partenaire->setIsArchive(true);
             foreach ($partenaire->getUsers() as $user)

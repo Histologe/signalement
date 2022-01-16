@@ -41,15 +41,25 @@
                                     </ul>
                                 {% endif %}
                             </li>
-                            <li class="fr-sidemenu__item {% if 'back_cartographie' is same as(app.request('_route')) %}fr-sidemenu__item--active{% endif %}">
+                            <li class="fr-sidemenu__item {% if 'back_cartographie' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
                                 <a class="fr-sidemenu__link" href="#" target="_self">Cartographie</a>
                             </li>
-                            <li class="fr-sidemenu__item {% if 'back_statistique' is same as(app.request('_route')) %}fr-sidemenu__item--active{% endif %}">
+                            <li class="fr-sidemenu__item {% if 'back_statistique' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
                                 <a class="fr-sidemenu__link" href="#" target="_self">Statistiques</a>
                             </li>
-                            <li class="fr-sidemenu__item {% if 'back_export' is same as(app.request('_route')) %}fr-sidemenu__item--active{% endif %}">
+                            <li class="fr-sidemenu__item {% if 'back_export' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
                                 <a class="fr-sidemenu__link" href="#" target="_self">Export</a>
                             </li>
+                            {% if is_granted('ROLE_ADMIN_PARTENAIRE') and app.user.partenaire %}
+                                <li class="fr-sidemenu__item {% if 'back_partenaire' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
+                                    <a class="fr-sidemenu__link" href="{{ path('back_partenaire_edit',{id:app.user.partenaire.id}) }}" target="_self" {% if 'back_partenaire' is same as(app.request.get('_route')) %}aria-current="page"{% endif %}>Paramètres</a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <li class="fr-sidemenu__item {% if 'back_partenaire' in app.request.get('_route') %}fr-sidemenu__item--active{% endif %}">
+                                    <a class="fr-sidemenu__link" href="{{ path('back_partenaire_index') }}" target="_self" {% if 'back_partenaire' in app.request.get('_route') %}aria-current="page"{% endif %}>Partenaires</a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
