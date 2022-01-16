@@ -36,7 +36,7 @@ class BackPartenaireController extends AbstractController
                     {
                         $user = new User();
                         $user->setPartenaire($partenaire);
-                        //TODO: Generate pass & send mail
+                        //TODO: Generate pass & send mail activation compte
                         $user->setPassword('123-456-789');
                         self::setUserData($user,$newUserData['nom'],$newUserData['prenom'],$newUserData['roles'],$newUserData['email']);
                         $entityManager->persist($user);

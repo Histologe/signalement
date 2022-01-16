@@ -191,6 +191,12 @@ class Signalement
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $codeProcedure;
 
+    #[ORM\Column(type: 'float')]
+    private $scoreCreation;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private $scoreCloture;
+
     public function __construct()
     {
         $this->situations = new ArrayCollection();
@@ -199,10 +205,7 @@ class Signalement
         $this->createdAt = new \DateTimeImmutable();
         $this->statut = self::STATUS_NEW;
         $this->affectations = new ArrayCollection();
-        $this->affectationsByPartenaire = new ArrayCollection();
         $this->uuid = uniqid();
-        $this->acceptedBy = new ArrayCollection();
-        $this->refusedBy = new ArrayCollection();
         $this->isSituationHandicap = false;
         $this->suivis = new ArrayCollection();
     }
@@ -950,6 +953,30 @@ class Signalement
             $result[$affectation->getPartenaire()->getId()]['statut'] = max($result[$affectation->getPartenaire()->getId()]['statuses']);
         }
         return $result;
+    }
+
+    public function getScoreCreation(): ?float
+    {
+        return $this->scoreCreation;
+    }
+
+    public function setScoreCreation(float $scoreCreation): self
+    {
+        $this->scoreCreation = $scoreCreation;
+
+        return $this;
+    }
+
+    public function getScoreCloture(): ?float
+    {
+        return $this->scoreCloture;
+    }
+
+    public function setScoreCloture(?float $scoreCloture): self
+    {
+        $this->scoreCloture = $scoreCloture;
+
+        return $this;
     }
 
 }

@@ -3,27 +3,23 @@
 namespace App\Controller;
 
 use App\Entity\Signalement;
-use App\Entity\SignalementUserAffectation;
-use App\Entity\Suivi;
-use App\Entity\User;
-use App\Repository\PartenaireRepository;
 use App\Repository\SignalementRepository;
 use App\Repository\SignalementUserAffectationRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use App\Service\ViewPageAsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 #[Route('/bo')]
 class BackController extends AbstractController
 {
-
     #[Route('/', name: 'back_index')]
     public function index(SignalementRepository $signalementRepository, SignalementUserAffectationRepository $affectationRepository, Request $request): Response
     {
+
         //TODO: Formulaire de recherche
         $title = 'Administration';
         $user = null;

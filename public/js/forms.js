@@ -11,7 +11,6 @@ serializeArray = (form) => {
 };
 forms.forEach((form) => {
     form?.querySelectorAll('.toggle-criticite input[type="radio"]')?.forEach((criticite) => {
-        //TODO: Forcer choix criticite sur chaque situation
         criticite.addEventListener('change', (event) => {
             event.currentTarget.parentElement.parentElement.parentElement.querySelector('.fr-toggle__input').checked = true;
             // parent.querySelector('[type="checkbox"]').checked = !parent.querySelector('[type="checkbox"]').checked;

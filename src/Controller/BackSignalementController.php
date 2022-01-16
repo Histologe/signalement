@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints\Positive;
 
@@ -30,6 +31,12 @@ class BackSignalementController extends AbstractController
         if ($affectationCurrentUser->isEmpty())
             return false;
         return $affectationCurrentUser->first();
+    }
+
+    private function viewAs($role)
+    {
+        $token = new UsernamePasswordToken($this->getUser(), 'main',  ['ROLE_USER_PARTENAIRE']);
+        $this->container->get('security.token_storage')->setToken($token);
     }
 
     #[Route('/{uuid}', name: 'back_signalement_view')]

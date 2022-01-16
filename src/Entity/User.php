@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Repository\SignalementUserAffectationRepository;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -54,7 +53,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'integer')]
     private $statut;
-
 
     public function __construct()
     {
@@ -197,60 +195,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             if ($suivi->getCreatedBy() === $this) {
                 $suivi->setCreatedBy(null);
             }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Signalement[]
-     */
-    public function getSignalementsAccepted(): Collection
-    {
-        return $this->signalementsAccepted;
-    }
-
-    public function addSignalementsAccepted(Signalement $signalementsAccepted): self
-    {
-        if (!$this->signalementsAccepted->contains($signalementsAccepted)) {
-            $this->signalementsAccepted[] = $signalementsAccepted;
-            $signalementsAccepted->addAcceptedBy($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSignalementsAccepted(Signalement $signalementsAccepted): self
-    {
-        if ($this->signalementsAccepted->removeElement($signalementsAccepted)) {
-            $signalementsAccepted->removeAcceptedBy($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Signalement[]
-     */
-    public function getSignalementsRefused(): Collection
-    {
-        return $this->signalementsRefused;
-    }
-
-    public function addSignalementsRefused(Signalement $signalementsRefused): self
-    {
-        if (!$this->signalementsRefused->contains($signalementsRefused)) {
-            $this->signalementsRefused[] = $signalementsRefused;
-            $signalementsRefused->addRefusedBy($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSignalementsRefused(Signalement $signalementsRefused): self
-    {
-        if ($this->signalementsRefused->removeElement($signalementsRefused)) {
-            $signalementsRefused->removeRefusedBy($this);
         }
 
         return $this;
