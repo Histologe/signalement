@@ -39,7 +39,7 @@
 <body>
 {% include "header.html.twig" %}
 <!-- Report de bug -->
-{% include 'bug_report/modal_bug.html.twig' %}
+{% include 'back/bug_report/modal_bug.html.twig' %}
 {% block body %}{% endblock %}
 {% if 'back_' not in app.request.get('_route') %}
     {% include "footer.html.twig" %}
@@ -49,6 +49,7 @@
 <script type="text/javascript" src="{{ asset('js/screencapture.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/app.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/forms.js') }}"></script>
+<script src="{{ asset('js/img_box.js') }}"></script>
 {% block javascripts %}{% endblock %}
 </body>
 </html>

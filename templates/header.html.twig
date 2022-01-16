@@ -27,44 +27,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="fr-header__tools">
-                    <div class="fr-header__tools-links">
-                        <ul class="fr-links-group">
-                            {% if app.user %}
-                                <li>
-                                    <a class="fr-link fr-fi-account-line"
-                                       href="{{ path('back_index') }}">Dashboard</a>
-                                </li>
-                                <li>
-                                    <a class="fr-link fr-fi-add-circle-line" href="{{ path('signalement') }}">Créer signalement</a>
-                                </li>
-                                <li>
-                                    <a class="fr-link fr-fi-alert-line" data-fr-opened="false" aria-controls="fr-bug-report-modal" href="#">Bug & Amélioration</a>
-                                </li>
-                                <li>
-                                    <a class="fr-link fr-fi-logout-box-r-line"
-                                       href="{{ path('app_logout') }}">Déconnexion</a>
-                                </li>
-                            {% else %}
-                                <li>
-                                    <a class="fr-link fr-fi-refresh-line" href="{{ path('home') }}">Accueil</a>
-                                </li>
-                                <li>
-                                    <a class="fr-link fr-fi-eye-line" href="{{ path('about') }}">Qui sommes-nous ?</a>
-                                </li>
-                                <li>
-                                    <a class="fr-link fr-fi-chat-quote-line" href="{{ path('contact') }}">Contact</a>
-                                </li>
-                                <li>
-                                    <a class="fr-link fr-fi-question-line" href="{{ path('faq') }}">Aide</a>
-                                </li>
-                                <li>
-                                    <a class="fr-link fr-fi-lock-line" href="{{ path('app_login') }}">Se connecter</a>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </div>
-                </div>
+                {% include 'nav.html.twig' %}
             </div>
         </div>
     </div>

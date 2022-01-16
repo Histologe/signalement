@@ -27,12 +27,16 @@ class SecurityController extends AbstractController
         return $this->render('back/login.html.twig', ['title'=>$title,'last_username' => $lastUsername, 'error' => $error]);
     }
 
-    #[Route('/_up/{file}',name:'show_uploaded_file')]
-    public function showUploadedFile($file)
+    #[Route('/{folder}/{file}',name:'show_uploaded_file',requirements: ['folder' => '_up|_capture'])]
+    public function showUploadedFile($folder,$file)
     {
         if(!$this->isGranted('ROLE_USER_PARTENAIRE'))
             return $this->redirectToRoute('home');
-        return new BinaryFileResponse($this->getParameter('uploads_dir').$file);
+        if($folder === '_up')
+            $folder = $this->getParameter('uploads_dir');
+        if($folder === '_capture')
+            $folder = $this->getParameter('capture_dir');
+        return new BinaryFileResponse($folder.$file);
     }
 
     /**

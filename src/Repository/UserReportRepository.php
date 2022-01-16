@@ -35,7 +35,16 @@ class UserReportRepository extends ServiceEntityRepository
         ;
     }
     */
-
+    public function findAlls()
+    {
+        return $this->createQueryBuilder('u')
+            ->leftJoin('u.createdBy','createdBy')
+            ->orderBy('u.createdAt', 'DESC')
+            ->addSelect('createdBy')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
     /*
     public function findOneBySomeField($value): ?UserReport
     {

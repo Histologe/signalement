@@ -9,11 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
 class UserReport
 {
 
-    const STATUS_AWAIT = 0;
-    const STATUS_VIEWED = 1;
-    const STATUS_CORRECTED = 2;
-    const STATUS_IS_NOT_BUG = 3;
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -29,9 +24,6 @@ class UserReport
     #[ORM\Column(type: 'text')]
     private $content;
 
-    #[ORM\Column(type: 'integer')]
-    private $statut;
-
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $capture;
 
@@ -41,10 +33,16 @@ class UserReport
     #[ORM\Column(type: 'string', length: 255)]
     private $route;
 
+    #[ORM\Column(type: 'boolean')]
+    private $isArchive;
+
+    #[ORM\Column(type: 'datetime_immutable',nullable: true)]
+    private $archivedAt;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
-        $this->statut = self::STATUS_AWAIT;
+        $this->isArchive =false;
     }
 
     public function getId(): ?int
@@ -88,18 +86,6 @@ class UserReport
         return $this;
     }
 
-    public function getStatut(): ?int
-    {
-        return $this->statut;
-    }
-
-    public function setStatut(int $statut): self
-    {
-        $this->statut = $statut;
-
-        return $this;
-    }
-
     public function getCapture(): ?string
     {
         return $this->capture;
@@ -132,6 +118,30 @@ class UserReport
     public function setRoute(string $route): self
     {
         $this->route = $route;
+
+        return $this;
+    }
+
+    public function getIsArchive(): ?bool
+    {
+        return $this->isArchive;
+    }
+
+    public function setIsArchive(bool $isArchive): self
+    {
+        $this->isArchive = $isArchive;
+
+        return $this;
+    }
+
+    public function getArchivedAt(): ?\DateTimeImmutable
+    {
+        return $this->archivedAt;
+    }
+
+    public function setArchivedAt(\DateTimeImmutable $archivedAt): self
+    {
+        $this->archivedAt = $archivedAt;
 
         return $this;
     }
