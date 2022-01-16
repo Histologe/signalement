@@ -38,9 +38,9 @@ document.querySelectorAll('.fr-input--file-signalement').forEach(inputFile=>{
 })
 
 document.querySelector('#fr-bug-report-modal').addEventListeners('dsfr.disclose dsfr.conceal', (event) => {
+    let form = event.target.querySelector('form[name="bug-report"]');
     let formData = new FormData(form);
     if (event.type === 'dsfr.disclose') {
-        let form = event.target.querySelector('form[name="bug-report"]');
         event.target.querySelector('#bug-report-success').classList.add('fr-hidden')
         form.classList.remove('fr-hidden');
         event.target.querySelector('#bug-report-submit').disabled = false;
