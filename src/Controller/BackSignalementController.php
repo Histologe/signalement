@@ -6,7 +6,10 @@ use App\Entity\Signalement;
 use App\Entity\SignalementUserAffectation;
 use App\Entity\Suivi;
 use App\Entity\User;
+use App\Form\SignalementType;
 use App\Repository\PartenaireRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,7 +38,7 @@ class BackSignalementController extends AbstractController
 
     private function viewAs($role)
     {
-        $token = new UsernamePasswordToken($this->getUser(), 'main',  ['ROLE_USER_PARTENAIRE']);
+        $token = new UsernamePasswordToken($this->getUser(), 'main', ['ROLE_USER_PARTENAIRE']);
         $this->container->get('security.token_storage')->setToken($token);
     }
 
@@ -67,12 +70,39 @@ class BackSignalementController extends AbstractController
         ]);
     }
 
+    #[Route('/{uuid}/edit', name: 'back_signalement_edit', methods: ['GET', 'POST'])]
+    public function editSignalement(Signalement $signalement, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $title = 'Administration - Edition signalement #' . $signalement->getReference();
+        $form = $this->createForm(SignalementType::class, $signalement);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $signalement->setModifiedBy($this->getUser());
+            $signalement->setModifiedAt(new \DateTimeImmutable());
+            $suivi = new Suivi();
+            $suivi->setCreatedBy($this->getUser());
+            $suivi->setSignalement($signalement);
+            $suivi->setIsPublic(false);
+            $suivi->setDescription('Modification du signalement par un partenaire');
+            $entityManager->persist($suivi);
+            $entityManager->flush();
+            return $this->redirectToRoute('back_signalement_view', [
+                'uuid' => $signalement->getUuid()
+            ]);
+        }
+        return $this->render('back/signalement/edit.html.twig', [
+            'title' => $title,
+            'form' => $form->createView(),
+            'signalement'=>$signalement
+        ]);
+    }
+
     #[Route('/s/{uuid}/suivi/add', name: 'back_signalement_add_suivi', methods: "POST")]
     public function addSuiviSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
             return $this->redirectToRoute('back_index');
-        if ($this->isCsrfTokenValid('signalement_add_suivi_'.$signalement->getId(), $request->get('_token'))
+        if ($this->isCsrfTokenValid('signalement_add_suivi_' . $signalement->getId(), $request->get('_token'))
             && $form = $request->get('signalement-add-suivi')) {
             $suivi = new Suivi();
             $suivi->setDescription($form['content']);
@@ -108,7 +138,7 @@ class BackSignalementController extends AbstractController
     #[Route('/s/{uuid}/file/add', name: 'back_signalement_add_file')]
     public function addFileSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger)
     {
-        if ($this->isCsrfTokenValid('signalement_add_file_'.$signalement->getId(), $request->get('_token')) && $files = $request->files->get('signalement-add-file')) {
+        if ($this->isCsrfTokenValid('signalement_add_file_' . $signalement->getId(), $request->get('_token')) && $files = $request->files->get('signalement-add-file')) {
             if (isset($files['documents']))
                 $type = 'documents';
             if (isset($files['photos']))
@@ -140,7 +170,7 @@ class BackSignalementController extends AbstractController
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
             return $this->redirectToRoute('back_index');
-        if ($this->isCsrfTokenValid('signalement_affectation_response_'.$signalement->getId(), $request->get('_token'))
+        if ($this->isCsrfTokenValid('signalement_affectation_response_' . $signalement->getId(), $request->get('_token'))
             && $response = $request->get('signalement-affectation-response')) {
             if (isset($response['accept']))
                 $statut = SignalementUserAffectation::STATUS_ACCEPTED;
@@ -160,7 +190,7 @@ class BackSignalementController extends AbstractController
     #[Route('/s/{uuid}/file/{type}/{file}/delete', name: 'back_signalement_delete_file')]
     public function deleteFileSignalement(Signalement $signalement, $type, $file, Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger)
     {
-        if ($this->isCsrfTokenValid('signalement_delete_file_'.$signalement->getId(), $request->get('_token'))) {
+        if ($this->isCsrfTokenValid('signalement_delete_file_' . $signalement->getId(), $request->get('_token'))) {
             $setMethod = 'set' . ucfirst($type);
             $getMethod = 'get' . ucfirst($type);
             $$type = $signalement->$getMethod();
@@ -173,7 +203,7 @@ class BackSignalementController extends AbstractController
             $doctrine->getManager()->flush();
             return $this->json(['response' => 'success']);
         } else
-            return $this->json(['response' => 'error'],400);
+            return $this->json(['response' => 'error'], 400);
     }
 
     #[Route('/{uuid}/delete', name: 'back_signalement_delete', methods: "POST")]
@@ -181,7 +211,7 @@ class BackSignalementController extends AbstractController
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
             return $this->redirectToRoute('back_index');
-        if ($this->isCsrfTokenValid('signalement_delete_'.$signalement->getId(), $request->get('_token'))) {
+        if ($this->isCsrfTokenValid('signalement_delete_' . $signalement->getId(), $request->get('_token'))) {
             $signalement->setStatut(Signalement::STATUS_ARCHIVED);
             $doctrine->getManager()->persist($signalement);
             $doctrine->getManager()->flush();
