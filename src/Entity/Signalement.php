@@ -209,6 +209,9 @@ class Signalement
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $adresseAutreOccupant;
 
+    #[ORM\Column(type: 'json', nullable: true)]
+    private $modeContactProprio = [];
+
     public function __construct()
     {
         $this->situations = new ArrayCollection();
@@ -1037,6 +1040,18 @@ class Signalement
     public function setAdresseAutreOccupant(?string $adresseAutreOccupant): self
     {
         $this->adresseAutreOccupant = $adresseAutreOccupant;
+
+        return $this;
+    }
+
+    public function getModeContactProprio(): ?array
+    {
+        return $this->modeContactProprio;
+    }
+
+    public function setModeContactProprio(?array $modeContactProprio): self
+    {
+        $this->modeContactProprio = $modeContactProprio;
 
         return $this;
     }

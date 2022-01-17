@@ -104,7 +104,7 @@ document?.querySelector('#fr-bug-report-modal').addEventListeners('dsfr.disclose
         event.target.querySelector('textarea').value = '';
     }
 })
-document?.querySelector('#fr-password-toggle').addEventListeners('click touchdown', (event) => {
+document?.querySelector('#fr-password-toggle')?.addEventListeners('click touchdown', (event) => {
     ['fr-fi-eye-off-fill', 'fr-fi-eye-fill'].map(c => {
         event.target.classList.toggle(c);
     })

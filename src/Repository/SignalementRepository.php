@@ -55,6 +55,17 @@ class SignalementRepository extends ServiceEntityRepository
              ->getResult();
      }*/
 
+    public function findAllWithGeoData()
+    {
+        return $this->createQueryBuilder('s')
+            ->select('s.geoloc')
+            ->addSelect('s.uuid')
+            ->addSelect('s.reference')
+            ->where('s.geoloc IS NOT NULL')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findByStatusAndOrCityForUser(User $user = null, $status = null, $city = null,$search=null)
     {
         $qb = $this->createQueryBuilder('s')

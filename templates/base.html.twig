@@ -31,9 +31,9 @@
     <link rel="icon" href="{{ asset('img/favicon.ico') }}">
     <link rel="stylesheet" href="{{ asset('dsfr/dsfr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/histologe.css') }}">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-          crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
     {% block stylesheets %}{% endblock %}
 </head>
 <body>
@@ -50,6 +50,8 @@
 <script type="text/javascript" src="{{ asset('js/app.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/forms.js') }}"></script>
 <script src="{{ asset('js/img_box.js') }}"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 {% block javascripts %}{% endblock %}
 </body>
 </html>
