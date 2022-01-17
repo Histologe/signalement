@@ -93,7 +93,7 @@ forms.forEach((form) => {
             } else {
                 form.querySelectorAll('input,textarea,select').forEach((field) => {
                     if (!field.checkValidity()) {
-                        console.log(field)
+                       /* console.log(field)*/
                         let parent = field.parentElement;
                         if (field.type === 'radio')
                             parent = field.parentElement.parentElement.parentElement;

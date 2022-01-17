@@ -2,12 +2,12 @@ Node.prototype.addEventListeners = function (eventNames, eventFunction) {
     for (eventName of eventNames.split(' '))
         this.addEventListener(eventName, eventFunction);
 }
-document.querySelectorAll('[name="bo-filter-form"]').forEach((filterForm) => {
+document?.querySelectorAll('[name="bo-filter-form"]').forEach((filterForm) => {
     filterForm.addEventListener('change', (evt) => {
         filterForm.submit();
     })
 })
-document.querySelectorAll('.fr-checkbox-affectation').forEach((checkbox) => {
+document?.querySelectorAll('.fr-checkbox-affectation').forEach((checkbox) => {
     checkbox.addEventListener('change', (event) => {
         checkbox.disabled = true;
         fetch(checkbox.getAttribute('data-toggle-fetch')).then(r => r.json().then(res => {
@@ -16,7 +16,7 @@ document.querySelectorAll('.fr-checkbox-affectation').forEach((checkbox) => {
         }))
     })
 })
-document.querySelectorAll('[data-file-delete]').forEach(fileDelete => {
+document?.querySelectorAll('[data-file-delete]').forEach(fileDelete => {
     fileDelete.addEventListeners('click touchdown', event => {
         if (confirm('Voulez-vous vraiment supprimer cette photo ?')) {
             let formData = new FormData;
@@ -32,12 +32,11 @@ document.querySelectorAll('[data-file-delete]').forEach(fileDelete => {
         }
     })
 })
-document.querySelectorAll('.fr-input--file-signalement').forEach(inputFile => {
+document?.querySelectorAll('.fr-input--file-signalement').forEach(inputFile => {
     inputFile.addEventListener('change', evt => {
         evt.target.form.submit();
     })
 })
-
 document?.querySelector('#partenaire_add_user')?.addEventListeners('click touchdown', (event) => {
     event.preventDefault();
     let template = document.importNode(document.querySelector('#partenaire_add_user_row').content, true)
@@ -54,7 +53,6 @@ document?.querySelector('#partenaire_add_user')?.addEventListeners('click touchd
     row.appendChild(template);
     container.appendChild(row);
 })
-
 document?.querySelectorAll('.partenaire-user-delete')?.forEach(userDelete => {
     userDelete.addEventListeners('click touchdown', event => {
         event.preventDefault();
@@ -72,8 +70,7 @@ document?.querySelectorAll('.partenaire-user-delete')?.forEach(userDelete => {
         }
     })
 })
-
-document.querySelector('#fr-bug-report-modal').addEventListeners('dsfr.disclose dsfr.conceal', (event) => {
+document?.querySelector('#fr-bug-report-modal').addEventListeners('dsfr.disclose dsfr.conceal', (event) => {
     let form = event.target.querySelector('form[name="bug-report"]');
     let formData = new FormData(form);
     if (event.type === 'dsfr.disclose') {
@@ -106,4 +103,10 @@ document.querySelector('#fr-bug-report-modal').addEventListeners('dsfr.disclose 
         formData = null;
         event.target.querySelector('textarea').value = '';
     }
+})
+document?.querySelector('#fr-password-toggle').addEventListeners('click touchdown', (event) => {
+    ['fr-fi-eye-off-fill', 'fr-fi-eye-fill'].map(c => {
+        event.target.classList.toggle(c);
+    })
+    let pwd=event.target.parentElement.querySelector('[name="password"]');"text"!==pwd.type?pwd.type="text":pwd.type="password";
 })
