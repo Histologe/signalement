@@ -21,9 +21,9 @@
             </form>
 
             <ul class="fr-sidemenu__list">
-                <li class="fr-sidemenu__item {% if 'back_index' is same as(app.request.get('_route')) or 'back_signalement_view' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
+                <li class="fr-sidemenu__item {% if 'back_index' is same as(app.request.get('_route')) or 'back_signalement_' in app.request.get('_route') %}fr-sidemenu__item--active{% endif %}">
                     <a class="fr-sidemenu__link" href="{{ path('back_index') }}" target="_self"
-                       {% if 'back_index' is same as(app.request.get('_route')) or 'back_signalement_view' is same as(app.request.get('_route')) %}aria-current="page"{% endif %}>Dashboard</a>
+                       {% if 'back_index' is same as(app.request.get('_route')) or 'back_signalement_' in app.request.get('_route') %}aria-current="page"{% endif %}>Dashboard</a>
                     {% if 'back_signalement_view' is same as(app.request.get('_route')) %}
                         <ul class="fr-sidemenu__list">
                             <li class="fr-sidemenu__item fr-sidemenu__item--active">
@@ -31,6 +31,13 @@
                                     signalement</a>
                             </li>
                         </ul>
+                        {% elseif 'back_signalement_edit' is same as(app.request.get('_route')) %}
+                            <ul class="fr-sidemenu__list">
+                                <li class="fr-sidemenu__item fr-sidemenu__item--active">
+                                    <a class="fr-sidemenu__link" href="#" target="_self" aria-current="page">Edition
+                                        signalement</a>
+                                </li>
+                            </ul>
                     {% endif %}
                 </li>
                 <li class="fr-sidemenu__item {% if 'back_cartographie' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
