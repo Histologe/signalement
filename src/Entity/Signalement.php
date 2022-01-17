@@ -208,6 +208,7 @@ class Signalement
         $this->uuid = uniqid();
         $this->isSituationHandicap = false;
         $this->suivis = new ArrayCollection();
+        $this->scoreCreation = 0;
     }
 
 
