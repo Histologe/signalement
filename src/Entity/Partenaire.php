@@ -27,6 +27,12 @@ class Partenaire
     #[ORM\Column(type: 'boolean')]
     private $isArchive;
 
+    #[ORM\Column(type: 'boolean')]
+    private $isCommune;
+
+    #[ORM\Column(type: 'string', length: 10, nullable: true)]
+    private $insee;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -99,6 +105,30 @@ class Partenaire
     public function setIsArchive(bool $isArchive): self
     {
         $this->isArchive = $isArchive;
+
+        return $this;
+    }
+
+    public function getIsCommune(): ?bool
+    {
+        return $this->isCommune;
+    }
+
+    public function setIsCommune(bool $isCommune): self
+    {
+        $this->isCommune = $isCommune;
+
+        return $this;
+    }
+
+    public function getInsee(): ?string
+    {
+        return $this->insee;
+    }
+
+    public function setInsee(?string $insee): self
+    {
+        $this->insee = $insee;
 
         return $this;
     }

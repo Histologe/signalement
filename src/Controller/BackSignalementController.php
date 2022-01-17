@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Critere;
+use App\Entity\Criticite;
 use App\Entity\Signalement;
 use App\Entity\SignalementUserAffectation;
+use App\Entity\Situation;
 use App\Entity\Suivi;
 use App\Entity\User;
 use App\Form\SignalementType;
@@ -65,7 +68,7 @@ class BackSignalementController extends AbstractController
             'isAccepted' => $isAccepted,
             'isRefused' => $isRefused,
             'signalement' => $signalement,
-            'partenaires' => $partenaireRepository->findAlls()
+            'partenaires' => $partenaireRepository->findAllOrByInseeIfCommune($signalement->getInseeOccupant())
         ]);
     }
 
@@ -85,7 +88,7 @@ class BackSignalementController extends AbstractController
             $suivi->setDescription('Modification du signalement par un partenaire');
             $entityManager->persist($suivi);
             $entityManager->flush();
-            $this->addFlash('success','Signalement modifé avec succés !');
+            $this->addFlash('success', 'Signalement modifé avec succés !');
             return $this->redirectToRoute('back_signalement_view', [
                 'uuid' => $signalement->getUuid()
             ]);
@@ -93,7 +96,7 @@ class BackSignalementController extends AbstractController
         return $this->render('back/signalement/edit.html.twig', [
             'title' => $title,
             'form' => $form->createView(),
-            'signalement'=>$signalement
+            'signalement' => $signalement
         ]);
     }
 

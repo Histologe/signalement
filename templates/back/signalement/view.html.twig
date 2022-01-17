@@ -446,7 +446,7 @@
                 </div>
                 <div class="fr-col-1 fr-text--right">
                     {% if suivi.isPublic %}
-                        <span class="fr-fi-eye-fill" title="Visible par l'usage"></span>
+                        <span class="fr-fi-eye-fill" title="Visible par l'usager"></span>
                     {% else %}
                         <span class="fr-fi-eye-off-fill" title="Non visible par l'usager"></span>
                     {% endif %}
@@ -456,7 +456,6 @@
     </section>
 {% endblock %}
 {% block javascripts %}
-
     <script>
         let map = L.map('map-signalement-view').setView([{{ signalement.geoloc.lng }}, {{ signalement.geoloc.lat }}], 13);
 

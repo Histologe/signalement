@@ -22,16 +22,20 @@ class PartenaireRepository extends ServiceEntityRepository
     // /**
     //  * @return Partenaire[] Returns an array of Partenaire objects
     //  */
-    public function findAlls()
+    public function findAllOrByInseeIfCommune($insee = null)
     {
-        return $this->createQueryBuilder('p')
-            ->where('p.isArchive != 1')
-            ->leftJoin('p.users','users')
+        $qb = $this->createQueryBuilder('p')
+            ->where('p.isArchive != 1');
+        if ($insee)
+            $qb->andWhere('p.isCommune = 0 OR p.isCommune = 1 AND p.insee = :insee')
+                ->setParameter('insee', $insee);
+        $qb->leftJoin('p.users', 'users')
             ->addSelect('users')
-            ->orderBy('users.roles')
+            ->orderBy('users.roles');
+
+        return $qb
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();;
     }
 
     /*

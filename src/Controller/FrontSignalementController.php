@@ -83,21 +83,8 @@ class FrontSignalementController extends AbstractController
                                     $criticite = $em->getRepository(Criticite::class)->find($data[$key][$idSituation]['critere'][$idCritere]['criticite']);
                                     $signalement->addCriticite($criticite);
                                     $data[$key][$idSituation]['critere'][$idCritere]['criticite']= [$criticite->getId() => ['label' => $criticite->getLabel(),'score'=>$criticite->getScore()]];
-                                    /*foreach ($data[$key][$idSituation]['critere'][$idCritere] as $idCriticite) {
-//                                        $criticite = $em->getRepository(Criticite::class)->find($idCriticite);
-//                                        var_dump(array_values($data[$key][$idSituation]['critere'][$idCritere]));
-//                                        $signalement->addCriticite($criticite);
-//                                        $data[$key][$idSituation]['critere'][$idCritere]['criticite']= [$idCriticite => ['label' => $criticite->getLabel()]];
-//                                        dd($signalement);
-                                        /*foreach ($criticite as $idCriticite => $null) {
-                                            $criticite = $em->getRepository(Criticite::class)->find($idCriticite);
-                                            $signalement->addCriticite($criticite);
-
-                                        }
-                                    }*/
                                 }
                             }
-                           /* die;*/
                         }
                         $signalement->setJsonContent($data[$key]);
                         break;
@@ -116,12 +103,6 @@ class FrontSignalementController extends AbstractController
                         $signalement->$method($value);
                 }
             }
-            //TODO: Si proprio pas averti mail avec lettre type
-            if ($em->getRepository(Signalement::class)->findOneBy([], ['id' => 'DESC'])) {
-                $id = $em->getRepository(Signalement::class)->findOneBy([], ['id' => 'DESC'])->getId() + 1;
-            } else {
-                $id = 1;
-            }
             if(!$signalement->getIsNotOccupant())
             {
                 $signalement->setNomDeclarant(null);
@@ -130,8 +111,30 @@ class FrontSignalementController extends AbstractController
                 $signalement->setStructureDeclarant(null);
                 $signalement->setTelDeclarant(null);
             }
+
+            //TODO: Si proprio pas averti mail avec lettre type
+            if ($em->getRepository(Signalement::class)->findOneBy([], ['id' => 'DESC'])) {
+                $id = $em->getRepository(Signalement::class)->findOneBy([], ['id' => 'DESC'])->getId() + 1;
+            } else {
+                $id = 1;
+            }
             //TODO: Repartir a zéro pour chaque année
             $signalement->setReference((new \DateTime())->format('Y') . '-' . $id);
+
+            $scoresMaxSituation = [];
+            $scoreSituation = [];
+            foreach ($signalement->getSituations() as $situation) {
+                $scoresMaxSituation[$situation->getLabel()] = $scoreSituation[$situation->getLabel()] = 0;
+                foreach ($situation->getCriteres() as $critere)
+                    foreach ($critere->getCriticites() as $criticite)
+                        $scoresMaxSituation[$situation->getLabel()] += $criticite->getScore();
+            }
+            foreach ($signalement->getCriticites() as $criticite)
+                $scoreSituation[$criticite->getCritere()->getSituation()->getLabel()] += $criticite->getScore();
+            $score = (array_sum($scoreSituation) / array_sum($scoresMaxSituation))*100;
+            if ($signalement->getNbEnfantsM6() || $signalement->getNbEnfantsP6())
+                $score = $score * 1.1;
+            $signalement->setScoreCreation($score);
             $em->persist($signalement);
             $em->flush();
             return $this->json(['response' => 'success']);

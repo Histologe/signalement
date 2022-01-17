@@ -4,7 +4,9 @@ namespace App\Form;
 
 use App\Entity\Partenaire;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -18,6 +20,28 @@ class PartenaireType extends AbstractType
                 'attr' => [
                     'class' => 'fr-input'
                 ]
+            ])
+            ->add('isCommune', ChoiceType::class, [
+                'row_attr' => [
+                    'class' => 'fr-select-group'
+                ], 'attr' => [
+                    'class' => 'fr-select'
+                ],
+                'choices' => [
+                    'Commune' => 1,
+                    'Partenaire' => 0
+                ],
+                'label_attr' => [
+                    'class' => 'fr-label'
+                ],
+                'label' => 'Type de partenaire'
+            ])
+            ->add('insee', NumberType::class, [
+                'attr' => [
+                    'class' => 'fr-input'
+                ],
+                'required'=>false,
+                'html5' => true
             ]);
     }
 
@@ -25,7 +49,7 @@ class PartenaireType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Partenaire::class,
-            'allow_extra_fields'=> true
+            'allow_extra_fields' => true
         ]);
     }
 }
