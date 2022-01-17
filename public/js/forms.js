@@ -26,16 +26,42 @@ forms.forEach((form) => {
         })
     })
     form?.querySelectorAll('.fr-accordion__title')?.forEach((situation) => {
-        situation.addEventListeners("click touchdown",(event) => {
-            event.target.parentElement.parentElement.querySelectorAll('[type="radio"],[type="checkbox"]').forEach((ipt)=>{
+        situation.addEventListeners("click touchdown", (event) => {
+            event.target.parentElement.parentElement.querySelectorAll('[type="radio"],[type="checkbox"]').forEach((ipt) => {
                 ipt.checked = false;
             })
         })
     })
-    form?.querySelectorAll('[data-fr-toggle]')?.forEach((toggle) => {
+    form?.querySelectorAll('[data-fr-toggle-show],[data-fr-toggle-hide]')?.forEach((toggle) => {
         toggle.addEventListener('change', (event) => {
-            let target = form.querySelector('#' + toggle.getAttribute('data-fr-toggle'));
-            "true" === event.target.value ? (target.classList.remove('fr-hidden'),target.querySelectorAll('input:not([type="checkbox"])').forEach((ipt)=>{ipt.required = true})) : (target.classList.add('fr-hidden'),target.querySelectorAll('input:not([type="checkbox"])').forEach((ipt)=>{ipt.required = false;}),target.querySelectorAll('input[type="checkbox"]').forEach((ipt)=>{ipt.checked = false}));
+            let toShow = event.target.getAttribute('data-fr-toggle-show'),
+                toHide = event.target.getAttribute('data-fr-toggle-hide'),
+                toUnrequire = event.target.getAttribute('data-fr-toggle-unrequire'),
+                toRequire = event.target.getAttribute('data-fr-toggle-require')
+            toShow && toShow.split('|').map(targetId => {
+                let target = form?.querySelector('#' + targetId);
+                target.querySelectorAll('input:not([type="checkbox"]),textarea').forEach(ipt => {
+                    ipt.required = true;
+                })
+                target.classList.remove('fr-hidden')
+            })
+            toHide && toHide.split('|').map(targetId => {
+                let target = form?.querySelector('#' + targetId);
+                target.querySelectorAll('input:not([type="checkbox"]),textarea').forEach(ipt => {
+                    ipt.required = false;
+                })
+                target.classList.add('fr-hidden')
+            })
+            toUnrequire && toUnrequire.split('|').map(targetId => {
+                let target = form?.querySelector('#' + targetId);
+                target.required = false;
+                target.labels[0].querySelector('sup').innerHTML = '';
+            })
+            toRequire && toRequire.split('|').map(targetId => {
+                let target = form?.querySelector('#' + targetId);
+                target.required = true;
+                target.labels[0].innerText.includes("*")||(target.labels[0].innerHTML=target.labels[0].innerText+'<sup class="fr-text-default--error">*</sup>');
+            })
         })
     })
     form?.querySelectorAll('input[type="file"]')?.forEach((file) => {
@@ -55,7 +81,7 @@ forms.forEach((form) => {
     })
     form?.querySelectorAll('[data-fr-adresse-autocomplete]').forEach((autocomplete) => {
         autocomplete.addEventListener('keyup', () => {
-            if (autocomplete.value.length > 3)
+            if (autocomplete.value.length > 10)
                 fetch('https://api-adresse.data.gouv.fr/search/?q=' + autocomplete.value).then((res) => {
                     res.json().then((r) => {
                         let container = form.querySelector('#signalement-adresse-suggestion')
@@ -69,6 +95,7 @@ forms.forEach((form) => {
                                 form.querySelector('#signalement-adresse-occupant').value = feature.properties.name;
                                 form.querySelector('#signalement-cp-occupant').value = feature.properties.postcode;
                                 form.querySelector('#signalement-ville-occupant').value = feature.properties.city;
+                                form.querySelector('#signalement-insee-occupant').value = feature.properties.citycode;
                                 form.querySelector('#signalement-geoloc-lat-occupant').value = feature.geometry.coordinates[0];
                                 form.querySelector('#signalement-geoloc-lng-occupant').value = feature.geometry.coordinates[1];
                                 container.innerHTML = '';
@@ -82,10 +109,10 @@ forms.forEach((form) => {
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         let invalid;
-    /*    console.log(form.querySelectorAll('[type="checkbox"]:checked').length)*/
+        /*    console.log(form.querySelectorAll('[type="checkbox"]:checked').length)*/
         if (!form.checkValidity()
             || form.id === "signalement-step-1" && null === form.querySelector('[type="radio"]:checked')
-            || form.id === "signalement-step-1" && form.querySelectorAll('[type="checkbox"]:checked').length !== form.querySelectorAll('[type="radio"]:checked').length ) {
+            || form.id === "signalement-step-1" && form.querySelectorAll('[type="checkbox"]:checked').length !== form.querySelectorAll('[type="radio"]:checked').length) {
             event.stopPropagation();
             if (form.id === "signalement-step-1") {
                 form.querySelector('[role="alert"]').classList.remove('fr-hidden')
@@ -93,7 +120,7 @@ forms.forEach((form) => {
             } else {
                 form.querySelectorAll('input,textarea,select').forEach((field) => {
                     if (!field.checkValidity()) {
-                       /* console.log(field)*/
+                        /* console.log(field)*/
                         let parent = field.parentElement;
                         if (field.type === 'radio')
                             parent = field.parentElement.parentElement.parentElement;
@@ -113,8 +140,7 @@ forms.forEach((form) => {
                 })
                 invalid = form?.querySelector('input:invalid:first-of-type')?.parentElement;
             }
-            if(invalid)
-            {
+            if (invalid) {
                 const y = invalid.getBoundingClientRect().top + window.scrollY;
                 window.scroll({
                     top: y,
@@ -174,7 +200,9 @@ forms.forEach((form) => {
                         if (r.ok) {
                             r.json().then((res) => {
                                 if (res.response === "success") {
-                                    document.querySelectorAll('#signalement-tabs,#signalement-success').forEach(el=>{el.classList.toggle('fr-hidden')})
+                                    document.querySelectorAll('#signalement-tabs,#signalement-success').forEach(el => {
+                                        el.classList.toggle('fr-hidden')
+                                    })
                                 } else {
                                     event.submitter.disabled = true;
                                     ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v => event.submitter.classList.toggle(v));

@@ -157,7 +157,7 @@
                     <div class="fr-input-group">
                         <label class="fr-label" for="signalement-details">
                             Décrivez le ou les problème(s) rencontré(s)<sup class="fr-text-default--error">*</sup>
-                            <span class="fr-hint-text">Proposer une rapide description du ou des problème(s).</span>
+                            <span class="fr-hint-text">Proposer une rapide description du ou des problème(s) en <u>10 caractères minimum</u>.</span>
                         </label>
                         <textarea class="fr-input fr-input--no-resize" id="signalement-details"
                                   name="signalement[details]" required></textarea>
@@ -170,29 +170,37 @@
                             <legend class="fr-label fr-pl-0">Joindre des photos du/des problème(s)</legend>
                             <span class="fr-hint-text">Les photos <u>ne doivent pas contenir de vues de personnes ou d'objets personnels</u>. <br> Pour les photos des parties communes, <a
                                         href="#">certaines restrictions sont à respecter</a>.</span>
-                            {% for i in 0..5 %}
-                                <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-instagram-line">
-                                    <img src="#" alt="Aperçu" class="fr-hidden fr-rounded" width="100">
-                                    <input type="file" accept="image/*" name="signalement[photos][{{ i }}]"
-                                           class="fr-hidden">
-                                </label>
-                            {% endfor %}
-                            <small class="fr-fi-information-fill fr-text-label--blue-france fr-display-block fr-mt-5v">Cliquez
-                                sur l'appareil
-                                photo pour joindre une photo.</small>
+                            <div class="fr-fieldset__content fr-grid-row fr-grid-row--gutters">
+                                {% for i in 0..5 %}
+                                    <div class="fr-col-4 fr-col-md-1 fr-text--center">
+                                        <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-instagram-line">
+                                            <img src="#" alt="Aperçu" class="fr-hidden fr-rounded" width="100">
+                                            <input type="file" accept="image/*" name="signalement[photos][{{ i }}]"
+                                                   class="fr-hidden">
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                                <small class="fr-col-12 fr-fi-information-fill fr-text-label--blue-france fr-display-block"> Cliquez
+                                    sur l'icone
+                                    photo pour joindre une photo.</small>
+                            </div>
                         </fieldset>
                     </div>
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-label fr-pl-0">Joindre des documents complémentaires</legend>
-                            <span class="fr-hint-text">Les documents ne doivent pas excéder <u>6Mo par document</u></span>
-                            {% for i in 0..1 %}
-                                <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-attachment-fill">
-                                    <input type="file" name="signalement[documents][{{ i }}]" class="fr-hidden">
-                                </label>
-                            {% endfor %}
-                            <small class="fr-fi-information-fill fr-text-label--blue-france fr-display-block fr-mt-5v">Cliquez
-                                sur l'icone pour joindre un document.</small>
+                            <span class="fr-hint-text">Les documents ne doivent pas excéder <u>2Mo par document</u></span>
+                            <div class="fr-fieldset__content fr-grid-row fr-grid-row--gutters">
+                                {% for i in 0..2 %}
+                                    <div class="fr-col-4 fr-col-md-1 fr-text--center">
+                                        <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-attachment-fill">
+                                            <input type="file" name="signalement[documents][{{ i }}]" class="fr-hidden">
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                                <small class="fr-fi-information-fill fr-text-label--blue-france fr-display-block fr-col-12"> Cliquez
+                                    sur l'icone pour joindre un document.</small>
+                            </div>
                         </fieldset>
                     </div>
                     <div class="fr-grid-row">
@@ -225,13 +233,13 @@
                                 <div class="fr-radio-group">
                                     <input type="radio" id="signalement-proprio-averti-1" value="true"
                                            name="signalement[isProprioAverti]" required
-                                           data-fr-toggle="signalement-methode-contact">
+                                           data-fr-toggle-show="signalement-methode-contact">
                                     <label class="fr-label" for="signalement-proprio-averti-1">Oui</label>
                                 </div>
                                 <div class="fr-radio-group">
                                     <input type="radio" id="signalement-proprio-averti-2" value="0"
                                            name="signalement[isProprioAverti]"
-                                           data-fr-toggle="signalement-methode-contact">
+                                           data-fr-toggle-hide="signalement-methode-contact">
                                     <label class="fr-label" for="signalement-proprio-averti-2">Non</label>
                                 </div>
                             </div>
@@ -240,7 +248,7 @@
                             </p>
                         </fieldset>
                     </div>
-                    <div class="fr-form-group fr-hidden" id="signalement-methode-contact">
+                    <div class="fr-form-group fr-hidden data-fr-toggle" id="signalement-methode-contact">
                         <fieldset class="fr-fieldset fr-fieldset--inline fr-fieldset--error" role="group">
                             <legend class="fr-fieldset__legend fr-text--regular" id="checkboxes-inline-legend">
                                 Comment avez-vous averti le propriétaire ou gestionnaire ?<sup
@@ -357,7 +365,7 @@
                                 Veuillez précisez si vous êtes allocataire
                             </p>
                         </fieldset>
-                        <div class="fr-form-group">
+                        <div class="fr-form-group fr-mt-5v">
                             <label class="fr-label" for="signalement-num-alloc">
                                 Numéro d'allocataire
                                 <span class="fr-hint-text">Merci de renseigner votre numéro d'allocataire tel qu'il apparait sur vos documents.</span>
@@ -467,7 +475,7 @@
                                 Veuillez précisez si le bail est en cours.
                             </p>
                         </fieldset>
-                        <div class="fr-form-group">
+                        <div class="fr-form-group fr-mt-5v">
                             <label class="fr-label" for="signalement-date-entree">
                                 Date d'entrée ?<sup class="fr-text-default--error">*</sup>
                                 <span class="fr-hint-text">La date d'entrée dans le logement doit être renseignée au format (JJ/MM/AAAA).</span>
@@ -483,7 +491,7 @@
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-fieldset__legend fr-text--regular">
                                 Propriétaire ou Gestionnaire Bailleur
-                                <span class="fr-hint-text">Que la bail soit en cours ou non, merci de renseigner la date d'entrée dans le logement.</span>
+                                <span class="fr-hint-text">Si vous disposez des infrmations suivantes concernant le propriétaire, merci de les renseigner.</span>
                             </legend>
                             <div class="fr-fieldset__content fr-grid-row fr-grid-row--gutters">
                                 <div class="fr-input-group fr-col-12 fr-col-md-6 fr-px-0 fr-pl-md-0 fr-pr-md-1v">
@@ -598,13 +606,13 @@
                                 <div class="fr-radio-group">
                                     <input type="radio" id="signalement-intervention-1" value="0"
                                            name="signalement[isRefusIntervention]" required
-                                           data-fr-toggle="signalement-raison-refus">
+                                           data-fr-toggle-hide="signalement-raison-refus">
                                     <label class="fr-label" for="signalement-intervention-1">Oui</label>
                                 </div>
                                 <div class="fr-radio-group">
                                     <input type="radio" id="signalement-intervention-2" value="true"
                                            name="signalement[isRefusIntervention]"
-                                           data-fr-toggle="signalement-raison-refus">
+                                           data-fr-toggle-show="signalement-raison-refus">
                                     <label class="fr-label" for="signalement-intervention-2">Non</label>
                                 </div>
                             </div>
@@ -613,7 +621,7 @@
                             </p>
                         </fieldset>
                     </div>
-                    <div class="fr-form-group fr-hidden" id="signalement-raison-refus">
+                    <div class="fr-form-group fr-hidden data-fr-toggle" id="signalement-raison-refus">
                         <label class="fr-label" for="signalement-raison-refus">
                             Précisez la raison de votre refus<sup class="fr-text-default--error">*</sup>
                             <span class="fr-hint-text">Proposer une rapide description du ou des problème(s).</span>
@@ -645,7 +653,7 @@
                 <form action="#" name="signalement" class="needs-validation" novalidate>
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
-                            <legend class="fr-fieldset__legend fr-text--regular" id='signalement-occupant'>
+                            <legend class="fr-fieldset__legend fr-text--regular">
                                 Êtes-vous l'occupant du logement ?<sup
                                         class="fr-text-default--error">*</sup>
                                 <span class="fr-hint-text">Si vous déposez ce signalement pour le compte de quelqu'un d'autres, merci de nous le faire savoir.</span>
@@ -653,13 +661,13 @@
                             <div class="fr-fieldset__content">
                                 <div class="fr-radio-group">
                                     <input type="radio" id="signalement-occupant-1" value="0"
-                                           name="signalement[isNotOccupant]" data-fr-toggle="signalement-pas-occupant"
+                                           name="signalement[isNotOccupant]" data-fr-toggle-hide="signalement-pas-occupant" data-fr-toggle-show="signalement-occupant" data-fr-toggle-require="signalement-courriel-occupant|signalement-tel-occupant"
                                            required>
                                     <label class="fr-label" for="signalement-occupant-1">Oui</label>
                                 </div>
                                 <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-occupant-2" value="true"
-                                           name="signalement[isNotOccupant]" data-fr-toggle="signalement-pas-occupant">
+                                    <input type="radio" id="signalement-occupant-2" value="1"
+                                           name="signalement[isNotOccupant]" data-fr-toggle-show="signalement-occupant|signalement-pas-occupant" data-fr-toggle-unrequire="signalement-courriel-occupant|signalement-tel-occupant">
                                     <label class="fr-label" for="signalement-occupant-2">Non</label>
                                 </div>
                             </div>
@@ -668,21 +676,21 @@
                             </p>
                         </fieldset>
                     </div>
-                    <div class="fr-form-group fr-hidden" id="signalement-pas-occupant">
+                    <div class="fr-form-group fr-hidden data-fr-toggle" id="signalement-pas-occupant">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-fieldset__legend fr-text--regular">
-                                Informations concernant le déclarant
+                                Informations concernant <strong><u>le déclarant</u></strong>
                                 <span class="fr-hint-text">Vous déposez pour le compte de quelqu'un d'autre</span>
                             </legend>
                             <div class="fr-fieldset__content fr-grid-row fr-grid-row--gutters">
                                 <div class="fr-input-group fr-col-12 fr-col-md-6 fr-px-0 fr-pl-md-0 fr-pr-md-1v">
                                     <label class="fr-label" for="signalement-nom-declarant">
-                                        Nom
+                                        Nom<sup class="fr-text-default--error">*</sup>
                                     </label>
                                     <input class="fr-input fr-input--no-resize" id="signalement-nom-declarant"
                                            name="signalement[nomDeclarant]" value="{{ app.user ? app.user.nom : '' }}">
                                     <label class="fr-label" for="signalement-prenom-declarant">
-                                        Prénom
+                                        Prénom<sup class="fr-text-default--error">*</sup>
                                     </label>
                                     <input class="fr-input fr-input--no-resize" id="signalement-prenom-declarant"
                                            name="signalement[prenomDeclarant]"
@@ -693,13 +701,13 @@
                                 </div>
                                 <div class="fr-input-group fr-col-12 fr-col-md-6 fr-px-0 fr-pr-md-0 fr-pl-md-1v">
                                     <label class="fr-label" for="signalement-tel-declarant">
-                                        N° de téléphone
+                                        N° de téléphone<sup class="fr-text-default--error">*</sup>
                                     </label>
                                     <input class="fr-input fr-input--no-resize" type="tel"
                                            id="signalement-tel-declarant"
                                            name="signalement[telDeclarant]">
                                     <label class="fr-label" for="signalement-courriel-declarant">
-                                        Courriel
+                                        Courriel<sup class="fr-text-default--error">*</sup>
                                     </label>
                                     <input class="fr-input fr-input--no-resize" type="email"
                                            id="signalement-courriel-declarant"
@@ -711,7 +719,7 @@
                                 </div>
                                 <div class="fr-input-group fr-col-12 fr-p-0">
                                     <label class="fr-label" for="signalement-structure-declarant">
-                                        Structure [ADIL, CCAS, SDIS, ...]
+                                        Structure [ADIL, CCAS, SDIS, ...]<sup class="fr-text-default--error">*</sup>
                                     </label>
                                     <input class="fr-input fr-input--no-resize" id="signalement-structure-declarant"
                                            name="signalement[structureDeclarant]"
@@ -723,10 +731,10 @@
                             </div>
                         </fieldset>
                     </div>
-                    <div class="fr-form-group">
+                    <div class="fr-form-group fr-hidden data-fr-toggle" id="signalement-occupant">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-fieldset__legend fr-text--regular">
-                                Informations concernant l'occupant
+                                Informations concernant <strong><u>l'occupant</u></strong>
                                 <span class="fr-hint-text">Ces informations sont neccèssaire au suivi de votre signalement, merci de bine verifier votre saisi.</span>
                             </legend>
                             <div class="fr-fieldset__content fr-grid-row fr-grid-row--gutters">
@@ -833,7 +841,7 @@
                                                 Autre
                                             </label>
                                             <input class="fr-input fr-input--no-resize" minlength="2"
-                                                   id="signalement-num-appart-occupant"
+                                                   id="signalement-adresse-autre-occupant"
                                                    name="signalement[adresseAutreOccupant]"
                                                    placeholder="Autre information">
                                         </div>
@@ -845,6 +853,8 @@
                                        id="signalement-geoloc-lat-occupant">
                                 <input type="hidden" name="signalement[geoloc][lng]"
                                        id="signalement-geoloc-lng-occupant">
+                                <input type="hidden" name="signalement[inseeOccupant]"
+                                       id="signalement-insee-occupant">
                             </div>
                         </fieldset>
                     </div>

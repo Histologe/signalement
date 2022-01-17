@@ -212,6 +212,9 @@ class Signalement
     #[ORM\Column(type: 'json', nullable: true)]
     private $modeContactProprio = [];
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $inseeOccupant;
+
     public function __construct()
     {
         $this->situations = new ArrayCollection();
@@ -1052,6 +1055,18 @@ class Signalement
     public function setModeContactProprio(?array $modeContactProprio): self
     {
         $this->modeContactProprio = $modeContactProprio;
+
+        return $this;
+    }
+
+    public function getInseeOccupant(): ?string
+    {
+        return $this->inseeOccupant;
+    }
+
+    public function setInseeOccupant(?string $inseeOccupant): self
+    {
+        $this->inseeOccupant = $inseeOccupant;
 
         return $this;
     }

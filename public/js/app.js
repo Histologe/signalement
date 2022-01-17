@@ -110,3 +110,14 @@ document?.querySelector('#fr-password-toggle')?.addEventListeners('click touchdo
     })
     let pwd=event.target.parentElement.querySelector('[name="password"]');"text"!==pwd.type?pwd.type="text":pwd.type="password";
 })
+
+document?.querySelectorAll('.fr-tabs__panel')?.forEach((tab) => {
+    tab.addEventListener("dsfr.conceal",event=>{
+        const y = tab.getBoundingClientRect().top + window.scrollY;
+        window.scroll({
+            top: y,
+            behavior: 'smooth'
+        });
+    });
+})
+
