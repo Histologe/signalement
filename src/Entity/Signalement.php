@@ -55,7 +55,7 @@ class Signalement
     #[ORM\Column(type: 'integer', nullable: true)]
     private $nbEnfantsP6;
 
-    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[ORM\Column(type: 'string', length: 3, nullable: true)]
     private $isAllocataire;
 
     #[ORM\Column(type: 'string', length: 25, nullable: true)]
@@ -197,6 +197,18 @@ class Signalement
     #[ORM\Column(type: 'float', nullable: true)]
     private $scoreCloture;
 
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private $etageOccupant;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private $escalierOccupant;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private $numAppartOccupant;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $adresseAutreOccupant;
+
     public function __construct()
     {
         $this->situations = new ArrayCollection();
@@ -207,6 +219,7 @@ class Signalement
         $this->affectations = new ArrayCollection();
         $this->uuid = uniqid();
         $this->isSituationHandicap = false;
+        $this->isOccupantPresentVisite = false;
         $this->suivis = new ArrayCollection();
         $this->scoreCreation = 0;
     }
@@ -374,12 +387,12 @@ class Signalement
         return $this;
     }
 
-    public function getIsAllocataire(): ?bool
+    public function getIsAllocataire(): ?string
     {
         return $this->isAllocataire;
     }
 
-    public function setIsAllocataire(?bool $isAllocataire): self
+    public function setIsAllocataire(?string $isAllocataire)
     {
         $this->isAllocataire = $isAllocataire;
 
@@ -976,6 +989,54 @@ class Signalement
     public function setScoreCloture(?float $scoreCloture): self
     {
         $this->scoreCloture = $scoreCloture;
+
+        return $this;
+    }
+
+    public function getEtageOccupant(): ?int
+    {
+        return $this->etageOccupant;
+    }
+
+    public function setEtageOccupant(?int $etageOccupant): self
+    {
+        $this->etageOccupant = $etageOccupant;
+
+        return $this;
+    }
+
+    public function getEscalierOccupant(): ?int
+    {
+        return $this->escalierOccupant;
+    }
+
+    public function setEscalierOccupant(?int $escalierOccupant): self
+    {
+        $this->escalierOccupant = $escalierOccupant;
+
+        return $this;
+    }
+
+    public function getNumAppartOccupant(): ?int
+    {
+        return $this->numAppartOccupant;
+    }
+
+    public function setNumAppartOccupant(?int $numAppartOccupant): self
+    {
+        $this->numAppartOccupant = $numAppartOccupant;
+
+        return $this;
+    }
+
+    public function getAdresseAutreOccupant(): ?string
+    {
+        return $this->adresseAutreOccupant;
+    }
+
+    public function setAdresseAutreOccupant(?string $adresseAutreOccupant): self
+    {
+        $this->adresseAutreOccupant = $adresseAutreOccupant;
 
         return $this;
     }

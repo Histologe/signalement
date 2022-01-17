@@ -35,7 +35,7 @@ forms.forEach((form) => {
     form?.querySelectorAll('[data-fr-toggle]')?.forEach((toggle) => {
         toggle.addEventListener('change', (event) => {
             let target = form.querySelector('#' + toggle.getAttribute('data-fr-toggle'));
-            "true" === event.target.value ? (target.classList.remove('fr-hidden'),target.querySelectorAll('input:not([type="checkbox"])').forEach((ipt)=>{ipt.required = true})) : (target.classList.add('fr-hidden'),target.querySelectorAll('input:not([type="checkbox"])').forEach((ipt)=>{ipt.required = false}),target.querySelectorAll('input[type="checkbox"]').forEach((ipt)=>{ipt.checked = false}));
+            "true" === event.target.value ? (target.classList.remove('fr-hidden'),target.querySelectorAll('input:not([type="checkbox"])').forEach((ipt)=>{ipt.required = true})) : (target.classList.add('fr-hidden'),target.querySelectorAll('input:not([type="checkbox"])').forEach((ipt)=>{ipt.required = false;}),target.querySelectorAll('input[type="checkbox"]').forEach((ipt)=>{ipt.checked = false}));
         })
     })
     form?.querySelectorAll('input[type="file"]')?.forEach((file) => {
@@ -174,7 +174,7 @@ forms.forEach((form) => {
                         if (r.ok) {
                             r.json().then((res) => {
                                 if (res.response === "success") {
-                                    document.querySelector('main').innerHTML = "Ok"
+                                    document.querySelectorAll('#signalement-tabs,#signalement-success').forEach(el=>{el.classList.toggle('fr-hidden')})
                                 } else {
                                     event.submitter.disabled = true;
                                     ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v => event.submitter.classList.toggle(v));

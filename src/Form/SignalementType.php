@@ -69,16 +69,21 @@ class SignalementType extends AbstractType
                         'class' => 'fr-form-group fr-col-2'
                     ]
                 ])
-                ->add('natureLogement', null, [
+                ->add('natureLogement', ChoiceType::class, [
+                    'row_attr' => [
+                        'class' => 'fr-select-group fr-col-2'
+                    ],
                     'attr' => [
-                        'class' => 'fr-input'
+                        'class' => 'fr-select'
+                    ],
+                    'choices' => [
+                        'Appartement' => 'appartement',
+                        'Maison' => 'maison',
+                        'Autre' => 'autre'
                     ],
                     'label_attr' => [
                         'class' => 'fr-label'
                     ],
-                    'row_attr' => [
-                        'class' => 'fr-form-group fr-col-2'
-                    ]
                 ])
                 ->add('typeLogement', null, [
                     'attr' => [
@@ -197,6 +202,50 @@ class SignalementType extends AbstractType
                         'class' => 'fr-form-group fr-col-2'
                     ]
                 ])
+                ->add('etageOccupant', null, [
+                    'attr' => [
+                        'class' => 'fr-input'
+                    ],
+                    'label_attr' => [
+                        'class' => 'fr-label'
+                    ],
+                    'row_attr' => [
+                        'class' => 'fr-form-group fr-col-2'
+                    ]
+                ])
+                ->add('escalierOccupant', null, [
+                    'attr' => [
+                        'class' => 'fr-input'
+                    ],
+                    'label_attr' => [
+                        'class' => 'fr-label'
+                    ],
+                    'row_attr' => [
+                        'class' => 'fr-form-group fr-col-2'
+                    ]
+                ])
+                ->add('numAppartOccupant', null, [
+                    'attr' => [
+                        'class' => 'fr-input'
+                    ],
+                    'label_attr' => [
+                        'class' => 'fr-label'
+                    ],
+                    'row_attr' => [
+                        'class' => 'fr-form-group fr-col-2'
+                    ]
+                ])
+                ->add('adresseAutreOccupant', null, [
+                    'attr' => [
+                        'class' => 'fr-input'
+                    ],
+                    'label_attr' => [
+                        'class' => 'fr-label'
+                    ],
+                    'row_attr' => [
+                        'class' => 'fr-form-group fr-col-2'
+                    ],'label'=>'Autre complément'
+                ])
                 ->add('villeOccupant', null, [
                     'attr' => [
                         'class' => 'fr-input'
@@ -210,13 +259,16 @@ class SignalementType extends AbstractType
                 ])
                 ->add('isAllocataire', ChoiceType::class, [
                     'row_attr' => [
-                        'class' => 'fr-radio-group fr-col-2'
+                        'class' => 'fr-select-group fr-col-2'
+                    ],'attr' => [
+                        'class' => 'fr-select'
                     ],
                     'choices' => [
-                        'Oui' => 1,
+                        'CAF' => 'CAF',
+                        'MSA' => 'MSA',
                         'Non' => 0
                     ],
-                    'expanded' => true,
+
                     'label_attr' => [
                         'class' => 'fr-label'
                     ], 'label' => 'Allocataire MSA/CAF'
@@ -414,13 +466,14 @@ class SignalementType extends AbstractType
                 ])
                 ->add('isOccupantPresentVisite', ChoiceType::class, [
                     'row_attr' => [
-                        'class' => 'fr-radio-group fr-col-2'
+                        'class' => 'fr-select-group fr-col-2'
+                    ],'attr' => [
+                        'class' => 'fr-select'
                     ],
                     'choices' => [
                         'Oui' => 1,
                         'Non' => 0
                     ],
-                    'expanded' => true,
                     'label_attr' => [
                         'class' => 'fr-label'
                     ],
@@ -429,13 +482,14 @@ class SignalementType extends AbstractType
                 ])
                 ->add('isSituationHandicap', ChoiceType::class, [
                     'row_attr' => [
-                        'class' => 'fr-radio-group fr-col-2'
+                        'class' => 'fr-select-group fr-col-2'
+                    ],'attr' => [
+                        'class' => 'fr-select'
                     ],
                     'choices' => [
                         'Oui' => 1,
                         'Non' => 0
                     ],
-                    'expanded' => true,
                     'label_attr' => [
                         'class' => 'fr-label'
                     ],
@@ -461,13 +515,14 @@ class SignalementType extends AbstractType
             ])
                 ->add('isNotOccupant', ChoiceType::class, [
                     'row_attr' => [
-                        'class' => 'fr-radio-group fr-col-2'
+                        'class' => 'fr-select-group fr-col-2'
+                    ],'attr' => [
+                        'class' => 'fr-select'
                     ],
                     'choices' => [
                         'Oui' => 1,
                         'Non' => 0
                     ],
-                    'expanded' => true,
                     'label_attr' => [
                         'class' => 'fr-label'
                     ],

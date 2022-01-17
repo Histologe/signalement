@@ -4,7 +4,16 @@
 
 {% block body %}
     <main class="fr-container fr-py-5w">
-        <div class="fr-tabs">
+        <header class="fr-callout bg-light fr-mb-5v fr-hidden" id="signalement-success">
+            <p class="fr-callout__title">
+                Merci de votre signalement.</p>
+            <p class="fr-callout__text fr-mb-5v">
+                L'équipe Histologe vous recontactera très rapidement.
+            </p>
+            <em class="fr-fi-information-line fr-text--light fr-text-label--blue-france"> Un courriel de confirmation va
+                vous être transmis.</em>
+        </header>
+        <div class="fr-tabs" id="signalement-tabs">
             <ul class="fr-tabs__list" role="tablist" aria-label="Etapes signalement">
                 <li role="presentation">
                     <button id="signalement-step-1"
@@ -56,7 +65,8 @@
                 <form action="#" name="signalement" id="signalement-step-1" class="needs-validation" novalidate>
                     <div role="alert" class="fr-alert fr-alert--error fr-alert--sm fr-mb-5v fr-hidden">
                         <p class="fr-alert__title">Réponse incomplète</p>
-                        <p>Vous devez selectionner <u>au moins une</u> situation et <u>un état (moyen, grave, très grave) par situation</u> pour continuer</p>
+                        <p>Vous devez selectionner <u>au moins une</u> situation et <u>un état (moyen, grave, très
+                                grave) par situation</u> pour continuer</p>
                     </div>
                     <ul class="fr-accordions-group">
                         {% for situation in situations %}
@@ -80,29 +90,36 @@
                                                     <input type="checkbox"
                                                            name="signalement[situation][{{ situation.id }}]"
                                                            class="fr-toggle__input signalement-situation"
-                                                           id="signalement-situation-{{ situation.id }}-critere-{{ critere.id }}" value="{{ critere.label }}">
+                                                           id="signalement-situation-{{ situation.id }}-critere-{{ critere.id }}"
+                                                           value="{{ critere.label }}">
                                                     <label class="fr-toggle__label fr-text--bold"
                                                            for="signalement-situation-{{ situation.id }}-critere-{{ critere.id }}">
                                                         <div class="fr-form-group fr-mb-0">
                                                             <fieldset class="fr-fieldset">
                                                                 <legend class="fr-fieldset__legend">
                                                                     {{ critere.label }}
-                                                                    <span class="fr-hint-text fr-display-block"><strong class="fr-text-default--info">Quand tout va bien:</strong> {{ critere.description }}</span>
+                                                                    <span class="fr-hint-text fr-display-block"><strong
+                                                                                class="fr-text-default--info">Quand tout va bien:</strong> {{ critere.description }}</span>
                                                                 </legend>
                                                             </fieldset>
                                                         </div>
                                                     </label>
                                                 </div>
-                                                <div class="fr-fieldset__content fr-collapse" id="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
+                                                <div class="fr-fieldset__content fr-collapse"
+                                                     id="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
                                                     {% for index,criticite in critere.criticites %}
                                                         <div class="fr-radio-group fr-radio-rich fr-mb-5v">
-                                                            <input type="radio" id="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"
-                                                                   name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]" value="{{ criticite.id }}">
-                                                            <label class="fr-label" for="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"><strong>{{ etats[index] }}</strong>
+                                                            <input type="radio"
+                                                                   id="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"
+                                                                   name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]"
+                                                                   value="{{ criticite.id }}">
+                                                            <label class="fr-label"
+                                                                   for="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"><strong>{{ etats[index] }}</strong>
                                                                 <span class="fr-hint-text">{{ criticite.label }}</span>
                                                             </label>
                                                             <div class="fr-radio-rich__img">
-                                                                <img src="{{ asset('img/'~etats_classes[index]~'-actif.svg') }}" alt="" width="100%" class="fr-p-2v"/>
+                                                                <img src="{{ asset('img/'~etats_classes[index]~'-actif.svg') }}"
+                                                                     alt="" width="100%" class="fr-p-2v"/>
                                                                 <!-- L’alternative de l’image (attribut alt) doit rester vide car l’image est illustrative et ne doit pas être restituée aux technologies d’assistance -->
                                                             </div>
                                                         </div>
@@ -327,7 +344,7 @@
                                 </div>
                                 <div class="fr-radio-group">
                                     <input type="radio" id="is-allocataire-msa" value="MSA"
-                                           name="signalement[isAllocataire]" >
+                                           name="signalement[isAllocataire]">
                                     <label class="fr-label" for="is-allocataire-msa">MSA</label>
                                 </div>
                                 <div class="fr-radio-group">
@@ -762,7 +779,8 @@
                                     <label class="fr-label" for="signalement-cp-occupant">
                                         Code postal<sup class="fr-text-default--error">*</sup>
                                     </label>
-                                    <input class="fr-input fr-input--no-resize" type="text" pattern="[0-9]{5}" id="signalement-cp-occupant"
+                                    <input class="fr-input fr-input--no-resize" type="text" pattern="[0-9]{5}"
+                                           id="signalement-cp-occupant"
                                            name="signalement[cpOccupant]" required>
                                     <p class="fr-error-text fr-hidden">
                                         Veuillez renseigner le code postal a 5 chiffres du logement (ex: 75000).
@@ -779,6 +797,50 @@
                                         Veuillez renseigner le code postal du logement.
                                     </p>
                                 </div>
+
+                                <fieldset class="fr-fieldset fr-col-12 fr-p-0">
+                                    <legend class="fr-fieldset__legend">
+                                        Complément d'adresse
+                                    </legend>
+                                    <div class="fr-fieldset__content fr-grid-row">
+                                        <div class="fr-input-group fr-col-12 fr-mb-0">
+                                            <label class="fr-label" for="signalement-etage-occupant">
+                                                Etage
+                                            </label>
+                                            <input class="fr-input fr-input--no-resize"
+                                                   id="signalement-etage-occupant" type="number"
+                                                   name="signalement[etageOccupant]" placeholder="Etage">
+                                        </div>
+                                        <div class="fr-input-group fr-col-12 fr-mb-0">
+                                            <label class="fr-label" for="signalement-escalier-occupant">
+                                                Escalier
+                                            </label>
+                                            <input class="fr-input fr-input--no-resize" type="number"
+                                                   id="signalement-escalier-occupant"
+                                                   name="signalement[escalierOccupant]" placeholder="Escalier">
+                                        </div>
+                                        <div class="fr-input-group fr-col-12 fr-mb-0">
+                                            <label class="fr-label" for="signalement-num-appart-occupant">
+                                                N° appartement
+                                            </label>
+                                            <input class="fr-input fr-input--no-resize" type="number"
+                                                   id="signalement-num-appart-occupant"
+                                                   name="signalement[numAppartOccupant]"
+                                                   placeholder="Numéro d'appartement">
+                                        </div>
+                                        <div class="fr-input-group fr-col-12 ">
+                                            <label class="fr-label" for="signalement-adresse-autre-occupant">
+                                                Autre
+                                            </label>
+                                            <input class="fr-input fr-input--no-resize" minlength="2"
+                                                   id="signalement-num-appart-occupant"
+                                                   name="signalement[adresseAutreOccupant]"
+                                                   placeholder="Autre information">
+                                        </div>
+                                    </div>
+                                </fieldset>
+
+
                                 <input type="hidden" name="signalement[geoloc][lat]"
                                        id="signalement-geoloc-lat-occupant">
                                 <input type="hidden" name="signalement[geoloc][lng]"
@@ -869,7 +931,8 @@
                                    name="signalement[isCguAccepted]" required>
                             <label class="fr-toggle__label" for="signalement-accept-cgu" data-fr-checked-label="Activé"
                                    data-fr-unchecked-label="Désactivé"><b>J'ai bien pris connaissance des <a
-                                            href="{{ path('cgu') }}" target="_blank">CGU</a></b> et je les
+                                            href="{{ path('cgu') }}" target="_blank">Conditions Générales
+                                        d'Utilisation</a></b> et je les
                                 acceptent.</label>
                             <p class="fr-error-text fr-hidden">
                                 Vous devez accepter les Conditions Générales d'Utilisation pour transmettre votre

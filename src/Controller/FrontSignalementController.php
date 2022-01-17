@@ -122,6 +122,14 @@ class FrontSignalementController extends AbstractController
             } else {
                 $id = 1;
             }
+            if(!$signalement->getIsNotOccupant())
+            {
+                $signalement->setNomDeclarant(null);
+                $signalement->setPrenomDeclarant(null);
+                $signalement->setMailDeclarant(null);
+                $signalement->setStructureDeclarant(null);
+                $signalement->setTelDeclarant(null);
+            }
             //TODO: Repartir a zéro pour chaque année
             $signalement->setReference((new \DateTime())->format('Y') . '-' . $id);
             $em->persist($signalement);
