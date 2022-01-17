@@ -59,7 +59,7 @@ class BackPartenaireController extends AbstractController
         if (!$this->isGranted('ROLE_ADMIN'))
             return $this->redirectToRoute('back_index');
         return $this->render('back/partenaire/index.html.twig', [
-            'partenaires' => $partenaireRepository->findAlls(),
+            'partenaires' => $partenaireRepository->findAllOrByInseeIfCommune(),
         ]);
     }
 
