@@ -52,9 +52,9 @@
                 <li class="fr-sidemenu__item {% if 'back_statistique' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
                     <a class="fr-sidemenu__link" href="#" target="_self">Statistiques</a>
                 </li>
-                <li class="fr-sidemenu__item {% if 'back_export' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
+               {# <li class="fr-sidemenu__item {% if 'back_export' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
                     <a class="fr-sidemenu__link" href="#" target="_self">Export</a>
-                </li>
+                </li>#}
                 {% if is_granted('ROLE_ADMIN_PARTENAIRE') and app.user.partenaire %}
                     <li class="fr-sidemenu__item {% if 'back_partenaire' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
                         <a class="fr-sidemenu__link" href="{{ path('back_partenaire_edit',{id:app.user.partenaire.id}) }}" target="_self" {% if 'back_partenaire' is same as(app.request.get('_route')) %}aria-current="page"{% endif %}>Paramètres</a>
