@@ -2,15 +2,14 @@
 
 namespace App\Controller;
 
-use App\Entity\Critere;
-use App\Entity\Criticite;
+
 use App\Entity\Signalement;
 use App\Entity\SignalementUserAffectation;
-use App\Entity\Situation;
 use App\Entity\Suivi;
 use App\Entity\User;
 use App\Form\SignalementType;
 use App\Repository\PartenaireRepository;
+use App\Service\CriticiteCalculatorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -64,8 +63,10 @@ class BackSignalementController extends AbstractController
         }
         return $this->render('back/signalement/view.html.twig', [
             'title' => $title,
+            'needValidation' => $signalement->getStatut() === Signalement::STATUS_NEED_VALIDATION,
             'isAffected' => $isAffected,
             'isAccepted' => $isAccepted,
+            'isInvalid' => $signalement->getStatut() === Signalement::STATUS_IS_INVALID,
             'isRefused' => $isRefused,
             'signalement' => $signalement,
             'partenaires' => $partenaireRepository->findAllOrByInseeIfCommune($signalement->getInseeOccupant())
@@ -81,6 +82,8 @@ class BackSignalementController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $signalement->setModifiedBy($this->getUser());
             $signalement->setModifiedAt(new \DateTimeImmutable());
+            $score = new CriticiteCalculatorService($signalement);
+            $signalement->setScoreCreation($score->calculate());
             $suivi = new Suivi();
             $suivi->setCreatedBy($this->getUser());
             $suivi->setSignalement($signalement);
@@ -166,6 +169,35 @@ class BackSignalementController extends AbstractController
         } else
             $this->addFlash('error', "Une erreur est survenu lors du téléchargement");
         return $this->redirect($this->generateUrl('back_signalement_view', ['uuid' => $signalement->getUuid()]) . '#documents');
+    }
+
+    #[Route('/{uuid}/validation/response', name: 'back_signalement_validation_response', methods: "GET")]
+    public function validationResponseSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
+    {
+        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
+            return $this->redirectToRoute('back_index');
+        if ($this->isCsrfTokenValid('signalement_validation_response_' . $signalement->getId(), $request->get('_token'))
+            && $response = $request->get('signalement-validation-response')) {
+            if (isset($response['accept'])) {
+                $statut = Signalement::STATUS_NEW;
+                $description = 'valide';
+                //TODO: Send mail usager
+            } else {
+                $statut = Signalement::STATUS_IS_INVALID;
+                $description = 'non-valide';
+            }
+            $suivi = new Suivi();
+            $suivi->setSignalement($signalement);
+            $suivi->setDescription('Le signalement à été marqué comme ' . $description);
+            $suivi->setCreatedBy($this->getUser());
+            $signalement->setStatut($statut);
+            $doctrine->getManager()->persist($signalement);
+            $doctrine->getManager()->persist($suivi);
+            $doctrine->getManager()->flush();
+            $this->addFlash('success', 'Statut du signalement mis à jour avec succés !');
+        } else
+            $this->addFlash('error', "Une erreur est survenue...");
+        return $this->redirectToRoute('back_signalement_view', ['uuid' => $signalement->getUuid()]);
     }
 
     #[Route('/{uuid}/affectation/{user}/response', name: 'back_signalement_affectation_response', methods: "GET")]

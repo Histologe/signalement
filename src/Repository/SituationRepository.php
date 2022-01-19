@@ -38,6 +38,20 @@ class SituationRepository extends ServiceEntityRepository
     }
 
 
+    public function findAllWithCritereAndCriticite()
+    {
+        return $this->createQueryBuilder('s')
+            ->leftJoin('s.criteres','criteres')
+            ->leftJoin('criteres.criticites','criticites')
+            ->addSelect('criteres')
+            ->addSelect('criticites')
+            ->orderBy('s.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+
     /*
     public function findOneBySomeField($value): ?Situation
     {

@@ -24,8 +24,12 @@ class BackController extends AbstractController
         $user = null;
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
             $user = $this->getUser();
+        $filter = [
+            'status' => $request->get('bo-filter-statut') ?? 'all',
+            'ville' => $request->get('bo-filter-ville') ?? 'all'
+        ];
         $signalements = [
-            'list' => $signalementRepository->findByStatusAndOrCityForUser($user, $request->get('bo-filter-statut') ?? 'all', $request->get('bo-filter-ville') ?? 'all',$request->get('search')),
+            'list' => $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'],$request->get('search')),
             'villes' => $signalementRepository->findCities($user)
         ];
         if (!$user) {
@@ -45,6 +49,7 @@ class BackController extends AbstractController
         }
         return $this->render('back/index.html.twig', [
             'title' => $title,
+            'filter' => $filter,
             'signalements' => $signalements,
         ]);
     }

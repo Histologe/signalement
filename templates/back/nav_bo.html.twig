@@ -1,10 +1,13 @@
-<nav class="fr-sidemenu fr-sidemenu--sticky-full-height fr-mt-5v fr-pl-md-5v fr-pr-0  fr-text--center fr-col-12 fr-col-md-3 fr-col-lg-2 fr-ml-0 fr-pl-0"
+<nav class="fr-sidemenu fr-sidemenu--sticky-full-height fr-pl-md-5v fr-pr-0  fr-text--center fr-col-12 fr-col-md-3 fr-col-lg-2 fr-ml-0 fr-pl-0"
      aria-label="Menu latéral">
-    <div class="fr-sidemenu__inner">
+    <div class="fr-py-5v fr-sidemenu__inner">
         <button class="fr-sidemenu__btn" hidden aria-controls="fr-sidemenu-wrapper" aria-expanded="false">
             Menu administration principal
         </button>
         <div class="fr-collapse" id="fr-sidemenu-wrapper">
+            <div class="fr-pb-5v">
+                <img src="{{ asset('img/logo_145.png') }}" alt="HISTOLOGE" width="145px">
+            </div>
             <div class="fr-sidemenu__title">Tableau de bord<br>
                 <small class="fr-text-label--blue-france">{{ app.user.userIdentifier }}</small></div>
 
@@ -21,6 +24,9 @@
             </form>
 
             <ul class="fr-sidemenu__list">
+                <li class="fr-sidemenu__item">
+                    <a class="fr-sidemenu__link fr-link--icon-left" href="{{ path('signalement') }}">Créer un signalement</a>
+                </li>
                 <li class="fr-sidemenu__item {% if 'back_index' is same as(app.request.get('_route')) or 'back_signalement_' in app.request.get('_route') %}fr-sidemenu__item--active{% endif %}">
                     <a class="fr-sidemenu__link" href="{{ path('back_index') }}" target="_self"
                        {% if 'back_index' is same as(app.request.get('_route')) or 'back_signalement_' in app.request.get('_route') %}aria-current="page"{% endif %}>Dashboard</a>
@@ -62,6 +68,15 @@
                         <a class="fr-sidemenu__link" href="{{ path('back_user_report_index') }}" target="_self" {% if 'back_user_report' in app.request.get('_route') %}aria-current="page"{% endif %}>Bugs & Retours</a>
                     </li>
                 {% endif %}
+            </ul>
+            <ul class="fr-sidemenu__list fr-sidemenu__list-bottom" style="position: fixed;bottom: 1.5rem">
+                <li class="fr-sidemenu__item">
+                    <a class="fr-sidemenu__link" data-fr-opened="false" aria-controls="fr-bug-report-modal" href="#">Feedbacks</a>
+                </li>
+                <li class="fr-sidemenu__item">
+                    <a class="fr-sidemenu__link fr-fi-logout-box-r-line"
+                       href="{{ path('app_logout') }}">Déconnexion</a>
+                </li>
             </ul>
         </div>
     </div>

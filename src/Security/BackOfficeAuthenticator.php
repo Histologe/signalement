@@ -56,8 +56,6 @@ class BackOfficeAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-
-        //TODO: LOGIQUE ROLE
         return new RedirectResponse($this->urlGenerator->generate('back_index'));
     }
 

@@ -54,6 +54,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'integer')]
     private $statut;
 
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private $lastLoginAt;
+
+    private $newsActivitiesSinceLastLogin;
+
     public function __construct()
     {
         $this->affectations = new ArrayCollection();
@@ -281,5 +286,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->statut = $statut;
 
         return $this;
+    }
+
+    public function getLastLoginAt(): ?\DateTimeImmutable
+    {
+        return $this->lastLoginAt;
+    }
+
+    public function setLastLoginAt(?\DateTimeImmutable $lastLoginAt): self
+    {
+        $this->lastLoginAt = $lastLoginAt;
+
+        return $this;
+    }
+
+    /**
+     * @param mixed $newsActivitiesSinceLastLogin
+     */
+    public function setNewsActivitiesSinceLastLogin($newsActivitiesSinceLastLogin): void
+    {
+        $this->newsActivitiesSinceLastLogin = $newsActivitiesSinceLastLogin;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNewsActivitiesSinceLastLogin()
+    {
+        return $this->newsActivitiesSinceLastLogin;
     }
 }

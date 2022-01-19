@@ -211,7 +211,8 @@ class SignalementType extends AbstractType
                     ],
                     'row_attr' => [
                         'class' => 'fr-form-group fr-col-2'
-                    ]
+                    ],
+                    'required'=> false
                 ])
                 ->add('escalierOccupant', null, [
                     'attr' => [
@@ -222,7 +223,8 @@ class SignalementType extends AbstractType
                     ],
                     'row_attr' => [
                         'class' => 'fr-form-group fr-col-2'
-                    ]
+                    ],
+                    'required'=> false
                 ])
                 ->add('numAppartOccupant', null, [
                     'attr' => [
@@ -233,7 +235,8 @@ class SignalementType extends AbstractType
                     ],
                     'row_attr' => [
                         'class' => 'fr-form-group fr-col-2'
-                    ]
+                    ],
+                    'required'=> false
                 ])
                 ->add('adresseAutreOccupant', null, [
                     'attr' => [
@@ -244,7 +247,8 @@ class SignalementType extends AbstractType
                     ],
                     'row_attr' => [
                         'class' => 'fr-form-group fr-col-2'
-                    ],'label'=>'Autre complément'
+                    ],'label'=>'Autre complément',
+                    'required'=> false
                 ])
                 ->add('villeOccupant', null, [
                     'attr' => [

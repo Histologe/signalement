@@ -38,7 +38,7 @@
                 <select name="bo-filter-ville" id="filter_ville" class="fr-select">
                     <option value="all">TOUTES</option>
                     {% for ville in signalements.villes %}
-                        <option value="{{ ville }}">{{ ville|upper }}</option>
+                        <option value="{{ ville }}" {% if filter.ville is same as(ville) %}selected{% endif %}>{{ ville|upper }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -46,10 +46,17 @@
                 <label class="fr-label" for="filter_statut"><strong>Filter par statut</strong></label>
                 <select name="bo-filter-statut" id="filter_statut" class="fr-select">
                     <option value="all">TOUS</option>
-                    <option value="new">Nouveaux</option>
-                    <option value="wait">En attente</option>
-                    <option value="review">A revoir</option>
-                    <option value="closed">Fermés</option>
+                    {% set statuts = {
+                        'need-validation':'A valider',
+                        'new':'Nouveaux',
+                        'wait':'En attente d\'info.',
+                        'review':'A revoir',
+                        'closed':'Fermés',
+                        'is-invalid':'Non-valide',
+                    } %}
+                    {% for statut,wording in statuts %}
+                    <option value="{{ statut }}" {% if filter.status is same as(statut) %}selected{% endif %}>{{ wording|upper }}</option>
+                    {% endfor %}
                 </select>
             </div>
         </form>
@@ -62,7 +69,7 @@
                 <th>Date</th>
                 <th>Situation(s)</th>
                 {# <th>Alert.</th> #}
-                <th>Procédure</th>
+                {# <th>Criticité</th> #}
                 <th>Desc.</th>
                 <th>Ville</th>
                 <th>Affectation</th>
@@ -72,9 +79,9 @@
             </thead>
             <tbody>
             {% for index,signalement in signalements.list %}
-                <tr>
+                <tr class="{% if signalement.statut is same as("need-validation") or "closed" in signalement.statut or signalement.statut is same as("is-invalid") %}fr-background-alt--red-marianne{% else %}fr-background-alt--green-bourgeon{% endif %}">
                     <td>
-                         <a href="{{ path('back_signalement_view',{uuid:signalement.uuid}) }}">{{ signalement.reference }}</a>
+                        <a href="{{ path('back_signalement_view',{uuid:signalement.uuid}) }}">{{ signalement.reference }}</a>
                     </td>
                     <td>{{ signalement.createdAt|date('d/m/Y') }}</td>
                     <td>{% for situation in signalement.situations %}
@@ -82,17 +89,26 @@
                                  alt="{{ situation.label }}" title="{{ situation.label }}">
                         {% endfor %}
                     </td>
-                    {# <td> #}{# {{ signalement.hasAlert ? 'Oui' : 'Non' }} #}{# </td> #}
-                    <td>{{ signalement.codeProcedure ? signalement.codeProcedure : 'Aucune' }}</td>
-                    <td class="text">
-                        <small><strong>[ {{ signalement.nomOccupant|upper~' '~signalement.prenomOccupant|capitalize }}
-                                ]</strong></small><br>{{ signalement.details[:30] }}...</td>
+                    <td>
+                        <div class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters">
+                            <canvas id="gauge-signalement-{{ signalement.id }}" class="fr-col-3"></canvas>
+                            {# <td> #}{# {{ signalement.hasAlert ? 'Oui' : 'Non' }} #}{# </td> #}
+                            {# <td>{{ signalement.codeProcedure ? signalement.codeProcedure : 'Aucune' }}</td> #}
+                            <div class="fr-col-9">
+                                <small>
+                                    <strong>[ {{ signalement.nomOccupant|upper~' '~signalement.prenomOccupant|capitalize }}
+                                        ]</strong>
+                                </small><br>
+                                {{ signalement.details[:30] }}...
+                            </div>
+                        </div>
+                    </td>
                     <td>{{ signalement.villeOccupant|upper }} <br>
                         <small>[{{ signalement.adresseOccupant }}]</small>
                     </td>
                     <td>
                         {% for affectation in signalement.affectationStatusByPartenaire %}
-                                {{ affectation.partenaire }}
+                            {{ affectation.partenaire }}
                             {% set statut = '' %}
                             {% if affectation.statut is same as (0) %}
                                 {% set statut = '<span class=" fr-text-label--orange-terre-battue">En attente</span>' %}
@@ -113,6 +129,10 @@
                             En attente d'info. complémentaire
                         {% elseif signalement.statut is same as('review') %}
                             A revoir
+                        {% elseif signalement.statut is same as('need-validation') %}
+                            <strong class="fr-text-label--red-marianne">A valider</strong>
+                        {% elseif signalement.statut is same as('is-invalid') %}
+                            <strong class="fr-text-label--red-marianne">Non-valide</strong>
                         {% else %}
                             Fermé
                         {% endif %}
@@ -121,7 +141,8 @@
                         <form method="post" action="{{ path('back_signalement_delete',{uuid:signalement.uuid}) }}"
                               onsubmit="return confirm('Êtes-vous sûre de vouloir supprimer ce signalement ?')">
                             <button class="fr-btn fr-btn--orange fr-btn--sm fr-fi-delete-fill"></button>
-                            <input type="hidden" name="_token" value="{{ csrf_token('signalement_delete_'~signalement.id) }}">
+                            <input type="hidden" name="_token"
+                                   value="{{ csrf_token('signalement_delete_'~signalement.id) }}">
                         </form>
                     </td>
                 </tr>
@@ -129,4 +150,20 @@
             </tbody>
         </table>
     </section>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        {% for signalement in signalements.list %}
+        opts.pointer = {
+            length: 0.49, // // Relative to gauge radius
+            strokeWidth: 0.1, // The thickness
+            color: '#000000' // Fill color
+        }
+        gauge = new Gauge(document.getElementById('gauge-signalement-{{ signalement.id }}')).setOptions(opts); // create sexy gauge!
+        gauge.maxValue = 100; // set max gauge value
+        gauge.setMinValue(0);  // Prefer setter over gauge.minValue = 0
+        gauge.animationSpeed = 100; // set animation speed (32 is default value)
+        gauge.set({{ signalement.scoreCreation }}); // set actual value
+        {% endfor %}
+    </script>
 {% endblock %}

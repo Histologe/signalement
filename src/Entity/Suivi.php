@@ -33,6 +33,7 @@ class Suivi
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->isPublic = false;
     }
 
     public function getId(): ?int

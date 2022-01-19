@@ -11,10 +11,13 @@ use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 #[ORM\Entity(repositoryClass: SignalementRepository::class)]
 class Signalement
 {
+    const STATUS_NEED_VALIDATION = 'need-validation';
+    const STATUS_IS_INVALID = 'is-invalid';
     const STATUS_NEW = 'new';
     const STATUS_AWAIT = 'await';
     const STATUS_NEED_REVIEW = 'review';
     const STATUS_CLOSED = 'closed';
+    const STATUS_CLOSED_FOR_ALL = 'closed-all';
     const STATUS_ARCHIVED = 'archive';
 
     #[ORM\Id]
@@ -221,7 +224,7 @@ class Signalement
         $this->criteres = new ArrayCollection();
         $this->criticites = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
-        $this->statut = self::STATUS_NEW;
+        $this->statut = self::STATUS_NEED_VALIDATION;
         $this->affectations = new ArrayCollection();
         $this->uuid = uniqid();
         $this->isSituationHandicap = false;
