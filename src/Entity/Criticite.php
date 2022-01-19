@@ -34,8 +34,12 @@ class Criticite
     #[ORM\Column(type: 'integer')]
     private $score;
 
+    #[ORM\Column(type: 'boolean')]
+    private $isArchive;
+
     public function __construct()
     {
+        $this->createdAt = new \DateTimeImmutable();
         $this->signalements = new ArrayCollection();
     }
 
@@ -127,6 +131,18 @@ class Criticite
     public function setScore(int $score): self
     {
         $this->score = $score;
+
+        return $this;
+    }
+
+    public function getIsArchive(): ?bool
+    {
+        return $this->isArchive;
+    }
+
+    public function setIsArchive(bool $isArchive): self
+    {
+        $this->isArchive = $isArchive;
 
         return $this;
     }

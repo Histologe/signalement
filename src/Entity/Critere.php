@@ -37,8 +37,12 @@ class Critere
     #[ORM\ManyToMany(targetEntity: Signalement::class, mappedBy: 'criteres')]
     private $signalements;
 
+    #[ORM\Column(type: 'boolean')]
+    private $isArchive;
+
     public function __construct()
     {
+        $this->createdAt = new \DateTimeImmutable();
         $this->criticites = new ArrayCollection();
         $this->signalements = new ArrayCollection();
     }
@@ -161,6 +165,18 @@ class Critere
         if ($this->signalements->removeElement($signalement)) {
             $signalement->removeCritere($this);
         }
+
+        return $this;
+    }
+
+    public function getIsArchive(): ?bool
+    {
+        return $this->isArchive;
+    }
+
+    public function setIsArchive(bool $isArchive): self
+    {
+        $this->isArchive = $isArchive;
 
         return $this;
     }

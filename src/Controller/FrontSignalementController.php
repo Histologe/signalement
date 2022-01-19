@@ -20,7 +20,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route('/signalement')]
 class FrontSignalementController extends AbstractController
 {
-    #[Route('/', name: 'signalement')]
+    #[Route('/', name: 'front_signalement')]
     public function index(SituationRepository $situationRepository): Response
     {
         $title = "Signalez vos problèmes de logement";

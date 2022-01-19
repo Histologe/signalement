@@ -39,6 +39,9 @@ class Situation
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private $icon;
 
+    #[ORM\Column(type: 'boolean')]
+    private $isArchive;
+
     public function __construct()
     {
         $this->criteres = new ArrayCollection();
@@ -175,6 +178,18 @@ class Situation
     public function setIcon(?string $icon): self
     {
         $this->icon = $icon;
+
+        return $this;
+    }
+
+    public function getIsArchive(): ?bool
+    {
+        return $this->isArchive;
+    }
+
+    public function setIsArchive(bool $isArchive): self
+    {
+        $this->isArchive = $isArchive;
 
         return $this;
     }

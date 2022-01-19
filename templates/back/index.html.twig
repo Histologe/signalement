@@ -1,28 +1,28 @@
 {% extends 'back/base_bo.html.twig' %}
 
 {% block content %}
-    <section class="fr-col-12 fr-col-md fr-background-alt--grey fr-p-5v">
+    <section class="fr-col-12 fr-col-md fr-background-alt--blue-france fr-p-5v">
         <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
             <div class="fr-col-3">
-                <div class="fr-rounded fr-highlight fr-p-3v fr-text--center bloc-stat">
+                <div class="fr-rounded fr-p-3v fr-text--center bloc-stat">
                     <span class="fr-display-xs">{{ signalements.counts.new }}</span><br>
                     <strong class="text-blue-france">Nouveaux</strong>
                 </div>
             </div>
             <div class="fr-col-3">
-                <div class="fr-rounded  fr-highlight fr-p-3v fr-text--center bloc-stat">
+                <div class="fr-rounded fr-p-3v fr-text--center bloc-stat">
                     <span class="fr-display-xs">{{ signalements.counts.await }}</span><br>
-                    <strong class="text-blue-france">Attente</strong>
+                    <strong class="text-blue-france">En attente</strong>
                 </div>
             </div>
             <div class="fr-col-3">
-                <div class="fr-rounded  fr-highlight fr-p-3v fr-text--center bloc-stat">
+                <div class="fr-rounded fr-p-3v fr-text--center bloc-stat">
                     <span class="fr-display-xs">{{ signalements.counts.review }}</span><br>
-                    <strong class="text-blue-france">Revoir</strong>
+                    <strong class="text-blue-france">A revoir</strong>
                 </div>
             </div>
             <div class="fr-col-3">
-                <div class="fr-col fr-rounded  fr-highlight fr-p-3v fr-text--center bloc-stat">
+                <div class="fr-col fr-rounded fr-p-3v fr-text--center bloc-stat">
                     <span class="fr-display-xs">{{ signalements.counts.closed }}</span><br>
                     <strong class="text-blue-france">Fermés</strong>
                 </div>
@@ -30,19 +30,18 @@
         </div>
     </section>
     <section class="fr-col-12 fr-p-5v">
-
-        <form action="#" name="bo-filter-form" method="POST"
-              class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
-            <div class="fr-col-6">
+        <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+            <form action="#" name="bo-filter-form" method="POST" class="fr-col-4">
                 <label class="fr-label" for="filter_ville"><strong>Filter par ville</strong></label>
                 <select name="bo-filter-ville" id="filter_ville" class="fr-select">
                     <option value="all">TOUTES</option>
                     {% for ville in signalements.villes %}
-                        <option value="{{ ville }}" {% if filter.ville is same as(ville) %}selected{% endif %}>{{ ville|upper }}</option>
+                        <option value="{{ ville }}"
+                                {% if filter.ville is same as(ville) %}selected{% endif %}>{{ ville|upper }}</option>
                     {% endfor %}
                 </select>
-            </div>
-            <div class="fr-col-6">
+            </form>
+            <form action="#" name="bo-filter-form" method="POST" class="fr-col-4">
                 <label class="fr-label" for="filter_statut"><strong>Filter par statut</strong></label>
                 <select name="bo-filter-statut" id="filter_statut" class="fr-select">
                     <option value="all">TOUS</option>
@@ -55,69 +54,69 @@
                         'is-invalid':'Non-valide',
                     } %}
                     {% for statut,wording in statuts %}
-                    <option value="{{ statut }}" {% if filter.status is same as(statut) %}selected{% endif %}>{{ wording|upper }}</option>
+                        <option value="{{ statut }}"
+                                {% if filter.status is same as(statut) %}selected{% endif %}>{{ wording|upper }}</option>
                     {% endfor %}
                 </select>
-            </div>
-        </form>
+            </form>
+            <form action="{{ path('back_index') }}" method="POST" class="fr-col-4">
+                <label class="fr-label" for="header-search-input"><strong>Rechercher</strong></label>
+                <div class="fr-search-bar fr-mt-2v" id="header-search">
+                    <input class="fr-input" placeholder="Rechercher" type="search" id="header-search-input"
+                           name="search" value="">
+
+                    <button class="fr-btn" title="Rechercher">
+                        Rechercher
+                    </button>
+                </div>
+            </form>
+        </div>
+
     </section>
     <section class="fr-col-12 fr-table fr-table--bordered">
         <table class="fr-display-inline-table">
-            <thead>
+            <thead class="fr-background-alt--blue-france">
             <tr>
                 <th>#Ref.</th>
                 <th>Date</th>
-                <th>Situation(s)</th>
+                {#<th>Situation(s)</th>#}
                 {# <th>Alert.</th> #}
                 {# <th>Criticité</th> #}
-                <th>Desc.</th>
+                <th>Criticité</th>
+                <th>Occupant</th>
                 <th>Ville</th>
                 <th>Affectation</th>
                 <th>Etat</th>
-                <th class="fr-text--right">Suppr.</th>
+                <th class="fr-text--right ">Actions</th>
             </tr>
             </thead>
             <tbody>
             {% for index,signalement in signalements.list %}
-                <tr class="{% if signalement.statut is same as("need-validation") or "closed" in signalement.statut or signalement.statut is same as("is-invalid") %}fr-background-alt--red-marianne{% else %}fr-background-alt--green-bourgeon{% endif %}">
+                <tr class="{% if signalement.statut is same as("new") %}fr-background-contrast--orange-terre-battue{% endif %} signalement-row">
                     <td>
                         <a href="{{ path('back_signalement_view',{uuid:signalement.uuid}) }}">{{ signalement.reference }}</a>
                     </td>
                     <td>{{ signalement.createdAt|date('d/m/Y') }}</td>
-                    <td>{% for situation in signalement.situations %}
-                            <img src="{{ asset('img/p_'~ situation.id~'.png') }}"
-                                 alt="{{ situation.label }}" title="{{ situation.label }}">
-                        {% endfor %}
+                    <td>
+                        <canvas id="gauge-signalement-{{ signalement.id }}" class="fr-col-4"></canvas>
                     </td>
                     <td>
-                        <div class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters">
-                            <canvas id="gauge-signalement-{{ signalement.id }}" class="fr-col-3"></canvas>
-                            {# <td> #}{# {{ signalement.hasAlert ? 'Oui' : 'Non' }} #}{# </td> #}
-                            {# <td>{{ signalement.codeProcedure ? signalement.codeProcedure : 'Aucune' }}</td> #}
-                            <div class="fr-col-9">
-                                <small>
-                                    <strong>[ {{ signalement.nomOccupant|upper~' '~signalement.prenomOccupant|capitalize }}
-                                        ]</strong>
-                                </small><br>
-                                {{ signalement.details[:30] }}...
-                            </div>
-                        </div>
+                        {{ signalement.nomOccupant|upper~' '~signalement.prenomOccupant|capitalize }}
                     </td>
                     <td>{{ signalement.villeOccupant|upper }} <br>
                         <small>[{{ signalement.adresseOccupant }}]</small>
                     </td>
                     <td>
                         {% for affectation in signalement.affectationStatusByPartenaire %}
-                            {{ affectation.partenaire }}
-                            {% set statut = '' %}
+                            {% set classe = '' %}
                             {% if affectation.statut is same as (0) %}
-                                {% set statut = '<span class=" fr-text-label--orange-terre-battue">En attente</span>' %}
+                                {% set classe = 'fr-text--orange fr-fi-question-fill' %}
                             {% elseif affectation.statut is same as (1) %}
-                                {% set statut = '<span class="fr-text-label--green-emeraude">Accepté</span>' %}
+                                {% set classe = 'fr-text-label--green-emeraude fr-fi-checkbox-circle-fill' %}
                             {% elseif affectation.statut is same as (2) %}
-                                {% set statut = '<span class="fr-text-label--red-marianne">Refusé</span>' %}
+                                {% set classe = 'fr-text-label--red-marianne fr-fi-close-circle-fill' %}
                             {% endif %}
-                            <small class="fr-display-block">[{{ statut|raw }}]</small>
+                            <text class="{{ classe }} fr-display-block"><span class="fr-text--black"> {{ affectation.partenaire }}</span></text>
                         {% else %}
                             Aucune
                         {% endfor %}
@@ -138,12 +137,9 @@
                         {% endif %}
                     </td>
                     <td class="fr-text--right">
-                        <form method="post" action="{{ path('back_signalement_delete',{uuid:signalement.uuid}) }}"
-                              onsubmit="return confirm('Êtes-vous sûre de vouloir supprimer ce signalement ?')">
-                            <button class="fr-btn fr-btn--orange fr-btn--sm fr-fi-delete-fill"></button>
-                            <input type="hidden" name="_token"
-                                   value="{{ csrf_token('signalement_delete_'~signalement.id) }}">
-                        </form>
+                            <a href="{{ path('back_signalement_view',{uuid:signalement.uuid}) }}" class="fr-btn fr-btn--sm fr-fi-eye-fill"></a>
+                            <a href="{{ path('back_signalement_edit',{uuid:signalement.uuid}) }}" class="fr-btn fr-btn--secondary fr-btn--sm fr-fi-edit-fill"></a>
+                            <button data-delete="{{ path('back_signalement_delete',{uuid:signalement.uuid}) }}" data-token="{{ csrf_token('signalement_delete_'~signalement.id) }}" class="fr-btn fr-btn--sm fr-btn--danger fr-fi-delete-fill signalement-row-delete"></button>
                     </td>
                 </tr>
             {% endfor %}

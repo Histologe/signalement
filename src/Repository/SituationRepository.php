@@ -27,8 +27,8 @@ class SituationRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('s')
             ->andWhere('s.isActive = true')
-            ->leftJoin('s.criteres','criteres')
-            ->leftJoin('criteres.criticites','criticites')
+            ->leftJoin('s.criteres','criteres','WITH','criteres.isArchive != 1')
+            ->leftJoin('criteres.criticites','criticites','WITH','criticites.isArchive != 1')
             ->addSelect('criteres')
             ->addSelect('criticites')
             ->orderBy('s.id', 'ASC')
@@ -41,11 +41,12 @@ class SituationRepository extends ServiceEntityRepository
     public function findAllWithCritereAndCriticite()
     {
         return $this->createQueryBuilder('s')
-            ->leftJoin('s.criteres','criteres')
-            ->leftJoin('criteres.criticites','criticites')
+            ->where('s.isArchive != 1')
+            ->leftJoin('s.criteres','criteres','WITH','criteres.isArchive != 1')
+            ->leftJoin('criteres.criticites','criticites','WITH','criticites.isArchive != 1')
             ->addSelect('criteres')
             ->addSelect('criticites')
-            ->orderBy('s.id', 'ASC')
+            ->orderBy('s.isActive', 'DESC')
             ->getQuery()
             ->getResult()
             ;
