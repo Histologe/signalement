@@ -300,19 +300,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @param mixed $newsActivitiesSinceLastLogin
-     */
-    public function setNewsActivitiesSinceLastLogin($newsActivitiesSinceLastLogin): void
-    {
-        $this->newsActivitiesSinceLastLogin = $newsActivitiesSinceLastLogin;
-    }
 
-    /**
-     * @return mixed
-     */
-    public function getNewsActivitiesSinceLastLogin()
-    {
-        return $this->newsActivitiesSinceLastLogin;
-    }
 }

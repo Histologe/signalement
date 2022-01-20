@@ -2,20 +2,20 @@
 
 namespace App\EventListener;
 
-use App\Entity\SignalementUserAffectation;
-use App\Entity\Suivi;
 use App\Entity\User;
-use Doctrine\Common\Collections\ArrayCollection;
+use App\Service\NewsActivitiesSinceLastLoginService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
 class LoginListener
 {
     private EntityManagerInterface $em;
+    private NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em,NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService)
     {
         $this->em = $em;
+        $this->newsActivitiesSinceLastLoginService = $newsActivitiesSinceLastLoginService;
     }
 
     public function onSecurityInteractiveLogin(InteractiveLoginEvent $event)
@@ -25,17 +25,8 @@ class LoginListener
 
         if($user->getLastLoginAt())
         {
-            $newsActivitiesSinceLastLogin = new ArrayCollection();
-            $user->getAffectations()->filter(function (SignalementUserAffectation $affectation)use ($newsActivitiesSinceLastLogin,$user){
-                $affectation->getSignalement()->getSuivis()->filter(function (Suivi $suivi)use ($newsActivitiesSinceLastLogin, $user){
-                    if ($suivi->getCreatedAt() > $user->getLastLoginAt())
-                        $newsActivitiesSinceLastLogin->add($suivi->getSignalement());
-                });
-            });
-            $user->setNewsActivitiesSinceLastLogin($newsActivitiesSinceLastLogin);
-           /* dd($user->getNewsActivitiesSinceLastLogin());*/
+            $this->newsActivitiesSinceLastLoginService->set($user);
         }
-
         $user->setLastLoginAt(new \DateTimeImmutable());
 
         // Persist the data to database.

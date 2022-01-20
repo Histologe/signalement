@@ -229,12 +229,12 @@
                                                 {% else %}
                                                     {% set icon = 'tres-grave' %}
                                                 {% endif %}
-                                                <li class="fr-grid-row fr-grid-row--middle">
-                                                    <div class="fr-col-1">
-                                                        <img src="{{ asset('img/'~icon~'-actif.svg') }}" alt="" width="50"
+                                                <li class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters">
+                                                    <div class="fr-col-2">
+                                                        <img src="{{ asset('img/'~icon~'-actif.svg') }}" alt="" width="75"
                                                              class=" fr-text--center">
                                                     </div>
-                                                    <div class="fr-col-11 fr-pl-2v">
+                                                    <div class="fr-col-10">
                                                         {{ criticite.label|capitalize }}
                                                     </div>
                                                 </li>

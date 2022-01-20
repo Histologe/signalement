@@ -10,12 +10,15 @@ use App\Entity\User;
 use App\Form\SignalementType;
 use App\Repository\PartenaireRepository;
 use App\Service\CriticiteCalculatorService;
+use App\Service\NewsActivitiesSinceLastLoginService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -44,13 +47,12 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/{uuid}', name: 'back_signalement_view')]
-    public function viewSignalement(Signalement $signalement, PartenaireRepository $partenaireRepository): Response
+    public function viewSignalement(Signalement $signalement, PartenaireRepository $partenaireRepository, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
             return $this->redirectToRoute('back_index');
         $title = 'Administration - Signalement #' . $signalement->getReference();
         $isRefused = $isAccepted = null;
-
         if ($isAffected = $this->checkAffectation($signalement)) {
             switch ($isAffected->getStatut()) {
                 case SignalementUserAffectation::STATUS_ACCEPTED:
@@ -61,6 +63,9 @@ class BackSignalementController extends AbstractController
                     break;
             }
         }
+
+        $newsActivitiesSinceLastLoginService->update($signalement);
+
         return $this->render('back/signalement/view.html.twig', [
             'title' => $title,
             'needValidation' => $signalement->getStatut() === Signalement::STATUS_NEED_VALIDATION,

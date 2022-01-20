@@ -5,9 +5,10 @@ namespace App\Controller;
 use App\Entity\Signalement;
 use App\Repository\SignalementRepository;
 use App\Repository\SignalementUserAffectationRepository;
-use App\Service\ViewPageAsService;
+use App\Service\NewsActivitiesSinceLastLoginService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
@@ -17,10 +18,9 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 class BackController extends AbstractController
 {
     #[Route('/', name: 'back_index')]
-    public function index(SignalementRepository $signalementRepository, SignalementUserAffectationRepository $affectationRepository, Request $request): Response
+    public function index(RequestStack$requestStack,SignalementRepository $signalementRepository, SignalementUserAffectationRepository $affectationRepository, Request $request): Response
     {
-
-        $title = 'Administration';
+        $title = 'Administration - Tableau de bord';
         $user = null;
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
             $user = $this->getUser();
@@ -54,4 +54,16 @@ class BackController extends AbstractController
         ]);
     }
 
+    #[Route('/news',name:'back_news_activities')]
+    public function newsActivitiesSinceLastLogin(NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response
+    {
+        $title = 'Administration - Nouveaux suivis';
+        $suivis = $newsActivitiesSinceLastLoginService->getAll();
+        if($suivis->isEmpty())
+            return $this->redirectToRoute('back_index');
+        return $this->render('back/news_activities/index.html.twig',[
+            'title'=> $title,
+            'suivis' => $suivis
+        ]);
+    }
 }
