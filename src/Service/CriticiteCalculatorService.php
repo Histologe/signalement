@@ -24,6 +24,7 @@ class CriticiteCalculatorService
                 foreach ($critere->getCriticites() as $criticite)
                     $scoresMaxSituation[$situation->getLabel()] += $criticite->getScore();
         }
+        dd($scoresMaxSituation);
         foreach ($signalement->getCriticites() as $criticite)
             $scoreSituation[$criticite->getCritere()->getSituation()->getLabel()] += $criticite->getScore();
         $score = (array_sum($scoreSituation) / array_sum($scoresMaxSituation))*1000;
