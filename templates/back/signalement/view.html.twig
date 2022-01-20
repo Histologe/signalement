@@ -215,7 +215,7 @@
                 <span class="fr-hint-text">Récapitulatif des situations rencontrées par l'occupant du logement</span>
                 <ul class="fr-list--icon-img">
                     {% for situation in signalement.jsonContent %}
-                        <li class="fr-background-alt--blue-france fr-mb-5v fr-p-5v fr-rounded">
+                        <li class="fr-background-alt--blue-france fr-mb-5v fr-px-5v fr-pt-5v fr-rounded">
                             <strong>{{ situation.label|capitalize }}</strong>
                             <ul>
                                 {% for critere in situation.critere %}
@@ -229,12 +229,12 @@
                                                 {% else %}
                                                     {% set icon = 'tres-grave' %}
                                                 {% endif %}
-                                                <li class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters">
-                                                    <div class="fr-col-2">
+                                                <li class="fr-grid-row fr-grid-row--middle">
+                                                    <div class="fr-col-1">
                                                         <img src="{{ asset('img/'~icon~'-actif.svg') }}" alt="" width="50"
                                                              class=" fr-text--center">
                                                     </div>
-                                                    <div class="fr-col-10">
+                                                    <div class="fr-col-11 fr-pl-5v">
                                                         {{ criticite.label|capitalize }}
                                                     </div>
                                                 </li>
