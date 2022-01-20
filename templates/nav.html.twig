@@ -2,19 +2,26 @@
     <div class="fr-header__tools-links">
         <ul class="fr-links-group">
                 <li>
-                    <a class="fr-link fr-fi-refresh-line" href="{{ path('home') }}">Accueil</a>
+                    <a class="fr-link" href="{{ path('home') }}">Accueil</a>
                 </li>
                 <li>
-                    <a class="fr-link fr-fi-eye-line" href="{{ path('about') }}">Qui sommes-nous ?</a>
+                    <a class="fr-link" href="{{ path('front_signalement') }}">Signalement</a>
                 </li>
                 <li>
-                    <a class="fr-link fr-fi-chat-quote-line" href="{{ path('contact') }}">Contact</a>
+                    <a class="fr-link" href="{{ path('about') }}">A propos</a>
                 </li>
                 <li>
-                    <a class="fr-link fr-fi-question-line" href="{{ path('faq') }}">Aide</a>
+                    <a class="fr-link" href="{{ path('contact') }}">Contact</a>
                 </li>
                 <li>
-                    <a class="fr-link fr-fi-lock-line" href="{{ path('app_login') }}">Se connecter</a>
+                    <a class="fr-link" href="{{ path('faq') }}">Aide</a>
+                </li>
+                <li>
+                    {% if app.user %}
+                        <a class="fr-link fr-fi-logout-box-r-line" href="{{ path('app_logout') }}">Se deconnecter</a>
+                        {% else %}
+                            <a class="fr-link fr-fi-lock-line" href="{{ path('app_login') }}">Se connecter</a>
+                    {% endif %}
                 </li>
         </ul>
     </div>

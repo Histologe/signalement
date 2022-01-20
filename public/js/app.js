@@ -297,6 +297,8 @@ document?.querySelectorAll('[data-delete]')?.forEach(deleteBtn => {
             className = '.signalement-file-item';
         else if(event.target.classList.contains('signalement-row-delete'))
             className = '.signalement-row';
+        else if(event.target.classList.contains('partenaire-row-delete'))
+            className = '.partenaire-row';
         if (confirm('Voulez-vous vraiment supprimer cet élément ?')) {
             let formData = new FormData;
             formData.append('_token', deleteBtn.getAttribute('data-token'))

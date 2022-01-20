@@ -88,6 +88,9 @@ small {
 .fr-btn--danger {
     background:#F60700;
 }
+.fr-btn--success {
+    background:#00a95f;
+}
 /*TEXT*/
 .fr-text--white {
     color: white;

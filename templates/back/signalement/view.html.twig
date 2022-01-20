@@ -230,8 +230,10 @@
                                                     {% set icon = 'tres-grave' %}
                                                 {% endif %}
                                                 <li class="fr-grid-row fr-grid-row--middle">
-                                                    <img src="{{ asset('img/'~icon~'-actif.svg') }}" alt="" width="30"
-                                                         class="fr-col-1 fr-text--center">
+                                                    <div class="fr-col-1">
+                                                        <img src="{{ asset('img/'~icon~'-actif.svg') }}" alt="" width="50"
+                                                             class=" fr-text--center">
+                                                    </div>
                                                     <div class="fr-col-11 fr-pl-2v">
                                                         {{ criticite.label|capitalize }}
                                                     </div>
@@ -323,7 +325,7 @@
                                    class="fr-hidden fr-input--file-signalement" multiple>
                         </label>
                         <input type="hidden" name="_token" value="{{ csrf_token('signalement_add_file') }}">
-                    </form>
+                    </form> &nbsp;
                     <form method="POST" enctype="multipart/form-data"
                           action="{{ path('back_signalement_add_file',{uuid:signalement.uuid}) }}">
                         <label class="fr-btn fr-btn--secondary fr-fi-instagram-fill fr-btn--icon-left"> Ajouter des
@@ -369,8 +371,8 @@
             <hr class="fr-mt-5v">
             <div class="fr-grid-row">
                 <div class="fr-col-12">
-                    <strong class="fr-fi-refresh-fill fr-text-label--blue-france"> Retour d'affectation</strong>
-                    <span class="fr-hint-text">Ci-dessous le ou les retour(s) d'affectation connu(s)</span>
+                    <strong class="fr-fi-refresh-fill fr-text-label--blue-france">  Prise en charge partenaire</strong>
+                    <span class="fr-hint-text">Ci-dessous les statuts de prise en charge des partenaires affectés au signalement</span>
                 </div>
             </div>
             <div class="fr-grid-row fr-py-5v fr-grid-row--gutters">
