@@ -209,7 +209,7 @@ forms.forEach((form) => {
                             formData.append(x, y);
                         }
                     })
-                    fetch('envoi', {
+                    fetch('signalement/envoi', {
                         method: "POST",
                         body: formData
                     }).then((r) => {
