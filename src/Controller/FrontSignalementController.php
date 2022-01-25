@@ -6,6 +6,7 @@ use App\Entity\Critere;
 use App\Entity\Criticite;
 use App\Entity\Signalement;
 use App\Entity\Situation;
+use App\Repository\SignalementRepository;
 use App\Repository\SituationRepository;
 use App\Service\CriticiteCalculatorService;
 use Doctrine\Persistence\ManagerRegistry;
@@ -17,10 +18,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-#[Route('/signalement')]
+#[Route('/')]
 class FrontSignalementController extends AbstractController
 {
-    #[Route('/', name: 'front_signalement')]
+    #[Route('/signalement', name: 'front_signalement')]
     public function index(SituationRepository $situationRepository): Response
     {
         $title = "Signalez vos problèmes de logement";
@@ -37,7 +38,7 @@ class FrontSignalementController extends AbstractController
     /**
      * @throws Exception
      */
-    #[Route('/envoi', name: 'envoi_signalement', methods: "POST")]
+    #[Route('/signalement/envoi', name: 'envoi_signalement', methods: "POST")]
     public function envoi(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
     {
         if ($data = $request->get('signalement')) {
@@ -130,5 +131,19 @@ class FrontSignalementController extends AbstractController
             return $this->json(['response' => 'success']);
         }
         return $this->json(['response' => 'error'], 400);
+    }
+
+    #[Route('/suivre-mon-signalement/{code}', name: 'front_suivi_signalement', methods: "GET")]
+    public function suiviSignalement(string $code,SignalementRepository $signalementRepository)
+    {
+        if($signalement = $signalementRepository->findOneBy(['codeSuivi'=>$code]))
+        {
+            //TODO: Verif info perso pour plus de sécu
+            return $this->render('front/suivi_signalement.html.twig',[
+                'signalement'=> $signalement
+            ]);
+        }
+        $this->addFlash('error','Le lien utilisé est expiré ou invalide, verifier votre saisie.');
+        return $this->redirectToRoute('front_signalement');
     }
 }

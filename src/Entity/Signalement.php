@@ -218,6 +218,9 @@ class Signalement
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $inseeOccupant;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $codeSuivi;
+
     public function __construct()
     {
         $this->situations = new ArrayCollection();
@@ -836,7 +839,6 @@ class Signalement
         return $this->affectations;
     }
 
-
     public function getJsonContent(): ?array
     {
         return $this->jsonContent;
@@ -1070,6 +1072,18 @@ class Signalement
     public function setInseeOccupant(?string $inseeOccupant): self
     {
         $this->inseeOccupant = $inseeOccupant;
+
+        return $this;
+    }
+
+    public function getCodeSuivi(): ?string
+    {
+        return $this->codeSuivi;
+    }
+
+    public function setCodeSuivi(?string $codeSuivi): self
+    {
+        $this->codeSuivi = $codeSuivi;
 
         return $this;
     }

@@ -3,27 +3,33 @@
 namespace App\Controller;
 
 
+use App\Entity\Partenaire;
 use App\Entity\Signalement;
 use App\Entity\SignalementUserAffectation;
 use App\Entity\Suivi;
 use App\Entity\User;
 use App\Form\SignalementType;
 use App\Repository\PartenaireRepository;
+use App\Repository\UserRepository;
 use App\Service\CriticiteCalculatorService;
 use App\Service\NewsActivitiesSinceLastLoginService;
+use App\Service\NotificationService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Twig\Mime\NotificationEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints\Positive;
+use function Symfony\Component\String\u;
 
 #[Route('/bo/s')]
 class BackSignalementController extends AbstractController
@@ -128,26 +134,61 @@ class BackSignalementController extends AbstractController
         return $this->redirect($this->generateUrl('back_signalement_view', ['uuid' => $signalement->getUuid()]) . '#suivis');
     }
 
-    #[Route('/{uuid}/affectation/{user}/toggle', name: 'back_signalement_toggle_affectation')]
-    public function toggleAffectationSignalement(Signalement $signalement, User $user, ManagerRegistry $doctrine): RedirectResponse|JsonResponse
+    #[Route('/{uuid}/affectation/toggle', name: 'back_signalement_toggle_affectation')]
+    public function toggleAffectationSignalement(Signalement $signalement, ManagerRegistry $doctrine, Request $request, UserRepository $userRepository,NotificationService $notificationService): RedirectResponse|JsonResponse
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
             return $this->json(['status' => 'denied'], 400);
-        if ($affectation = $doctrine->getRepository(SignalementUserAffectation::class)->findOneBy(['user' => $user, 'signalement' => $signalement])) {
-            $doctrine->getManager()->remove($affectation);
-        } else {
-            $affectation = new SignalementUserAffectation();
-            $affectation->setUser($user);
-            $affectation->setSignalement($signalement);
-            $affectation->setPartenaire($user->getPartenaire());
-            $doctrine->getManager()->persist($affectation);
+        if ($this->isCsrfTokenValid('signalement_affectation_' . $signalement->getId(), $request->get('_token'))) {
+            $data = $request->get('signalement-affectation');
+            if(isset($data['users'])){
+                $postedUsers = $data['users'];
+                $alreadyAffectedUsers = $signalement->getAffectations()->map(function (SignalementUserAffectation $affectation){
+                    return $affectation->getUser()->getId();
+                })->toArray();
+                $usersToAdd = array_diff($postedUsers,$alreadyAffectedUsers);
+                $usersToRemove = array_diff($alreadyAffectedUsers,$postedUsers);
+                foreach ($usersToAdd as $userIdToAdd)
+                {
+                    $user = $userRepository->find($userIdToAdd);
+                    if ($user->getIsGenerique()) {
+                        $user->getPartenaire()->getUsers()->map(function (User $user) use ($signalement, $doctrine) {
+                            $affectation = new SignalementUserAffectation();
+                            $affectation->setUser($user);
+                            $affectation->setSignalement($signalement);
+                            $affectation->setPartenaire($user->getPartenaire());
+                            $doctrine->getManager()->persist($affectation);
+                        });
+                    } else {
+                        $affectation = new SignalementUserAffectation();
+                        $affectation->setUser($user);
+                        $affectation->setSignalement($signalement);
+                        $affectation->setPartenaire($user->getPartenaire());
+                        $doctrine->getManager()->persist($affectation);
+                    }
+                }
+                foreach ($usersToRemove as $userIdToRemove)
+                {
+                    $user = $userRepository->find($userIdToRemove);
+                    $signalement->getAffectations()->filter(function (SignalementUserAffectation $affectation)use ($doctrine,$user){
+                        if($affectation->getUser()->getId() === $user->getId())
+                            $doctrine->getManager()->remove($affectation);
+                    });
+                }
+            } else {
+                $signalement->getAffectations()->filter(function (SignalementUserAffectation $affectation)use ($doctrine){
+                   $doctrine->getManager()->remove($affectation);
+                });
+            }
+
+            $doctrine->getManager()->flush();
+            return $this->json(['status' => 'success']);
         }
-        $doctrine->getManager()->flush();
-        return $this->json(['status' => 'success']);
+        return $this->json(['status' => 'denied'], 400);
     }
 
     #[Route('/s/{uuid}/file/add', name: 'back_signalement_add_file')]
-    public function addFileSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger)
+    public function addFileSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger): RedirectResponse
     {
         if ($this->isCsrfTokenValid('signalement_add_file_' . $signalement->getId(), $request->get('_token')) && $files = $request->files->get('signalement-add-file')) {
             if (isset($files['documents']))
@@ -185,15 +226,16 @@ class BackSignalementController extends AbstractController
             && $response = $request->get('signalement-validation-response')) {
             if (isset($response['accept'])) {
                 $statut = Signalement::STATUS_NEW;
-                $description = 'valide';
-                //TODO: Send mail usager
+                $description = 'validé';
+                $signalement->setCodeSuivi(md5(uniqid()));
+                //TODO: Notifier déclarant (occupant si email) avec code de suivi
             } else {
                 $statut = Signalement::STATUS_IS_INVALID;
                 $description = 'non-valide';
             }
             $suivi = new Suivi();
             $suivi->setSignalement($signalement);
-            $suivi->setDescription('Le signalement à été marqué comme ' . $description);
+            $suivi->setDescription('Signalement ' . $description);
             $suivi->setCreatedBy($this->getUser());
             $signalement->setStatut($statut);
             $doctrine->getManager()->persist($signalement);

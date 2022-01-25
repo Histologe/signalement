@@ -6,6 +6,7 @@ use App\Repository\PartenaireRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 
 #[ORM\Entity(repositoryClass: PartenaireRepository::class)]
 class Partenaire
@@ -131,5 +132,44 @@ class Partenaire
         $this->insee = $insee;
 
         return $this;
+    }
+
+    public function getUsersAffectable(Signalement $signalement): ArrayCollection|PersistentCollection
+    {
+        $usersGenerique = $this->users->filter(function (User $user)use ($signalement){
+            if($user->getIsGenerique() && !$user->isAffectedTo($signalement))
+            {
+                return $user;
+            }
+
+        });
+        if(!$usersGenerique->isEmpty())
+            return $usersGenerique;
+        return $this->users->filter(function (User $user)use ($signalement){
+            if(!$user->isAffectedTo($signalement) && !$this->hasGeneriqueUsers())
+                return $user;
+        });
+    }
+
+    public function getUsersAffected(Signalement $signalement): ArrayCollection|PersistentCollection
+    {
+        $usersGenerique = $this->users->filter(function (User $user)use ($signalement){
+            if($user->getIsGenerique() && $user->isAffectedTo($signalement))
+                return $user;
+        });
+        if(!$usersGenerique->isEmpty())
+            return $usersGenerique;
+        return $this->users->filter(function (User $user)use ($signalement){
+            if($user->isAffectedTo($signalement))
+                return $user;
+        });
+    }
+
+    public function hasGeneriqueUsers(): bool
+    {
+        foreach ($this->users as $user)
+            if($user->getIsGenerique())
+                return  true;
+        return false;
     }
 }

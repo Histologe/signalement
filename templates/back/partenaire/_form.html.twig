@@ -40,6 +40,18 @@
             Vous devez selectionner le role de l'utilisateur
         </p>
     </div>
+    <div class="fr-input-group fr-col">
+        <label for="partenaire_users_is_generique_new__ID__" class="fr-label">Type compte<sup
+                    class="fr-text-label--red-marianne">*</sup></label>
+        <select id="partenaire_users_is_generique_new__ID__" name="partenaire[users][new][__ID__][isGenerique]" required="required"
+                class="fr-select">
+            <option value="0" selected>Utilisateur</option>
+            <option value="1">Générique</option>
+        </select>
+        <p class="fr-error-text fr-hidden">
+            Vous devez definir le type d'adresse.
+        </p>
+    </div>
     <div class="fr-input-group">
         <label for="partenaire_users_delete__ID__" class="fr-label">Suppr.</label>
         <button class="fr-btn fr-btn--danger fr-fi-delete-line fr-mt-3v partenaire-user-delete"
@@ -119,6 +131,22 @@
             </select>
             <p class="fr-error-text fr-hidden">
                 Vous devez selectionner le role de l'utilisateur
+            </p>
+        </div>
+        <div class="fr-input-group fr-col">
+            <label for="partenaire_users_is_generique_{{ user.id }}" class="fr-label">Type compte<sup
+                        class="fr-text-label--red-marianne">*</sup></label>
+            <select id="partenaire_users_is_generique_{{ user.id }}" name="partenaire[users][{{ user.id }}][isGenerique]"
+                    required="required" class="fr-select">
+                <option value="0" {% if not user.isGenerique %}selected{% endif %}>
+                    Utilisateur
+                </option>
+                <option value="1" {% if user.isGenerique %}selected{% endif %}>
+                    Générique
+                </option>
+            </select>
+            <p class="fr-error-text fr-hidden">
+                Vous devez spécifiez le type de compte.
             </p>
         </div>
         <div class="fr-input-group">

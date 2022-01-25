@@ -27,7 +27,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'json')]
     private $roles = [];
 
-    #[ORM\Column(type: 'string')]
+    #[ORM\Column(type: 'string', nullable: true)]
     private $password;
 
     #[ORM\OneToMany(mappedBy: 'modifiedBy', targetEntity: Signalement::class)]
@@ -58,6 +58,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $lastLoginAt;
 
     private $newsActivitiesSinceLastLogin;
+
+    #[ORM\Column(type: 'boolean')]
+    private $isGenerique;
 
     public function __construct()
     {
@@ -298,6 +301,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->lastLoginAt = $lastLoginAt;
 
         return $this;
+    }
+
+    public function getIsGenerique(): ?bool
+    {
+        return $this->isGenerique;
+    }
+
+    public function setIsGenerique(bool $isGenerique): self
+    {
+        $this->isGenerique = $isGenerique;
+
+        return $this;
+    }
+
+    public function isAffectedTo(Signalement $signalement): bool
+    {
+        foreach ($this->affectations as $affectation)
+            if ($affectation->getSignalement()->getId() === $signalement->getId())
+                return true;
+        return false;
     }
 
 

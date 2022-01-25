@@ -83,7 +83,7 @@ forms.forEach((form) => {
                 [preview, deleter].forEach(el => el?.classList?.remove('fr-hidden'))
                 deleter.addEventListeners('click touchdown', (e) => {
                     e.preventDefault();
-                    if(preview){
+                    if (preview) {
                         preview.src = '#';
                         event.target.parentElement.classList.add('fr-fi-instagram-line')
                     } else if (event.target.parentElement.classList.contains('fr-fi-checkbox-circle-fill')) {
@@ -241,7 +241,7 @@ document?.querySelectorAll('[name="bo-filter-form"]').forEach((filterForm) => {
         filterForm.submit();
     })
 })
-document?.querySelectorAll('.fr-checkbox-affectation').forEach((checkbox) => {
+/*document?.querySelectorAll('.fr-checkbox-affectation').forEach((checkbox) => {
     checkbox.addEventListener('change', (event) => {
         checkbox.disabled = true;
         fetch(checkbox.getAttribute('data-toggle-fetch')).then(r => r.json().then(res => {
@@ -249,6 +249,49 @@ document?.querySelectorAll('.fr-checkbox-affectation').forEach((checkbox) => {
             checkbox.disabled = false;
         }))
     })
+})*/
+document?.querySelectorAll('[data-fr-select-target]')?.forEach(t => {
+    let source = document?.querySelector('#' + t.getAttribute('data-fr-select-source'));
+    let target = document?.querySelector('#' + t.getAttribute('data-fr-select-target'));
+    t.addEventListeners('click touchdown', (event) => {
+        let selected = [...source.selectedOptions]
+        selected.map(s => {
+            let groupPartenaire = s.parentElement.getAttribute('data-select-group-id'), group, count;
+            /*target.append(s);*/
+            if (!target.querySelector('[data-select-group-id="' + groupPartenaire + '"]')) {
+                group = document.createElement('optgroup');
+                group.setAttribute('data-select-group-id', groupPartenaire);
+                group.label = s.parentElement.label;
+            } else {
+                group = target.querySelector('[data-select-group-id="' + groupPartenaire + '"]')
+            }
+            group.append(s)
+            target.append(group)
+        })
+    })
+})
+document.querySelector('#signalement-affectation-form-submit').addEventListeners('click touchdown', (e) => {
+    e.preventDefault();
+    e.target.disabled = true;
+    e.target?.form?.querySelectorAll('option').forEach(o => {
+        o.selected = true;
+    })
+    document?.querySelectorAll('#signalement-affectation-form-row,#signalement-affectation-loader-row').forEach(el => {
+        el.classList.toggle('fr-hidden')
+    })
+    //POST
+    let formData = new FormData(e.target.form);
+    fetch(e.target.getAttribute('formaction'), {
+        method: 'POST',
+        body: formData
+    }).then(r => {
+        if (r.ok) {
+            r.json().then(res => {
+                window.location.reload(true)
+            })
+        }
+    })
+    console.log(e.target.form);
 })
 document?.querySelectorAll('.fr-input--file-signalement').forEach(inputFile => {
     inputFile.addEventListener('change', evt => {
@@ -257,21 +300,20 @@ document?.querySelectorAll('.fr-input--file-signalement').forEach(inputFile => {
 })
 document?.querySelector('#partenaire_add_user,#situation_add_critere')?.addEventListeners('click touchdown', (event) => {
     event.preventDefault();
-    let template,container,count,row,className;
-    if(event.target.id === 'partenaire_add_user')
-    {
+    let template, container, count, row, className;
+    if (event.target.id === 'partenaire_add_user') {
         template = document.importNode(document.querySelector('#partenaire_add_user_row').content, true)
         container = document.querySelector('#partenaire_add_user_placeholder')
         className = 'partenaire-row-user'
-        count = container.querySelectorAll('.'+className)?.length
+        count = container.querySelectorAll('.' + className)?.length
     } else {
         template = document.importNode(document.querySelector('#situation_add_critere_row').content, true)
         container = document.querySelector('#situation_add_critere_placeholder')
         className = 'situation-row-critere';
-        count = container.querySelectorAll('.'+className)?.length
+        count = container.querySelectorAll('.' + className)?.length
     }
     row = document.createElement('div');
-    row.classList.add('fr-grid-row', 'fr-grid-row--gutters', 'fr-grid-row--middle', 'fr-background-alt--blue-france','fr-mb-5v',className);
+    row.classList.add('fr-grid-row', 'fr-grid-row--gutters', 'fr-grid-row--middle', 'fr-background-alt--blue-france', 'fr-mb-5v', className);
     template.querySelectorAll('label,input,select,button,textarea').forEach(field => {
         field.id = field?.id?.replaceAll('__ID__', count);
         field.name = field?.name?.replaceAll('__ID__', count);
@@ -279,25 +321,25 @@ document?.querySelector('#partenaire_add_user,#situation_add_critere')?.addEvent
             field.setAttribute('for', field.getAttribute('for').replaceAll('__ID__', count))
         if (field.tagName === 'BUTTON')
             field.addEventListeners('click touchdown', (event) => {
-                event.target.closest('.'+className).remove();
+                event.target.closest('.' + className).remove();
             })
     })
     row.appendChild(template);
     container.appendChild(row);
 })
 document?.querySelectorAll('[data-delete]')?.forEach(deleteBtn => {
-   deleteBtn.addEventListeners('click touchdown', event => {
+    deleteBtn.addEventListeners('click touchdown', event => {
         event.preventDefault();
         let className;
-        if(event.target.classList.contains('partenaire-user-delete'))
+        if (event.target.classList.contains('partenaire-user-delete'))
             className = '.partenaire-row-user';
-        else if(event.target.classList.contains('situation-critere-delete'))
+        else if (event.target.classList.contains('situation-critere-delete'))
             className = '.situation-row-critere';
-        else if(event.target.classList.contains('signalement-file-delete'))
+        else if (event.target.classList.contains('signalement-file-delete'))
             className = '.signalement-file-item';
-        else if(event.target.classList.contains('signalement-row-delete'))
+        else if (event.target.classList.contains('signalement-row-delete'))
             className = '.signalement-row';
-        else if(event.target.classList.contains('partenaire-row-delete'))
+        else if (event.target.classList.contains('partenaire-row-delete'))
             className = '.partenaire-row';
         if (confirm('Voulez-vous vraiment supprimer cet élément ?')) {
             let formData = new FormData;
@@ -343,12 +385,39 @@ document?.querySelector('#fr-bug-report-modal').addEventListeners('dsfr.disclose
         event.target.querySelector('textarea').value = '';
     }
 })
-document?.querySelector('#fr-password-toggle')?.addEventListeners('click touchdown', (event) => {
-    ['fr-fi-eye-off-fill', 'fr-fi-eye-fill'].map(c => {
-        event.target.classList.toggle(c);
+document?.querySelectorAll('.fr-password-toggle')?.forEach(pwdToggle => {
+    pwdToggle.addEventListeners('click touchdown', (event) => {
+        ['fr-fi-eye-off-fill', 'fr-fi-eye-fill'].map(c => {
+            event.target.classList.toggle(c);
+        })
+        let pwd = event.target.parentElement.querySelector('[name^="password"]');
+        "text" !== pwd.type ? pwd.type = "text" : pwd.type = "password";
     })
-    let pwd = event.target.parentElement.querySelector('[name="password"]');
-    "text" !== pwd.type ? pwd.type = "text" : pwd.type = "password";
+})
+
+document?.querySelector('form[name="login-creation-mdp-form"]')?.querySelectorAll('[name^="password"]').forEach(pwd => {
+    pwd.addEventListener('input', event => {
+        let pass = document?.querySelector('form[name="login-creation-mdp-form"] #login-password').value;
+        let repeat = document?.querySelector('form[name="login-creation-mdp-form"] #login-password-repeat').value;
+        let pwdMatchError = document?.querySelector('form[name="login-creation-mdp-form"] #password-match-error');
+        let submitBtn = document?.querySelector('form[name="login-creation-mdp-form"] #submitter');
+        if (pass !== repeat) {
+            document?.querySelector('form[name="login-creation-mdp-form"]').querySelectorAll('.fr-input-group').forEach(iptGroup => {
+                iptGroup.classList.add('fr-input-group--error')
+                iptGroup.querySelector('.fr-input').classList.add('fr-input--error')
+            })
+            submitBtn.disabled = true;
+            pwdMatchError.classList.remove('fr-hidden')
+        } else {
+            document?.querySelector('form[name="login-creation-mdp-form"]').querySelectorAll('.fr-input-group--error,.fr-input--error').forEach(iptError => {
+                ['fr-input-group--error', 'fr-input--error'].map(c => {
+                    iptError.classList.remove(c)
+                });
+            })
+            pwdMatchError.classList.add('fr-hidden');
+            submitBtn.disabled = false;
+        }
+    })
 })
 document?.querySelectorAll('.fr-tabs__panel')?.forEach((tab) => {
     tab.addEventListener("dsfr.conceal", event => {

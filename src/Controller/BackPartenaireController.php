@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Partenaire;
+use App\Entity\SignalementUserAffectation;
 use App\Entity\User;
 use App\Form\PartenaireType;
 use App\Repository\PartenaireRepository;
@@ -28,7 +29,7 @@ class BackPartenaireController extends AbstractController
                     if (!$userPartenaire->isEmpty())
                     {
                         $user = $userPartenaire->first();
-                        self::setUserData($user,$userData['nom'],$userData['prenom'],$userData['roles'],$userData['email']);
+                        self::setUserData($user,$userData['nom'],$userData['prenom'],$userData['roles'],$userData['email'],$userData['isGenerique']);
                         $entityManager->persist($user);
                     }
                 } else {
@@ -36,19 +37,24 @@ class BackPartenaireController extends AbstractController
                     {
                         $user = new User();
                         $user->setPartenaire($partenaire);
-                        //TODO: Generate pass & send mail activation compte
-                        $user->setPassword('123-456-789');
-                        self::setUserData($user,$newUserData['nom'],$newUserData['prenom'],$newUserData['roles'],$newUserData['email']);
+                        self::setUserData($user,$newUserData['nom'],$newUserData['prenom'],$newUserData['roles'],$newUserData['email'],$newUserData['isGenerique']);
                         $entityManager->persist($user);
+                        $partenaire->getAffectations()->map(function () use ($user,$partenaire,$entityManager){
+                            $aff = new SignalementUserAffectation();
+                            $aff->setPartenaire($partenaire);
+                            $aff->setUser($user);
+                            $entityManager->persist($aff);
+                        });
                     }
                 }
             }
     }
 
-    private static function setUserData(User $user, mixed $nom, mixed $prenom, mixed $roles, mixed $email)
+    private static function setUserData(User $user, mixed $nom, mixed $prenom, mixed $roles, mixed $email,bool $isGenerique)
     {
         $user->setNom($nom);
         $user->setPrenom($prenom);
+        $user->setIsGenerique($isGenerique);
         $user->setRoles([$roles]);
         $user->setEmail($email);
     }

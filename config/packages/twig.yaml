@@ -2,6 +2,7 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     globals:
         newsActivitiesSinceLastLogin: '@App\Service\NewsActivitiesSinceLastLoginService'
+        config: '@App\Service\ConfigurationService'
 
 when@test:
     twig:

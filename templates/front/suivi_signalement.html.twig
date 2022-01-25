@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+    <main class="fr-container--fluid">
+        <section class="fr-container fr-p-5w">
+            <header>
+                <div class="fr-grid-row fr-grid-row--middle">
+                    <div class="fr-col-12 fr-col-md-6">
+                        <h1 class="fr-h2 fr-mb-2v">Signalement #{{ signalement.reference }} </h1>
+                        {% if signalement.isNotOccupant %}
+                            <small class="fr-background-contrast--red-marianne fr-text-default--error fr-rounded fr-p-1v fr-text--bold fr-fi-information-fill fr-link--icon-right fr-pr-3v">&nbsp;
+                                Signalement par un tiers</small>
+                        {% else %}
+                            <small class="fr-background-alt--blue-france fr-text-label--blue-france fr-rounded fr-p-1v fr-text--bold fr-fi-information-fill fr-link--icon-right fr-pr-3v">&nbsp;
+                                Signalement par l'occupant</small>
+                        {% endif %}
+                        <text><strong>Déposé le:</strong> {{ signalement.createdAt|date('d/m/Y à H:i') }}</text>
+                    </div>
+
+                </div>
+            </header>
+            <hr>
+            {% for suivi in signalement.suivis|reverse %}
+                {% if suivi.isPublic %}
+                    <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-2v">
+                        <div class="fr-col-2">
+                            <strong> {{ suivi.createdBy.nom[:1]|upper~'. '~ suivi.createdBy.prenom|capitalize }}</strong> <br>
+                            <small>[{{ suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun' }}]</small> <br>
+                            <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
+                        </div>
+                        <div class="fr-col-9">
+                            {{ suivi.description|capitalize }}
+                        </div>
+                        <div class="fr-col-1 fr-text--right">
+                            {% if suivi.isPublic %}
+                                <span class="fr-fi-eye-fill" title="Visible par l'usager"></span>
+                            {% else %}
+                                <span class="fr-fi-eye-off-fill" title="Non visible par l'usager"></span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </section>
+    </main>
+{% endblock %}

@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -24,11 +26,20 @@ class SecurityController extends AbstractController
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('back/login.html.twig', ['title'=>$title,'last_username' => $lastUsername, 'error' => $error]);
+        return $this->render('security/login.html.twig', ['title'=>$title,'last_username' => $lastUsername, 'error' => $error]);
     }
 
+    /**
+     * @Route("/oneclickconnect", name="login_check")
+     */
+    public function check()
+    {
+        throw new \LogicException('This code should never be reached');
+    }
+
+
     #[Route('/{folder}/{file}',name:'show_uploaded_file',requirements: ['folder' => '_up|_capture'])]
-    public function showUploadedFile($folder,$file)
+    public function showUploadedFile($folder,$file): BinaryFileResponse|RedirectResponse
     {
         if(!$this->isGranted('ROLE_USER_PARTENAIRE'))
             return $this->redirectToRoute('home');
