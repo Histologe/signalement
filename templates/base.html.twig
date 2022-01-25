@@ -39,19 +39,19 @@
 <body>
 {% if 'back_' not in app.request.get('_route') %}
 {% include "header.html.twig" %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="fr-form-group">
+                <div role="alert" class="fr-alert fr-alert--{{ label }} fr-alert--sm">
+                    <strong>Erreur...</strong>
+                    <p>{{ message }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
 {% endif %}
 <!-- Report de bug -->
 {% include 'back/bug_report/modal_bug.html.twig' %}
-{% for label, messages in app.flashes %}
-    {% for message in messages %}
-        <div class="fr-form-group">
-            <div role="alert" class="fr-alert fr-alert--{{ label }} fr-alert--sm">
-                <strong>Erreur...</strong>
-                <p>{{ message }}</p>
-            </div>
-        </div>
-    {% endfor %}
-{% endfor %}
 {% block body %}{% endblock %}
 {% if 'back_' not in app.request.get('_route') %}
     {% include "footer.html.twig" %}
