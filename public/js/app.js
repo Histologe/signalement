@@ -270,7 +270,7 @@ document?.querySelectorAll('[data-fr-select-target]')?.forEach(t => {
         })
     })
 })
-document.querySelector('#signalement-affectation-form-submit').addEventListeners('click touchdown', (e) => {
+document?.querySelector('#signalement-affectation-form-submit')?.addEventListeners('click touchdown', (e) => {
     e.preventDefault();
     e.target.disabled = true;
     e.target?.form?.querySelectorAll('option').forEach(o => {
