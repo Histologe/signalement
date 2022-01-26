@@ -291,7 +291,7 @@ caractère personnel</span></b></p>
     <p class=MsoNormal><i><span style='color:black'>6.1 Responsable de traitement</span></i></p>
 
     <p class=MsoNormal><span
-                style='color:black'>Le responsable de traitement est  <b>{{ config.get.nomDpo }}</b>.</span>
+                style='color:black'>Le responsable de traitement est  <b>{{ config.get ? config.get.nomDpo }}</b>.</span>
     </p>
 
     <p class=MsoNormal><i><span style='color:black'>6.2 Données personnelles
@@ -486,11 +486,11 @@ matière de cookies uniquement.</span></p>
 écrivant</span></p>
 
     <p class=MsoNormal><b><i><span style='color:black'>par mail</span></i></b><span
-                style='color:black'> à <b>{{ config.get.mailDpo }}</b></span></p>
+                style='color:black'> à <b>{{ config.get ? config.get.mailDpo }}</b></span></p>
 
     <p class=MsoNormal><span style='color:black'>ou <b><i>par courrier</i></b></span></p>
 
-    <p class=MsoNormal><b>{{ config.get.adresseDpo }}</b></p>
+    <p class=MsoNormal><b>{{ config.get ? config.get.adresseDpo }}</b></p>
 
     <p class=MsoNormal><span style='color:black'>En raison de l’obligation de
 sécurité et de confidentialité dans le traitement des données à caractère
