@@ -24,7 +24,8 @@ class ConfigType extends AbstractType
             ])
             ->add('logotype', FileType::class, [
                 'attr' => [
-                    'class' => 'fr-upload'
+                    'class' => 'fr-upload',
+                    'accept'=>'image/*'
                 ],
                 'row_attr'=>[
                     'class'=> 'fr-upload-group fr-mb-5v'
