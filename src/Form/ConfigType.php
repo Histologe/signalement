@@ -34,7 +34,7 @@ class ConfigType extends AbstractType
                 ],
                 'data_class'=>null
             ])
-            ->add('urlTerritoire', UrlType::class, [
+            ->add('urlTerritoire', TextType::class, [
                 'attr' => [
                     'class' => 'fr-input'
                 ],
