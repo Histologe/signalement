@@ -111,6 +111,9 @@ small {
 .fr-btn--orange {
     background: #FF9940;
 }
+.fr-btn--orange:hover {
+    background: rgba(255, 153, 64, 0.65);
+}
 
 .fr-btn--danger {
     background: #F60700;
