@@ -77,7 +77,7 @@ class BackController extends AbstractController
     public function config(ConfigRepository $configRepository, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $title = 'Administration - Configration';
-        if ($configRepository->findLast())
+        if (isset($configRepository->findLast()[0]))
             $config = $configRepository->findLast()[0];
         else
             $config = new Config();
