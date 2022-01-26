@@ -75,23 +75,34 @@ forms.forEach((form) => {
                 let deleter = event.target.parentElement.parentElement.querySelector('.signalement-uploadedfile-delete')
                 let src = URL.createObjectURL(event.target.files[0]);
                 let preview = event.target?.parentElement?.querySelector('img')
+                let fileIsOk = false;
                 if (preview/*event.target.parentElement.classList.contains('fr-fi-instagram-line')*/) {
                     preview.src = src;
                     ['fr-fi-instagram-line', 'fr-py-7v'].map(v => event.target.parentElement.classList.toggle(v));
-                } else if (event.target.parentElement.classList.contains('fr-fi-attachment-fill'))
-                    ['fr-fi-attachment-fill', 'fr-fi-checkbox-circle-fill'].map(v => event.target.parentElement.classList.toggle(v));
-                [preview, deleter].forEach(el => el?.classList?.remove('fr-hidden'))
-                deleter.addEventListeners('click touchdown', (e) => {
-                    e.preventDefault();
-                    if (preview) {
-                        preview.src = '#';
-                        event.target.parentElement.classList.add('fr-fi-instagram-line')
-                    } else if (event.target.parentElement.classList.contains('fr-fi-checkbox-circle-fill')) {
+                    fileIsOk = true;
+                } else if (event.target.parentElement.classList.contains('fr-fi-attachment-fill')) {
+                    if (event.target.files[0].size > 2 * 1024 * 1024) {
+                        event.target.value = "";
+                        event.target.parentElement.parentElement.querySelector('small.fr-hidden').classList.remove('fr-hidden')
+                    } else {
+                        fileIsOk = true;
                         ['fr-fi-attachment-fill', 'fr-fi-checkbox-circle-fill'].map(v => event.target.parentElement.classList.toggle(v));
                     }
-                    event.target.value = '';
-                    [preview, deleter].forEach(el => el?.classList.add('fr-hidden'))
-                })
+                }
+                if(fileIsOk) {
+                    [preview, deleter].forEach(el => el?.classList?.remove('fr-hidden'))
+                    deleter.addEventListeners('click touchdown', (e) => {
+                        e.preventDefault();
+                        if (preview) {
+                            preview.src = '#';
+                            event.target.parentElement.classList.add('fr-fi-instagram-line')
+                        } else if (event.target.parentElement.classList.contains('fr-fi-checkbox-circle-fill')) {
+                            ['fr-fi-attachment-fill', 'fr-fi-checkbox-circle-fill'].map(v => event.target.parentElement.classList.toggle(v));
+                        }
+                        event.target.value = '';
+                        [preview, deleter].forEach(el => el?.classList.add('fr-hidden'))
+                    })
+                }
             }
         })
     })
@@ -159,7 +170,7 @@ forms.forEach((form) => {
             if (invalid) {
                 const y = invalid.getBoundingClientRect().top + window.scrollY;
                 window.scroll({
-                    top: y,
+                    top: y-150,
                     behavior: 'smooth'
                 });
             }

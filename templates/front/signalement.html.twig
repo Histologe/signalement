@@ -179,14 +179,17 @@
                                 {% for i in 0..5 %}
                                     <div class="fr-col-6 fr-col-md fr-text--center">
                                         <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-instagram-line">
-                                            <img src="#" alt="Aperçu" class="fr-hidden fr-rounded fr-display-block"
-                                                 width="100">
+                                            <img class="fr-hidden fr-rounded fr-display-block" width="100">
                                             <input type="file" accept="image/*" name="signalement[photos][{{ i }}]"
                                                    class="fr-hidden">
                                         </label>
-                                        <button class="fr-mt-2v fr-btn fr-btn--sm fr-btn--danger signalement-uploadedfile-delete fr-hidden">
-                                            Supprimer
-                                        </button>
+                                       <div class="fr-grid-row">
+                                           <div class="fr-col fr-text--center">
+                                               <button class="fr-mt-2v fr-btn fr-btn--sm fr-btn--danger signalement-uploadedfile-delete fr-hidden">
+                                                   Supprimer
+                                               </button>
+                                           </div>
+                                       </div>
                                     </div>
                                 {% endfor %}
                                 <small class="fr-col-12 fr-fi-information-fill fr-text-label--blue-france fr-display-block">
@@ -204,11 +207,16 @@
                                 {% for i in 0..3 %}
                                     <div class="fr-col-6 fr-col-md fr-text--center">
                                         <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-attachment-fill">
-                                            <input type="file" name="signalement[documents][{{ i }}]" class="fr-hidden">
+                                            <input type="file" name="signalement[documents][{{ i }}]" class="fr-hidden" accept=".pdf,.doc,.docx">
                                         </label>
-                                        <button class="fr-mt-2v fr-btn fr-btn--sm fr-btn--danger signalement-uploadedfile-delete fr-hidden">
-                                            Supprimer
-                                        </button>
+                                        <small class="fr-text-label--red-marianne fr-icon--sm fr-hidden fr-display-block">Le document dépasse 2MB</small>
+                                        <div class="fr-grid-row">
+                                            <div class="fr-col fr-text--center">
+                                                <button class="fr-mt-2v fr-btn fr-btn--sm fr-btn--danger signalement-uploadedfile-delete fr-hidden">
+                                                    Supprimer
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 {% endfor %}
                                 <small class="fr-fi-information-fill fr-text-label--blue-france fr-display-block fr-col-12">
