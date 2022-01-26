@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ConfigRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ConfigRepository::class)]
 class Config
@@ -35,6 +36,7 @@ class Config
     private $adresseDpo;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Assert\File(maxSize: '2048k',mimeTypes: "images/*")]
     private $logotype;
 
     public function getId(): ?int
