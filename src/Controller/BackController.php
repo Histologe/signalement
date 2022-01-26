@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Config;
 use App\Entity\Signalement;
 use App\Form\ConfigType;
 use App\Repository\ConfigRepository;
@@ -73,16 +74,17 @@ class BackController extends AbstractController
     }
 
     #[Route('/config', name: 'back_config')]
-    public function config(ConfigRepository $configRepository, Request $request,EntityManagerInterface $entityManager,SluggerInterface $slugger): Response
+    public function config(ConfigRepository $configRepository, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $title = 'Administration - Configration';
-        $config = $configRepository->findLast()[0];
+        if ($configRepository->findLast())
+            $config = $configRepository->findLast()[0];
+        else
+            $config = new Config();
         $form = $this->createForm(ConfigType::class, $config);
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid())
-        {
-            if(isset($request->files->get('config')['logotype']))
-            {
+        if ($form->isSubmitted() && $form->isValid()) {
+            if (isset($request->files->get('config')['logotype'])) {
                 $logotype = $request->files->get('config')['logotype'];
                 $originalFilename = pathinfo($logotype->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
@@ -93,8 +95,7 @@ class BackController extends AbstractController
                         $newFilename
                     );
                     $config->setLogotype($newFilename);
-                } catch (Exception $e)
-                {
+                } catch (Exception $e) {
                     dd($e);
                 }
 
