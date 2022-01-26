@@ -15,6 +15,8 @@ class ConfigurationService
 
     public function get()
     {
-        return $this->config[0];
+        if (isset($this->config[0]))
+            return $this->config[0];
+        return false;
     }
 }
