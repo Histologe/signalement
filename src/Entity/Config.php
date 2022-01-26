@@ -36,7 +36,7 @@ class Config
     private $adresseDpo;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Assert\File(maxSize: '2048k',mimeTypes: "images/*")]
+    #[Assert\File(maxSize: '2048k',mimeTypes: "image/*")]
     private $logotype;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
