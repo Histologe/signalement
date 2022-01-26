@@ -35,9 +35,8 @@ class PartenaireRepository extends ServiceEntityRepository
 
         return $qb
             ->getQuery()
-            ->getResult();;
+            ->getResult();
     }
-
     /*
     public function findOneBySomeField($value): ?Partenaire
     {

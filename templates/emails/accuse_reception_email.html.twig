@@ -1,0 +1,7 @@
+{% extends 'emails/base_email.html.twig' %}
+
+{% block body %}
+    <p>Bonjour,</p>
+    <p>Nous accusons réception de votre signalement concernant le logement situé <br> <b>{{ signalement.adresseOccupant~', '~signalement.cpOccupant~' '~signalement.villeOccupant|upper }}</b>
+        <br> ce dernier à bien été enregistré, vous serez informé par courriel lorsqu'il aura été traité par nos service.</p>
+{% endblock %}

@@ -19,7 +19,7 @@ class BackPartenaireController extends AbstractController
 {
     private static function checkFormExtraData(FormInterface $form,Partenaire $partenaire,EntityManagerInterface $entityManager)
     {
-        if ($form->getExtraData()['users'])
+        if (isset($form->getExtraData()['users']))
             foreach ($form->getExtraData()['users'] as $id => $userData) {
                 if($id !== 'new'){
                     $userPartenaire = $partenaire->getUsers()->filter(function (User $user) use ($id) {
@@ -29,7 +29,7 @@ class BackPartenaireController extends AbstractController
                     if (!$userPartenaire->isEmpty())
                     {
                         $user = $userPartenaire->first();
-                        self::setUserData($user,$userData['nom'],$userData['prenom'],$userData['roles'],$userData['email'],$userData['isGenerique']);
+                        self::setUserData($user,$userData['nom'],$userData['prenom'],$userData['roles'],$userData['email'],$userData['isGenerique'],$userData['isMailingActive']);
                         $entityManager->persist($user);
                     }
                 } else {
@@ -37,24 +37,19 @@ class BackPartenaireController extends AbstractController
                     {
                         $user = new User();
                         $user->setPartenaire($partenaire);
-                        self::setUserData($user,$newUserData['nom'],$newUserData['prenom'],$newUserData['roles'],$newUserData['email'],$newUserData['isGenerique']);
+                        self::setUserData($user,$newUserData['nom'],$newUserData['prenom'],$newUserData['roles'],$newUserData['email'],$newUserData['isGenerique'],$newUserData['isMailingActive']);
                         $entityManager->persist($user);
-                        $partenaire->getAffectations()->map(function () use ($user,$partenaire,$entityManager){
-                            $aff = new SignalementUserAffectation();
-                            $aff->setPartenaire($partenaire);
-                            $aff->setUser($user);
-                            $entityManager->persist($aff);
-                        });
                     }
                 }
             }
     }
 
-    private static function setUserData(User $user, mixed $nom, mixed $prenom, mixed $roles, mixed $email,bool $isGenerique)
+    private static function setUserData(User $user, mixed $nom, mixed $prenom, mixed $roles, mixed $email,bool $isGenerique,bool $isMailingActive)
     {
         $user->setNom($nom);
         $user->setPrenom($prenom);
         $user->setIsGenerique($isGenerique);
+        $user->setIsMailingActive($isMailingActive);
         $user->setRoles([$roles]);
         $user->setEmail($email);
     }

@@ -9,6 +9,7 @@ use App\Entity\Situation;
 use App\Repository\SignalementRepository;
 use App\Repository\SituationRepository;
 use App\Service\CriticiteCalculatorService;
+use App\Service\NotificationService;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

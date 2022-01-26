@@ -62,6 +62,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private $isGenerique;
 
+    #[ORM\Column(type: 'boolean')]
+    private $isMailingActive;
+
     public function __construct()
     {
         $this->affectations = new ArrayCollection();
@@ -321,6 +324,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             if ($affectation->getSignalement()->getId() === $signalement->getId())
                 return true;
         return false;
+    }
+
+    public function getIsMailingActive(): ?bool
+    {
+        return $this->isMailingActive;
+    }
+
+    public function setIsMailingActive(bool $isMailingActive): self
+    {
+        $this->isMailingActive = $isMailingActive;
+
+        return $this;
     }
 
 

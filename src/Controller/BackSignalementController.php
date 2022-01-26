@@ -243,16 +243,7 @@ class BackSignalementController extends AbstractController
             $doctrine->getManager()->persist($signalement);
             $doctrine->getManager()->persist($suivi);
             $doctrine->getManager()->flush();
-            if($signalement->getStatut() === Signalement::STATUS_NEW) {
-                $params = [
-                    'adresse' => $signalement->getAdresseOccupant().', '.$signalement->getCpOccupant().' '.strtoupper($signalement->getVilleOccupant()),
-                    'lien_suivi' => $this->generateUrl('front_suivi_signalement',['code'=>$signalement->getCodeSuivi()], UrlGeneratorInterface::ABSOLUTE_URL)
-                ];
-                if($signalement->getIsNotOccupant())
-                    $notificationService->send(NotificationService::TYPE_SIGNALEMENT_VALIDE,$signalement->getMailDeclarant(),$params);
-                if($signalement->getMailOccupant())
-                    $notificationService->send(NotificationService::TYPE_SIGNALEMENT_VALIDE,$signalement->getMailOccupant(),$params);
-            }
+
             $this->addFlash('success', 'Statut du signalement mis à jour avec succés !');
         } else
             $this->addFlash('error', "Une erreur est survenue...");

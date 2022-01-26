@@ -4,8 +4,10 @@ namespace App\Form;
 
 use App\Entity\Config;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -32,7 +34,7 @@ class ConfigType extends AbstractType
                 ],
                 'data_class'=>null
             ])
-            ->add('urlTerritoire', TextType::class, [
+            ->add('urlTerritoire', UrlType::class, [
                 'attr' => [
                     'class' => 'fr-input'
                 ],
@@ -48,7 +50,7 @@ class ConfigType extends AbstractType
                     'class'=> 'fr-input-group'
                 ]
             ])
-            ->add('mailDpo', TextType::class, [
+            ->add('mailDpo', EmailType::class, [
                 'attr' => [
                     'class' => 'fr-input'
                 ],
@@ -64,7 +66,7 @@ class ConfigType extends AbstractType
                     'class'=> 'fr-input-group'
                 ]
             ])
-            ->add('mailResponsable', TextType::class, [
+            ->add('mailResponsable', EmailType::class, [
                 'attr' => [
                     'class' => 'fr-input'
                 ],
@@ -79,6 +81,14 @@ class ConfigType extends AbstractType
                 'row_attr'=>[
                     'class'=> 'fr-input-group'
                 ]
+            ])
+            ->add('emailReponse', EmailType::class, [
+                'attr' => [
+                    'class' => 'fr-input'
+                ],
+                'row_attr'=>[
+                    'class'=> 'fr-input-group'
+                ],'label'=>'Courriel de réponse'
             ])
         ;
     }

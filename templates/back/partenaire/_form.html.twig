@@ -1,6 +1,6 @@
 <template id="partenaire_add_user_row">
     <div class="fr-col-12">
-            <h4 class="fr-mb-0">Nouvel utilisateur</h4>
+        <h4 class="fr-mb-0">Nouvel utilisateur</h4>
     </div>
     <div class="fr-input-group fr-col">
         <label for="partenaire_users_nom_new__ID__" class="fr-label">Nom<sup class="fr-text-label--red-marianne">*</sup></label>
@@ -43,10 +43,24 @@
     <div class="fr-input-group fr-col">
         <label for="partenaire_users_is_generique_new__ID__" class="fr-label">Type compte<sup
                     class="fr-text-label--red-marianne">*</sup></label>
-        <select id="partenaire_users_is_generique_new__ID__" name="partenaire[users][new][__ID__][isGenerique]" required="required"
+        <select id="partenaire_users_is_generique_new__ID__" name="partenaire[users][new][__ID__][isGenerique]"
+                required="required"
                 class="fr-select">
             <option value="0" selected>Utilisateur</option>
             <option value="1">Générique</option>
+        </select>
+        <p class="fr-error-text fr-hidden">
+            Vous devez definir le type d'adresse.
+        </p>
+    </div>
+    <div class="fr-input-group fr-col">
+        <label for="partenaire_users_is_mailing_active_new__ID__" class="fr-label">Notification<sup
+                    class="fr-text-label--red-marianne">*</sup></label>
+        <select id="partenaire_users_is_mailing_active_new__ID__" name="partenaire[users][new][__ID__][isMailingActive]"
+                required="required"
+                class="fr-select">
+            <option value="0" selected>Non</option>
+            <option value="1">Oui</option>
         </select>
         <p class="fr-error-text fr-hidden">
             Vous devez definir le type d'adresse.
@@ -136,7 +150,8 @@
         <div class="fr-input-group fr-col">
             <label for="partenaire_users_is_generique_{{ user.id }}" class="fr-label">Type compte<sup
                         class="fr-text-label--red-marianne">*</sup></label>
-            <select id="partenaire_users_is_generique_{{ user.id }}" name="partenaire[users][{{ user.id }}][isGenerique]"
+            <select id="partenaire_users_is_generique_{{ user.id }}"
+                    name="partenaire[users][{{ user.id }}][isGenerique]"
                     required="required" class="fr-select">
                 <option value="0" {% if not user.isGenerique %}selected{% endif %}>
                     Utilisateur
@@ -148,6 +163,20 @@
             <p class="fr-error-text fr-hidden">
                 Vous devez spécifiez le type de compte.
             </p>
+        </div>
+        <div class="fr-input-group fr-col">
+            <label for="partenaire_users_is_mailing_active_{{ user.id }}" class="fr-label">Notification<sup
+                        class="fr-text-label--red-marianne">*</sup></label>
+            <select id="partenaire_users_is_mailing_active_{{ user.id }}"
+                    name="partenaire[users][{{ user.id }}][isMailingActive]"
+                    required="required" class="fr-select">
+                <option value="0" {% if not user.isMailingActive %}selected{% endif %}>
+                    Non
+                </option>
+                <option value="1" {% if user.isMailingActive %}selected{% endif %}>
+                    Oui
+                </option>
+            </select>
         </div>
         <div class="fr-input-group">
             <label for="partenaire_users_delete_{{ user.id }}" class="fr-label">Suppr.</label>

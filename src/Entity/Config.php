@@ -39,6 +39,9 @@ class Config
     #[Assert\File(maxSize: '2048k',mimeTypes: "images/*")]
     private $logotype;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $emailReponse;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -136,6 +139,18 @@ class Config
     public function setLogotype(?string $logotype): self
     {
         $this->logotype = $logotype;
+
+        return $this;
+    }
+
+    public function getEmailReponse(): ?string
+    {
+        return $this->emailReponse;
+    }
+
+    public function setEmailReponse(?string $emailReponse): self
+    {
+        $this->emailReponse = $emailReponse;
 
         return $this;
     }

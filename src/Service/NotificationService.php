@@ -13,13 +13,15 @@ class NotificationService
     const TYPE_NEW_SIGNALEMENT = 3;
     const TYPE_AFFECTATION = 4;
     const TYPE_SIGNALEMENT_VALIDE = 5;
-    const TYPE_ACCUSE_RECEPTION_DECLARANT = 6;
+    const TYPE_ACCUSE_RECEPTION = 6;
 
     private MailerInterface $mailer;
+    private ConfigurationService $configuration;
 
-    public function __construct(MailerInterface $mailer)
+    public function __construct(MailerInterface $mailer,ConfigurationService $configurationService)
     {
         $this->mailer = $mailer;
+        $this->configuration = $configurationService;
     }
 
     private function config(int $type): array
@@ -41,13 +43,18 @@ class NotificationService
                 'btntext'=>"Voir le signalement"
             ],
             NotificationService::TYPE_AFFECTATION => [
-                'template' => 'login_link_email',
-                'subject' => 'Vous avez été affecté à un signalement'
+                'template' => 'affectation_email',
+                'subject' => 'Vous avez été affecté à un signalement',
+                'btntext'=>"Voir le signalement"
             ],
             NotificationService::TYPE_SIGNALEMENT_VALIDE => [
                 'template' => 'validation_signalement_email',
                 'subject' => 'Votre signalement à été validé par nos service',
                 'btntext'=>"Suivre mon signalement"
+            ],
+            NotificationService::TYPE_ACCUSE_RECEPTION => [
+                'template' => 'accuse_reception_email',
+                'subject' => 'Accusé de réception de votre signalement',
             ]
         };
     }
@@ -56,6 +63,8 @@ class NotificationService
     {
         $message = $this->renderMailContentWithParamsByType($type, $params);
         $message->to($email);
+        if($this->configuration->get()->getEmailReponse() !== null)
+            $message->replyTo($this->configuration->get()->getEmailReponse());
         try {
             $this->mailer->send($message);
             return true;
