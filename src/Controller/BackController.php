@@ -100,6 +100,7 @@ class BackController extends AbstractController
                 }
 
             }
+            $entityManager->persist($config);
             $entityManager->flush();
         }
         return $this->render('back/config/index.html.twig', [
