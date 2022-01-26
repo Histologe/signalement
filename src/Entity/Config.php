@@ -34,6 +34,9 @@ class Config
     #[ORM\Column(type: 'string', length: 255)]
     private $adresseDpo;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $logotype;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -119,6 +122,18 @@ class Config
     public function setAdresseDpo(string $adresseDpo): self
     {
         $this->adresseDpo = $adresseDpo;
+
+        return $this;
+    }
+
+    public function getLogotype(): ?string
+    {
+        return $this->logotype;
+    }
+
+    public function setLogotype(?string $logotype): self
+    {
+        $this->logotype = $logotype;
 
         return $this;
     }

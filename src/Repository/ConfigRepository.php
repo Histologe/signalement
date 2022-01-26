@@ -28,7 +28,7 @@ class ConfigRepository extends ServiceEntityRepository
             ->orderBy('c.id', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
-            ->getArrayResult()
+            ->getResult()
             ;
     }
 
