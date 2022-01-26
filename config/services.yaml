@@ -6,6 +6,7 @@
 parameters:
     uploads_dir: '%kernel.project_dir%/uploaded_files/signalement/'
     capture_dir: '%kernel.project_dir%/uploaded_files/capture/'
+    images_dir: '%kernel.project_dir%/public/img/'
 services:
     # default configuration for services in *this* file
     _defaults:

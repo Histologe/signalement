@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Notifier\CustomLoginLinkNotification;
 use App\Repository\UserRepository;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\NotificationEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,30 +28,30 @@ class UserAccountController extends AbstractController
      * @throws TransportExceptionInterface
      */
     #[Route('/activation', name: 'login_activation')]
-    public function requestLoginLink(LoginLinkHandlerInterface $loginLinkHandler, UserRepository $userRepository, Request $request, MailerInterface $mailer): \Symfony\Component\HttpFoundation\Response
+    public function requestLoginLink(NotificationService$notificationService,LoginLinkHandlerInterface $loginLinkHandler, UserRepository $userRepository, Request $request, MailerInterface $mailer): \Symfony\Component\HttpFoundation\Response
     {
         $title = 'Activation de votre compte';
         if ($request->isMethod('POST') && $email = $request->request->get('email')) {
             $user = $userRepository->findOneBy(['email' => $email]);
-            $userRequest = clone $request;
-            $userRequest->setLocale($request->getDefaultLocale());
-            $loginLinkDetails = $loginLinkHandler->createLoginLink($user, $userRequest);
-            $loginLink = $loginLinkDetails->getUrl();
-            $notif = new NotificationEmail();
-            $notif->htmlTemplate('emails/login_link_email.html.twig')
-                ->context(['link' => $loginLink])
-                ->to($email)
-                ->subject('Histologe - Activation');
-            $mailer->send($notif);
-            return $this->render('security/login_link_sent.html.twig', [
-                'title' => 'Lien de connexion envoyé !',
-                'email' => $email
-            ]);
+            if($user)
+            {
+                $loginLinkDetails = $loginLinkHandler->createLoginLink($user);
+                $loginLink = $loginLinkDetails->getUrl();
+                $notificationService->send(NotificationService::TYPE_ACTIVATION,$email,['link'=>$loginLink]);
+                return $this->render('security/login_link_sent.html.twig', [
+                    'title' => 'Lien de connexion envoyé !',
+                    'email' => $email
+                ]);
+            } else {
+                $this->addFlash('error',"Cette adresse ne correspond à aucun compte, verifiez votre saisie");
+            }
         }
 
         // if it's not submitted, render the "login" form
         return $this->render('security/login_activation.html.twig', [
-            'title' => $title
+            'title' => $title,
+            'actionTitle'=> "Activation de votre compte",
+            'actionText' => "afin d'activer"
         ]);
     }
 
@@ -85,7 +86,9 @@ class UserAccountController extends AbstractController
 
         // if it's not submitted, render the "login" form
         return $this->render('security/login_activation.html.twig', [
-            'title' => $title
+            'title' => $title,
+            'actionTitle'=> "Récupération de mot de passe",
+            'actionText' => "afin de récupèrer l'accès à"
         ]);
     }
 

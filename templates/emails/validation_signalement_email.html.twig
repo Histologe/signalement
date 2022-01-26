@@ -2,8 +2,7 @@
 
 {% block body %}
     <p>Bonjour,</p>
-    <p>Vous avez demandez l'activation de votre compte, cliquez sur le bouton ci-dessous pour vous connecter et activer
-        votre compte</p>
+    <p>Nous vous informons que votre signalement conercant le logement situé {{ adresse }} vient d'être validé par le service Histologe, vous pouvez désormais suire l'avancé du traitement de votre signalemetn en cliquant sur le bouton ci-dessous.</p>
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="text-align: center">
         <tbody>
         <tr>
@@ -12,7 +11,7 @@
                     <tbody>
                     <tr style="text-align: center;width: 100%">
                         <td>
-                            <a href="{{ link|raw }}" target="_blank">{{ btntext }}</a></td>
+                            <a href="{{ lien_suivi|raw }}" target="_blank">{{ btntext }}</a></td>
                     </tr>
                     </tbody>
                 </table>
@@ -20,5 +19,5 @@
         </tr>
         </tbody>
     </table>
-    <p>Si le bouton ne fonctionne pas <a href="{{ link|raw }}">cliquez ici</a></p>
+    <p>Si le bouton ne fonctionne pas <a href="{{ lien_suivi|raw }}">cliquez ici</a></p>
 {% endblock %}

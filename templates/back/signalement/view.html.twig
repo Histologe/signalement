@@ -339,7 +339,6 @@
                             <input type="hidden" name="_token"
                                    value="{{ csrf_token('signalement_add_file_'~signalement.id) }}">
                         </form>
-
                     </div>
                 </div>
             {% endif %}
@@ -426,6 +425,8 @@
                     {% endif %}
                 {% endfor %}
             </div>
+            {% else %}
+                <hr style="visibility: hidden">
         {% endif %}
         {% if is_granted('ROLE_ADMIN_PARTENAIRE') and "closed" not in signalement.statut and not needValidation and not isInvalid %}
       {#      <div class="fr-grid-row">

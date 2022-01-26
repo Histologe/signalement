@@ -27,19 +27,27 @@ class NotificationService
         return match ($type) {
             NotificationService::TYPE_ACTIVATION => [
                 'template' => 'login_link_email',
-                'subject' => 'Activation de votre compte'
+                'subject' => 'Activation de votre compte',
+                'btntext'=>"J'active mon compte"
             ],
             NotificationService::TYPE_LOST_PASSWORD => [
-                'template' => 'login_link_email',
-                'subject' => 'Récupération de votre mot de passe'
+                'template' => 'lost_pass_email',
+                'subject' => 'Récupération de votre mot de passe',
+                'btntext'=>"Je créer un nouveau mot de passe"
             ],
             NotificationService::TYPE_NEW_SIGNALEMENT => [
                 'template' => 'login_link_email',
-                'subject' => 'Un nouveau signalement vous attend'
+                'subject' => 'Un nouveau signalement vous attend',
+                'btntext'=>"Voir le signalement"
             ],
             NotificationService::TYPE_AFFECTATION => [
                 'template' => 'login_link_email',
                 'subject' => 'Vous avez été affecté à un signalement'
+            ],
+            NotificationService::TYPE_SIGNALEMENT_VALIDE => [
+                'template' => 'validation_signalement_email',
+                'subject' => 'Votre signalement à été validé par nos service',
+                'btntext'=>"Suivre mon signalement"
             ]
         };
     }
@@ -61,7 +69,7 @@ class NotificationService
         $config = $this->config($type);
         $notification = new NotificationEmail();
         return $notification->htmlTemplate('emails/' . $config['template'] . '.html.twig')
-            ->context($params)
+            ->context(array_merge($params,$config))
             ->subject('Histologe - ' . $config['subject']);
     }
 }

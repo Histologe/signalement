@@ -89,7 +89,7 @@ class BackController extends AbstractController
                 $newFilename = $safeFilename . '-' . uniqid() . '.' . $logotype->guessExtension();
                 try {
                     $logotype->move(
-                        $this->getParameter('uploads_dir'),
+                        $this->getParameter('images_dir'),
                         $newFilename
                     );
                     $config->setLogotype($newFilename);

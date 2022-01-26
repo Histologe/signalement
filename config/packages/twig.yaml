@@ -3,7 +3,9 @@ twig:
     globals:
         newsActivitiesSinceLastLogin: '@App\Service\NewsActivitiesSinceLastLoginService'
         config: '@App\Service\ConfigurationService'
-
+    paths:
+        # point this wherever your images live
+        '%kernel.project_dir%/public/img': images
 when@test:
     twig:
         strict_variables: true

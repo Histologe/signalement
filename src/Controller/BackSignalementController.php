@@ -26,6 +26,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGenerator;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints\Positive;
@@ -218,7 +220,7 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/{uuid}/validation/response', name: 'back_signalement_validation_response', methods: "GET")]
-    public function validationResponseSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
+    public function validationResponseSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine,NotificationService $notificationService): Response
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
             return $this->redirectToRoute('back_index');
@@ -228,7 +230,6 @@ class BackSignalementController extends AbstractController
                 $statut = Signalement::STATUS_NEW;
                 $description = 'validé';
                 $signalement->setCodeSuivi(md5(uniqid()));
-                //TODO: Notifier déclarant (occupant si email) avec code de suivi
             } else {
                 $statut = Signalement::STATUS_IS_INVALID;
                 $description = 'non-valide';
@@ -237,10 +238,21 @@ class BackSignalementController extends AbstractController
             $suivi->setSignalement($signalement);
             $suivi->setDescription('Signalement ' . $description);
             $suivi->setCreatedBy($this->getUser());
+            $suivi->setIsPublic(true);
             $signalement->setStatut($statut);
             $doctrine->getManager()->persist($signalement);
             $doctrine->getManager()->persist($suivi);
             $doctrine->getManager()->flush();
+            if($signalement->getStatut() === Signalement::STATUS_NEW) {
+                $params = [
+                    'adresse' => $signalement->getAdresseOccupant().', '.$signalement->getCpOccupant().' '.strtoupper($signalement->getVilleOccupant()),
+                    'lien_suivi' => $this->generateUrl('front_suivi_signalement',['code'=>$signalement->getCodeSuivi()], UrlGeneratorInterface::ABSOLUTE_URL)
+                ];
+                if($signalement->getIsNotOccupant())
+                    $notificationService->send(NotificationService::TYPE_SIGNALEMENT_VALIDE,$signalement->getMailDeclarant(),$params);
+                if($signalement->getMailOccupant())
+                    $notificationService->send(NotificationService::TYPE_SIGNALEMENT_VALIDE,$signalement->getMailOccupant(),$params);
+            }
             $this->addFlash('success', 'Statut du signalement mis à jour avec succés !');
         } else
             $this->addFlash('error', "Une erreur est survenue...");
