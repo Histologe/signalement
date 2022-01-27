@@ -81,7 +81,8 @@
                                         <text role="button"
                                               class="fr-accordion__btn fr-btn--icon-left fr-fi-question-fill"
                                               aria-expanded="false"
-                                              aria-controls="signalement-accordion-situation-{{ situation.id }}">Votre
+                                              aria-controls="signalement-accordion-situation-{{ situation.id }}"
+                                        id="signalement-accordion-situation-{{ situation.id }}-selector">Votre
                                             signalement
                                             concerne-t-il {{ situation.label }}
                                         </text>
@@ -91,7 +92,7 @@
                                             {% for critere in situation.criteres %}
                                                 <div class="fr-toggle fr-pb-0"
                                                      aria-expanded="false"
-                                                     aria-controls="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
+                                                     aria-controls="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}" id="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}-selector">
                                                     <input type="checkbox"
                                                            name="signalement[situation][{{ situation.id }}]"
                                                            class="fr-toggle__input signalement-situation"
@@ -907,7 +908,7 @@
                     <div class="fr-col-12 fr-col-md-4">
                         <ul>
                             <li>
-                                <strong>Coordonées</strong>
+                                <strong>Coordonées <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-edit-fill" title="Editer les informations" data-goto-step="4"></button></strong>
                                 <p>
                                     <span id="recap-signalement-nom-occupant"></span> <span
                                             id="recap-signalement-prenom-occupant"></span> <br>
@@ -920,7 +921,7 @@
                     <div class="fr-col-12 fr-col-md-4">
                         <ul>
                             <li>
-                                <strong>Adresse du logement</strong>
+                                <strong>Adresse du logement <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-edit-fill" title="Editer les informations" data-goto-step="4"></button></strong>
                                 <p>
                                     <span id="recap-signalement-adresse-occupant"></span> <br>
                                     <span id="recap-signalement-cp-occupant"></span>, <span
@@ -932,7 +933,7 @@
                     <div class="fr-col-12 fr-col-md-4">
                         <ul>
                             <li>
-                                <strong>Composition du logement</strong>
+                                <strong>Composition du logement <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-edit-fill" title="Editer les informations" data-goto-step="3"></button></strong>
                                 <p>
                                     <span id="recap-signalement-nb-adulte"></span> Adulte(s) <br>
                                     <span id="recap-signalement-nb-enfants-m6"></span> Enfant(s) de moins de 6 ans <br>
@@ -944,7 +945,7 @@
                     <div class="fr-col-12">
                         <ul>
                             <li>
-                                <strong>Problème(s) signalé(s)</strong>
+                                <strong>Problème(s) signalé(s) <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-edit-fill" title="Editer les informations" data-goto-step="1"></button></strong>
                                 <p>
                                     <span id="recap-signalement-situation"></span>
                                 </p>
@@ -954,7 +955,7 @@
                     <div class="fr-col-12">
                         <ul>
                             <li>
-                                <strong>Description du ou des problème(s)</strong>
+                                <strong>Description du ou des problème(s) <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-edit-fill" title="Editer les informations" data-goto-step="2"></button></strong>
                                 <p>
                                     <span id="recap-signalement-details"></span>
                                 </p>

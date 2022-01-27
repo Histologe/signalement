@@ -1,10 +1,10 @@
 Node.prototype.addEventListeners = function (eventNames, eventFunction) {
-    for (eventName of eventNames.split(' '))
+    for (let eventName of eventNames.split(' '))
         this.addEventListener(eventName, eventFunction);
 }
 const forms = document.querySelectorAll('form.needs-validation:not([name="bug-report"])');
 const localStorage = window.localStorage;
-serializeArray = (form) => {
+const serializeArray = (form) => {
     return Array.from(new FormData(form)
         .entries())
         .reduce(function (response, current) {
@@ -12,6 +12,28 @@ serializeArray = (form) => {
             return response
         }, {})
 };
+const checkFirstStep = (form) => {
+    return !(form.id === "signalement-step-1" && null === form.querySelector('[type="radio"]:checked') || form.id === "signalement-step-1" && form.querySelectorAll('[type="checkbox"]:checked').length !== form.querySelectorAll('[type="radio"]:checked').length);
+}
+const checkFieldset = (form) => {
+    let field = form.querySelector('fieldset[aria-required="true"]')
+    if (field) {
+        if (null === field.querySelector('[type="checkbox"]:checked')) {
+            field.classList.add('fr-fieldset--error');
+            field?.querySelector('.fr-error-text')?.classList.remove('fr-hidden');
+            invalid = field.parentElement;
+            return false;
+        } else {
+            field.classList.remove('fr-fieldset--error');
+            field?.querySelector('.fr-error-text')?.classList.add('fr-hidden');
+            return true;
+        }
+    } else
+        return true;
+}
+const goToStep = (step) => {
+    document.querySelector('#signalement-step-'+step).click();
+}
 forms.forEach((form) => {
     form?.querySelectorAll('.toggle-criticite input[type="radio"]')?.forEach((criticite) => {
         criticite.addEventListener('change', (event) => {
@@ -143,25 +165,7 @@ forms.forEach((form) => {
         })
     })
     let invalid;
-    let checkFirstStep = (form) => {
-        return !(form.id === "signalement-step-1" && null === form.querySelector('[type="radio"]:checked') || form.id === "signalement-step-1" && form.querySelectorAll('[type="checkbox"]:checked').length !== form.querySelectorAll('[type="radio"]:checked').length);
-    }
-    let checkFieldset = (form) => {
-       let field = form.querySelector('fieldset[aria-required="true"]')
-        if(field){
-            if (null === field.querySelector('[type="checkbox"]:checked')) {
-                field.classList.add('fr-fieldset--error');
-                field?.querySelector('.fr-error-text')?.classList.remove('fr-hidden');
-                invalid = field.parentElement;
-                return false;
-            } else {
-                field.classList.remove('fr-fieldset--error');
-                field?.querySelector('.fr-error-text')?.classList.add('fr-hidden');
-                return true;
-            }
-        } else
-            return true;
-    }
+
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         /*    console.log(form.querySelectorAll('[type="checkbox"]:checked').length)*/
@@ -183,8 +187,7 @@ forms.forEach((form) => {
                             })
                             invalid = field.parentElement;
                         }
-                    }
-                    else if (!field.checkValidity()) {
+                    } else if (!field.checkValidity()) {
                         /* console.log(field)*/
                         let parent = field.parentElement;
                         if (field.type === 'radio')
@@ -270,14 +273,17 @@ forms.forEach((form) => {
                                     document.querySelectorAll('#signalement-tabs,#signalement-success').forEach(el => {
                                         el.classList.toggle('fr-hidden')
                                     })
+                                    localStorage.clear();
                                 } else {
-                                    event.submitter.disabled = true;
+                                    event.submitter.disabled = false;
+                                    event.submitter.innerHTML = "Confirmer";
                                     ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v => event.submitter.classList.toggle(v));
                                     alert('Erreur signalement !')
                                 }
                             })
                         } else {
-                            event.submitter.disabled = true;
+                            event.submitter.disabled = false;
+                            event.submitter.innerHTML = "Confirmer";
                             ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v => event.submitter.classList.toggle(v));
                             alert('Erreur signalement !')
                         }
@@ -292,15 +298,6 @@ document?.querySelectorAll('[name="bo-filter-form"]').forEach((filterForm) => {
         filterForm.submit();
     })
 })
-/*document?.querySelectorAll('.fr-checkbox-affectation').forEach((checkbox) => {
-    checkbox.addEventListener('change', (event) => {
-        checkbox.disabled = true;
-        fetch(checkbox.getAttribute('data-toggle-fetch')).then(r => r.json().then(res => {
-            ['fr-fi-checkbox-circle-fill', 'fr-fi-close-circle-fill', 'fr-text-label--green-emeraude', 'fr-text-label--red-marianne'].map(c => checkbox.parentElement.parentElement.classList.toggle(c))
-            checkbox.disabled = false;
-        }))
-    })
-})*/
 document?.querySelectorAll('[data-fr-select-target]')?.forEach(t => {
     let source = document?.querySelector('#' + t.getAttribute('data-fr-select-source'));
     let target = document?.querySelector('#' + t.getAttribute('data-fr-select-target'));
@@ -445,7 +442,6 @@ document?.querySelectorAll('.fr-password-toggle')?.forEach(pwdToggle => {
         "text" !== pwd.type ? pwd.type = "text" : pwd.type = "password";
     })
 })
-
 document?.querySelector('form[name="login-creation-mdp-form"]')?.querySelectorAll('[name^="password"]').forEach(pwd => {
     pwd.addEventListener('input', event => {
         let pass = document?.querySelector('form[name="login-creation-mdp-form"] #login-password').value;
@@ -472,6 +468,11 @@ document?.querySelector('form[name="login-creation-mdp-form"]')?.querySelectorAl
 })
 document?.querySelectorAll('.fr-tabs__panel')?.forEach((tab) => {
     tab.addEventListener("dsfr.conceal", event => {
+        if (tab.id === "signalement-step-1-panel") {
+            tab.querySelectorAll('[aria-expanded="true"]').forEach(opened => {
+                localStorage.setItem(opened.id, 'true')
+            })
+        }
         const y = tab.getBoundingClientRect().top + window.scrollY;
         window.scroll({
             top: y,
@@ -479,4 +480,15 @@ document?.querySelectorAll('.fr-tabs__panel')?.forEach((tab) => {
         });
     });
 })
-
+document?.querySelector('#signalement-step-1-panel')?.addEventListener('dsfr.disclose', (ev => {
+    ev.target.querySelectorAll('[aria-expanded]').forEach(exp => {
+        if (localStorage.getItem(exp.id))
+            document.querySelector('#' + exp.id).setAttribute('aria-expanded', "true"),localStorage.removeItem(exp.id)
+    })
+}))
+document?.querySelectorAll('[data-goto-step]')?.forEach(stepper=>{
+    stepper.addEventListeners('click touchdown',(evt)=>{
+        evt.preventDefault();
+        goToStep(stepper.getAttribute('data-goto-step'))
+    })
+})
