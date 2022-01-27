@@ -148,16 +148,19 @@ forms.forEach((form) => {
     }
     let checkFieldset = (form) => {
        let field = form.querySelector('fieldset[aria-required="true"]')
-        if (null === field.querySelector('[type="checkbox"]:checked')) {
-            field.classList.add('fr-fieldset--error');
-            field?.querySelector('.fr-error-text')?.classList.remove('fr-hidden');
-            invalid = field.parentElement;
-            return false;
-        } else {
-            field.classList.remove('fr-fieldset--error');
-            field?.querySelector('.fr-error-text')?.classList.add('fr-hidden');
+        if(field){
+            if (null === field.querySelector('[type="checkbox"]:checked')) {
+                field.classList.add('fr-fieldset--error');
+                field?.querySelector('.fr-error-text')?.classList.remove('fr-hidden');
+                invalid = field.parentElement;
+                return false;
+            } else {
+                field.classList.remove('fr-fieldset--error');
+                field?.querySelector('.fr-error-text')?.classList.add('fr-hidden');
+                return true;
+            }
+        } else
             return true;
-        }
     }
     form.addEventListener('submit', (event) => {
         event.preventDefault();
