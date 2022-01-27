@@ -31,12 +31,15 @@ class BackController extends AbstractController
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
             $user = $this->getUser();
         $filter = [
+            'search'=>$request->get('search') ?? null,
             'status' => $request->get('bo-filter-statut') ?? 'all',
-            'ville' => $request->get('bo-filter-ville') ?? 'all'
+            'ville' => $request->get('bo-filter-ville') ?? 'all',
+            'page' => $request->get('page') ?? 1,
         ];
         $signalements = [
-            'list' => $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $request->get('search')),
-            'villes' => $signalementRepository->findCities($user)
+            'list' => $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'],$filter['search'],$filter['page']),
+            'villes' => $signalementRepository->findCities($user),
+            'page' => (int)$filter['page'],
         ];
         if (!$user) {
             $signalements['counts'] = [
@@ -53,12 +56,21 @@ class BackController extends AbstractController
                 Signalement::STATUS_CLOSED => $affectationRepository->countForUser(Signalement::STATUS_CLOSED, $user),
             ];
         }
+        // get the total number of orders
+        $signalements['total'] = count($signalements['list']);
+        $signalements['pages'] = (int)ceil($signalements['total']/50);
+        if($request->get('pagination'))
+            return $this->render('back/table_result.html.twig',[
+                'filter' => $filter,
+                'signalements' => $signalements,
+            ]);
         return $this->render('back/index.html.twig', [
             'title' => $title,
             'filter' => $filter,
             'signalements' => $signalements,
         ]);
     }
+
 
     #[Route('/news', name: 'back_news_activities')]
     public function newsActivitiesSinceLastLogin(NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response

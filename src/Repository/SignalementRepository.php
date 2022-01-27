@@ -8,6 +8,7 @@ use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -67,8 +68,10 @@ class SignalementRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findByStatusAndOrCityForUser(User $user = null, $status = null, $city = null,$search=null)
+    public function findByStatusAndOrCityForUser(User $user = null, $status = null, $city = null, $search = null, $page = null)
     {
+        $pageSize = 50;
+        $firstResult = ($page - 1) * $pageSize;
         $qb = $this->createQueryBuilder('s')
             ->where('s.statut != :status')
             ->setParameter('status', Signalement::STATUS_ARCHIVED);
@@ -100,12 +103,16 @@ class SignalementRepository extends ServiceEntityRepository
         if ($user)
             $qb->andWhere('user = :user')
                 ->setParameter('user', $user);
-        if($search)
+        if ($search)
             $qb->andWhere('LOWER(s.nomOccupant) LIKE :search OR LOWER(s.prenomOccupant) LIKE :search OR LOWER(s.reference) LIKE :search')
-                ->setParameter('search',"%".strtolower($search)."%");
-        return $qb->orderBy('s.id', 'DESC')
-            ->getQuery()
-            ->getResult();
+                ->setParameter('search', "%" . strtolower($search) . "%");
+        $qb->orderBy('s.id', 'DESC')
+            ->setFirstResult($firstResult)
+            ->setMaxResults($pageSize)
+            ->getQuery();
+
+        $paginator = new Paginator($qb,true);
+        return $paginator;
     }
 
 
