@@ -82,7 +82,7 @@
                                               class="fr-accordion__btn fr-btn--icon-left fr-fi-question-fill"
                                               aria-expanded="false"
                                               aria-controls="signalement-accordion-situation-{{ situation.id }}"
-                                        id="signalement-accordion-situation-{{ situation.id }}-selector">Votre
+                                              id="signalement-accordion-situation-{{ situation.id }}-selector">Votre
                                             signalement
                                             concerne-t-il {{ situation.label }}
                                         </text>
@@ -92,7 +92,8 @@
                                             {% for critere in situation.criteres %}
                                                 <div class="fr-toggle fr-pb-0"
                                                      aria-expanded="false"
-                                                     aria-controls="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}" id="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}-selector">
+                                                     aria-controls="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}"
+                                                     id="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}-selector">
                                                     <input type="checkbox"
                                                            name="signalement[situation][{{ situation.id }}]"
                                                            class="fr-toggle__input signalement-situation"
@@ -118,19 +119,23 @@
                                                             <input type="radio"
                                                                    id="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"
                                                                    name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]"
-                                                                   value="{{ criticite.id }}" class="toggle-criticite-smiley" >
+                                                                   value="{{ criticite.id }}"
+                                                                   class="toggle-criticite-smiley">
                                                             <label class="fr-label"
                                                                    for="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"><strong>{{ etats[index] }}</strong>
                                                                 <span class="fr-hint-text">{{ criticite.label }}</span>
                                                             </label>
                                                             <div class="fr-radio-rich__img">
                                                                 <img src="{{ asset('img/'~etats_classes[index]~'.svg') }}"
-                                                                     alt="" width="100%" class="fr-p-2v"  data-fr-checked-icon="{{ asset('img/'~etats_classes[index]~'-actif.svg') }}" data-fr-unchecked-icon="{{ asset('img/'~etats_classes[index]~'.svg') }}"/>
+                                                                     alt="" width="100%" class="fr-p-2v"
+                                                                     data-fr-checked-icon="{{ asset('img/'~etats_classes[index]~'-actif.svg') }}"
+                                                                     data-fr-unchecked-icon="{{ asset('img/'~etats_classes[index]~'.svg') }}"/>
                                                                 <!-- L’alternative de l’image (attribut alt) doit rester vide car l’image est illustrative et ne doit pas être restituée aux technologies d’assistance -->
                                                             </div>
                                                         </div>
                                                     {% endfor %}
-                                                    <p class="fr-error-text fr-hidden">Vous devez sélectioner un état pour cette situation</p>
+                                                    <p class="fr-error-text fr-hidden">Vous devez sélectioner un état
+                                                        pour cette situation</p>
                                                 </div>
                                             {% endfor %}
                                         </ul>
@@ -185,13 +190,13 @@
                                             <input type="file" accept="image/*" name="signalement[photos][{{ i }}]"
                                                    class="fr-hidden">
                                         </label>
-                                       <div class="fr-grid-row">
-                                           <div class="fr-col fr-text--center">
-                                               <button class="fr-mt-2v fr-btn fr-btn--sm fr-btn--danger signalement-uploadedfile-delete fr-hidden">
-                                                   Supprimer
-                                               </button>
-                                           </div>
-                                       </div>
+                                        <div class="fr-grid-row">
+                                            <div class="fr-col fr-text--center">
+                                                <button class="fr-mt-2v fr-btn fr-btn--sm fr-btn--danger signalement-uploadedfile-delete fr-hidden">
+                                                    Supprimer
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 {% endfor %}
                                 <small class="fr-col-12 fr-fi-information-fill fr-text-label--blue-france fr-display-block">
@@ -209,9 +214,11 @@
                                 {% for i in 0..3 %}
                                     <div class="fr-col-6 fr-col-md fr-text--center">
                                         <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-attachment-fill">
-                                            <input type="file" name="signalement[documents][{{ i }}]" class="fr-hidden" accept=".pdf,.doc,.docx">
+                                            <input type="file" name="signalement[documents][{{ i }}]" class="fr-hidden"
+                                                   accept=".pdf,.doc,.docx">
                                         </label>
-                                        <small class="fr-text-label--red-marianne fr-icon--sm fr-hidden fr-display-block">Le document dépasse 2MB</small>
+                                        <small class="fr-text-label--red-marianne fr-icon--sm fr-hidden fr-display-block">Le
+                                            document dépasse 2MB</small>
                                         <div class="fr-grid-row">
                                             <div class="fr-col fr-text--center">
                                                 <button class="fr-mt-2v fr-btn fr-btn--sm fr-btn--danger signalement-uploadedfile-delete fr-hidden">
@@ -273,7 +280,7 @@
                         </fieldset>
                     </div>
                     <div class="fr-form-group fr-hidden data-fr-toggle" id="signalement-methode-contact">
-                        <fieldset class="fr-fieldset fr-fieldset--inline{# fr-fieldset--error#}" role="group">
+                        <fieldset class="fr-fieldset fr-fieldset--inline{# fr-fieldset--error #}" role="group">
                             <legend class="fr-fieldset__legend fr-text--regular" id="checkboxes-inline-legend">
                                 Comment avez-vous averti le propriétaire ou gestionnaire ?<sup
                                         class="fr-text-default--error">*</sup>
@@ -371,17 +378,20 @@
                             <div class="fr-fieldset__content">
                                 <div class="fr-radio-group">
                                     <input type="radio" id="is-allocataire-caf" value="CAF"
-                                           name="signalement[isAllocataire]" required data-fr-toggle-show="signalement-num-alloc-bloc">
+                                           name="signalement[isAllocataire]" required
+                                           data-fr-toggle-show="signalement-num-alloc-bloc">
                                     <label class="fr-label" for="is-allocataire-caf">CAF</label>
                                 </div>
                                 <div class="fr-radio-group">
                                     <input type="radio" id="is-allocataire-msa" value="MSA"
-                                           name="signalement[isAllocataire]" data-fr-toggle-show="signalement-num-alloc-bloc">
+                                           name="signalement[isAllocataire]"
+                                           data-fr-toggle-show="signalement-num-alloc-bloc">
                                     <label class="fr-label" for="is-allocataire-msa">MSA</label>
                                 </div>
                                 <div class="fr-radio-group">
                                     <input type="radio" id="is-not-allocataire" value="0"
-                                           name="signalement[isAllocataire]" data-fr-toggle-hide="signalement-num-alloc-bloc" >
+                                           name="signalement[isAllocataire]"
+                                           data-fr-toggle-hide="signalement-num-alloc-bloc">
                                     <label class="fr-label" for="is-not-allocataire">Non</label>
                                 </div>
                             </div>
@@ -653,7 +663,7 @@
                                            name="signalement[isNotOccupant]"
                                            data-fr-toggle-hide="signalement-pas-occupant"
                                            data-fr-toggle-show="signalement-occupant|signalement-infos-proprio"
-                                           data-fr-toggle-unrequire="signalement-adresse-proprio|signalement-tel-proprio|signalement-courriel-proprio|signalement-etage-occupant|signalement-num-appart-occupant|signalement-adresse-autre-occupant|signalement-escalier-occupant"
+                                           data-fr-toggle-unrequire="signalement-lien-declarant-occupant|signalement-adresse-proprio|signalement-tel-proprio|signalement-courriel-proprio|signalement-etage-occupant|signalement-num-appart-occupant|signalement-adresse-autre-occupant|signalement-escalier-occupant"
                                            data-fr-toggle-require="signalement-courriel-occupant|signalement-tel-occupant"
                                            required>
                                     <label class="fr-label" for="signalement-occupant-1">Oui</label>
@@ -713,6 +723,23 @@
                                     </p>
                                 </div>
                                 <div class="fr-input-group fr-col-12 fr-p-0">
+                                    <label class="fr-label" for="signalement-lien-declarant-occupant">
+                                        Votre lien avec l'occupant<sup class="fr-text-default--error">*</sup>
+                                    </label>
+                                    <select class="fr-select" id="signalement-lien-declarant-occupant"
+                                            name="signalement[lienDeclarantOccupant]" required>
+                                        <option value="" selected disabled>--- Selectionnez ---</option>
+                                        <option value="proche">Proche</option>
+                                        <option value="professionnel">Professionnel</option>
+                                        <option value="tuteur">Tuteur légal</option>
+                                        <option value="voisin">Voisin</option>
+                                        <option value="autre">Autre</option>
+                                    </select>
+                                    <p class="fr-error-text fr-hidden">
+                                        Veuillez indiquer votre lien avec l'occupant du logement.
+                                    </p>
+                                </div>
+                                <div class="fr-input-group fr-col-12 fr-p-0">
                                     <label class="fr-label" for="signalement-structure-declarant">
                                         Structure [ADIL, CCAS, SDIS, ...]<sup class="fr-text-default--error">*</sup>
                                     </label>
@@ -752,7 +779,8 @@
                                     <label class="fr-label" for="signalement-tel-occupant">
                                         N° de téléphone<sup class="fr-text-default--error">*</sup>
                                     </label>
-                                    <input class="fr-input fr-input--no-resize" type="tel" pattern="[0-9]{10}" id="signalement-tel-occupant"
+                                    <input class="fr-input fr-input--no-resize" type="tel" pattern="[0-9]{10}"
+                                           id="signalement-tel-occupant"
                                            name="signalement[telOccupant]" required>
                                     <label class="fr-label" for="signalement-courriel-occupant">
                                         Courriel<sup class="fr-text-default--error">*</sup>
@@ -916,7 +944,10 @@
                     <div class="fr-col-12 fr-col-md-4">
                         <ul>
                             <li>
-                                <strong>Coordonées <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-edit-fill" title="Editer les informations" data-goto-step="4"></button></strong>
+                                <strong>Coordonées
+                                    <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-edit-fill"
+                                            title="Editer les informations" data-goto-step="4"></button>
+                                </strong>
                                 <p>
                                     <span id="recap-signalement-nom-occupant"></span> <span
                                             id="recap-signalement-prenom-occupant"></span> <br>
@@ -929,7 +960,10 @@
                     <div class="fr-col-12 fr-col-md-4">
                         <ul>
                             <li>
-                                <strong>Adresse du logement <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-edit-fill" title="Editer les informations" data-goto-step="4"></button></strong>
+                                <strong>Adresse du logement
+                                    <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-edit-fill"
+                                            title="Editer les informations" data-goto-step="4"></button>
+                                </strong>
                                 <p>
                                     <span id="recap-signalement-adresse-occupant"></span> <br>
                                     <span id="recap-signalement-cp-occupant"></span>, <span
@@ -941,7 +975,10 @@
                     <div class="fr-col-12 fr-col-md-4">
                         <ul>
                             <li>
-                                <strong>Composition du logement <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-edit-fill" title="Editer les informations" data-goto-step="3"></button></strong>
+                                <strong>Composition du logement
+                                    <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-edit-fill"
+                                            title="Editer les informations" data-goto-step="3"></button>
+                                </strong>
                                 <p>
                                     <span id="recap-signalement-nb-adulte"></span> Adulte(s) <br>
                                     <span id="recap-signalement-nb-enfants-m6"></span> Enfant(s) de moins de 6 ans <br>
@@ -953,7 +990,10 @@
                     <div class="fr-col-12">
                         <ul>
                             <li>
-                                <strong>Problème(s) signalé(s) <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-edit-fill" title="Editer les informations" data-goto-step="1"></button></strong>
+                                <strong>Problème(s) signalé(s)
+                                    <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-edit-fill"
+                                            title="Editer les informations" data-goto-step="1"></button>
+                                </strong>
                                 <p>
                                     <span id="recap-signalement-situation"></span>
                                 </p>
@@ -963,7 +1003,10 @@
                     <div class="fr-col-12">
                         <ul>
                             <li>
-                                <strong>Description du ou des problème(s) <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-edit-fill" title="Editer les informations" data-goto-step="2"></button></strong>
+                                <strong>Description du ou des problème(s)
+                                    <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-edit-fill"
+                                            title="Editer les informations" data-goto-step="2"></button>
+                                </strong>
                                 <p>
                                     <span id="recap-signalement-details"></span>
                                 </p>
@@ -976,8 +1019,9 @@
                         <div class="fr-toggle fr-toggle--border-bottom">
                             <input type="checkbox" class="fr-toggle__input" id="signalement-accept-cgu"
                                    name="signalement[isCguAccepted]" required>
-                            <label class="fr-toggle__label" for="signalement-accept-cgu">J'ai bien pris connaissance des <span
-                                            aria-controls="cguModal" data-fr-opened="false">&nbsp;<u><b>Conditions Générales
+                            <label class="fr-toggle__label" for="signalement-accept-cgu">J'ai bien pris connaissance des
+                                <span
+                                        aria-controls="cguModal" data-fr-opened="false">&nbsp;<u><b>Conditions Générales
                                         d'Utilisation</b></u></span>&nbsp; je les
                                 acceptent.</label>
                             <p class="fr-error-text fr-hidden">
@@ -1018,7 +1062,8 @@
                                     <div class="fr-modal__footer">
                                         <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
                                             <li>
-                                                <button class="fr-btn fr-fi-close-line" aria-controls="cguModal" target="_self" title="Fermer la fenêtre modale">
+                                                <button class="fr-btn fr-fi-close-line" aria-controls="cguModal"
+                                                        target="_self" title="Fermer la fenêtre modale">
                                                     Fermer
                                                 </button>
                                             </li>

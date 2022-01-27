@@ -221,6 +221,9 @@ class Signalement
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $codeSuivi;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $lienDeclarantOccupant;
+
     public function __construct()
     {
         $this->situations = new ArrayCollection();
@@ -1084,6 +1087,18 @@ class Signalement
     public function setCodeSuivi(?string $codeSuivi): self
     {
         $this->codeSuivi = $codeSuivi;
+
+        return $this;
+    }
+
+    public function getLienDeclarantOccupant(): ?string
+    {
+        return $this->lienDeclarantOccupant;
+    }
+
+    public function setLienDeclarantOccupant(?string $lienDeclarantOccupant): self
+    {
+        $this->lienDeclarantOccupant = $lienDeclarantOccupant;
 
         return $this;
     }

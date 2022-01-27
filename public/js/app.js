@@ -2,6 +2,7 @@ Node.prototype.addEventListeners = function (eventNames, eventFunction) {
     for (let eventName of eventNames.split(' '))
         this.addEventListener(eventName, eventFunction);
 }
+const imgData = new FormData();
 const forms = document.querySelectorAll('form.needs-validation:not([name="bug-report"])');
 const localStorage = window.localStorage;
 const serializeArray = (form) => {
@@ -32,8 +33,60 @@ const checkFieldset = (form) => {
         return true;
 }
 const goToStep = (step) => {
-    document.querySelector('#signalement-step-'+step).click();
+    document.querySelector('#signalement-step-' + step).click();
 }
+const resizeImage = function (image, ratio) {
+    return new Promise(function (resolve, reject) {
+        const reader = new FileReader();
+
+        // Read the file
+        reader.readAsDataURL(image);
+
+        // Manage the `load` event
+        reader.addEventListener('load', function (e) {
+            // Create new image element
+            const ele = new Image();
+            ele.addEventListener('load', function () {
+                // Create new canvas
+                const canvas = document.createElement('canvas');
+
+                // Draw the image that is scaled to `ratio`
+                const context = canvas.getContext('2d');
+                const w = ele.width * ratio;
+                const h = ele.height * ratio;
+                canvas.width = w;
+                canvas.height = h;
+                context.drawImage(ele, 0, 0, w, h);
+
+                // Get the data of resized image
+                'toBlob' in canvas
+                    ? canvas.toBlob(function (blob) {
+                        resolve(blob);
+                    })
+                    : resolve(dataUrlToBlob(canvas.toDataURL()));
+            });
+
+            // Set the source
+            ele.src = e.target.result;
+        });
+
+        reader.addEventListener('error', function (e) {
+            reject();
+        });
+    });
+};
+const dataUrlToBlob = function (url) {
+    const arr = url.split(',');
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const str = atob(arr[1]);
+    let length = str.length;
+    const uintArr = new Uint8Array(length);
+    while (length--) {
+        uintArr[length] = str.charCodeAt(length);
+    }
+    return new Blob([uintArr], {type: mime});
+};
+let invalid;
 forms.forEach((form) => {
     form?.querySelectorAll('.toggle-criticite input[type="radio"]')?.forEach((criticite) => {
         criticite.addEventListener('change', (event) => {
@@ -67,7 +120,7 @@ forms.forEach((form) => {
                 toRequire = event.target.getAttribute('data-fr-toggle-require')
             toShow && toShow.split('|').map(targetId => {
                 let target = form?.querySelector('#' + targetId);
-                target.querySelectorAll('input:not([type="checkbox"]),textarea').forEach(ipt => {
+                target.querySelectorAll('input:not([type="checkbox"]),textarea,select').forEach(ipt => {
                     ipt.required = true;
                 })
                 if (target.id === "signalement-methode-contact") {
@@ -77,12 +130,12 @@ forms.forEach((form) => {
             })
             toHide && toHide.split('|').map(targetId => {
                 let target = form?.querySelector('#' + targetId);
-                target.querySelectorAll('input:not([type="checkbox"]),textarea').forEach(ipt => {
+                target?.querySelectorAll('input:not([type="checkbox"]),textarea,select')?.forEach(ipt => {
                     ipt.required = false;
                 })
                 if (target.id === "signalement-methode-contact") {
-                    target.querySelector('fieldset[aria-required="true"]').removeAttribute('aria-required')
-                    target.querySelectorAll('[type="checkbox"]').forEach(chk => {
+                    target?.querySelector('fieldset[aria-required="true"]')?.removeAttribute('aria-required')
+                    target?.querySelectorAll('[type="checkbox"]')?.forEach(chk => {
                         chk.checked = false;
                     })
                 }
@@ -107,12 +160,26 @@ forms.forEach((form) => {
         //TODO: Resize avant upload
         file.addEventListener('change', (event) => {
             if (event.target.files.length > 0) {
-                let deleter = event.target.parentElement.parentElement.querySelector('.signalement-uploadedfile-delete')
-                let src = URL.createObjectURL(event.target.files[0]);
-                let preview = event.target?.parentElement?.querySelector('img')
-                let fileIsOk = false;
-                if (preview/*event.target.parentElement.classList.contains('fr-fi-instagram-line')*/) {
-                    preview.src = src;
+                let deleter = event.target.parentElement.parentElement.querySelector('.signalement-uploadedfile-delete'),
+                    /*src = URL.createObjectURL(event.target.files[0]),*/
+                    preview = event.target?.parentElement?.querySelector('img'),
+                    fileIsOk = false;
+                if (preview) {
+                    const MAX_SIZE = (1024*1024)/2;
+                    const RATIO = (MAX_SIZE/event.target.files[0].size)/2
+                    if(event.target.files[0].size > MAX_SIZE)
+                    {
+                        resizeImage(event.target.files[0], RATIO).then(function (blob) {
+                            // Preview
+                            // Assume that `previewEle` represents the preview image element
+                            preview.src = URL.createObjectURL(blob);
+                            imgData.append(event.target.name, blob);
+                            event.target.value = '';
+                        });
+                    } else {
+                        preview.src = URL.createObjectURL(event.target.files[0]);
+                    }
+                    // preview.src = src;
                     ['fr-fi-instagram-line', 'fr-py-7v'].map(v => event.target.parentElement.classList.toggle(v));
                     fileIsOk = true;
                 } else if (event.target.parentElement.classList.contains('fr-fi-attachment-fill')) {
@@ -135,6 +202,7 @@ forms.forEach((form) => {
                             ['fr-fi-attachment-fill', 'fr-fi-checkbox-circle-fill'].map(v => event.target.parentElement.classList.toggle(v));
                         }
                         event.target.value = '';
+                        imgData.delete(event.target.name);
                         [preview, deleter].forEach(el => el?.classList.add('fr-hidden'))
                     })
                 }
@@ -168,8 +236,6 @@ forms.forEach((form) => {
                 })
         })
     })
-    let invalid;
-
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         /*    console.log(form.querySelectorAll('[type="checkbox"]:checked').length)*/
@@ -178,26 +244,24 @@ forms.forEach((form) => {
             if (form.id === "signalement-step-1") {
                 form.querySelector('[role="alert"]').classList.remove('fr-hidden')
                 /* invalid = document.querySelector("div[role='alert']");*/
-                form?.querySelectorAll('.fr-fieldset__content.fr-collapse.fr-collapse--expanded').forEach(exp=>{
+                form?.querySelectorAll('.fr-fieldset__content.fr-collapse.fr-collapse--expanded').forEach(exp => {
                     exp.querySelector('[type="radio"]:first-of-type').required = true;
-                   if(exp.querySelector('input:invalid')){
-                       exp.classList.add('fr-fieldset--error')
-                       exp.querySelector('.fr-error-text').classList.remove('fr-hidden')
-                   }
+                    if (exp.querySelector('input:invalid')) {
+                        exp.classList.add('fr-fieldset--error')
+                        exp.querySelector('.fr-error-text').classList.remove('fr-hidden')
+                    }
                 })
                 invalid = form?.querySelector('*:invalid:first-of-type')?.parentElement;
-                if(!invalid)
+                if (!invalid)
                     invalid = document.querySelector("div[role='alert']")
                 form.addEventListener('change', () => {
-                    form?.querySelectorAll('.fr-fieldset__content.fr-collapse.fr-collapse--expanded').forEach(exp=>{
-                      if(null === exp.querySelector('input:invalid'))
-                      {
-                          exp.classList.remove('fr-fieldset--error')
-                          exp.querySelector('.fr-error-text').classList.add('fr-hidden')
-                      }
+                    form?.querySelectorAll('.fr-fieldset__content.fr-collapse.fr-collapse--expanded').forEach(exp => {
+                        if (null === exp.querySelector('input:invalid')) {
+                            exp.classList.remove('fr-fieldset--error')
+                            exp.querySelector('.fr-error-text').classList.add('fr-hidden')
+                        }
                     })
-                    if (checkFirstStep(form))
-                    {
+                    if (checkFirstStep(form)) {
                         form.querySelector('[role="alert"]').classList.add('fr-hidden')
                     }
                 })
@@ -283,7 +347,11 @@ forms.forEach((form) => {
                         for (let i = 0; i < Object.keys(data).length; i++) {
                             let x = Object.keys(data)[i];
                             let y = Object.values(data)[i];
-                            formData.append(x, y);
+                            if (imgData.has(x)) {
+                                formData.append(x,imgData.get(x))
+                                imgData.delete(x)
+                            } else
+                                formData.append(x, y);
                         }
                     })
                     fetch('signalement/envoi', {
@@ -317,17 +385,17 @@ forms.forEach((form) => {
     })
 })
 document?.querySelectorAll('[name="bo-filter-form"]').forEach((filterForm) => {
-    filterForm.addEventListener('change', (evt) => {
+    filterForm.addEventListener('change', () => {
         filterForm.submit();
     })
 })
 document?.querySelectorAll('[data-fr-select-target]')?.forEach(t => {
     let source = document?.querySelector('#' + t.getAttribute('data-fr-select-source'));
     let target = document?.querySelector('#' + t.getAttribute('data-fr-select-target'));
-    t.addEventListeners('click touchdown', (event) => {
+    t.addEventListeners('click touchdown', () => {
         let selected = [...source.selectedOptions]
         selected.map(s => {
-            let groupPartenaire = s.parentElement.getAttribute('data-select-group-id'), group, count;
+            let groupPartenaire = s.parentElement.getAttribute('data-select-group-id'), group;
             /*target.append(s);*/
             if (!target.querySelector('[data-select-group-id="' + groupPartenaire + '"]')) {
                 group = document.createElement('optgroup');
@@ -357,9 +425,9 @@ document?.querySelector('#signalement-affectation-form-submit')?.addEventListene
         body: formData
     }).then(r => {
         if (r.ok) {
-            r.json().then(res => {
-                window.location.reload(true)
-            })
+            /*r.json().then(res => {*/
+            window.location.reload(true)
+            /*})*/
         }
     })
     console.log(e.target.form);
@@ -466,7 +534,7 @@ document?.querySelectorAll('.fr-password-toggle')?.forEach(pwdToggle => {
     })
 })
 document?.querySelector('form[name="login-creation-mdp-form"]')?.querySelectorAll('[name^="password"]').forEach(pwd => {
-    pwd.addEventListener('input', event => {
+    pwd.addEventListener('input', () => {
         let pass = document?.querySelector('form[name="login-creation-mdp-form"] #login-password').value;
         let repeat = document?.querySelector('form[name="login-creation-mdp-form"] #login-password-repeat').value;
         let pwdMatchError = document?.querySelector('form[name="login-creation-mdp-form"] #password-match-error');
@@ -490,7 +558,7 @@ document?.querySelector('form[name="login-creation-mdp-form"]')?.querySelectorAl
     })
 })
 document?.querySelectorAll('.fr-tabs__panel')?.forEach((tab) => {
-    tab.addEventListener("dsfr.conceal", event => {
+    tab.addEventListener("dsfr.conceal", () => {
         if (tab.id === "signalement-step-1-panel") {
             tab.querySelectorAll('[aria-expanded="true"]').forEach(opened => {
                 localStorage.setItem(opened.id, 'true')
@@ -505,23 +573,24 @@ document?.querySelectorAll('.fr-tabs__panel')?.forEach((tab) => {
 })
 document?.querySelector('#signalement-step-1-panel')?.addEventListener('dsfr.disclose', (ev => {
     ev.target.querySelectorAll('[aria-expanded]').forEach(exp => {
-        if (localStorage.getItem(exp.id))
-            document.querySelector('#' + exp.id).setAttribute('aria-expanded', "true"),localStorage.removeItem(exp.id)
+        if (localStorage.getItem(exp.id)) { // noinspection CommaExpressionJS
+            document.querySelector('#' + exp.id).setAttribute('aria-expanded', "true"), localStorage.removeItem(exp.id)
+        }
     })
 }))
-document?.querySelectorAll('[data-goto-step]')?.forEach(stepper=>{
-    stepper.addEventListeners('click touchdown',(evt)=>{
+document?.querySelectorAll('[data-goto-step]')?.forEach(stepper => {
+    stepper.addEventListeners('click touchdown', (evt) => {
         evt.preventDefault();
         goToStep(stepper.getAttribute('data-goto-step'))
     })
 })
-document?.querySelectorAll('.toggle-criticite-smiley').forEach(iptSmiley=>{
-    iptSmiley.addEventListener('change',(evt)=>{
+document?.querySelectorAll('.toggle-criticite-smiley').forEach(iptSmiley => {
+    iptSmiley.addEventListener('change', (evt) => {
         let icon = evt.target.labels[0]?.parentElement?.querySelector('.fr-radio-rich__img img');
-        evt.target.parentElement.parentElement.querySelectorAll('.fr-radio-rich__img img').forEach(iptParentImg=>{
+        evt.target.parentElement.parentElement.querySelectorAll('.fr-radio-rich__img img').forEach(iptParentImg => {
             iptParentImg.src = iptParentImg.getAttribute('data-fr-unchecked-icon')
         })
-        if(evt.target.checked === true)
+        if (evt.target.checked === true)
             icon.src = evt.target.parentElement.querySelector('.fr-radio-rich__img img').getAttribute('data-fr-checked-icon')
     })
 })
