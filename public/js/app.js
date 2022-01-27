@@ -46,6 +46,9 @@ forms.forEach((form) => {
                 target.querySelectorAll('input:not([type="checkbox"]),textarea').forEach(ipt => {
                     ipt.required = true;
                 })
+                if (target.id === "signalement-methode-contact") {
+                    target.querySelector('fieldset').setAttribute('aria-required', true)
+                }
                 target.classList.remove('fr-hidden')
             })
             toHide && toHide.split('|').map(targetId => {
@@ -53,6 +56,12 @@ forms.forEach((form) => {
                 target.querySelectorAll('input:not([type="checkbox"]),textarea').forEach(ipt => {
                     ipt.required = false;
                 })
+                if (target.id === "signalement-methode-contact") {
+                    target.querySelector('fieldset[aria-required="true"]').removeAttribute('aria-required')
+                    target.querySelectorAll('[type="checkbox"]').forEach(chk => {
+                        chk.checked = false;
+                    })
+                }
                 target.classList.add('fr-hidden')
             })
             toUnrequire && toUnrequire.split('|').map(targetId => {
@@ -89,7 +98,7 @@ forms.forEach((form) => {
                         ['fr-fi-attachment-fill', 'fr-fi-checkbox-circle-fill'].map(v => event.target.parentElement.classList.toggle(v));
                     }
                 }
-                if(fileIsOk) {
+                if (fileIsOk) {
                     [preview, deleter].forEach(el => el?.classList?.remove('fr-hidden'))
                     deleter.addEventListeners('click touchdown', (e) => {
                         e.preventDefault();
@@ -133,20 +142,46 @@ forms.forEach((form) => {
                 })
         })
     })
+    let invalid;
+    let checkFirstStep = (form) => {
+        return !(form.id === "signalement-step-1" && null === form.querySelector('[type="radio"]:checked') || form.id === "signalement-step-1" && form.querySelectorAll('[type="checkbox"]:checked').length !== form.querySelectorAll('[type="radio"]:checked').length);
+    }
+    let checkFieldset = (form) => {
+       let field = form.querySelector('fieldset[aria-required="true"]')
+        if (null === field.querySelector('[type="checkbox"]:checked')) {
+            field.classList.add('fr-fieldset--error');
+            field?.querySelector('.fr-error-text')?.classList.remove('fr-hidden');
+            invalid = field.parentElement;
+            return false;
+        } else {
+            field.classList.remove('fr-fieldset--error');
+            field?.querySelector('.fr-error-text')?.classList.add('fr-hidden');
+            return true;
+        }
+    }
     form.addEventListener('submit', (event) => {
         event.preventDefault();
-        let invalid;
         /*    console.log(form.querySelectorAll('[type="checkbox"]:checked').length)*/
-        if (!form.checkValidity()
-            || form.id === "signalement-step-1" && null === form.querySelector('[type="radio"]:checked')
-            || form.id === "signalement-step-1" && form.querySelectorAll('[type="checkbox"]:checked').length !== form.querySelectorAll('[type="radio"]:checked').length) {
+        if (!form.checkValidity() || !checkFirstStep(form) || !checkFieldset(form)) {
             event.stopPropagation();
             if (form.id === "signalement-step-1") {
                 form.querySelector('[role="alert"]').classList.remove('fr-hidden')
                 invalid = document.querySelector("div[role='alert']");
+                form.addEventListener('change', () => {
+                    if (checkFirstStep(form))
+                        form.querySelector('[role="alert"]').classList.add('fr-hidden')
+                })
             } else {
-                form.querySelectorAll('input,textarea,select').forEach((field) => {
-                    if (!field.checkValidity()) {
+                form.querySelectorAll('input,textarea,select,fieldset[aria-required="true"]').forEach((field) => {
+                    if (field.tagName === "FIELDSET") {
+                        if (!checkFieldset(form)) {
+                            field.addEventListener('change', () => {
+                                checkFieldset(form);
+                            })
+                            invalid = field.parentElement;
+                        }
+                    }
+                    else if (!field.checkValidity()) {
                         /* console.log(field)*/
                         let parent = field.parentElement;
                         if (field.type === 'radio')
@@ -163,14 +198,16 @@ forms.forEach((form) => {
                                 parent.querySelector('.fr-error-text')?.classList.add('fr-hidden');
                             }
                         })
+                        invalid = form?.querySelector('*:invalid:first-of-type')?.parentElement;
                     }
+
                 })
-                invalid = form?.querySelector('input:invalid:first-of-type')?.parentElement;
+
             }
             if (invalid) {
                 const y = invalid.getBoundingClientRect().top + window.scrollY;
                 window.scroll({
-                    top: y-150,
+                    top: y,
                     behavior: 'smooth'
                 });
             }

@@ -271,7 +271,7 @@
                         </fieldset>
                     </div>
                     <div class="fr-form-group fr-hidden data-fr-toggle" id="signalement-methode-contact">
-                        <fieldset class="fr-fieldset fr-fieldset--inline fr-fieldset--error" role="group">
+                        <fieldset class="fr-fieldset fr-fieldset--inline{# fr-fieldset--error#}" role="group" aria-required="true">
                             <legend class="fr-fieldset__legend fr-text--regular" id="checkboxes-inline-legend">
                                 Comment avez-vous averti le propriétaire ou gestionnaire ?<sup
                                         class="fr-text-default--error">*</sup>
@@ -279,7 +279,7 @@
                             <div class="fr-fieldset__content">
                                 <div class="fr-checkbox-group">
                                     <input type="checkbox" id="optionProprio_cr"
-                                           name="signalement[modeContactProprio][]" value="reccommande" multiple>
+                                           name="signalement[modeContactProprio][]" value="recommande" multiple>
                                     <label class="fr-label" for="optionProprio_cr">Courrier recommandé
                                     </label>
                                 </div>
@@ -302,7 +302,7 @@
                                     </label>
                                 </div>
                             </div>
-                            <p class="fr-error-text">
+                            <p class="fr-error-text fr-hidden">
                                 Veuillez précisez la ou les methode(s) de contact.
                             </p>
                         </fieldset>
