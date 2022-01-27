@@ -88,8 +88,10 @@ forms.forEach((form) => {
             })
             toUnrequire && toUnrequire.split('|').map(targetId => {
                 let target = form?.querySelector('#' + targetId);
-                console.log(target)
                 target.required = false;
+                target?.parentElement?.classList?.remove('fr-input-group--error')
+                target?.parentElement?.querySelector('.fr-error-text')?.classList.add('fr-hidden')
+                target?.classList?.remove('fr-input--error')
                 target.labels[0].querySelector('sup') ? target.labels[0].querySelector('sup').innerHTML = '' : null;
             })
             toRequire && toRequire.split('|').map(targetId => {

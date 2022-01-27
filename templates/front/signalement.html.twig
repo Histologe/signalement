@@ -314,7 +314,7 @@
                                 Qui habite ce logement ?<sup class="fr-text-default--error">*</sup>
                                 <span class="fr-hint-text">Indiquer la composition du logement en précisant le nombre d'enfants.</span>
                             </legend>
-                            <div class="fr-select-group fr-mb-0">
+                            <div class="fr-select-group">
                                 <label class="fr-label" for="signalement-nb-adulte">
                                     Nombre d'adultes<sup class="fr-text-default--error">*</sup>
                                 </label>
@@ -432,7 +432,7 @@
                                 Carracteristiques du logement<sup class="fr-text-default--error">*</sup>
                                 <span class="fr-hint-text">Indiquer la typologie et la superficie du logement en mètres carrés (m²) ainsi que le loyer mensuel en euros (€).</span>
                             </legend>
-                            <div class="fr-select-group fr-mb-0">
+                            <div class="fr-select-group">
                                 <label class="fr-label" for="signalement-type-logement">
                                     Typologie<sup class="fr-text-default--error">*</sup>
                                 </label>
@@ -453,7 +453,7 @@
                                     Veuillez renseigner la typologie du logement.
                                 </p>
                             </div>
-                            <div class="fr-form-group fr-mb-0">
+                            <div class="fr-form-group">
                                 <label class="fr-label" for="signalement-superficie">
                                     Superficie estimée (m²)<sup class="fr-text-default--error">*</sup>
                                 </label>
@@ -509,41 +509,6 @@
                                 Veuillez renseigner la date d'entrée dans le logement au format (JJ/MM/AAAA).
                             </p>
                         </div>
-                    </div>
-                    <div class="fr-form-group">
-                        <fieldset class="fr-fieldset fr-fieldset--inline">
-                            <legend class="fr-fieldset__legend fr-text--regular">
-                                Propriétaire ou Gestionnaire Bailleur
-                                <span class="fr-hint-text">Si vous disposez des informations suivantes concernant le propriétaire, merci de les renseigner.</span>
-                            </legend>
-                            <div class="fr-fieldset__content fr-grid-row fr-grid-row--gutters">
-                                <div class="fr-input-group fr-col-12 fr-col-md-6 fr-px-0 fr-pl-md-0 fr-pr-md-1v">
-                                    <label class="fr-label" for="signalement-nom-proprio">
-                                        Nom et prénom ou raison sociale
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" id="signalement-nom-proprio"
-                                           name="signalement[nomProprio]">
-                                    <label class="fr-label" for="signalement-adresse-proprio">
-                                        Adresse
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" id="signalement-adresse-proprio"
-                                           name="signalement[adresseProprio]">
-                                </div>
-                                <div class="fr-input-group fr-col-12 fr-col-md-6  fr-px-0 fr-pr-md-0 fr-pl-md-1v">
-                                    <label class="fr-label" for="signalement-tel-proprio">
-                                        N° de téléphone
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" type="tel" id="signalement-tel-proprio"
-                                           name="signalement[telProprio]">
-                                    <label class="fr-label" for="signalement-courriel-proprio">
-                                        Courriel
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" type="email"
-                                           id="signalement-courriel-proprio"
-                                           name="signalement[mailProprio]">
-                                </div>
-                            </div>
-                        </fieldset>
                     </div>
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
@@ -686,8 +651,8 @@
                                     <input type="radio" id="signalement-occupant-1" value="0"
                                            name="signalement[isNotOccupant]"
                                            data-fr-toggle-hide="signalement-pas-occupant"
-                                           data-fr-toggle-show="signalement-occupant"
-                                           data-fr-toggle-unrequire="signalement-etage-occupant|signalement-num-appart-occupant|signalement-adresse-autre-occupant|signalement-escalier-occupant"
+                                           data-fr-toggle-show="signalement-occupant|signalement-infos-proprio"
+                                           data-fr-toggle-unrequire="signalement-adresse-proprio|signalement-tel-proprio|signalement-courriel-proprio|signalement-etage-occupant|signalement-num-appart-occupant|signalement-adresse-autre-occupant|signalement-escalier-occupant"
                                            data-fr-toggle-require="signalement-courriel-occupant|signalement-tel-occupant"
                                            required>
                                     <label class="fr-label" for="signalement-occupant-1">Oui</label>
@@ -695,8 +660,8 @@
                                 <div class="fr-radio-group">
                                     <input type="radio" id="signalement-occupant-2" value="1"
                                            name="signalement[isNotOccupant]"
-                                           data-fr-toggle-show="signalement-occupant|signalement-pas-occupant"
-                                           data-fr-toggle-unrequire="signalement-structure-declarant|signalement-courriel-occupant|signalement-tel-occupant|signalement-etage-occupant|signalement-num-appart-occupant|signalement-adresse-autre-occupant|signalement-escalier-occupant">
+                                           data-fr-toggle-show="signalement-occupant|signalement-pas-occupant|signalement-infos-proprio"
+                                           data-fr-toggle-unrequire="signalement-adresse-proprio|signalement-tel-proprio|signalement-courriel-proprio|signalement-nom-proprio|signalement-structure-declarant|signalement-courriel-occupant|signalement-tel-occupant|signalement-etage-occupant|signalement-num-appart-occupant|signalement-adresse-autre-occupant|signalement-escalier-occupant">
                                     <label class="fr-label" for="signalement-occupant-2">Non</label>
                                 </div>
                             </div>
@@ -884,6 +849,48 @@
                                        id="signalement-geoloc-lng-occupant">
                                 <input type="hidden" name="signalement[inseeOccupant]"
                                        id="signalement-insee-occupant">
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="fr-form-group fr-hidden data-fr-toggle fr-pt-5v" id="signalement-infos-proprio">
+                        <fieldset class="fr-fieldset">
+                            <legend class="fr-fieldset__legend fr-text--regular">
+                                Informations du propriétaire ou gestionnaire bailleur
+                                <span class="fr-hint-text">Si vous disposez des informations suivantes concernant le propriétaire, merci de les renseigner.</span>
+                            </legend>
+                            <div class="fr-fieldset__content fr-grid-row">
+                                <div class="fr-input-group fr-col-12">
+                                    <label class="fr-label" for="signalement-nom-proprio">
+                                        Nom et prénom ou raison sociale<sup class="fr-text-default--error">*</sup>
+                                    </label>
+                                    <input class="fr-input fr-input--no-resize" id="signalement-nom-proprio"
+                                           name="signalement[nomProprio]">
+                                    <p class="fr-error-text fr-hidden">
+                                        Veuillez saisir le nom du propriétaire.
+                                    </p>
+                                </div>
+                                <div class="fr-input-group fr-col-12">
+                                    <label class="fr-label" for="signalement-adresse-proprio">
+                                        Adresse<sup class="fr-text-default--error">*</sup>
+                                    </label>
+                                    <input class="fr-input fr-input--no-resize" id="signalement-adresse-proprio"
+                                           name="signalement[adresseProprio]">
+                                </div>
+                                <div class="fr-input-group fr-col-12">
+                                    <label class="fr-label" for="signalement-tel-proprio">
+                                        N° de téléphone<sup class="fr-text-default--error">*</sup>
+                                    </label>
+                                    <input class="fr-input fr-input--no-resize" type="tel" id="signalement-tel-proprio"
+                                           name="signalement[telProprio]">
+                                </div>
+                                <div class="fr-input-group fr-col-12">
+                                    <label class="fr-label" for="signalement-courriel-proprio">
+                                        Courriel<sup class="fr-text-default--error">*</sup>
+                                    </label>
+                                    <input class="fr-input fr-input--no-resize" type="email"
+                                           id="signalement-courriel-proprio"
+                                           name="signalement[mailProprio]">
+                                </div>
                             </div>
                         </fieldset>
                     </div>
