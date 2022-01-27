@@ -492,3 +492,13 @@ document?.querySelectorAll('[data-goto-step]')?.forEach(stepper=>{
         goToStep(stepper.getAttribute('data-goto-step'))
     })
 })
+document?.querySelectorAll('.toggle-criticite-smiley').forEach(iptSmiley=>{
+    iptSmiley.addEventListener('change',(evt)=>{
+        let icon = evt.target.labels[0]?.parentElement?.querySelector('.fr-radio-rich__img img');
+        evt.target.parentElement.parentElement.querySelectorAll('.fr-radio-rich__img img').forEach(iptParentImg=>{
+            iptParentImg.src = iptParentImg.getAttribute('data-fr-unchecked-icon')
+        })
+        if(evt.target.checked === true)
+            icon.src = evt.target.parentElement.querySelector('.fr-radio-rich__img img').getAttribute('data-fr-checked-icon')
+    })
+})

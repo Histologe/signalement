@@ -118,14 +118,14 @@
                                                             <input type="radio"
                                                                    id="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"
                                                                    name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]"
-                                                                   value="{{ criticite.id }}">
+                                                                   value="{{ criticite.id }}" class="toggle-criticite-smiley">
                                                             <label class="fr-label"
                                                                    for="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"><strong>{{ etats[index] }}</strong>
                                                                 <span class="fr-hint-text">{{ criticite.label }}</span>
                                                             </label>
                                                             <div class="fr-radio-rich__img">
-                                                                <img src="{{ asset('img/'~etats_classes[index]~'-actif.svg') }}"
-                                                                     alt="" width="100%" class="fr-p-2v"/>
+                                                                <img src="{{ asset('img/'~etats_classes[index]~'.svg') }}"
+                                                                     alt="" width="100%" class="fr-p-2v"  data-fr-checked-icon="{{ asset('img/'~etats_classes[index]~'-actif.svg') }}" data-fr-unchecked-icon="{{ asset('img/'~etats_classes[index]~'.svg') }}"/>
                                                                 <!-- L’alternative de l’image (attribut alt) doit rester vide car l’image est illustrative et ne doit pas être restituée aux technologies d’assistance -->
                                                             </div>
                                                         </div>
