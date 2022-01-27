@@ -118,7 +118,7 @@
                                                             <input type="radio"
                                                                    id="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"
                                                                    name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]"
-                                                                   value="{{ criticite.id }}" class="toggle-criticite-smiley">
+                                                                   value="{{ criticite.id }}" class="toggle-criticite-smiley" >
                                                             <label class="fr-label"
                                                                    for="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"><strong>{{ etats[index] }}</strong>
                                                                 <span class="fr-hint-text">{{ criticite.label }}</span>
@@ -130,6 +130,7 @@
                                                             </div>
                                                         </div>
                                                     {% endfor %}
+                                                    <p class="fr-error-text fr-hidden">Vous devez sélectioner un état pour cette situation</p>
                                                 </div>
                                             {% endfor %}
                                         </ul>

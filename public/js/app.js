@@ -47,6 +47,7 @@ forms.forEach((form) => {
             if (!event.target.checked)
                 event.currentTarget.nextElementSibling.querySelectorAll('.fr-collapse input[type="radio"]').forEach((radio) => {
                     radio.checked = false
+                    radio.required = false;
                 })
         })
     })
@@ -54,6 +55,7 @@ forms.forEach((form) => {
         situation.addEventListeners("click touchdown", (event) => {
             event.target.parentElement.parentElement.querySelectorAll('[type="radio"],[type="checkbox"]').forEach((ipt) => {
                 ipt.checked = false;
+
             })
         })
     })
@@ -175,10 +177,29 @@ forms.forEach((form) => {
             event.stopPropagation();
             if (form.id === "signalement-step-1") {
                 form.querySelector('[role="alert"]').classList.remove('fr-hidden')
-                invalid = document.querySelector("div[role='alert']");
+                /* invalid = document.querySelector("div[role='alert']");*/
+                form?.querySelectorAll('.fr-fieldset__content.fr-collapse.fr-collapse--expanded').forEach(exp=>{
+                    exp.querySelector('[type="radio"]:first-of-type').required = true;
+                   if(exp.querySelector('input:invalid')){
+                       exp.classList.add('fr-fieldset--error')
+                       exp.querySelector('.fr-error-text').classList.remove('fr-hidden')
+                   }
+                })
+                invalid = form?.querySelector('*:invalid:first-of-type')?.parentElement;
+                if(!invalid)
+                    invalid = document.querySelector("div[role='alert']")
                 form.addEventListener('change', () => {
+                    form?.querySelectorAll('.fr-fieldset__content.fr-collapse.fr-collapse--expanded').forEach(exp=>{
+                      if(null === exp.querySelector('input:invalid'))
+                      {
+                          exp.classList.remove('fr-fieldset--error')
+                          exp.querySelector('.fr-error-text').classList.add('fr-hidden')
+                      }
+                    })
                     if (checkFirstStep(form))
+                    {
                         form.querySelector('[role="alert"]').classList.add('fr-hidden')
+                    }
                 })
             } else {
                 form.querySelectorAll('input,textarea,select,fieldset[aria-required="true"]').forEach((field) => {

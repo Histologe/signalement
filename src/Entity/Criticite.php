@@ -37,6 +37,12 @@ class Criticite
     #[ORM\Column(type: 'boolean')]
     private $isArchive;
 
+    #[ORM\Column(type: 'float')]
+    private $coef;
+
+    #[ORM\Column(type: 'boolean')]
+    private $isDefault;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -143,6 +149,30 @@ class Criticite
     public function setIsArchive(bool $isArchive): self
     {
         $this->isArchive = $isArchive;
+
+        return $this;
+    }
+
+    public function getCoef(): ?float
+    {
+        return $this->coef;
+    }
+
+    public function setCoef(float $coef): self
+    {
+        $this->coef = $coef;
+
+        return $this;
+    }
+
+    public function getIsDefault(): ?bool
+    {
+        return $this->isDefault;
+    }
+
+    public function setIsDefault(bool $isDefault): self
+    {
+        $this->isDefault = $isDefault;
 
         return $this;
     }
