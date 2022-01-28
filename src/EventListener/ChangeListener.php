@@ -47,7 +47,7 @@ class ChangeListener implements EventSubscriberInterface
                         if (!empty($changeSet['statut']) && $changeSet['statut'][1] === Signalement::STATUS_NEW) {
                             $emails = [$entity->getMailDeclarant() ?? null, $entity->getMailOccupant() ?? null];
                             array_map(function ($email) use ($entity) {
-                                null === $email && $this->notifier->send(NotificationService::TYPE_SIGNALEMENT_VALIDE, $email, [
+                                null !== $email && $this->notifier->send(NotificationService::TYPE_SIGNALEMENT_VALIDE, $email, [
                                     'signalement' => $entity,
                                     'lien_suivi' => $this->urlGenerator->generate('front_suivi_signalement', ['code' => $entity->getCodeSuivi()], $this->urlGenerator::ABSOLUTE_URL)
                                 ]);
