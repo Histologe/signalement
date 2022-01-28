@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use Symfony\Bridge\Twig\Mime\NotificationEmail;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
@@ -75,13 +76,12 @@ class NotificationService
         }
     }
 
-    private function renderMailContentWithParamsByType(int $type, array $params): NotificationEmail
+    private function renderMailContentWithParamsByType(int $type, array $params): TemplatedEmail
     {
         $config = $this->config($type);
-        $notification = new NotificationEmail();
-        $notification->markAsPublic();
+        $notification = new TemplatedEmail();
         return $notification->htmlTemplate('emails/' . $config['template'] . '.html.twig')
-            ->context(array_merge($params,$config,['importance'=>null]))
+            ->context(array_merge($params,$config))
             ->subject('Histologe - ' . $config['subject']);
     }
 }
