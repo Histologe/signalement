@@ -62,18 +62,16 @@ class ChangeListener implements EventSubscriberInterface
                 //NOUVEAU SIGNALEMENT
                 if ($entity instanceof Signalement) {
                     //TODO SERVEUR MAIL
-                    return;
                     $emails = [$entity->getMailDeclarant() ?? null, $entity->getMailOccupant() ?? null];
                     foreach ($emails as $email)
                         if ($email)
                             $this->notifier->send(NotificationService::TYPE_ACCUSE_RECEPTION, $email, ['signalement' => $entity]);
-                    /** @var Partenaire $partenaire */
-                    foreach ($entityManager->getRepository(Partenaire::class)->findAllOrByInseeIfCommune($entity->getInseeOccupant()) as $partenaire){
+                    /*foreach ($entityManager->getRepository(Partenaire::class)->findAllOrByInseeIfCommune($entity->getInseeOccupant()) as $partenaire){
                         $partenaire->getUsersAffectable($entity)->filter(function (User $user)use ($entity){
                             if($user->getIsMailingActive())
                                 $this->notifier->send(NotificationService::TYPE_NEW_SIGNALEMENT, $user->getEmail(), ['signalement' => $entity]);
                         });
-                    }
+                    }*/
                 }
                 //NOUVELLE AFFECTATION
                 if ($entity instanceof SignalementUserAffectation) {
