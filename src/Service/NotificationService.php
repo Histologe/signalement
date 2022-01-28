@@ -79,7 +79,6 @@ class NotificationService
     {
         $config = $this->config($type);
         $notification = new NotificationEmail();
-        $notification->importance(null);
         $notification->markAsPublic();
         return $notification->htmlTemplate('emails/' . $config['template'] . '.html.twig')
             ->context(array_merge($params,$config))
