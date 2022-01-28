@@ -5,6 +5,7 @@ namespace App\Service;
 use Symfony\Bridge\Twig\Mime\NotificationEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 
 class NotificationService
 {
@@ -63,6 +64,7 @@ class NotificationService
     {
         $message = $this->renderMailContentWithParamsByType($type, $params);
         $message->to($email);
+        $message->from(new Address('notifications@hitologe.info','HISTOLOGE'));
         if($this->configuration->get()->getEmailReponse() !== null)
             $message->replyTo($this->configuration->get()->getEmailReponse());
         try {
