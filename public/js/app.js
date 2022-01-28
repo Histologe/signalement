@@ -144,20 +144,32 @@ forms.forEach((form) => {
                 toUnrequire = event.target.getAttribute('data-fr-toggle-unrequire'),
                 toRequire = event.target.getAttribute('data-fr-toggle-require')
             toShow && toShow.split('|').map(targetId => {
-                let target = form?.querySelector('#' + targetId);
-                target.querySelectorAll('input:not([type="checkbox"]),textarea,select').forEach(ipt => {
-                    ipt.required = true;
-                })
+                let target;
+                if (targetId === "signalement-consentement-tiers-bloc") {
+                    target = document?.querySelector('#signalement-consentement-tiers-bloc');
+                    target.querySelector('[type="checkbox"]').required = true;
+                } else {
+                    target  = form?.querySelector('#' + targetId);
+                    target.querySelectorAll('input:not([type="checkbox"]),textarea,select').forEach(ipt => {
+                        ipt.required = true;
+                    })
+                }
                 if (target.id === "signalement-methode-contact") {
                     target.querySelector('fieldset').setAttribute('aria-required', true)
                 }
                 target.classList.remove('fr-hidden')
             })
             toHide && toHide.split('|').map(targetId => {
-                let target = form?.querySelector('#' + targetId);
-                target?.querySelectorAll('input:not([type="checkbox"]),textarea,select')?.forEach(ipt => {
-                    ipt.required = false;
-                })
+                let target;
+                if (targetId === "signalement-consentement-tiers-bloc") {
+                    target = document.querySelector('#signalement-consentement-tiers-bloc');
+                    target.querySelector('[type="checkbox"]').required = false
+                } else {
+                    target = form?.querySelector('#' + targetId);
+                    target?.querySelectorAll('input:not([type="checkbox"]),textarea,select')?.forEach(ipt => {
+                        ipt.required = false;
+                    })
+                }
                 if (target.id === "signalement-methode-contact") {
                     target?.querySelector('fieldset[aria-required="true"]')?.removeAttribute('aria-required')
                     target?.querySelectorAll('[type="checkbox"]')?.forEach(chk => {

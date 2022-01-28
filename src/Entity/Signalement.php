@@ -224,6 +224,9 @@ class Signalement
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $lienDeclarantOccupant;
 
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $isConsentementTiers;
+
     public function __construct()
     {
         $this->situations = new ArrayCollection();
@@ -1099,6 +1102,18 @@ class Signalement
     public function setLienDeclarantOccupant(?string $lienDeclarantOccupant): self
     {
         $this->lienDeclarantOccupant = $lienDeclarantOccupant;
+
+        return $this;
+    }
+
+    public function getIsConsentementTiers(): ?bool
+    {
+        return $this->isConsentementTiers;
+    }
+
+    public function setIsConsentementTiers(?bool $isConsentementTiers): self
+    {
+        $this->isConsentementTiers = $isConsentementTiers;
 
         return $this;
     }

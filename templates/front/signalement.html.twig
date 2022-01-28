@@ -718,17 +718,17 @@
                                 <div class="fr-radio-group">
                                     <input type="radio" id="signalement-occupant-1" value="0"
                                            name="signalement[isNotOccupant]"
-                                           data-fr-toggle-hide="signalement-pas-occupant"
-                                           data-fr-toggle-show="signalement-occupant|signalement-infos-proprio"
+                                           data-fr-toggle-hide="signalement-pas-occupant|signalement-consentement-tiers-bloc"
+                                           data-fr-toggle-show="signalement-occupant|signalement-infos-proprio|signalement-consentement-tiers-bloc"
                                            data-fr-toggle-unrequire="signalement-lien-declarant-occupant|signalement-adresse-proprio|signalement-tel-proprio|signalement-courriel-proprio|signalement-etage-occupant|signalement-num-appart-occupant|signalement-adresse-autre-occupant|signalement-escalier-occupant"
-                                           data-fr-toggle-require="signalement-courriel-occupant|signalement-tel-occupant"
+                                           data-fr-toggle-require="signalement-courriel-occupant|signalement-tel-occupant|signalement-consentement-tiers"
                                            required>
                                     <label class="fr-label" for="signalement-occupant-1">Oui</label>
                                 </div>
                                 <div class="fr-radio-group">
                                     <input type="radio" id="signalement-occupant-2" value="1"
                                            name="signalement[isNotOccupant]"
-                                           data-fr-toggle-show="signalement-occupant|signalement-pas-occupant|signalement-infos-proprio"
+                                           data-fr-toggle-show="signalement-consentement-tiers-bloc|signalement-occupant|signalement-pas-occupant|signalement-infos-proprio"
                                            data-fr-toggle-unrequire="signalement-adresse-proprio|signalement-tel-proprio|signalement-courriel-proprio|signalement-nom-proprio|signalement-structure-declarant|signalement-courriel-occupant|signalement-tel-occupant|signalement-etage-occupant|signalement-num-appart-occupant|signalement-adresse-autre-occupant|signalement-escalier-occupant">
                                     <label class="fr-label" for="signalement-occupant-2">Non</label>
                                 </div>
@@ -1072,6 +1072,16 @@
                     </div>
                 </div>
                 <form action="#" name="signalement" class="needs-validation" novalidate>
+                    <div class="fr-form-group fr-mb-0 fr-hidden" id="signalement-consentement-tiers-bloc">
+                        <div class="fr-toggle">
+                            <input type="checkbox" class="fr-toggle__input" id="signalement-consentement-tiers"
+                                   name="signalement[isConsentementTiers]" required>
+                            <label class="fr-toggle__label" for="signalement-consentement-tiers">Je certifie avec le droit de déposer un signalement pour le compte d'un tiers.</label>
+                            <p class="fr-error-text fr-hidden">
+                                Pour déposer un signalement au nom d'une tierce personne vous devez en avoir l'autorisation.
+                            </p>
+                        </div>
+                    </div>
                     <div class="fr-form-group">
                         <div class="fr-toggle fr-toggle--border-bottom">
                             <input type="checkbox" class="fr-toggle__input" id="signalement-accept-cgu"

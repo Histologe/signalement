@@ -30,50 +30,49 @@
         </div>
     </section>
     <section class="fr-col-12 fr-p-5v">
-        <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
-            <form action="#" name="bo-filter-form" method="POST" class="fr-col-4">
-                <label class="fr-label" for="filter_ville"><strong>Filter par ville</strong></label>
-                <select name="bo-filter-ville" id="filter_ville" class="fr-select">
-                    <option value="all">TOUTES</option>
-                    {% for ville in signalements.villes %}
-                        <option value="{{ ville }}"
-                                {% if filter.ville is same as(ville) %}selected{% endif %}>{{ ville|upper }}</option>
-                    {% endfor %}
-                </select>
-            </form>
-            <form action="#" name="bo-filter-form" method="POST" class="fr-col-4">
-                <label class="fr-label" for="filter_statut"><strong>Filter par statut</strong></label>
-                <select name="bo-filter-statut" id="filter_statut" class="fr-select">
-                    <option value="all">TOUS</option>
-                    {% set statuts = {
-                        'need-validation':'A valider',
-                        'new':'Nouveaux',
-                        'wait':'En attente d\'info.',
-                        'review':'A revoir',
-                        'closed':'Fermés',
-                        'is-invalid':'Non-valide',
-                    } %}
-                    {% for statut,wording in statuts %}
-                        <option value="{{ statut }}"
-                                {% if filter.status is same as(statut) %}selected{% endif %}>{{ wording|upper }}</option>
-                    {% endfor %}
-                </select>
-            </form>
-            <form action="{{ path('back_index') }}" method="POST" class="fr-col-4">
-                <label class="fr-label" for="header-search-input"><strong>Rechercher</strong></label>
-                <div class="fr-search-bar fr-mt-2v" id="header-search">
-                    <input class="fr-input" placeholder="Rechercher" type="search" id="header-search-input"
-                           name="search" value="">
-                    <button class="fr-btn" title="Rechercher">
-                        Rechercher
-                    </button>
+            <form action="#" name="bo-filter-form" method="POST" class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+                <div class="fr-col-md-4">
+                    <label class="fr-label" for="filter_ville"><strong>Filter par ville</strong></label>
+                    <select name="bo-filter-ville" id="filter_ville" class="fr-select">
+                        <option value="all">TOUTES</option>
+                        {% for ville in signalements.villes %}
+                            <option value="{{ ville }}"
+                                    {% if filter.ville is same as(ville) %}selected{% endif %}>{{ ville|upper }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
+                <div class="fr-col-md-4">
+                    <label class="fr-label" for="filter_statut"><strong>Filter par statut</strong></label>
+                    <select name="bo-filter-statut" id="filter_statut" class="fr-select">
+                        <option value="all">TOUS</option>
+                        {% set statuts = {
+                            'need-validation':'A valider',
+                            'new':'Nouveaux',
+                            'wait':'En attente d\'info.',
+                            'review':'A revoir',
+                            'closed':'Fermés',
+                            'is-invalid':'Non-valide',
+                        } %}
+                        {% for statut,wording in statuts %}
+                            <option value="{{ statut }}"
+                                    {% if filter.status is same as(statut) %}selected{% endif %}>{{ wording|upper }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+               <div class="fr-col-md-4">
+                   <label class="fr-label" for="header-search-input"><strong>Rechercher</strong></label>
+                   <div class="fr-search-bar fr-mt-2v" id="header-search">
+                       <input class="fr-input" placeholder="Rechercher" type="search" id="header-search-input"
+                              name="search" value="">
+                       <button class="fr-btn" title="Rechercher">
+                           Rechercher
+                       </button>
+                   </div>
+               </div>
             </form>
             <div class="fr-col-12 fr-text--right fr-pt-0">
                 <a href="{{ path('back_index') }}" class="fr-link fr-link--icon-left fr-fi-close-circle-line">Réinitialiser les résultats</a>
             </div>
-        </div>
-
     </section>
     <section class="fr-col-12 fr-table fr-table--bordered">
         <table class="fr-display-inline-table">
