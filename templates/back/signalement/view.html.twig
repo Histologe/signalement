@@ -361,7 +361,7 @@
                 <div class="fr-col-6 fr-col-md-2 fr-rounded signalement-file-item">
                     <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center"
                          style="background: url('{{ asset('img/document.png') }}')no-repeat center center/50%">
-                        <button class="fr-btn fr-btn--sm fr-fi-eye-line" title="Voir le document"></button>
+                        <a href="{{ asset('_up/'~document) }}" class="fr-btn fr-btn--sm fr-fi-eye-line" title="Voir le document" target="_blank"></a>
                         <button title="Supprimer le document"
                                 data-delete="{{ path('back_signalement_delete_file',{uuid:signalement.uuid,type:'documents',file:document}) }}"
                                 data-token="{{ csrf_token('signalement_delete_file_'~signalement.id) }}"
