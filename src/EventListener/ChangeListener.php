@@ -62,6 +62,7 @@ class ChangeListener implements EventSubscriberInterface
                 //NOUVEAU SIGNALEMENT
                 if ($entity instanceof Signalement) {
                     //TODO SERVEUR MAIL
+                    return;
                     $emails = [$entity->getMailDeclarant() ?? null, $entity->getMailOccupant() ?? null];
                     foreach ($emails as $email)
                         if ($email)
