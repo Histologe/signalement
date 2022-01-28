@@ -18,6 +18,7 @@ class CriticiteCalculatorService
         $this->signalement = $signalement;
         $this->doctrine = $doctrine;
         $this->scoreSignalement = 0;
+        $this->isDanger = false;
     }
 
     public function calculate(): float|int
@@ -26,10 +27,14 @@ class CriticiteCalculatorService
         $scoreMax = $this->doctrine->getRepository(Critere::class)->getMaxScore()*Criticite::SCORE_MAX;
         $signalement->getCriticites()->map(function (Criticite $criticite){
            $this->scoreSignalement += ($criticite->getScore() * $criticite->getCritere()->getCoef());
+           if($criticite->getCritere()->getIsDanger())
+               $this->isDanger = true;
         });
         $score = ($this->scoreSignalement/$scoreMax)*10000;
         if ($signalement->getNbEnfantsM6() || $signalement->getNbEnfantsP6())
             $score = $score * 1.1;
+        if($this->isDanger)
+            $score = 100;
         return $score;
     }
 }
