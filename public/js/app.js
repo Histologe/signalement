@@ -5,6 +5,99 @@ Node.prototype.addEventListeners = function (eventNames, eventFunction) {
 const imgData = new FormData();
 const forms = document.querySelectorAll('form.needs-validation:not([name="bug-report"])');
 const localStorage = window.localStorage;
+const sortTableFunction = (table) => {
+    return function (ev) {
+        if (ev.target.tagName.toLowerCase() == 'a') {
+            sortRows(table, siblingIndex(ev.target.parentNode));
+            ev.preventDefault();
+        }
+    };
+}
+const siblingIndex = (node) => {
+    let count = 0;
+
+    while (node = node.previousElementSibling) {
+        count++;
+    }
+
+    return count;
+}
+const sortRows = (table, columnIndex) => {
+    let rows = table.querySelectorAll("tbody tr"),
+        sel = "thead th:nth-child(" + (columnIndex + 1) + ")",
+        sel2 = "td:nth-child(" + (columnIndex + 1) + ")",
+        classList = table.querySelector(sel).classList,
+        values = [],
+        cls = "",
+        allNum = true,
+        val,
+        index,
+        node;
+
+    if (classList) {
+        if (classList.contains("date")) {
+            cls = "date";
+        } else if (classList.contains("number")) {
+            cls = "number";
+        }
+    }
+
+    for (index = 0; index < rows.length; index++) {
+        node = rows[index].querySelector(sel2);
+        val = node.innerText;
+
+        if (isNaN(val)) {
+            allNum = false;
+        } else {
+            val = parseFloat(val);
+        }
+
+        values.push({value: val, row: rows[index]});
+    }
+
+    if (cls == "" && allNum) {
+        cls = "number";
+    }
+
+    if (cls == "number") {
+        values.sort(sortNumberVal);
+        values = values.reverse();
+    } else if (cls == "date") {
+        values.sort(sortDateVal);
+    } else {
+        values.sort(sortTextVal);
+    }
+
+    for (let idx = 0; idx < values.length; idx++) {
+        table.querySelector("tbody").appendChild(values[idx].row);
+    }
+}
+const sortNumberVal = (a, b) => {
+    return sortNumber(a.value, b.value);
+}
+const sortNumber = (a, b) => {
+    return a - b;
+}
+const sortDateVal = (a, b) => {
+    let dateA = Date.parse(a.value),
+        dateB = Date.parse(b.value);
+
+    return sortNumber(dateA, dateB);
+}
+const sortTextVal = (a, b) => {
+    let textA = (a.value + "").toUpperCase();
+    let textB = (b.value + "").toUpperCase();
+
+    if (textA < textB) {
+        return -1;
+    }
+
+    if (textA > textB) {
+        return 1;
+    }
+
+    return 0;
+}
 const serializeArray = (form) => {
     return Array.from(new FormData(form)
         .entries())
@@ -86,7 +179,25 @@ const dataUrlToBlob = function (url) {
     }
     return new Blob([uintArr], {type: mime});
 };
-let invalid;
+let invalid, tables = document.querySelectorAll("table.sortable"),
+    table,
+    thead,
+    headers,
+    i,
+    j;
+for (i = 0; i < tables.length; i++) {
+    table = tables[i];
+
+    if (thead = table.querySelector("thead")) {
+        headers = thead.querySelectorAll("th");
+
+        for (j = 0; j < headers.length; j++) {
+            headers[j].innerHTML = "<a href='#'>" + headers[j].innerText + "</a>";
+        }
+
+        thead.addEventListener("click", sortTableFunction(table));
+    }
+}
 document?.querySelectorAll(".fr-pagination__link:not([aria-current])").forEach((e => {
     let t, r, a, n = document.querySelector(".fr-pagination__link--prev"),
         i = document.querySelector(".fr-pagination__link--next"),
@@ -149,7 +260,7 @@ forms.forEach((form) => {
                     target = document?.querySelector('#signalement-consentement-tiers-bloc');
                     target.querySelector('[type="checkbox"]').required = true;
                 } else {
-                    target  = form?.querySelector('#' + targetId);
+                    target = form?.querySelector('#' + targetId);
                     target.querySelectorAll('input:not([type="checkbox"]),textarea,select').forEach(ipt => {
                         ipt.required = true;
                     })
@@ -630,3 +741,4 @@ document?.querySelectorAll('.toggle-criticite-smiley').forEach(iptSmiley => {
             icon.src = evt.target.parentElement.querySelector('.fr-radio-rich__img img').getAttribute('data-fr-checked-icon')
     })
 })
+
