@@ -58,7 +58,7 @@ class BackController extends AbstractController
         }
         // get the total number of orders
         $signalements['total'] = count($signalements['list']);
-        $signalements['pages'] = (int)ceil($signalements['total']/50);
+        $signalements['pages'] = (int)ceil($signalements['total']/3);
         if($request->get('pagination'))
             return $this->render('back/table_result.html.twig',[
                 'filter' => $filter,

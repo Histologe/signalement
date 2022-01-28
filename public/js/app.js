@@ -87,23 +87,23 @@ const dataUrlToBlob = function (url) {
     return new Blob([uintArr], {type: mime});
 };
 let invalid;
-document?.querySelectorAll(".fr-pagination__link:not([aria-disabled]):not([aria-current])").forEach((e => {
+document?.querySelectorAll(".fr-pagination__link:not([aria-current])").forEach((e => {
     let t, r, a, n = document.querySelector(".fr-pagination__link--prev"),
         i = document.querySelector(".fr-pagination__link--next"),
-        o = document.querySelector(".fr-pagination__link--first"),
-        u = document.querySelector(".fr-pagination__link--last"), l = 1, g = parseInt(u.getAttribute("data-page"));
+        u = document.querySelector(".fr-pagination__link--first"),
+        l = document.querySelector(".fr-pagination__link--last"), o = 1, c = parseInt(l.getAttribute("data-page"));
     e.addEventListener("click", (e => {
         let p = new FormData;
-        p.append("pagination", "true");
-        let c = document?.querySelector(".fr-pagination__link[aria-current]"), d = e.target;
-        d !== n && d !== i && d !== o && d !== u ? l = parseInt(d.getAttribute("data-page")) : d === i ? l = parseInt(c.getAttribute("data-page")) + 1 : d === n ? l = parseInt(c.getAttribute("data-page")) - 1 : d === u ? l = parseInt(g) : d === o && (l = parseInt(1)), p.append("page", l), t = document.querySelector('.fr-pagination__link[data-page="' + l + '"]'), fetch("#", {
+        p.append("pagination", "true"), p.append("search", document.querySelector("#header-search-input").value), p.append("status", document.querySelector("#filter_statut").value), p.append("ville", document.querySelector("#filter_ville").value);
+        let d = document?.querySelector(".fr-pagination__link[aria-current]"), g = e.target;
+        g !== n && g !== i && g !== u && g !== l ? o = parseInt(g.getAttribute("data-page")) : g === i ? o = parseInt(d.getAttribute("data-page")) + 1 : g === n ? o = parseInt(d.getAttribute("data-page")) - 1 : g === l ? o = parseInt(c) : g === u && (o = parseInt(1)), p.append("page", o), t = document.querySelector('.fr-pagination__link[data-page="' + o + '"]'), fetch("#", {
             method: "POST",
             body: p
         }).then((e => e.text().then((e => {
             let p = document.querySelector("#signalements-result");
             p.innerHTML = e, p.querySelectorAll("tr").forEach((e => {
                 gauge = new Gauge(e.querySelector(".gauge-signalement")).setOptions(opts), gauge.set(e.getAttribute("data-score"))
-            })), c.ariaCurrent = null, c.href = "#", t.removeAttribute("href"), t.ariaCurrent = "page", 1 !== l && l !== g ? r = [o, n, i, u] : 1 === l ? (r = [i, u], a = [o, n]) : l === g && (r = [o, n], a = [i, u]), r.forEach((e => {
+            })), d.ariaCurrent = null, d.href = "#", t.removeAttribute("href"), t.ariaCurrent = "page", 1 !== o && o !== c ? r = [u, n, i, l] : 1 === o ? (r = [i, l], a = [u, n]) : o === c && (r = [u, n], a = [i, l]), r.forEach((e => {
                 e.removeAttribute("aria-disabled"), e.href = "#"
             })), a && a.forEach((e => {
                 e.removeAttribute("href"), e.ariaDisabled = "true"
@@ -111,6 +111,7 @@ document?.querySelectorAll(".fr-pagination__link:not([aria-disabled]):not([aria-
         }))))
     }))
 }));
+/**/
 forms.forEach((form) => {
     form?.querySelectorAll('.toggle-criticite input[type="radio"]')?.forEach((criticite) => {
         criticite.addEventListener('change', (event) => {
