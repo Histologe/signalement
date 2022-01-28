@@ -88,7 +88,7 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/{uuid}/edit', name: 'back_signalement_edit', methods: ['GET', 'POST'])]
-    public function editSignalement(Signalement $signalement, Request $request, EntityManagerInterface $entityManager): Response
+    public function editSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
     {
         $title = 'Administration - Edition signalement #' . $signalement->getReference();
         $form = $this->createForm(SignalementType::class, $signalement);
@@ -96,15 +96,15 @@ class BackSignalementController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $signalement->setModifiedBy($this->getUser());
             $signalement->setModifiedAt(new \DateTimeImmutable());
-            $score = new CriticiteCalculatorService($signalement);
+            $score = new CriticiteCalculatorService($signalement,$doctrine);
             $signalement->setScoreCreation($score->calculate());
             $suivi = new Suivi();
             $suivi->setCreatedBy($this->getUser());
             $suivi->setSignalement($signalement);
             $suivi->setIsPublic(false);
             $suivi->setDescription('Modification du signalement par un partenaire');
-            $entityManager->persist($suivi);
-            $entityManager->flush();
+            $doctrine->getManager()->persist($suivi);
+            $doctrine->getManager()->flush();
             $this->addFlash('success', 'Signalement modifé avec succés !');
             return $this->redirectToRoute('back_signalement_view', [
                 'uuid' => $signalement->getUuid()

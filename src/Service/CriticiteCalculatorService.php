@@ -2,31 +2,32 @@
 
 namespace App\Service;
 
+use App\Entity\Critere;
+use App\Entity\Criticite;
 use App\Entity\Signalement;
+use Doctrine\Persistence\ManagerRegistry;
 
 class CriticiteCalculatorService
 {
     private Signalement $signalement;
+    private ManagerRegistry $doctrine;
+    private int $scoreSignalement;
 
-    public function __construct(Signalement $signalement)
+    public function __construct(Signalement $signalement,ManagerRegistry $doctrine)
     {
         $this->signalement = $signalement;
+        $this->doctrine = $doctrine;
+        $this->scoreSignalement = 0;
     }
 
     public function calculate(): float|int
     {
         $signalement = $this->signalement;
-        $scoresMaxSituation = [];
-        $scoreSituation = [];
-        foreach ($signalement->getSituations() as $situation) {
-            $scoresMaxSituation[$situation->getLabel()] = $scoreSituation[$situation->getLabel()] = 0;
-            foreach ($situation->getCriteres() as $critere)
-                foreach ($critere->getCriticites() as $criticite)
-                    $scoresMaxSituation[$situation->getLabel()] += $criticite->getScore();
-        }
-        foreach ($signalement->getCriticites() as $criticite)
-            $scoreSituation[$criticite->getCritere()->getSituation()->getLabel()] += $criticite->getScore();
-        $score = (array_sum($scoreSituation) / array_sum($scoresMaxSituation))*1000;
+        $scoreMax = $this->doctrine->getRepository(Critere::class)->getMaxScore()*Criticite::SCORE_MAX;
+        $signalement->getCriticites()->map(function (Criticite $criticite){
+           $this->scoreSignalement += ($criticite->getScore() * $criticite->getCritere()->getCoef());
+        });
+        $score = ($this->scoreSignalement/$scoreMax)*10000;
         if ($signalement->getNbEnfantsM6() || $signalement->getNbEnfantsP6())
             $score = $score * 1.1;
         return $score;

@@ -124,7 +124,7 @@ class FrontSignalementController extends AbstractController
             //TODO: Repartir a zéro pour chaque année
             $signalement->setReference((new \DateTime())->format('Y') . '-' . $id);
 
-            $score = new CriticiteCalculatorService($signalement);
+            $score = new CriticiteCalculatorService($signalement,$doctrine);
             $signalement->setScoreCreation($score->calculate());
             $em->persist($signalement);
             $em->flush();

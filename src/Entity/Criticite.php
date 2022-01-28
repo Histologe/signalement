@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: CriticiteRepository::class)]
 class Criticite
 {
+    const SCORE_MAX = 3;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -37,8 +39,6 @@ class Criticite
     #[ORM\Column(type: 'boolean')]
     private $isArchive;
 
-    #[ORM\Column(type: 'float')]
-    private $coef;
 
     #[ORM\Column(type: 'boolean')]
     private $isDefault;
@@ -153,17 +153,6 @@ class Criticite
         return $this;
     }
 
-    public function getCoef(): ?float
-    {
-        return $this->coef;
-    }
-
-    public function setCoef(float $coef): self
-    {
-        $this->coef = $coef;
-
-        return $this;
-    }
 
     public function getIsDefault(): ?bool
     {

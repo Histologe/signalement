@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Critere;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -35,7 +37,19 @@ class CritereRepository extends ServiceEntityRepository
         ;
     }
     */
-
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getMaxScore()
+    {
+        return $this->createQueryBuilder('c')
+            ->select('SUM(c.coef)')
+            ->where('c.isArchive != 1')
+            ->getQuery()
+            ->getSingleScalarResult()
+            ;
+    }
     /*
     public function findOneBySomeField($value): ?Critere
     {

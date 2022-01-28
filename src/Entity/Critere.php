@@ -40,6 +40,12 @@ class Critere
     #[ORM\Column(type: 'boolean')]
     private $isArchive;
 
+    #[ORM\Column(type: 'boolean')]
+    private $isDanger;
+
+    #[ORM\Column(type: 'integer')]
+    private $coef;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -177,6 +183,30 @@ class Critere
     public function setIsArchive(bool $isArchive): self
     {
         $this->isArchive = $isArchive;
+
+        return $this;
+    }
+
+    public function getIsDanger(): ?bool
+    {
+        return $this->isDanger;
+    }
+
+    public function setIsDanger(bool $isDanger): self
+    {
+        $this->isDanger = $isDanger;
+
+        return $this;
+    }
+
+    public function getCoef(): ?int
+    {
+        return $this->coef;
+    }
+
+    public function setCoef(int $coef): self
+    {
+        $this->coef = $coef;
 
         return $this;
     }
