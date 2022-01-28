@@ -327,7 +327,7 @@
                                 <input type="file" accept="application/*" name="signalement-add-file[documents][]"
                                        class="fr-hidden fr-input--file-signalement" multiple>
                             </label>
-                            <input type="hidden" name="_token" value="{{ csrf_token('signalement_add_file') }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('signalement_add_file_'~signalement.id) }}">
                         </form> &nbsp;
                         <form method="POST" enctype="multipart/form-data"
                               action="{{ path('back_signalement_add_file',{uuid:signalement.uuid}) }}">

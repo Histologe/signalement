@@ -17,6 +17,7 @@ use App\Service\NotificationService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use PHPUnit\Exception;
 use Symfony\Bridge\Twig\Mime\NotificationEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -204,10 +205,15 @@ class BackSignalementController extends AbstractController
                 $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
                 $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
-                $file->move(
-                    $this->getParameter('uploads_dir'),
-                    $newFilename
-                );
+                try {
+                    $file->move(
+                        $this->getParameter('uploads_dir'),
+                        $newFilename
+                    );
+                } catch (Exception $e)
+                {
+                    dd($e);
+                }
                 array_push($$type, $newFilename);
             }
             $signalement->$setMethod($$type);
