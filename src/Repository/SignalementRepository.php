@@ -70,7 +70,7 @@ class SignalementRepository extends ServiceEntityRepository
 
     public function findByStatusAndOrCityForUser(User $user = null, $status = null, $city = null, $search = null, $page = null)
     {
-        $pageSize = 3;
+        $pageSize = 50;
         $firstResult = ($page - 1) * $pageSize;
         $qb = $this->createQueryBuilder('s')
             ->where('s.statut != :status')
