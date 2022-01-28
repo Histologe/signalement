@@ -710,7 +710,7 @@ class Signalement
         return $this->telOccupant;
     }
 
-    public function setTelOccupant(string $telOccupant): self
+    public function setTelOccupant($telOccupant): self
     {
         $this->telOccupant = $telOccupant;
 
@@ -722,7 +722,7 @@ class Signalement
         return $this->mailOccupant;
     }
 
-    public function setMailOccupant(string $mailOccupant): self
+    public function setMailOccupant($mailOccupant): self
     {
         $this->mailOccupant = $mailOccupant;
 
