@@ -13,7 +13,7 @@ class RequestListener
     private TokenStorage $tokenStorage;
     private UrlGeneratorInterface $urlGenerator;
 
-    public function __construct(TokenStorage $tokenStorage,UrlGeneratorInterface $urlGenerator)
+    public function __construct(TokenStorage $tokenStorage, UrlGeneratorInterface $urlGenerator)
     {
         $this->tokenStorage = $tokenStorage;
         $this->urlGenerator = $urlGenerator;
@@ -21,16 +21,12 @@ class RequestListener
 
     public function onKernelRequest(RequestEvent $event)
     {
-        if($event->getRequest()->get('_route') !== 'login_creation_pass')
-        {
-            if($token = $this->tokenStorage->getToken())
-            {
+        if ($token = $this->tokenStorage->getToken()) {
+            if ($event->getRequest()->get('_route') !== 'login_creation_pass') {
                 $user = $token->getUser();
-                if(!$user->getPassword() || $user->getStatut() === User::STATUS_INACTIVE)
+                if (!$user->getPassword() || $user->getStatut() === User::STATUS_INACTIVE)
                     $event->setResponse(new RedirectResponse($this->urlGenerator->generate('login_creation_pass')));
             }
         }
-
-        // ...
     }
 }

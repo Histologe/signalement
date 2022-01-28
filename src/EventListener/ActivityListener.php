@@ -9,11 +9,9 @@ use App\Service\NotificationService;
 use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class ChangeListener implements EventSubscriberInterface
+class ActivityListener implements EventSubscriberInterface
 {
     private NotificationService $notifier;
     private UrlGeneratorInterface $urlGenerator;
@@ -40,9 +38,9 @@ class ChangeListener implements EventSubscriberInterface
                 if ($entity instanceof Signalement) {
                     if (!$entityManager->contains($entity)) {
                         $emails = [$entity->getMailDeclarant() ?? null, $entity->getMailOccupant() ?? null];
-                        foreach ($emails as $email)
-                            if ($email)
-                                $this->notifier->send(NotificationService::TYPE_ACCUSE_RECEPTION, $email, ['signalement' => $entity]);
+                        array_map(function ($email) use ($entity) {
+                            null !== $this->notifier->send(NotificationService::TYPE_ACCUSE_RECEPTION, $email, ['signalement' => $entity]);
+                        }, $emails);
                     } else {
                         if (!empty($changeSet['statut']) && $changeSet['statut'][1] === Signalement::STATUS_NEW) {
                             $emails = [$entity->getMailDeclarant() ?? null, $entity->getMailOccupant() ?? null];

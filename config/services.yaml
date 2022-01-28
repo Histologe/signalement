@@ -22,7 +22,7 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
             - '../src/Tests/'
-    App\EventListener\ChangeListener:
+    App\EventListener\ActivityListener:
         tags:
             - name: 'doctrine.event_subscriber'
         arguments:
