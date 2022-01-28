@@ -5,8 +5,8 @@ use App\Kernel;
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
 return function (array $context) {
-    dump($_SERVER['REMOTE_ADDR']);
-    if($_SERVER['REMOTE_ADDR'] === ' 37.164.1.187')
+    /*dump($_SERVER['REMOTE_ADDR']);*/
+    if($_SERVER['REMOTE_ADDR'] === '37.164.1.187')
     {
         $context['APP_ENV'] = 'dev';
         $context['APP_DEBUG'] = true;
