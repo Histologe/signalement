@@ -81,7 +81,7 @@ class NotificationService
         $notification = new NotificationEmail();
         $notification->markAsPublic();
         return $notification->htmlTemplate('emails/' . $config['template'] . '.html.twig')
-            ->context(array_merge($params,$config))
+            ->context(array_merge($params,$config,['importance'=>null]))
             ->subject('Histologe - ' . $config['subject']);
     }
 }
