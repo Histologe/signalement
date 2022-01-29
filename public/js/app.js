@@ -291,16 +291,20 @@ forms.forEach((form) => {
             })
             toUnrequire && toUnrequire.split('|').map(targetId => {
                 let target = form?.querySelector('#' + targetId);
+                if(!target)
+                    target = document?.querySelector('#' + targetId);
                 target.required = false;
                 target?.parentElement?.classList?.remove('fr-input-group--error')
                 target?.parentElement?.querySelector('.fr-error-text')?.classList.add('fr-hidden')
                 target?.classList?.remove('fr-input--error')
-                target.labels[0].querySelector('sup') ? target.labels[0].querySelector('sup').innerHTML = '' : null;
+                target.labels[0].classList.remove('required')
             })
             toRequire && toRequire.split('|').map(targetId => {
                 let target = form?.querySelector('#' + targetId);
+                if(!target)
+                    target = document?.querySelector('#' + targetId);
                 target.required = true;
-                target?.labels[0]?.innerText.includes("*") || (target.labels[0].innerHTML = target.labels[0].innerText + '<sup class="fr-text-default--error">*</sup>');
+                target?.labels[0]?.classList.add('required')
             })
         })
     })
@@ -369,9 +373,9 @@ forms.forEach((form) => {
                             suggestion.innerHTML = feature.properties.label;
                             suggestion.addEventListener('click', () => {
                                 // console.log(feature.geometry.coordinates)
-                                form.querySelector('#signalement-adresse-occupant').value = feature.properties.name;
-                                form.querySelector('#signalement-cp-occupant').value = feature.properties.postcode;
-                                form.querySelector('#signalement-ville-occupant').value = feature.properties.city;
+                                form.querySelector('#signalement_adresseOccupant').value = feature.properties.name;
+                                form.querySelector('#signalement_cpOccupant').value = feature.properties.postcode;
+                                form.querySelector('#signalement_villeOccupant').value = feature.properties.city;
                                 form.querySelector('#signalement-insee-occupant').value = feature.properties.citycode;
                                 form.querySelector('#signalement-geoloc-lat-occupant').value = feature.geometry.coordinates[0];
                                 form.querySelector('#signalement-geoloc-lng-occupant').value = feature.geometry.coordinates[1];

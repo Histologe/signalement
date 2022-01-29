@@ -3,6 +3,116 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block body %}
+    <dialog aria-labelledby="cgu-modal-title" role="dialog" id="cguModal" class="fr-modal">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-10">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <button class="fr-link--close fr-link" title="Fermer la fenêtre modale"
+                                    aria-controls="cguModal" target="_self">Fermer
+                            </button>
+                        </div>
+                        <div class="fr-modal__content">
+                            <h1 id="cgu-modal-title" class="fr-modal__title"><span
+                                        class="fr-fi-arrow-right-line fr-fi--lg"></span>Conditions Générales
+                                d'Utilisation</h1>
+                            <div class="fr-container">
+                                <div class="fr-grid-row">
+                                    <div class="fr-col-12">
+                                        {% include 'front/cgu.html.twig' %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-modal__footer">
+                            <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
+                                <li>
+                                    <button class="fr-btn fr-fi-close-line" aria-controls="cguModal"
+                                            target="_self" title="Fermer la fenêtre modale">
+                                        Fermer
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
+    <dialog aria-labelledby="modal-photos-restrictions-title" role="dialog"
+            id="modal-photos-restrictions" class="fr-modal">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-10">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <a href="#" class="fr-link--close fr-link" title="Fermer la fenêtre modale"
+                               aria-controls="modal-photos-restrictions" target="_self">Fermer
+                            </a>
+                        </div>
+                        <div class="fr-modal__content">
+                            <h1 id="modal-photos-restrictions-title" class="fr-modal__title"><span
+                                        class="fr-fi-arrow-right-line fr-fi--sm"></span>Règlementation
+                                des photos</h1>
+                            <div class="fr-container">
+                                <div class="fr-grid-row">
+                                    <div class="fr-col-12">
+                                        <strong>Comment bien prendre vos photos ?</strong>
+                                        <small class="fr-hint-text">Quelques conseils pour bien prendre
+                                            vos photos</small>
+                                        <ul class="fr-list">
+                                            <li>Evitez de prendre en photo des personnes ou des objets
+                                                personnels
+                                            </li>
+                                            <li>Lorsque vous prenez votre photo, assurez-vous que la
+                                                luminosité soit suffisante.
+                                                <br> N’hésitez pas à activer le flash si besoin.
+                                            </li>
+                                            <li>Assurez-vous que votre photo n’est pas floue.</li>
+                                            <li>Votre photo doit permettre de rendre compte de la
+                                                situation globale. Évitez donc les photos prises en gros
+                                                plan ou les photos qui ne permettent pas de bien évaluer
+                                                la situation.
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="fr-grid-row">
+                                    <div class="fr-col-12">
+                                        <strong>Rappel concernant les interdictions de
+                                            photographie</strong>
+                                        <small class="fr-hint-text">Sont interdites les photographies
+                                            des parties communes présentant un élément
+                                            d'identification</small>
+                                        <ul class="fr-list">
+                                            <li>d'une personne</li>
+                                            <li>d'une ou plusieurs boîtes aux lettres</li>
+                                            <li>d'éléments extérieurs</li>
+                                            <li>de numéros d'appartements</li>
+                                            <li>de noms de propriétaires ou locataires de logements</li>
+                                            <li>de plaque d’immatriculation de véhicules</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fr-modal__footer">
+                            <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
+                                <li>
+                                    <a href="#" class="fr-btn fr-fi-close-line"
+                                       aria-controls="modal-photos-restrictions"
+                                       target="_self" title="Fermer la fenêtre modale">
+                                        Fermer
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
     <main class="fr-container fr-py-5w">
         <header class="fr-callout bg-light fr-mb-5v fr-hidden" id="signalement-success">
             <p class="fr-callout__title">
@@ -29,28 +139,28 @@
                 <li role="presentation">
                     <button id="signalement-step-2"
                             class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
-                            role="tab" aria-selected="false" aria-controls="signalement-step-2-panel" disabled>2.
+                            role="tab" aria-selected="false" aria-controls="signalement-step-2-panel">2.
                         Détails
                     </button>
                 </li>
                 <li role="presentation">
                     <button id="signalement-step-3"
                             class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
-                            role="tab" aria-selected="false" aria-controls="signalement-step-3-panel" disabled>3.
+                            role="tab" aria-selected="false" aria-controls="signalement-step-3-panel">3.
                         Logement
                     </button>
                 </li>
                 <li role="presentation">
                     <button id="signalement-step-4"
                             class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
-                            role="tab" aria-selected="false" aria-controls="signalement-step-4-panel" disabled>4.
+                            role="tab" aria-selected="false" aria-controls="signalement-step-4-panel">4.
                         Identité
                     </button>
                 </li>
                 <li role="presentation">
                     <button id="signalement-step-last"
                             class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
-                            role="tab" aria-selected="false" aria-controls="signalement-step-last-panel" disabled
+                            role="tab" aria-selected="false" aria-controls="signalement-step-last-panel"
                             data-fr-last-step="true">5.
                         Validation
                     </button>
@@ -167,78 +277,19 @@
                 </header>
                 <form action="#" name="signalement" class="needs-validation" novalidate>
                     <div class="fr-input-group">
-                        <label class="fr-label" for="signalement-details">
-                            Décrivez le ou les problème(s) rencontré(s)<sup class="fr-text-default--error">*</sup>
-                            <span class="fr-hint-text">Proposer une rapide description du ou des problème(s) en <u>10 caractères minimum</u>.</span>
-                        </label>
-                        <textarea class="fr-input fr-input--no-resize" id="signalement-details"
-                                  name="signalement[details]" minlength="10" required></textarea>
+                        {{ form_label(form.details) }}
+                        {{ form_help(form.details) }}
+                        {{ form_widget(form.details) }}
                         <p class="fr-error-text fr-hidden">
                             Merci de proposer une rapide description (minimum 10 caractères).
                         </p>
                     </div>
-                    <dialog aria-labelledby="modal-photos-restrictions-title" role="dialog" id="modal-photos-restrictions" class="fr-modal">
-                        <div class="fr-container fr-container--fluid fr-container-md">
-                            <div class="fr-grid-row fr-grid-row--center">
-                                <div class="fr-col-12 fr-col-md-10">
-                                    <div class="fr-modal__body">
-                                        <div class="fr-modal__header">
-                                            <a href="#" class="fr-link--close fr-link" title="Fermer la fenêtre modale"
-                                                    aria-controls="modal-photos-restrictions" target="_self">Fermer
-                                            </a>
-                                        </div>
-                                        <div class="fr-modal__content">
-                                            <h1 id="modal-photos-restrictions-title" class="fr-modal__title"><span
-                                                        class="fr-fi-arrow-right-line fr-fi--sm"></span>Règlementation des photos</h1>
-                                            <div class="fr-container">
-                                                <div class="fr-grid-row">
-                                                    <div class="fr-col-12">
-                                                        <strong>Comment bien prendre vos photos ?</strong>
-                                                        <small class="fr-hint-text">Quelques conseils pour bien prendre vos photos</small>
-                                                        <ul class="fr-list">
-                                                            <li>Evitez de prendre en photo des personnes ou des objets personnels</li>
-                                                            <li>Lorsque vous prenez votre photo, assurez-vous que la luminosité soit suffisante.
-                                                                <br> N’hésitez pas à activer le flash si besoin.</li>
-                                                            <li>Assurez-vous que votre photo n’est pas floue.</li>
-                                                            <li>Votre photo doit permettre de rendre compte de la situation globale. Évitez donc les photos prises en gros plan ou les photos qui ne permettent pas de bien évaluer la situation.</li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <div class="fr-grid-row">
-                                                    <div class="fr-col-12">
-                                                        <strong>Rappel concernant les interdictions de photographie</strong>
-                                                        <small class="fr-hint-text">Sont interdites les photographies des parties communes présentant un élément d'identification</small>
-                                                        <ul class="fr-list">
-                                                            <li>d'une personne</li>
-                                                            <li>d'une ou plusieurs boîtes aux lettres</li>
-                                                            <li>d'éléments extérieurs</li>
-                                                            <li>de numéros d'appartements</li>
-                                                            <li>de noms de propriétaires ou locataires de logements</li>
-                                                            <li>de plaque d’immatriculation de véhicules</li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="fr-modal__footer">
-                                            <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
-                                                <li>
-                                                    <a href="#" class="fr-btn fr-fi-close-line" aria-controls="modal-photos-restrictions"
-                                                            target="_self" title="Fermer la fenêtre modale">
-                                                        Fermer
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </dialog>
+
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-label fr-pl-0">Joindre des photos du/des problème(s)</legend>
-                            <span class="fr-hint-text">Les photos <u>ne doivent pas contenir de vues de personnes ou d'objets personnels</u>. <br> Pour les photos des parties communes, <u role="button" aria-controls="modal-photos-restrictions" data-fr-opened="false">certaines restrictions sont à respecter</u>.</span>
+                            <span class="fr-hint-text">Les photos <u>ne doivent pas contenir de vues de personnes ou d'objets personnels</u>. <br> Pour les photos des parties communes, <u
+                                        role="button" aria-controls="modal-photos-restrictions" data-fr-opened="false">certaines restrictions sont à respecter</u>.</span>
                             <div class="fr-fieldset__content fr-grid-row fr-grid-row--gutters">
                                 {% for i in 0..5 %}
                                     <div class="fr-col-6 fr-col-md fr-text--center">
@@ -313,23 +364,16 @@
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-fieldset__legend fr-text--regular" id='signalement-proprio-averti'>
-                                Avez-vous informé le propriétaire ou gestionnaire de ces nuisances ?<sup
-                                        class="fr-text-default--error">*</sup>
-                                <span class="fr-hint-text">Le cas échéant merci de précisez la ou les méthodes de contact.</span>
+                                {{ form_label(form.isProprioAverti) }}
+                                {{ form_help(form.isProprioAverti) }}
                             </legend>
                             <div class="fr-fieldset__content">
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-proprio-averti-1" value="true"
-                                           name="signalement[isProprioAverti]" required
-                                           data-fr-toggle-show="signalement-methode-contact">
-                                    <label class="fr-label" for="signalement-proprio-averti-1">Oui</label>
-                                </div>
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-proprio-averti-2" value="0"
-                                           name="signalement[isProprioAverti]"
-                                           data-fr-toggle-hide="signalement-methode-contact">
-                                    <label class="fr-label" for="signalement-proprio-averti-2">Non</label>
-                                </div>
+                                {% for key, choice in form.isProprioAverti.children %}
+                                    <div class="fr-radio-group">
+                                        {{ form_widget(choice) }}
+                                        {{ form_label(choice) }}
+                                    </div>
+                                {% endfor %}
                             </div>
                             <p class="fr-error-text fr-hidden">
                                 Veuillez précisez si vous avez pris contact.
@@ -339,34 +383,15 @@
                     <div class="fr-form-group fr-hidden data-fr-toggle" id="signalement-methode-contact">
                         <fieldset class="fr-fieldset fr-fieldset--inline{# fr-fieldset--error #}" role="group">
                             <legend class="fr-fieldset__legend fr-text--regular" id="checkboxes-inline-legend">
-                                Comment avez-vous averti le propriétaire ou gestionnaire ?<sup
-                                        class="fr-text-default--error">*</sup>
+                                {{ form_label(form.modeContactProprio) }}
                             </legend>
                             <div class="fr-fieldset__content">
-                                <div class="fr-checkbox-group">
-                                    <input type="checkbox" id="optionProprio_cr"
-                                           name="signalement[modeContactProprio][]" value="recommande" multiple>
-                                    <label class="fr-label" for="optionProprio_cr">Courrier recommandé
-                                    </label>
-                                </div>
-                                <div class="fr-checkbox-group">
-                                    <input type="checkbox" id="optionProprio_m"
-                                           name="signalement[modeContactProprio][]" value="courriel">
-                                    <label class="fr-label" for="optionProprio_m">Courriel
-                                    </label>
-                                </div>
-                                <div class="fr-checkbox-group">
-                                    <input type="checkbox" id="optionProprio_sms"
-                                           name="signalement[modeContactProprio][]" value="sms">
-                                    <label class="fr-label" for="optionProprio_sms">SMS
-                                    </label>
-                                </div>
-                                <div class="fr-checkbox-group">
-                                    <input type="checkbox" id="optionProprio_t"
-                                           name="signalement[modeContactProprio][]" value="message">
-                                    <label class="fr-label" for="optionProprio_t">Message téléphonique
-                                    </label>
-                                </div>
+                                {% for key, choice in form.modeContactProprio.children %}
+                                    <div class="fr-checkbox-group">
+                                        {{ form_widget(choice) }}
+                                        {{ form_label(choice) }}
+                                    </div>
+                                {% endfor %}
                             </div>
                             <p class="fr-error-text fr-hidden">
                                 Veuillez précisez la ou les methode(s) de contact.
@@ -380,114 +405,58 @@
                                 <span class="fr-hint-text">Indiquer la composition du logement en précisant le nombre d'enfants.</span>
                             </legend>
                             <div class="fr-select-group">
-                                <label class="fr-label" for="signalement-nb-adulte">
-                                    Nombre d'adultes<sup class="fr-text-default--error">*</sup>
-                                </label>
-                                <select class="fr-select" id="signalement-nb-adulte"
-                                        name="signalement[nbAdultes]" required>
-                                    <option value="" selected disabled hidden>Selectionnez une option</option>
-                                    <option value="1">1 adulte</option>
-                                    <option value="2">2 adultes</option>
-                                    <option value="3">3 adultes</option>
-                                    <option value="4">4 adultes</option>
-                                    <option value="4+">Plus de 4 adultes</option>
-                                </select>
+                                {{ form_label(form.nbAdultes) }}
+                                {{ form_widget(form.nbAdultes) }}
                                 <p class="fr-error-text fr-hidden">
                                     Veuillez renseigner le nombre d'adultes dans le logement.
                                 </p>
                             </div>
-                            <div class="fr-select-group">
-                                <label class="fr-label" for="signalement-nb-enfants-m6">
-                                    Nombre d'enfants de <strong>moins de 6 ans</strong>
-                                </label>
-                                <select class="fr-select" id="signalement-nb-enfants-m6"
-                                        name="signalement[nbEnfantsM6]">
-                                    <option value="0" selected>Selectionnez une option</option>
-                                    <option value="1">1 enfant</option>
-                                    <option value="2">2 enfants</option>
-                                    <option value="3">3 enfants</option>
-                                    <option value="4">4 enfants</option>
-                                    <option value="4+">Plus de 4 enfants</option>
-                                </select>
-                            </div>
-                            <div class="fr-select-group">
-                                <label class="fr-label" for="signalement-nb-enfants-p6">
-                                    Nombre d'enfants de <strong>plus de 6 ans</strong>
-                                </label>
-                                <select class="fr-select" id="signalement-nb-enfants-p6"
-                                        name="signalement[nbEnfantsP6]">
-                                    <option value="0" selected>Selectionnez une option</option>
-                                    <option value="1">1 enfant</option>
-                                    <option value="2">2 enfants</option>
-                                    <option value="3">3 enfants</option>
-                                    <option value="4">4 enfants</option>
-                                    <option value="4+">Plus de 4 enfants</option>
-                                </select>
-                            </div>
+                            {{ form_row(form.nbEnfantsM6) }}
+                            {{ form_row(form.nbEnfantsP6) }}
                         </fieldset>
                     </div>
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-fieldset__legend fr-text--regular">
-                                Recevez-vous une allocation logement de la CAF ou de la MSA ?
-                                <span class="fr-hint-text">Le cas échéant, merci de renseigner votre numéro d'allocataire.</span>
+                                {{ form_label(form.isAllocataire) }}
+                                {{ form_help(form.isAllocataire) }}
                             </legend>
                             <div class="fr-fieldset__content">
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="is-allocataire-caf" value="CAF"
-                                           name="signalement[isAllocataire]" required
-                                           data-fr-toggle-show="signalement-num-alloc-bloc">
-                                    <label class="fr-label" for="is-allocataire-caf">CAF</label>
-                                </div>
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="is-allocataire-msa" value="MSA"
-                                           name="signalement[isAllocataire]"
-                                           data-fr-toggle-show="signalement-num-alloc-bloc">
-                                    <label class="fr-label" for="is-allocataire-msa">MSA</label>
-                                </div>
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="is-not-allocataire" value="0"
-                                           name="signalement[isAllocataire]"
-                                           data-fr-toggle-hide="signalement-num-alloc-bloc">
-                                    <label class="fr-label" for="is-not-allocataire">Non</label>
-                                </div>
+                                {% for key, choice in form.isAllocataire.children %}
+                                    <div class="fr-radio-group">
+                                        {{ form_widget(choice) }}
+                                        {{ form_label(choice) }}
+                                    </div>
+                                {% endfor %}
                             </div>
                             <p class="fr-error-text fr-hidden">
                                 Veuillez précisez si vous êtes allocataire
                             </p>
                         </fieldset>
                         <div class="fr-form-group fr-mt-5v fr-hidden" id="signalement-num-alloc-bloc">
-                            <label class="fr-label" for="signalement-num-alloc">
-                                Numéro d'allocataire
-                            </label>
-                            <span class="fr-hint-text">Merci de renseigner votre numéro d'allocataire tel qu'il apparait sur vos documents.</span>
-                            <input class="fr-input" id="signalement-num-alloc"
-                                   name="signalement[numAllocataire]">
+                            <div class="fr-input-group">
+                                {{ form_label(form.numAllocataire) }}
+                                {{ form_help(form.numAllocataire) }}
+                                {{ form_widget(form.numAllocataire) }}
+                                <p class="fr-error-text fr-hidden">
+                                    Veuillez précisez votre numéro d'allocataire
+                                </p>
+                            </div>
                         </div>
                     </div>
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-fieldset__legend fr-text--regular" id='signalement-nature-logement'>
-                                Nature du logement concerné ?<sup
-                                        class="fr-text-default--error">*</sup>
-                                <span class="fr-hint-text">Cette information nous permet d'informer le ou les service(s) concerné(s).</span>
+                                {{ form_label(form.natureLogement) }}
+                                {{ form_help(form.natureLogement) }}
                             </legend>
                             <div class="fr-fieldset__content">
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="nature-logement-1" value="maison"
-                                           name="signalement[natureLogement]" required>
-                                    <label class="fr-label" for="nature-logement-1">Maison</label>
-                                </div>
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="nature-logement-2" value="appartement"
-                                           name="signalement[natureLogement]">
-                                    <label class="fr-label" for="nature-logement-2">Appartement</label>
-                                </div>
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="nature-logement-3" value="autre"
-                                           name="signalement[natureLogement]">
-                                    <label class="fr-label" for="nature-logement-3">Autre</label>
-                                </div>
+                                {% for key, choice in form.natureLogement.children %}
+                                    <div class="fr-radio-group">
+                                        {{ form_widget(choice) }}
+                                        {{ form_label(choice) }}
+                                    </div>
+                                {% endfor %}
                             </div>
                             <p class="fr-error-text fr-hidden">
                                 Veuillez précisez la nature du logement concerné.
@@ -498,45 +467,26 @@
                         <fieldset class="fr-fieldset">
                             <legend class="fr-fieldset__legend fr-text--regular">
                                 Carracteristiques du logement<sup class="fr-text-default--error">*</sup>
-                                <span class="fr-hint-text">Indiquer la typologie et la superficie du logement en mètres carrés (m²) ainsi que le loyer mensuel en euros (€).</span>
+                                <p class="fr-hint-text">Indiquer la typologie et la superficie du logement en mètres
+                                    carrés (m²) ainsi que le loyer mensuel en euros (€).</p>
                             </legend>
                             <div class="fr-select-group">
-                                <label class="fr-label" for="signalement-type-logement">
-                                    Typologie<sup class="fr-text-default--error">*</sup>
-                                </label>
-                                <select class="fr-select" id="signalement-type-logement"
-                                        name="signalement[typeLogement]" required>
-                                    <option value="" selected disabled hidden>Selectionnez une option</option>
-                                    <option value="chambre">Chambre</option>
-                                    <option value="studio">Studio</option>
-                                    <option value="T1">T1</option>
-                                    <option value="T2">T2</option>
-                                    <option value="T3">T3</option>
-                                    <option value="T4">T4</option>
-                                    <option value="T5">T5</option>
-                                    <option value="T6">T6</option>
-                                    <option value="plus">Plus</option>
-                                </select>
+                                {{ form_label(form.typeLogement) }}
+                                {{ form_widget(form.typeLogement) }}
                                 <p class="fr-error-text fr-hidden">
                                     Veuillez renseigner la typologie du logement.
                                 </p>
                             </div>
-                            <div class="fr-form-group">
-                                <label class="fr-label" for="signalement-superficie">
-                                    Superficie estimée (m²)<sup class="fr-text-default--error">*</sup>
-                                </label>
-                                <input class="fr-input" type="number" id="signalement-superficie"
-                                       name="signalement[superficie]" required>
+                            <div class="fr-input-group">
+                                {{ form_label(form.superficie) }}
+                                {{ form_widget(form.superficie) }}
                                 <p class="fr-error-text fr-hidden">
                                     Veuillez renseigner la superficie en mètres carrés du logement.
                                 </p>
                             </div>
-                            <div class="fr-form-group">
-                                <label class="fr-label" for="signalement-loyer">
-                                    Loyer mensuel (€)<sup class="fr-text-default--error">*</sup>
-                                </label>
-                                <input class="fr-input" type="number" min="1" step="0.01" id="signalement-loyer"
-                                       name="signalement[loyer]" required>
+                            <div class="fr-input-group">
+                                {{ form_label(form.loyer) }}
+                                {{ form_widget(form.loyer) }}
                                 <p class="fr-error-text fr-hidden">
                                     Veuillez renseigner le loyer mensuel du logement en euros.
                                 </p>
@@ -546,33 +496,29 @@
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-fieldset__legend fr-text--regular">
-                                Le bail est-il en cours ?<sup
-                                        class="fr-text-default--error">*</sup>
-                                <span class="fr-hint-text">Que la bail soit en cours ou non, merci de renseigner la date d'entrée dans le logement.</span>
+                                {{ form_label(form.isBailEnCours) }}
+                                {{ form_help(form.isBailEnCours) }}
                             </legend>
                             <div class="fr-fieldset__content">
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="is-bail-en-cours-1" value="true"
-                                           name="signalement[isBailEnCours]" required>
-                                    <label class="fr-label" for="is-bail-en-cours-1">Oui</label>
-                                </div>
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="is-bail-en-cours-2" value="0"
-                                           name="signalement[isBailEnCours]">
-                                    <label class="fr-label" for="is-bail-en-cours-2">Non</label>
-                                </div>
+                                {% for key, choice in form.isBailEnCours.children %}
+                                    <div class="fr-radio-group">
+                                        {{ form_widget(choice) }}
+                                        {{ form_label(choice) }}
+                                    </div>
+                                {% endfor %}
                             </div>
                             <p class="fr-error-text fr-hidden">
                                 Veuillez précisez si le bail est en cours.
                             </p>
                         </fieldset>
-                        <div class="fr-form-group fr-mt-5v">
+                    </div>
+                    <div class="fr-form-group">
+                        <div class="fr-input-group">
                             <label class="fr-label" for="signalement-date-entree">
-                                Date d'entrée ?<sup class="fr-text-default--error">*</sup>
-                                <span class="fr-hint-text">La date d'entrée dans le logement doit être renseignée au format (JJ/MM/AAAA).</span>
+                                {{ form_label(form.dateEntree) }}
+                                {{ form_help(form.dateEntree) }}
                             </label>
-                            <input class="fr-input" type="date" id="signalement-date-entree"
-                                   name="signalement[dateEntree]" required>
+                            {{ form_widget(form.dateEntree) }}
                             <p class="fr-error-text fr-hidden">
                                 Veuillez renseigner la date d'entrée dans le logement au format (JJ/MM/AAAA).
                             </p>
@@ -581,21 +527,16 @@
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-fieldset__legend fr-text--regular" id='signalement-logement-social'>
-                                Le logement est-il un logement social ?<sup
-                                        class="fr-text-default--error">*</sup>
-                                <span class="fr-hint-text">Cette information nous aide à optimiser le temps de traitement de votre signalement.</span>
+                                {{ form_label(form.isLogementSocial) }}
+                                {{ form_help(form.isLogementSocial) }}
                             </legend>
                             <div class="fr-fieldset__content">
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-logement-social-1" value="true"
-                                           name="signalement[isLogementSocial]" required>
-                                    <label class="fr-label" for="signalement-logement-social-1">Oui</label>
-                                </div>
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-logement-social-2" value="0"
-                                           name="signalement[isLogementSocial]">
-                                    <label class="fr-label" for="signalement-logement-social-2">Non</label>
-                                </div>
+                                {% for key, choice in form.isLogementSocial.children %}
+                                    <div class="fr-radio-group">
+                                        {{ form_widget(choice) }}
+                                        {{ form_label(choice) }}
+                                    </div>
+                                {% endfor %}
                             </div>
                             <p class="fr-error-text fr-hidden">
                                 Veuillez précisez si le logement est un logement social ou non.
@@ -605,21 +546,16 @@
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-fieldset__legend fr-text--regular" id='signalement-preavis'>
-                                Avez-vous déposé un préavis de départ pour ce logement ?<sup
-                                        class="fr-text-default--error">*</sup>
-                                <span class="fr-hint-text">Cette information nous aide également à optimiser le temps de traitement de votre signalement.</span>
+                                {{ form_label(form.isPreavisDepart) }}
+                                {{ form_help(form.isPreavisDepart) }}
                             </legend>
                             <div class="fr-fieldset__content">
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-preavis-1" value="true"
-                                           name="signalement[isPreavisDepart]" required>
-                                    <label class="fr-label" for="signalement-preavis-1">Oui</label>
-                                </div>
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-preavis-2" value="0"
-                                           name="signalement[isPreavisDepart]">
-                                    <label class="fr-label" for="signalement-preavis-2">Non</label>
-                                </div>
+                                {% for key, choice in form.isPreavisDepart.children %}
+                                    <div class="fr-radio-group">
+                                        {{ form_widget(choice) }}
+                                        {{ form_label(choice) }}
+                                    </div>
+                                {% endfor %}
                             </div>
                             <p class="fr-error-text fr-hidden">
                                 Veuillez précisez si vous avez déposé un préavis de départ.
@@ -629,21 +565,16 @@
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-fieldset__legend fr-text--regular" id='signalement-relogement'>
-                                Avez-vous engagé une démarche de relogement ?<sup
-                                        class="fr-text-default--error">*</sup>
-                                <span class="fr-hint-text">Nos services pourrons vous accompagner dans cette demarche le cas échéant.</span>
+                                {{ form_label(form.isRelogement) }}
+                                {{ form_help(form.isRelogement) }}
                             </legend>
                             <div class="fr-fieldset__content">
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-relogement-1" value="true"
-                                           name="signalement[isRelogement]" required>
-                                    <label class="fr-label" for="signalement-relogement-1">Oui</label>
-                                </div>
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-relogement-2" value="0"
-                                           name="signalement[isRelogement]">
-                                    <label class="fr-label" for="signalement-relogement-2">Non</label>
-                                </div>
+                                {% for key, choice in form.isRelogement.children %}
+                                    <div class="fr-radio-group">
+                                        {{ form_widget(choice) }}
+                                        {{ form_label(choice) }}
+                                    </div>
+                                {% endfor %}
                             </div>
                             <p class="fr-error-text fr-hidden">
                                 Veuillez précisez si vous avez engagé une démarche ou non.
@@ -653,24 +584,16 @@
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-fieldset__legend fr-text--regular" id='signalement-intervention'>
-                                Si cela est nécessaire, l'occupant accepte la visite d’un personne qualifiée et la mise
-                                en place de travaux d'amélioration ?<sup
-                                        class="fr-text-default--error">*</sup>
-                                <span class="fr-hint-text">Le cas échéant, expliquez rapidement pourquoi vous ne souhaitez pas d'une visite de votre domicile, en 10 caractères minimum.</span>
+                                {{ form_label(form.isRefusIntervention) }}
+                                {{ form_help(form.isRefusIntervention) }}
                             </legend>
                             <div class="fr-fieldset__content">
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-intervention-1" value="0"
-                                           name="signalement[isRefusIntervention]" required
-                                           data-fr-toggle-hide="signalement-raison-refus">
-                                    <label class="fr-label" for="signalement-intervention-1">Oui</label>
-                                </div>
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-intervention-2" value="true"
-                                           name="signalement[isRefusIntervention]"
-                                           data-fr-toggle-show="signalement-raison-refus">
-                                    <label class="fr-label" for="signalement-intervention-2">Non</label>
-                                </div>
+                                {% for key, choice in form.isRefusIntervention.children %}
+                                    <div class="fr-radio-group">
+                                        {{ form_widget(choice) }}
+                                        {{ form_label(choice) }}
+                                    </div>
+                                {% endfor %}
                             </div>
                             <p class="fr-error-text fr-hidden">
                                 Veuillez précisez si vous acceptez une intervention dans le logement ou non.
@@ -678,15 +601,14 @@
                         </fieldset>
                     </div>
                     <div class="fr-form-group fr-hidden data-fr-toggle" id="signalement-raison-refus">
-                        <label class="fr-label" for="signalement-raison-refus">
-                            Précisez la raison de votre refus<sup class="fr-text-default--error">*</sup>
-                            <span class="fr-hint-text">Proposer une rapide description du ou des problème(s).</span>
-                        </label>
-                        <textarea class="fr-input fr-input--no-resize" id="signalement-raison-refus"
-                                  name="signalement[raisonRefusIntervention]" minlength="10"></textarea>
-                        <p class="fr-error-text fr-hidden">
-                            Votre message doit contenir au moins 10 caractères.
-                        </p>
+                        <div class="fr-input-group">
+                            {{ form_label(form.raisonRefusIntervention) }}
+                            {{ form_help(form.raisonRefusIntervention) }}
+                            {{ form_widget(form.raisonRefusIntervention) }}
+                            <p class="fr-error-text fr-hidden">
+                                Votre message doit contenir au moins 10 caractères.
+                            </p>
+                        </div>
                     </div>
                     <div class="fr-grid-row">
                         <div class="fr-col-12 fr-text--center">
@@ -710,28 +632,16 @@
                     <div class="fr-form-group">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-fieldset__legend fr-text--regular">
-                                Êtes-vous l'occupant du logement ?<sup
-                                        class="fr-text-default--error">*</sup>
-                                <span class="fr-hint-text">Si vous déposez ce signalement pour le compte de quelqu'un d'autres, merci de nous le faire savoir.</span>
+                                {{ form_label(form.isNotOccupant) }}
+                                {{ form_help(form.isNotOccupant) }}
                             </legend>
                             <div class="fr-fieldset__content">
+                                {% for key, choice in form.isNotOccupant.children %}
                                 <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-occupant-1" value="0"
-                                           name="signalement[isNotOccupant]"
-                                           data-fr-toggle-hide="signalement-pas-occupant|signalement-consentement-tiers-bloc"
-                                           data-fr-toggle-show="signalement-occupant|signalement-infos-proprio|signalement-consentement-tiers-bloc"
-                                           data-fr-toggle-unrequire="signalement-lien-declarant-occupant|signalement-adresse-proprio|signalement-tel-proprio|signalement-courriel-proprio|signalement-etage-occupant|signalement-num-appart-occupant|signalement-adresse-autre-occupant|signalement-escalier-occupant"
-                                           data-fr-toggle-require="signalement-courriel-occupant|signalement-tel-occupant|signalement-consentement-tiers"
-                                           required>
-                                    <label class="fr-label" for="signalement-occupant-1">Oui</label>
+                                    {{ form_widget(choice) }}
+                                    {{ form_label(choice) }}
                                 </div>
-                                <div class="fr-radio-group">
-                                    <input type="radio" id="signalement-occupant-2" value="1"
-                                           name="signalement[isNotOccupant]"
-                                           data-fr-toggle-show="signalement-consentement-tiers-bloc|signalement-occupant|signalement-pas-occupant|signalement-infos-proprio"
-                                           data-fr-toggle-unrequire="signalement-adresse-proprio|signalement-tel-proprio|signalement-courriel-proprio|signalement-nom-proprio|signalement-structure-declarant|signalement-courriel-occupant|signalement-tel-occupant|signalement-etage-occupant|signalement-num-appart-occupant|signalement-adresse-autre-occupant|signalement-escalier-occupant">
-                                    <label class="fr-label" for="signalement-occupant-2">Non</label>
-                                </div>
+                                {% endfor %}
                             </div>
                             <p class="fr-error-text fr-hidden">
                                 Veuillez précisez si vous êtes l'occupant du logement.
@@ -744,197 +654,154 @@
                                 Informations concernant <strong><u>le déclarant</u></strong>
                                 <span class="fr-hint-text">Vous déposez pour le compte de quelqu'un d'autre</span>
                             </legend>
-                            <div class="fr-fieldset__content fr-grid-row fr-grid-row--gutters">
-                                <div class="fr-input-group fr-col-12 fr-col-md-6 fr-px-0 fr-pl-md-0 fr-pr-md-1v">
-                                    <label class="fr-label" for="signalement-nom-declarant">
-                                        Nom<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" id="signalement-nom-declarant"
-                                           name="signalement[nomDeclarant]" value="{{ app.user ? app.user.nom : '' }}">
-                                    <label class="fr-label" for="signalement-prenom-declarant">
-                                        Prénom<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" id="signalement-prenom-declarant"
-                                           name="signalement[prenomDeclarant]"
-                                           value="{{ app.user ? app.user.prenom : '' }}">
-                                    <p class="fr-error-text fr-hidden">
-                                        Veuillez renseigner votre nom et prenom.
-                                    </p>
-                                </div>
-                                <div class="fr-input-group fr-col-12 fr-col-md-6 fr-px-0 fr-pr-md-0 fr-pl-md-1v">
-                                    <label class="fr-label" for="signalement-tel-declarant">
-                                        N° de téléphone<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" type="tel"
-                                           id="signalement-tel-declarant"
-                                           name="signalement[telDeclarant]">
-                                    <label class="fr-label" for="signalement-courriel-declarant">
-                                        Courriel<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" type="email"
-                                           id="signalement-courriel-declarant"
-                                           name="signalement[mailDeclarant]"
-                                           value="{{ app.user ? app.user.email : '' }}">
-                                    <p class="fr-error-text fr-hidden">
-                                        Veuillez renseigner votre n° de téléphone et votre courriel.
-                                    </p>
-                                </div>
-                                <div class="fr-input-group fr-col-12 fr-p-0">
-                                    <label class="fr-label" for="signalement-lien-declarant-occupant">
-                                        Votre lien avec l'occupant<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <select class="fr-select" id="signalement-lien-declarant-occupant"
-                                            name="signalement[lienDeclarantOccupant]" required>
-                                        <option value="" selected disabled>--- Selectionnez ---</option>
-                                        <option value="proche">Proche</option>
-                                        <option value="professionnel">Professionnel</option>
-                                        <option value="tuteur">Tuteur légal</option>
-                                        <option value="voisin">Voisin</option>
-                                        <option value="autre">Autre</option>
-                                    </select>
-                                    <p class="fr-error-text fr-hidden">
-                                        Veuillez indiquer votre lien avec l'occupant du logement.
-                                    </p>
-                                </div>
-                                <div class="fr-input-group fr-col-12 fr-p-0">
-                                    <label class="fr-label" for="signalement-structure-declarant">
-                                        Structure [ADIL, CCAS, SDIS, ...]<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" id="signalement-structure-declarant"
-                                           name="signalement[structureDeclarant]"
-                                           value="{{ app.user ? (app.user.partenaire ? app.user.partenaire.nom : ''):'' }}">
-                                    <p class="fr-error-text fr-hidden">
-                                        Veuillez renseigner votre structure.
-                                    </p>
-                                </div>
+                            <div class="fr-fieldset__content fr-grid-row fr-grid-row--gutters fr-m-0">
+                               <div class="fr-form-group fr-col-12 fr-col-md-6 fr-mb-0 fr-px-0 fr-pl-md-0 fr-pr-md-1v">
+                                   <div class="fr-input-group">
+                                       {{ form_label(form.nomDeclarant) }}
+                                       {{ form_widget(form.nomDeclarant) }}
+                                       <p class="fr-error-text fr-hidden">
+                                           Veuillez renseigner votre nom.
+                                       </p>
+                                   </div>
+                               </div>
+                               <div class="fr-form-group fr-col-12 fr-col-md-6 fr-mb-0 fr-px-0 fr-pr-md-0 fr-pl-md-1v">
+                                   <div class="fr-input-group">
+                                       {{ form_label(form.prenomDeclarant) }}
+                                       {{ form_widget(form.prenomDeclarant) }}
+                                       <p class="fr-error-text fr-hidden">
+                                           Veuillez renseigner votre prénom.
+                                       </p>
+                                   </div>
+                               </div>
+                               <div class="fr-form-group fr-col-12 fr-col-md-6 fr-mb-0 fr-px-0 fr-pl-md-0 fr-pr-md-1v">
+                                   <div class="fr-input-group">
+                                       {{ form_label(form.telDeclarant) }}
+                                       {{ form_widget(form.telDeclarant) }}
+                                       <p class="fr-error-text fr-hidden">
+                                           Veuillez renseigner votre numéro de téléphone.
+                                       </p>
+                                   </div>
+                               </div>
+                               <div class="fr-form-group fr-col-12 fr-col-md-6 fr-mb-0 fr-px-0 fr-pr-md-0 fr-pl-md-1v">
+                                   <div class="fr-input-group">
+                                       {{ form_label(form.mailDeclarant) }}
+                                       {{ form_widget(form.mailDeclarant) }}
+                                       <p class="fr-error-text fr-hidden">
+                                           Veuillez renseigner votre adresse courriel
+                                       </p>
+                                   </div>
+                               </div>
                             </div>
                         </fieldset>
+                        <div class="fr-form-group">
+                            <fieldset class="fr-fieldset fr-fieldset--inline">
+                                <legend class="fr-fieldset__legend fr-text--regular">
+                                    {{ form_label(form.lienDeclarantOccupant) }}
+                                </legend>
+                                <div class="fr-fieldset__content">
+                                    {% for key, choice in form.lienDeclarantOccupant.children %}
+                                        <div class="fr-radio-group">
+                                            {{ form_widget(choice) }}
+                                            {{ form_label(choice) }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <p class="fr-error-text fr-hidden">
+                                    Veuillez précisez votre lien avec l'occupant.
+                                </p>
+                            </fieldset>
+                        </div>
+                        <div class="fr-form-group">
+                            {{ form_row(form.structureDeclarant) }}
+                        </div>
                     </div>
                     <div class="fr-form-group fr-hidden data-fr-toggle" id="signalement-occupant">
                         <fieldset class="fr-fieldset fr-fieldset--inline">
                             <legend class="fr-fieldset__legend fr-text--regular">
                                 Informations concernant <strong><u>l'occupant</u></strong>
-                                <span class="fr-hint-text">Ces informations sont neccèssaire au suivi de votre signalement, merci de bine verifier votre saisi.</span>
+                                <span class="fr-hint-text">Ces informations sont neccessaire au suivi de votre signalement, merci de bien verifier votre saisie.</span>
                             </legend>
-                            <div class="fr-fieldset__content fr-grid-row fr-grid-row--gutters">
-                                <div class="fr-input-group fr-col-12 fr-col-md-6 fr-px-0 fr-pl-md-0 fr-pr-md-1v">
-                                    <label class="fr-label" for="signalement-nom-occupant">
-                                        Nom<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" id="signalement-nom-occupant"
-                                           name="signalement[nomOccupant]" required>
-                                    <label class="fr-label" for="signalement-prenom-occupant">
-                                        Prénom<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" id="signalement-prenom-occupant"
-                                           name="signalement[prenomOccupant]" required>
-                                    <p class="fr-error-text fr-hidden">
-                                        Veuillez renseigner le nom et prenom de l'occupant.
-                                    </p>
-                                </div>
-                                <div class="fr-input-group fr-col-12 fr-col-md-6  fr-px-0 fr-pl-md-1v fr-pr-md-0">
-                                    <label class="fr-label" for="signalement-tel-occupant">
-                                        N° de téléphone<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" type="tel" pattern="[0-9]{10}"
-                                           id="signalement-tel-occupant"
-                                           name="signalement[telOccupant]" required>
-                                    <label class="fr-label" for="signalement-courriel-occupant">
-                                        Courriel<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" type="email"
-                                           id="signalement-courriel-occupant"
-                                           name="signalement[mailOccupant]" required>
-                                    <p class="fr-error-text fr-hidden">
-                                        Veuillez renseigner le téléphone et courriel de l'occupant.
-                                    </p>
-                                </div>
-                                <div class="fr-input-group fr-col-12 fr-p-0 fr-mb-0">
-                                    <label class="fr-label" for="signalement-adresse-occupant">
-                                        Adresse du logement<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <span class="fr-hint-text">Commencez à entrer votre adresse et cliquez sur l'une des suggestion. Si vous ne trouvez pas votre adresse entrez-la manuellement </span>
-                                    <input class="fr-input fr-input--no-resize" id="signalement-adresse-occupant"
-                                           name="signalement[adresseOccupant]" data-fr-adresse-autocomplete required>
-                                    <div class="fr-grid-row fr-background-alt--blue-france fr-text-label--blue-france"
-                                         id="signalement-adresse-suggestion">
+                            <div class="fr-fieldset__content fr-grid-row fr-grid-row--gutters fr-m-0">
+                                <div class="fr-form-group fr-col-12 fr-col-md-6 fr-mb-0 fr-px-0 fr-pl-md-0 fr-pr-md-1v">
+                                    <div class="fr-input-group">
+                                        {{ form_label(form.nomOccupant) }}
+                                        {{ form_widget(form.nomOccupant) }}
+                                        <p class="fr-error-text fr-hidden">
+                                            Veuillez renseigner votre nom.
+                                        </p>
                                     </div>
-                                    <p class="fr-error-text fr-hidden">
-                                        Veuillez renseigner l'adresse du logement.
-                                    </p>
                                 </div>
-                                <div class="fr-input-group fr-col-12 fr-p-0 fr-mb-0">
-                                    <label class="fr-label" for="signalement-cp-occupant">
-                                        Code postal<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" type="text" pattern="[0-9]{5}"
-                                           id="signalement-cp-occupant"
-                                           name="signalement[cpOccupant]" required>
-                                    <p class="fr-error-text fr-hidden">
-                                        Veuillez renseigner le code postal a 5 chiffres du logement (ex: 75000).
-                                    </p>
-                                </div>
-                                <div class="fr-input-group fr-col-12 fr-p-0">
-                                    <label class="fr-label" for="signalement-ville-occupant">
-                                        Ville<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" minlength="2"
-                                           id="signalement-ville-occupant"
-                                           name="signalement[villeOccupant]" required>
-                                    <p class="fr-error-text fr-hidden">
-                                        Veuillez renseigner le code postal du logement.
-                                    </p>
-                                </div>
-
-                                <fieldset class="fr-fieldset fr-col-12 fr-p-0">
-                                    <legend class="fr-fieldset__legend">
-                                        Complément d'adresse
-                                    </legend>
-                                    <div class="fr-fieldset__content fr-grid-row">
-                                        <div class="fr-input-group fr-col-12 fr-mb-0">
-                                            <label class="fr-label" for="signalement-etage-occupant">
-                                                Etage
-                                            </label>
-                                            <input class="fr-input fr-input--no-resize"
-                                                   id="signalement-etage-occupant" type="text"
-                                                   name="signalement[etageOccupant]" placeholder="Etage">
-                                        </div>
-                                        <div class="fr-input-group fr-col-12 fr-mb-0">
-                                            <label class="fr-label" for="signalement-escalier-occupant">
-                                                Escalier
-                                            </label>
-                                            <input class="fr-input fr-input--no-resize" type="text"
-                                                   id="signalement-escalier-occupant"
-                                                   name="signalement[escalierOccupant]" placeholder="Escalier">
-                                        </div>
-                                        <div class="fr-input-group fr-col-12 fr-mb-0">
-                                            <label class="fr-label" for="signalement-num-appart-occupant">
-                                                N° appartement
-                                            </label>
-                                            <input class="fr-input fr-input--no-resize" type="text"
-                                                   id="signalement-num-appart-occupant"
-                                                   name="signalement[numAppartOccupant]"
-                                                   placeholder="Numéro d'appartement">
-                                        </div>
-                                        <div class="fr-input-group fr-col-12 ">
-                                            <label class="fr-label" for="signalement-adresse-autre-occupant">
-                                                Autre
-                                            </label>
-                                            <input class="fr-input fr-input--no-resize" type="text"
-                                                   id="signalement-adresse-autre-occupant"
-                                                   name="signalement[adresseAutreOccupant]"
-                                                   placeholder="Autre information">
-                                        </div>
+                                <div class="fr-form-group fr-col-12 fr-col-md-6 fr-mb-0 fr-px-0 fr-pr-md-0 fr-pl-md-1v">
+                                    <div class="fr-input-group">
+                                        {{ form_label(form.prenomOccupant) }}
+                                        {{ form_widget(form.prenomOccupant) }}
+                                        <p class="fr-error-text fr-hidden">
+                                            Veuillez renseigner votre prénom.
+                                        </p>
                                     </div>
-                                </fieldset>
-
-
-                                <input type="hidden" name="signalement[geoloc][lat]"
-                                       id="signalement-geoloc-lat-occupant">
-                                <input type="hidden" name="signalement[geoloc][lng]"
-                                       id="signalement-geoloc-lng-occupant">
-                                <input type="hidden" name="signalement[inseeOccupant]"
-                                       id="signalement-insee-occupant">
+                                </div>
+                                <div class="fr-form-group fr-col-12 fr-col-md-6 fr-px-0 fr-pl-md-0 fr-pr-md-1v">
+                                    <div class="fr-input-group">
+                                        {{ form_label(form.telOccupant) }}
+                                        {{ form_widget(form.telOccupant) }}
+                                        <p class="fr-error-text fr-hidden">
+                                            Veuillez renseigner votre numéro de téléphone.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="fr-form-group fr-col-12 fr-col-md-6 fr-px-0 fr-pr-md-0 fr-pl-md-1v">
+                                    <div class="fr-input-group">
+                                        {{ form_label(form.mailOccupant) }}
+                                        {{ form_widget(form.mailOccupant) }}
+                                        <p class="fr-error-text fr-hidden">
+                                            Veuillez renseigner votre adresse courriel
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="fr-form-group">
+                            <div class="fr-input-group">
+                                {{ form_label(form.adresseOccupant) }}
+                                {{ form_help(form.adresseOccupant) }}
+                                {{ form_widget(form.adresseOccupant) }}
+                                <div class="fr-grid-row fr-background-alt--blue-france fr-text-label--blue-france"
+                                     id="signalement-adresse-suggestion">
+                                </div>
+                                <p class="fr-error-text fr-hidden">
+                                    Veuillez renseigner l'adresse du logement.
+                                </p>
+                            </div>
+                            <div class="fr-input-group">
+                                {{ form_label(form.cpOccupant) }}
+                                {{ form_widget(form.cpOccupant) }}
+                                <p class="fr-error-text fr-hidden">
+                                    Veuillez renseigner le code postal a 5 chiffres du logement (ex: 75000).
+                                </p>
+                            </div>
+                            <div class="fr-input-group">
+                                {{ form_label(form.villeOccupant) }}
+                                {{ form_widget(form.villeOccupant) }}
+                                <p class="fr-error-text fr-hidden">
+                                    Veuillez renseigner la ville du logement
+                                </p>
+                            </div>
+                            <input type="hidden" name="signalement[geoloc][lat]"
+                                   id="signalement-geoloc-lat-occupant">
+                            <input type="hidden" name="signalement[geoloc][lng]"
+                                   id="signalement-geoloc-lng-occupant">
+                            <input type="hidden" name="signalement[inseeOccupant]"
+                                   id="signalement-insee-occupant">
+                        </div>
+                        <fieldset class="fr-fieldset fr-col-12 fr-p-0">
+                            <legend class="fr-fieldset__legend">
+                                Complément d'adresse
+                            </legend>
+                            <div class="fr-fieldset__content">
+                                {{ form_row(form.etageOccupant) }}
+                                {{ form_row(form.escalierOccupant) }}
+                                {{ form_row(form.numAppartOccupant) }}
+                                {{ form_row(form.adresseAutreOccupant) }}
                             </div>
                         </fieldset>
                     </div>
@@ -944,39 +811,11 @@
                                 Informations du propriétaire ou gestionnaire bailleur
                                 <span class="fr-hint-text">Si vous disposez des informations suivantes concernant le propriétaire, merci de les renseigner.</span>
                             </legend>
-                            <div class="fr-fieldset__content fr-grid-row">
-                                <div class="fr-input-group fr-col-12">
-                                    <label class="fr-label" for="signalement-nom-proprio">
-                                        Nom et prénom ou raison sociale<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" id="signalement-nom-proprio"
-                                           name="signalement[nomProprio]">
-                                    <p class="fr-error-text fr-hidden">
-                                        Veuillez saisir le nom du propriétaire.
-                                    </p>
-                                </div>
-                                <div class="fr-input-group fr-col-12">
-                                    <label class="fr-label" for="signalement-adresse-proprio">
-                                        Adresse<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" id="signalement-adresse-proprio"
-                                           name="signalement[adresseProprio]">
-                                </div>
-                                <div class="fr-input-group fr-col-12">
-                                    <label class="fr-label" for="signalement-tel-proprio">
-                                        N° de téléphone<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" type="tel" id="signalement-tel-proprio"
-                                           name="signalement[telProprio]">
-                                </div>
-                                <div class="fr-input-group fr-col-12">
-                                    <label class="fr-label" for="signalement-courriel-proprio">
-                                        Courriel<sup class="fr-text-default--error">*</sup>
-                                    </label>
-                                    <input class="fr-input fr-input--no-resize" type="email"
-                                           id="signalement-courriel-proprio"
-                                           name="signalement[mailProprio]">
-                                </div>
+                            <div class="fr-fieldset__content">
+                                {{ form_row(form.nomProprio) }}
+                                {{ form_row(form.adresseProprio) }}
+                                {{ form_row(form.telProprio) }}
+                                {{ form_row(form.mailProprio) }}
                             </div>
                         </fieldset>
                     </div>
@@ -1006,10 +845,10 @@
                                             title="Editer les informations" data-goto-step="4"></button>
                                 </strong>
                                 <p>
-                                    <span id="recap-signalement-nom-occupant"></span> <span
-                                            id="recap-signalement-prenom-occupant"></span> <br>
-                                    <span id="recap-signalement-courriel-occupant"></span> <br>
-                                    <span id="recap-signalement-tel-occupant"></span>
+                                    <span id="recap-signalement_nomOccupant"></span> <span
+                                            id="recap-signalement_prenomOccupant"></span> <br>
+                                    <span id="recap-signalement_mailOccupant"></span> <br>
+                                    <span id="recap-signalement_telOccupant"></span>
                                 </p>
                             </li>
                         </ul>
@@ -1022,9 +861,9 @@
                                             title="Editer les informations" data-goto-step="4"></button>
                                 </strong>
                                 <p>
-                                    <span id="recap-signalement-adresse-occupant"></span> <br>
-                                    <span id="recap-signalement-cp-occupant"></span>, <span
-                                            id="recap-signalement-ville-occupant"></span>
+                                    <span id="recap-signalement_adresseOccupant"></span> <br>
+                                    <span id="recap-signalement_cpOccupant"></span>, <span
+                                            id="recap-signalement_ville0ccupant"></span>
                                 </p>
                             </li>
                         </ul>
@@ -1037,9 +876,9 @@
                                             title="Editer les informations" data-goto-step="3"></button>
                                 </strong>
                                 <p>
-                                    <span id="recap-signalement-nb-adulte"></span> Adulte(s) <br>
-                                    <span id="recap-signalement-nb-enfants-m6"></span> Enfant(s) de moins de 6 ans <br>
-                                    <span id="recap-signalement-nb-enfants-p6"></span> Enfant(s) de plus de 6 ans <br>
+                                    <span id="recap-signalement_nbAdultes"></span> Adulte(s) <br>
+                                    <span id="recap-signalement_nbEnfantsM6"></span> Enfant(s) de moins de 6 ans <br>
+                                    <span id="recap-signalement_nbEnfantsP6"></span> Enfant(s) de plus de 6 ans <br>
                                 </p>
                             </li>
                         </ul>
@@ -1076,9 +915,11 @@
                         <div class="fr-toggle">
                             <input type="checkbox" class="fr-toggle__input" id="signalement-consentement-tiers"
                                    name="signalement[isConsentementTiers]" required>
-                            <label class="fr-toggle__label" for="signalement-consentement-tiers">Je certifie avec le droit de déposer un signalement pour le compte d'un tiers.</label>
+                            <label class="fr-toggle__label" for="signalement-consentement-tiers">Je certifie avec le
+                                droit de déposer un signalement pour le compte d'un tiers.</label>
                             <p class="fr-error-text fr-hidden">
-                                Pour déposer un signalement au nom d'une tierce personne vous devez en avoir l'autorisation.
+                                Pour déposer un signalement au nom d'une tierce personne vous devez en avoir
+                                l'autorisation.
                             </p>
                         </div>
                     </div>
@@ -1103,44 +944,9 @@
                             </button>
                         </div>
                     </div>
+                    <input type="hidden" name="_token" value="{{ csrf_token('new_signalement') }}">
                 </form>
-                <dialog aria-labelledby="cgu-modal-title" role="dialog" id="cguModal" class="fr-modal">
-                    <div class="fr-container fr-container--fluid fr-container-md">
-                        <div class="fr-grid-row fr-grid-row--center">
-                            <div class="fr-col-12 fr-col-md-10">
-                                <div class="fr-modal__body">
-                                    <div class="fr-modal__header">
-                                        <button class="fr-link--close fr-link" title="Fermer la fenêtre modale"
-                                                aria-controls="cguModal" target="_self">Fermer
-                                        </button>
-                                    </div>
-                                    <div class="fr-modal__content">
-                                        <h1 id="cgu-modal-title" class="fr-modal__title"><span
-                                                    class="fr-fi-arrow-right-line fr-fi--lg"></span>Conditions Générales
-                                            d'Utilisation</h1>
-                                        <div class="fr-container">
-                                            <div class="fr-grid-row">
-                                                <div class="fr-col-12">
-                                                    {% include 'front/cgu.html.twig' %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="fr-modal__footer">
-                                        <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
-                                            <li>
-                                                <button class="fr-btn fr-fi-close-line" aria-controls="cguModal"
-                                                        target="_self" title="Fermer la fenêtre modale">
-                                                    Fermer
-                                                </button>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </dialog>
+
             </section>
         </div>
     </main>

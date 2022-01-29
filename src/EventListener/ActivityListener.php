@@ -4,6 +4,7 @@ namespace App\EventListener;
 
 use App\Entity\Signalement;
 use App\Entity\SignalementUserAffectation;
+use App\Entity\Suivi;
 use App\Entity\User;
 use App\Service\NotificationService;
 use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
@@ -41,8 +42,8 @@ class ActivityListener implements EventSubscriberInterface
                         array_map(function ($email) use ($entity) {
                             null !== $this->notifier->send(NotificationService::TYPE_ACCUSE_RECEPTION, $email, ['signalement' => $entity]);
                         }, $emails);
-                    } else {
-                        if (!empty($changeSet['statut']) && $changeSet['statut'][1] === Signalement::STATUS_NEW) {
+                    } elseif(!empty($changeSet['statut'])) {
+                        if ($changeSet['statut'][1] === Signalement::STATUS_ACTIVE) {
                             $emails = [$entity->getMailDeclarant() ?? null, $entity->getMailOccupant() ?? null];
                             array_map(function ($email) use ($entity) {
                                 null !== $email && $this->notifier->send(NotificationService::TYPE_SIGNALEMENT_VALIDE, $email, [

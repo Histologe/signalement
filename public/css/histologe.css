@@ -61,9 +61,16 @@ html, body {
 .fr-rounded {
     border-radius: .25rem;
 }
-
+label.required::after {
+    color: #F60700;
+    content: '*';
+}
 .fr-display-block {
     display: block;
+}
+
+.fr-display-inline-flex {
+    display: inline-flex!important;
 }
 
 .fr-display-inline-table {

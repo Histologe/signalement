@@ -65,12 +65,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private $isMailingActive;
 
+    #[ORM\OneToMany(mappedBy: 'closedBy', targetEntity: Cloture::class, orphanRemoval: true)]
+    private $clotures;
+
     public function __construct()
     {
         $this->affectations = new ArrayCollection();
         $this->suivis = new ArrayCollection();
         $this->userReports = new ArrayCollection();
         $this->statut = self::STATUS_INACTIVE;
+        $this->clotures = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -334,6 +338,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsMailingActive(bool $isMailingActive): self
     {
         $this->isMailingActive = $isMailingActive;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Cloture[]
+     */
+    public function getClotures(): Collection
+    {
+        return $this->clotures;
+    }
+
+    public function addCloture(Cloture $cloture): self
+    {
+        if (!$this->clotures->contains($cloture)) {
+            $this->clotures[] = $cloture;
+            $cloture->setClosedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCloture(Cloture $cloture): self
+    {
+        if ($this->clotures->removeElement($cloture)) {
+            // set the owning side to null (unless already changed)
+            if ($cloture->getClosedBy() === $this) {
+                $cloture->setClosedBy(null);
+            }
+        }
 
         return $this;
     }

@@ -3,11 +3,13 @@
 namespace App\Controller;
 
 
+use App\Entity\Cloture;
 use App\Entity\Partenaire;
 use App\Entity\Signalement;
 use App\Entity\SignalementUserAffectation;
 use App\Entity\Suivi;
 use App\Entity\User;
+use App\Form\ClotureType;
 use App\Form\SignalementType;
 use App\Repository\PartenaireRepository;
 use App\Repository\UserRepository;
@@ -56,7 +58,7 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/{uuid}', name: 'back_signalement_view')]
-    public function viewSignalement(Signalement $signalement, PartenaireRepository $partenaireRepository, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response
+    public function viewSignalement(Request $request, EntityManagerInterface $entityManager, Signalement $signalement, PartenaireRepository $partenaireRepository, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
             return $this->redirectToRoute('back_index');
@@ -72,18 +74,50 @@ class BackSignalementController extends AbstractController
                     break;
             }
         }
+        $clotureCurrentUser = $signalement->getClotures()->filter(function (Cloture $cloture) {
+            if ($cloture->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId())
+                return $cloture;
+        });
+        if ($clotureCurrentUser->isEmpty())
+            $isClosedForMe = false;
+        else $isClosedForMe = $clotureCurrentUser->first();
 
         $newsActivitiesSinceLastLoginService->update($signalement);
 
+        $cloture = new Cloture();
+        $clotureForm = $this->createForm(ClotureType::class, $cloture);
+        $clotureForm->handleRequest($request);
+        if ($clotureForm->isSubmitted() && $clotureForm->isValid()) {
+            $sujet = $this->getUser()->getPartenaire()->getNom();
+            if ($cloture->getType() === Cloture::TYPE_CLOTURE_ALL) {
+                $signalement->setStatut(Signalement::STATUS_CLOSED);
+                $sujet = 'tous les partenaires';
+            }
+            $suivi = new Suivi();
+            $suivi->setDescription('Le signalement à été cloturer pour ' . $sujet . ' avec le motif suivant: <br> <strong>' . $cloture->getMotif()->getLabel() . '</strong>');
+            $suivi->setCreatedBy($this->getUser());
+            $signalement->addSuivi($suivi);
+            $cloture->setSignalement($signalement);
+            $cloture->setPartenaire($this->getUser()->getPartenaire());
+            $cloture->setClosedBy($this->getUser());
+            $entityManager->persist($suivi);
+            $entityManager->persist($signalement);
+            $entityManager->persist($suivi);
+            $entityManager->persist($cloture);
+            $entityManager->flush();
+        }
         return $this->render('back/signalement/view.html.twig', [
             'title' => $title,
             'needValidation' => $signalement->getStatut() === Signalement::STATUS_NEED_VALIDATION,
             'isAffected' => $isAffected,
             'isAccepted' => $isAccepted,
-            'isInvalid' => $signalement->getStatut() === Signalement::STATUS_IS_INVALID,
+            'isInvalid' => $signalement->getStatut() === Signalement::STATUS_INVALID,
+            'isClosed' => $signalement->getStatut() === Signalement::STATUS_CLOSED,
+            'isClosedForMe' => $isClosedForMe,
             'isRefused' => $isRefused,
             'signalement' => $signalement,
-            'partenaires' => $partenaireRepository->findAllOrByInseeIfCommune($signalement->getInseeOccupant())
+            'partenaires' => $partenaireRepository->findAllOrByInseeIfCommune($signalement->getInseeOccupant()),
+            'clotureForm' => $clotureForm->createView()
         ]);
     }
 
@@ -96,7 +130,7 @@ class BackSignalementController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $signalement->setModifiedBy($this->getUser());
             $signalement->setModifiedAt(new \DateTimeImmutable());
-            $score = new CriticiteCalculatorService($signalement,$doctrine);
+            $score = new CriticiteCalculatorService($signalement, $doctrine);
             $signalement->setScoreCreation($score->calculate());
             $suivi = new Suivi();
             $suivi->setCreatedBy($this->getUser());
@@ -138,21 +172,20 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/{uuid}/affectation/toggle', name: 'back_signalement_toggle_affectation')]
-    public function toggleAffectationSignalement(Signalement $signalement, ManagerRegistry $doctrine, Request $request, UserRepository $userRepository,NotificationService $notificationService): RedirectResponse|JsonResponse
+    public function toggleAffectationSignalement(Signalement $signalement, ManagerRegistry $doctrine, Request $request, UserRepository $userRepository, NotificationService $notificationService): RedirectResponse|JsonResponse
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
             return $this->json(['status' => 'denied'], 400);
         if ($this->isCsrfTokenValid('signalement_affectation_' . $signalement->getId(), $request->get('_token'))) {
             $data = $request->get('signalement-affectation');
-            if(isset($data['users'])){
+            if (isset($data['users'])) {
                 $postedUsers = $data['users'];
-                $alreadyAffectedUsers = $signalement->getAffectations()->map(function (SignalementUserAffectation $affectation){
+                $alreadyAffectedUsers = $signalement->getAffectations()->map(function (SignalementUserAffectation $affectation) {
                     return $affectation->getUser()->getId();
                 })->toArray();
-                $usersToAdd = array_diff($postedUsers,$alreadyAffectedUsers);
-                $usersToRemove = array_diff($alreadyAffectedUsers,$postedUsers);
-                foreach ($usersToAdd as $userIdToAdd)
-                {
+                $usersToAdd = array_diff($postedUsers, $alreadyAffectedUsers);
+                $usersToRemove = array_diff($alreadyAffectedUsers, $postedUsers);
+                foreach ($usersToAdd as $userIdToAdd) {
                     $user = $userRepository->find($userIdToAdd);
                     if ($user->getIsGenerique()) {
                         $user->getPartenaire()->getUsers()->map(function (User $user) use ($signalement, $doctrine) {
@@ -170,17 +203,16 @@ class BackSignalementController extends AbstractController
                         $doctrine->getManager()->persist($affectation);
                     }
                 }
-                foreach ($usersToRemove as $userIdToRemove)
-                {
+                foreach ($usersToRemove as $userIdToRemove) {
                     $user = $userRepository->find($userIdToRemove);
-                    $signalement->getAffectations()->filter(function (SignalementUserAffectation $affectation)use ($doctrine,$user){
-                        if($affectation->getUser()->getId() === $user->getId())
+                    $signalement->getAffectations()->filter(function (SignalementUserAffectation $affectation) use ($doctrine, $user) {
+                        if ($affectation->getUser()->getId() === $user->getId())
                             $doctrine->getManager()->remove($affectation);
                     });
                 }
             } else {
-                $signalement->getAffectations()->filter(function (SignalementUserAffectation $affectation)use ($doctrine){
-                   $doctrine->getManager()->remove($affectation);
+                $signalement->getAffectations()->filter(function (SignalementUserAffectation $affectation) use ($doctrine) {
+                    $doctrine->getManager()->remove($affectation);
                 });
             }
 
@@ -210,8 +242,7 @@ class BackSignalementController extends AbstractController
                         $this->getParameter('uploads_dir'),
                         $newFilename
                     );
-                } catch (Exception $e)
-                {
+                } catch (Exception $e) {
                     dd($e);
                 }
                 array_push($$type, $newFilename);
@@ -226,7 +257,7 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/{uuid}/validation/response', name: 'back_signalement_validation_response', methods: "GET")]
-    public function validationResponseSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine,NotificationService $notificationService): Response
+    public function validationResponseSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, NotificationService $notificationService): Response
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
             return $this->redirectToRoute('back_index');

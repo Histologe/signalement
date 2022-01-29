@@ -5,25 +5,25 @@
         <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
             <div class="fr-col-3">
                 <div class="fr-rounded fr-p-3v fr-text--center bloc-stat">
-                    <span class="fr-display-xs">{{ signalements.counts.new }}</span><br>
+                    <span class="fr-display-xs">{% if signalements.counts[0] is defined %}{{ signalements.counts[0].count}}{% else %}0{% endif %}</span><br>
                     <strong class="text-blue-france">Nouveaux</strong>
                 </div>
             </div>
             <div class="fr-col-3">
                 <div class="fr-rounded fr-p-3v fr-text--center bloc-stat">
-                    <span class="fr-display-xs">{{ signalements.counts.await }}</span><br>
+                    <span class="fr-display-xs">{% if signalements.counts[3] is defined %}{{ signalements.counts[3].count}}{% else %}0{% endif %}</span><br>
                     <strong class="text-blue-france">En attente</strong>
                 </div>
             </div>
             <div class="fr-col-3">
                 <div class="fr-rounded fr-p-3v fr-text--center bloc-stat">
-                    <span class="fr-display-xs">{{ signalements.counts.review }}</span><br>
+                    <span class="fr-display-xs">{% if signalements.counts[4] is defined %}{{ signalements.counts[4].count}}{% else %}0{% endif %}</span><br>
                     <strong class="text-blue-france">A revoir</strong>
                 </div>
             </div>
             <div class="fr-col-3">
                 <div class="fr-col fr-rounded fr-p-3v fr-text--center bloc-stat">
-                    <span class="fr-display-xs">{{ signalements.counts.closed }}</span><br>
+                    <span class="fr-display-xs">{% if signalements.counts[5] is defined %}{{ signalements.counts[5].count}}{% else %}0{% endif %}</span><br>
                     <strong class="text-blue-france">Fermés</strong>
                 </div>
             </div>
@@ -46,16 +46,16 @@
                     <select name="bo-filter-statut" id="filter_statut" class="fr-select">
                         <option value="all">TOUS</option>
                         {% set statuts = {
-                            'need-validation':'A valider',
-                            'new':'Nouveaux',
-                            'wait':'En attente d\'info.',
-                            'review':'A revoir',
-                            'closed':'Fermés',
-                            'is-invalid':'Non-valide',
+                            1:'Nouveau',
+                            2:'En cours',
+                            3:'Non-valide',
+                            4:'En attente d\'info.',
+                            5:'A revoir',
+                            6:'Fermés'
                         } %}
                         {% for statut,wording in statuts %}
                             <option value="{{ statut }}"
-                                    {% if filter.status is same as(statut) %}selected{% endif %}>{{ wording|upper }}</option>
+                                    {% if filter.status is same as(""~statut~"") %}selected{% endif %}>{{ wording|upper }}</option>
                         {% endfor %}
                     </select>
                 </div>

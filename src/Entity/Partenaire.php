@@ -34,10 +34,14 @@ class Partenaire
     #[ORM\Column(type: 'string', length: 10, nullable: true)]
     private $insee;
 
+    #[ORM\OneToMany(mappedBy: 'partenaire', targetEntity: Cloture::class, orphanRemoval: true)]
+    private $clotures;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->isArchive = false;
+        $this->clotures = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -171,5 +175,35 @@ class Partenaire
             if($user->getIsGenerique())
                 return  true;
         return false;
+    }
+
+    /**
+     * @return Collection|Cloture[]
+     */
+    public function getClotures(): Collection
+    {
+        return $this->clotures;
+    }
+
+    public function addCloture(Cloture $cloture): self
+    {
+        if (!$this->clotures->contains($cloture)) {
+            $this->clotures[] = $cloture;
+            $cloture->setPartenaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCloture(Cloture $cloture): self
+    {
+        if ($this->clotures->removeElement($cloture)) {
+            // set the owning side to null (unless already changed)
+            if ($cloture->getPartenaire() === $this) {
+                $cloture->setPartenaire(null);
+            }
+        }
+
+        return $this;
     }
 }

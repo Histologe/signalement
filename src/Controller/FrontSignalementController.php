@@ -6,6 +6,7 @@ use App\Entity\Critere;
 use App\Entity\Criticite;
 use App\Entity\Signalement;
 use App\Entity\Situation;
+use App\Form\SignalementType;
 use App\Repository\SignalementRepository;
 use App\Repository\SituationRepository;
 use App\Service\CriticiteCalculatorService;
@@ -23,14 +24,17 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class FrontSignalementController extends AbstractController
 {
     #[Route('/signalement', name: 'front_signalement')]
-    public function index(SituationRepository $situationRepository): Response
+    public function index(SituationRepository $situationRepository,Request$request): Response
     {
         $title = "Signalez vos problèmes de logement";
         $etats = ["Etat moyen", "Mauvais état", "Très mauvais état"];
         $etats_classes = ["moyen", "grave", "tres-grave"];
+        $form = $this->createForm(SignalementType::class);
+        $form->handleRequest($request);
         return $this->render('front/signalement.html.twig', [
             'title' => $title,
             'situations' => $situationRepository->findAllActive(),
+            'form'=> $form->createView(),
             'etats' => $etats,
             'etats_classes' => $etats_classes
         ]);

@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @method Signalement|null find($id, $lockMode = null, $lockVersion = null)
@@ -68,7 +69,21 @@ class SignalementRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findByStatusAndOrCityForUser(User $user = null, $status = null, $city = null, $search = null, $page = null)
+    public function countByStatus($user)
+    {
+        $qb = $this->createQueryBuilder('s')
+            ->select('COUNT(s.id) as count')
+            ->addSelect('s.statut');
+        if ($user)
+            $qb->leftJoin('s.affectations', 'a', 'WITH', 'a.user = :user')
+                ->setParameter('user', $user);
+        return $qb->indexBy('s', 's.statut')
+            ->groupBy('s.statut')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByStatusAndOrCityForUser(User|UserInterface $user = null, $status = null, $city = null, $search = null, $page = null): Paginator
     {
         $pageSize = 50;
         $firstResult = ($page - 1) * $pageSize;
@@ -111,8 +126,7 @@ class SignalementRepository extends ServiceEntityRepository
             ->setMaxResults($pageSize)
             ->getQuery();
 
-        $paginator = new Paginator($qb,true);
-        return $paginator;
+        return new Paginator($qb, true);
     }
 
 

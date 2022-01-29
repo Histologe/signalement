@@ -1,28 +1,29 @@
 {% extends 'back/base_bo.html.twig' %}
 
-{% set picto_yes = '<small class="fr-background-alt--blue-france fr-text-label--blue-france fr-rounded fr-p-1v fr-text--bold fr-fi-checkbox-circle-fill fr-link--icon-right fr-pr-3v">&nbsp;Oui</small>' %}
-{% set picto_no = '<small class="fr-background-contrast--red-marianne fr-text-default--error fr-rounded fr-p-1v fr-text--bold fr-fi-close-circle-fill fr-link--icon-right fr-pr-3v">&nbsp;Non</small>' %}
+{% set picto_yes = '<small class="fr-background-alt--green-emeraude fr-rounded fr-p-1v fr-text--bold fr-valid-text fr-display-inline-flex fr-mt-0 fr-px-3v">Oui</small>' %}
+{% set picto_no = '<small class="fr-background-contrast--red-marianne fr-error-text fr-display-inline-flex fr-mt-0 fr-rounded fr-p-1v fr-text--bold fr-px-3v">Non</small>' %}
 
 {% block content %}
     {% include 'back/signalement/modal_affectation.html.twig' %}
-    <section class="fr-p-5v {{ isInvalid ? 'signalement-invalid':'' }}" id="signalement-{{ signalement.id }}-content">
+    {% include 'back/signalement/modal_cloture.html.twig' %}
+    <section class="fr-p-5v {{ isInvalid ? 'signalement-invalid':'' }} {{ isInvalid ? 'signalement-invalid':'' }}" id="signalement-{{ signalement.id }}-content">
         <header>
-            <div class="fr-grid-row fr-grid-row--middle">
+            <div class="fr-grid-row fr-grid-row--middle ">
                 <div class="fr-col-12 fr-col-md-6">
                     <h1 class="fr-h2 fr-mb-2v">Signalement #{{ signalement.reference }} <a
                                 href="{{ path('back_signalement_edit',{uuid:signalement.uuid}) }}"
                                 class="fr-btn fr-btn--sm fr-fi-edit-fill" title="Editer le signalement"></a></h1>
                     {% if signalement.isNotOccupant %}
-                        <small class="fr-background-contrast--red-marianne fr-text-default--error fr-rounded fr-p-1v fr-text--bold {#fr-fi-information-fill fr-badge--icon-left#} fr-pr-3v">&nbsp;
+                        <small class="fr-background-contrast--red-marianne fr-text-default--error fr-rounded fr-p-1v fr-text--bold {# fr-fi-information-fill fr-badge--icon-left #} fr-pr-3v">&nbsp;
                             Signalement par un tiers</small>
                     {% else %}
-                        <small class="fr-background-alt--blue-france fr-text-label--blue-france fr-rounded fr-p-1v fr-text--bold{# fr-fi-information-fill fr-icon--sm#} fr-pr-3v">&nbsp;
+                        <small class="fr-background-alt--blue-france fr-text-label--blue-france fr-rounded fr-p-1v fr-text--bold{# fr-fi-information-fill fr-icon--sm #} fr-pr-3v">&nbsp;
                             Signalement par l'occupant</small>
                     {% endif %}
                     <text><strong>Déposé le:</strong> {{ signalement.createdAt|date('d/m/Y à H:i') }}</text>
                 </div>
                 <div class="fr-col-12 fr-col-md-6 fr-text--right">
-                    {% if isAffected and not isAccepted and not isRefused and not needValidation and not isInvalid %}
+                    {% if isAffected and not isAccepted and not isRefused and not needValidation and not isInvalid and not isClosed and not isClosedForMe %}
                         <form action="{{ path('back_signalement_affectation_response',{uuid:signalement.uuid,user:app.user.id}) }}">
                             <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
                                     name="signalement-affectation-response[accept]" value="1"
@@ -40,19 +41,19 @@
                             <input type="hidden" name="_token"
                                    value="{{ csrf_token('signalement_affectation_response_'~signalement.id) }}">
                         </form>
-                        <span class="fr-hint-text fr-fi-calendar-line fr-icon--sm"><strong>Vous à été attribué le :</strong> {{ isAffected.createdAt|date('d/m/Y') }}</span>
+                        <span class="fr-hint-text"><strong>Vous à été attribué le :</strong> {{ isAffected.createdAt|date('d/m/Y') }}</span>
                     {% elseif isAccepted %}
-                        <strong class="fr-text-label--green-emeraude fr-fi-checkbox-circle-fill"> Vous avez
+                        <strong class="fr-valid-text"> Vous avez
                             <u>accepté</u> ce
                             signalement</strong>
                         <span class="fr-hint-text"><strong>Le :</strong> {{ isAccepted.answeredAt|date('d/m/Y') }}</span>
                     {% elseif isRefused %}
-                        <strong class="fr-text-label--red-marianne fr-fi-checkbox-circle-fill"> Vous avez
+                        <strong class="fr-error-text"> Vous avez
                             <u>refusé</u>
                             ce
                             signalement</strong>
                         <span class="fr-hint-text"><strong>Le :</strong> {{ isRefused.answeredAt|date('d/m/Y') }}</span>
-                    {% elseif needValidation %}
+                    {% elseif needValidation and not isClosedForMe %}
                         <form action="{{ path('back_signalement_validation_response',{uuid:signalement.uuid}) }}">
                             <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
                                     name="signalement-validation-response[accept]" value="1"
@@ -67,11 +68,11 @@
                             <input type="hidden" name="_token"
                                    value="{{ csrf_token('signalement_validation_response_'~signalement.id) }}">
                         </form>
-                        <span class="fr-hint-text fr-fi-information-line fr-tag--icon-right">&nbsp; En tant qu'administrateur vous devez <strong><u>valider/refuser</u></strong> ce signalement</span>
+                        <span class="fr-hint-text">En tant qu'administrateur vous devez <strong><u>valider/refuser</u></strong> ce signalement</span>
                     {% elseif isInvalid %}
-                        <strong class="fr-text-label--red-marianne fr-fi-close-circle-fill"> Signalement
+                        <strong class="fr-error-text"> Signalement
                             non-valide</strong>
-                        <span class="fr-hint-text fr-fi-information-line fr-tag--icon-right">&nbsp; Ce signalement à été marqué comme non-valide, il est donc en mode lecture seule.</span>
+                        <span class="fr-hint-text">Ce signalement à été marqué comme non-valide, il est donc en mode lecture seule.</span>
                     {% endif %}
                 </div>
             </div>
@@ -79,7 +80,8 @@
         <hr>
         <div class="fr-grid-row">
             <div class="fr-col-12">
-                <strong class="fr-fi-chat-quote-fill fr-text-label--blue-france"> Description par l'usager</strong>
+                <strong class="fr-fi-chat-quote-fill fr-icon--sm fr-text-label--blue-france"> Description par
+                    l'usager</strong>
                 <span class="fr-hint-text">Ci-dessous le détails du signalement tel que rapporté par l'usager</span>
                 <ul class="fr-background-alt--blue-france fr-list--icon-img fr-rounded">
                     <li class="fr-p-5v">
@@ -93,7 +95,7 @@
         <div class="fr-grid-row">
             <div class="fr-col-12 fr-col-md-6">
                 {% if signalement.isNotOccupant %}
-                    <strong class="fr-fi-information-fill fr-text-label--blue-france"> Informations du
+                    <strong class="fr-fi-information-fill fr-icon--sm fr-text-label--blue-france"> Informations du
                         déclarant</strong>
                     <span class="fr-hint-text">Ce signalement à été effectué par un tiers, les informations du déclarant sont les suivantes.</span>
                     <ul class="fr-list--icon-img">
@@ -106,7 +108,8 @@
                         <li><strong>Structure: </strong> {{ signalement.structureDeclarant }}</li>
                     </ul>
                 {% endif %}
-                <strong class="fr-fi-information-fill fr-text-label--blue-france"> Informations de l'occupant</strong>
+                <strong class="fr-fi-information-fill fr-icon--sm fr-text-label--blue-france"> Informations de
+                    l'occupant</strong>
                 <span class="fr-hint-text">Ce signalement à été effectué par l'occupant du logement, les informations fournies sont les suivantes.</span>
                 <ul class="fr-list--icon-img">
                     <li><strong>Nom: </strong> {{ signalement.nomOccupant }} -
@@ -163,7 +166,8 @@
                 </ul>
             </div>
             <div class="fr-col-12 fr-col-md-6">
-                <strong class="fr-fi-alert-fill fr-text-label--blue-france"> Criticité du signalement</strong>
+                <strong class="fr-fi-alert-fill fr-icon--sm fr-text-label--blue-france"> Criticité du
+                    signalement</strong>
                 <span class="fr-hint-text">La criticité est calculée automatiquement en fonction des situations signalées.</span>
                 <ul class="fr-list--icon-img">
                     <li>
@@ -175,7 +179,8 @@
                         </div>
                     </li>
                 </ul>
-                <strong class="fr-fi-eye-fill fr-text-label--blue-france"> Constatation du signalement</strong>
+                <strong class="fr-fi-eye-fill fr-icon--sm fr-text-label--blue-france"> Constatation du
+                    signalement</strong>
                 <span class="fr-hint-text">Le signalement doit être constaté afin d'optimiser le temps de traitement</span>
                 <ul class="fr-list--icon-img">
                     <li>
@@ -211,7 +216,8 @@
                         {% endif %}
                     {% endif %}
                 </ul>
-                <strong class="fr-fi-alert-fill fr-text-label--blue-france"> Ce signalement concerne les points
+                <strong class="fr-fi-alert-fill fr-icon--sm fr-text-label--blue-france"> Ce signalement concerne les
+                    points
                     suivants:</strong>
                 <span class="fr-hint-text">Récapitulatif des situations rencontrées par l'occupant du logement</span>
                 <ul class="fr-list--icon-img">
@@ -253,7 +259,8 @@
         <hr>
         <div class="fr-grid-row">
             <div class="fr-col-12 fr-col-md-6">
-                <strong class="fr-fi-information-fill fr-text-label--blue-france"> Informations du propriétaire</strong>
+                <strong class="fr-fi-information-fill fr-icon--sm fr-text-label--blue-france"> Informations du
+                    propriétaire</strong>
                 <span class="fr-hint-text">Ci-dessous les informations concernant le proprétaire ou gestionnaire bailleur du logement.</span>
                 <ul class="fr-list--icon-img">
                     <li>
@@ -274,7 +281,8 @@
                 </ul>
             </div>
             <div class="fr-col-12 fr-col-md-6">
-                <strong class="fr-fi-information-fill fr-text-label--blue-france"> Informations du logement</strong>
+                <strong class="fr-fi-information-fill fr-icon--sm fr-text-label--blue-france"> Informations du
+                    logement</strong>
                 <span class="fr-hint-text">Ci-dessous les informations concernant le logement et autres info concernant le bail.</span>
                 <ul class="fr-list--icon-img">
                     <li>
@@ -315,7 +323,7 @@
         <hr id="documents">
         <div class="fr-grid-row fr-grid-row--middle">
             <div class="fr-col-12 fr-col-md-6">
-                <strong class="fr-fi-upload-2-fill fr-text-label--blue-france"> Photos et documents</strong>
+                <strong class="fr-fi-upload-2-fill fr-icon--sm fr-text-label--blue-france"> Photos et documents</strong>
                 <span class="fr-hint-text">Ci-dessous les photos et documents fournis par le déclarant et/ou les partenaires.</span>
             </div>
             {% if is_granted('ROLE_ADMIN_PARTENAIRE') or isAffected %}
@@ -327,7 +335,8 @@
                                 <input type="file" accept="application/*" name="signalement-add-file[documents][]"
                                        class="fr-hidden fr-input--file-signalement" multiple>
                             </label>
-                            <input type="hidden" name="_token" value="{{ csrf_token('signalement_add_file_'~signalement.id) }}">
+                            <input type="hidden" name="_token"
+                                   value="{{ csrf_token('signalement_add_file_'~signalement.id) }}">
                         </form> &nbsp;
                         <form method="POST" enctype="multipart/form-data"
                               action="{{ path('back_signalement_add_file',{uuid:signalement.uuid}) }}">
@@ -361,7 +370,8 @@
                 <div class="fr-col-6 fr-col-md-2 fr-rounded signalement-file-item">
                     <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center"
                          style="background: url('{{ asset('img/document.png') }}')no-repeat center center/50%">
-                        <a href="{{ asset('_up/'~document) }}" class="fr-btn fr-btn--sm fr-fi-eye-line" title="Voir le document" target="_blank"></a>
+                        <a href="{{ asset('_up/'~document) }}" class="fr-btn fr-btn--sm fr-fi-eye-line"
+                           title="Voir le document" target="_blank"></a>
                         <button title="Supprimer le document"
                                 data-delete="{{ path('back_signalement_delete_file',{uuid:signalement.uuid,type:'documents',file:document}) }}"
                                 data-token="{{ csrf_token('signalement_delete_file_'~signalement.id) }}"
@@ -370,19 +380,21 @@
                 </div>
             {% endfor %}
         </div>
-        {% if "closed" not in signalement.statut and not needValidation and not isInvalid %}
+        {% if not isClosed and not needValidation and not isInvalid %}
             <hr class="fr-mt-5v" id="affectations">
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-col-md-6">
-                    <strong class="fr-fi-refresh-fill fr-text-label--blue-france"> Prise en charge partenaire</strong>
+                    <strong class="fr-fi-refresh-fill fr-icon--sm fr-text-label--blue-france"> Prise en charge
+                        partenaire</strong>
                     <span class="fr-hint-text">Ci-dessous les statuts de prise en charge des partenaires affectés au signalement</span>
                 </div>
                 {% if is_granted('ROLE_ADMIN_PARTENAIRE') and "closed" not in signalement.statut and not needValidation and not isInvalid %}
-                <div class="fr-col-12 fr-col-md-6 fr-text--right">
-                    <button class="fr-btn fr-fi-add-circle-line fr-btn--icon-left" data-fr-opened="false" aria-controls="fr-modal-affectation">
-                        Affecter des partenaires
-                    </button>
-                </div>
+                    <div class="fr-col-12 fr-col-md-6 fr-text--right">
+                        <button class="fr-btn fr-fi-add-circle-line fr-btn--icon-left" data-fr-opened="false"
+                                aria-controls="fr-modal-affectation">
+                            Affecter des partenaires
+                        </button>
+                    </div>
                 {% endif %}
             </div>
             <div class="fr-grid-row fr-py-5v fr-grid-row--gutters">
@@ -425,46 +437,15 @@
                     {% endif %}
                 {% endfor %}
             </div>
-            {% else %}
-                <hr style="visibility: hidden">
-        {% endif %}
-        {% if is_granted('ROLE_ADMIN_PARTENAIRE') and "closed" not in signalement.statut and not needValidation and not isInvalid %}
-      {#      <div class="fr-grid-row">
-                <div class="fr-col-12">
-                    <strong class="fr-fi-user-fill fr-text-label--blue-france"> Affectation(s)</strong>
-                    <span class="fr-hint-text">Cliquez sur le bouton ci-dessous pour affecter des partenaires à ce signalement.</span>
-                </div>
-            </div>#}
-
-           {# <div class="fr-grid-row fr-grid-row--gutters fr-py-5v">
-                {% for partenaire in partenaires %}
-                    <div class="fr-col-2">
-                        <div class="fr-background-alt--blue-france fr-p-2v fr-rounded">
-                            <strong>{{ partenaire.nom }}</strong> <br>
-                            <ul class="fr-list--icon-img fr-list--hover ">
-                                {% for user in partenaire.usersAffectable %}
-                                    <li class="fr-checkbox-affectation__parent {% for u in signalement.affectations|filter(v => v.user is same as(user)) %}fr-fi-checkbox-circle-fill fr-text-label--green-emeraude{% else %}fr-fi-close-circle-fill fr-text-label--red-marianne{% endfor %}">
-                                        <label for="signalement-affectation-{{ user.id }}"
-                                               class="fr-text--sm">{{ user.nom[:1]|upper~'. '~user.prenom|capitalize }}
-                                            #}{# {% for affectation in signalement.affectations %}{% if user is same as (affectation.user) %}<span class="fr-hint-text">&nbsp; {{ affectation.createdAt|date('d/m/Y') }}</small></span>{% endif %}{% endfor %} #}{#
-                                            <input type="checkbox" class="fr-checkbox-affectation fr-hidden"
-                                                   id="signalement-affectation-{{ user.id }}"
-                                                   {% for u in signalement.affectations|filter(v => v.user is same as(user)) %}checked{% endfor %}
-                                                   data-toggle-fetch="">
-                                        </label>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>#}
+        {% else %}
+            <hr style="visibility: hidden">
         {% endif %}
         <hr id="suivis">
         {% if is_granted('ROLE_ADMIN_PARTENAIRE') or isAffected %}
             <div class="fr-grid-row">
                 <div class="fr-col-12">
-                    <strong class="fr-fi-calendar-fill fr-text-label--blue-france"> Suivis du signalement</strong>
+                    <strong class="fr-fi-calendar-fill fr-icon--sm fr-text-label--blue-france"> Suivis du
+                        signalement</strong>
                     <span class="fr-hint-text">Ci-dessous l'historique des changements d'états et interventions du signalement.</span>
                     <strong>Nouveau suivi:</strong>
                     <form method="POST"
@@ -481,15 +462,26 @@
                                 Merci de proposer une rapide description (minimum 10 caractères).
                             </p>
                         </div>
-                        <button type="submit" class="fr-btn fr-fi-eye-off-fill fr-btn--icon-left"
-                                name="signalement-add-suivi[isPublic]" value="0"> Enregistrer (privé)
-                        </button>
-                        <button type="submit" class="fr-btn fr-btn--secondary fr-fi-eye-fill fr-btn--icon-left"
-                                name="signalement-add-suivi[isPublic]" value="1"> Enregistrer (visible par usager)
-                        </button>
+                        <div class="fr-grid-row">
+                            <div class="fr-col-6">
+                                <button type="submit" class="fr-btn fr-fi-eye-off-fill fr-btn--icon-left"
+                                        name="signalement-add-suivi[isPublic]" value="0"> Enregistrer (privé)
+                                </button>
+                                <button type="submit" class="fr-btn fr-btn--secondary fr-fi-eye-fill fr-btn--icon-left"
+                                        name="signalement-add-suivi[isPublic]" value="1"> Enregistrer (visible par
+                                    usager)
+                                </button>
+                            </div>
+                            <div class="fr-col-6 fr-text--right">
+                                <a href="#" aria-controls="cloture-modal" data-fr-opened="false"
+                                        class="fr-btn fr-btn--danger fr-fi-close-line fr-btn--icon-left">Cloturer
+                                </a>
+                            </div>
+                        </div>
                         <input type="hidden" name="_token"
                                value="{{ csrf_token('signalement_add_suivi_'~signalement.id) }}">
                     </form>
+
                 </div>
             </div>
             <hr>
@@ -502,7 +494,7 @@
                     <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
                 </div>
                 <div class="fr-col-9">
-                    {{ suivi.description|capitalize }}
+                    {{ suivi.description|raw }}
                 </div>
                 <div class="fr-col-1 fr-text--right">
                     {% if suivi.isPublic %}

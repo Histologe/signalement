@@ -11,14 +11,13 @@ use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 #[ORM\Entity(repositoryClass: SignalementRepository::class)]
 class Signalement
 {
-    const STATUS_NEED_VALIDATION = 'need-validation';
-    const STATUS_IS_INVALID = 'is-invalid';
-    const STATUS_NEW = 'new';
-    const STATUS_AWAIT = 'await';
-    const STATUS_NEED_REVIEW = 'review';
-    const STATUS_CLOSED = 'closed';
-    const STATUS_CLOSED_FOR_ALL = 'closed-all';
-    const STATUS_ARCHIVED = 'archive';
+    const STATUS_NEED_VALIDATION = 1;
+    const STATUS_ACTIVE = 2;
+    const STATUS_INVALID = 3;
+    const STATUS_WAIT_FOR_INFO = 4;
+    const STATUS_NEED_REVIEW = 5;
+    const STATUS_CLOSED = 6;
+    const STATUS_ARCHIVED = 7;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -158,7 +157,7 @@ class Signalement
     private $modifiedAt;
 
 
-    #[ORM\Column(type: 'string', length: 25)]
+    #[ORM\Column(type: 'integer')]
     private $statut;
 
     #[ORM\Column(type: 'string', length: 100, unique: true)]
@@ -227,6 +226,9 @@ class Signalement
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $isConsentementTiers;
 
+    #[ORM\OneToMany(mappedBy: 'signalement', targetEntity: Cloture::class, orphanRemoval: true)]
+    private $clotures;
+
     public function __construct()
     {
         $this->situations = new ArrayCollection();
@@ -240,6 +242,7 @@ class Signalement
         $this->isOccupantPresentVisite = false;
         $this->suivis = new ArrayCollection();
         $this->scoreCreation = 0;
+        $this->clotures = new ArrayCollection();
     }
 
 
@@ -813,12 +816,12 @@ class Signalement
         return $this;
     }
 
-    public function getStatut(): ?string
+    public function getStatut(): ?int
     {
         return $this->statut;
     }
 
-    public function setStatut(string $statut): self
+    public function setStatut(int $statut): self
     {
         $this->statut = $statut;
 
@@ -1114,6 +1117,36 @@ class Signalement
     public function setIsConsentementTiers(?bool $isConsentementTiers): self
     {
         $this->isConsentementTiers = $isConsentementTiers;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Cloture[]
+     */
+    public function getClotures(): Collection
+    {
+        return $this->clotures;
+    }
+
+    public function addCloture(Cloture $cloture): self
+    {
+        if (!$this->clotures->contains($cloture)) {
+            $this->clotures[] = $cloture;
+            $cloture->setSignalement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCloture(Cloture $cloture): self
+    {
+        if ($this->clotures->removeElement($cloture)) {
+            // set the owning side to null (unless already changed)
+            if ($cloture->getSignalement() === $this) {
+                $cloture->setSignalement(null);
+            }
+        }
 
         return $this;
     }
