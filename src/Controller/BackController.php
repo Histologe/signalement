@@ -44,6 +44,7 @@ class BackController extends AbstractController
         ];
 //        dd($signalementRepository->countByStatus($user));
         $signalements['counts'] = $signalementRepository->countByStatus($user);
+//        dd($signalementRepository->countByStatus($user));
         if ($request->isXmlHttpRequest() && $request->get('pagination'))
             return $this->render('back/table_result.html.twig', ['filter' => $filter, 'signalements' => $signalements]);
         return $this->render('back/index.html.twig', [
