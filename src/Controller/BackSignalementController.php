@@ -12,6 +12,7 @@ use App\Entity\User;
 use App\Form\ClotureType;
 use App\Form\SignalementType;
 use App\Repository\PartenaireRepository;
+use App\Repository\SituationRepository;
 use App\Repository\UserRepository;
 use App\Service\CriticiteCalculatorService;
 use App\Service\NewsActivitiesSinceLastLoginService;
@@ -122,9 +123,11 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/{uuid}/edit', name: 'back_signalement_edit', methods: ['GET', 'POST'])]
-    public function editSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
+    public function editSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine,SituationRepository $situationRepository): Response
     {
         $title = 'Administration - Edition signalement #' . $signalement->getReference();
+        $etats = ["Etat moyen", "Mauvais état", "Très mauvais état"];
+        $etats_classes = ["moyen", "grave", "tres-grave"];
         $form = $this->createForm(SignalementType::class, $signalement);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -147,7 +150,10 @@ class BackSignalementController extends AbstractController
         return $this->render('back/signalement/edit.html.twig', [
             'title' => $title,
             'form' => $form->createView(),
-            'signalement' => $signalement
+            'signalement' => $signalement,
+            'situations' => $situationRepository->findAllWithCritereAndCriticite(),
+            'etats' => $etats,
+            'etats_classes' => $etats_classes
         ]);
     }
 
