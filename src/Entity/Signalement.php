@@ -6,7 +6,6 @@ use App\Repository\SignalementRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 
 #[ORM\Entity(repositoryClass: SignalementRepository::class)]
 class Signalement
@@ -132,10 +131,10 @@ class Signalement
     #[ORM\Column(type: 'string', length: 50)]
     private $prenomOccupant;
 
-    #[ORM\Column(type: 'string', length: 15,nullable: true)]
+    #[ORM\Column(type: 'string', length: 15, nullable: true)]
     private $telOccupant;
 
-    #[ORM\Column(type: 'string', length: 50,nullable: true)]
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private $mailOccupant;
 
     #[ORM\Column(type: 'string', length: 100)]

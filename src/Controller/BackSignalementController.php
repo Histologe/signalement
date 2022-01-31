@@ -4,8 +4,11 @@ namespace App\Controller;
 
 
 use App\Entity\Cloture;
+use App\Entity\Critere;
+use App\Entity\Criticite;
 use App\Entity\Signalement;
 use App\Entity\SignalementUserAffectation;
+use App\Entity\Situation;
 use App\Entity\Suivi;
 use App\Entity\User;
 use App\Form\ClotureType;
@@ -98,7 +101,7 @@ class BackSignalementController extends AbstractController
             $entityManager->persist($suivi);
             $entityManager->persist($cloture);
             $entityManager->flush();
-            $this->addFlash('success','SIgnalement cloturer avec succès !');
+            $this->addFlash('success', 'SIgnalement cloturer avec succès !');
             return $this->redirectToRoute('back_index');
         }
         return $this->render('back/signalement/view.html.twig', [
@@ -124,11 +127,29 @@ class BackSignalementController extends AbstractController
         $etats_classes = ["moyen", "grave", "tres-grave"];
         $form = $this->createForm(SignalementType::class, $signalement);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() /*&& $form->isValid()*/) {
             $signalement->setModifiedBy($this->getUser());
             $signalement->setModifiedAt(new \DateTimeImmutable());
             $score = new CriticiteCalculatorService($signalement, $doctrine);
             $signalement->setScoreCreation($score->calculate());
+            $data = [];
+            $data['situation'] = $form->getExtraData()['situation'];
+            foreach ( $data['situation'] as $idSituation => $criteres) {
+                $situation = $doctrine->getManager()->getRepository(Situation::class)->find($idSituation);
+                $signalement->addSituation($situation);
+                 $data['situation'][$idSituation]['label'] = $situation->getLabel();
+                foreach ($criteres as $critere) {
+                    foreach ($critere as $idCritere => $criticites) {
+                        $critere = $doctrine->getManager()->getRepository(Critere::class)->find($idCritere);
+                        $signalement->addCritere($critere);
+                        $data['situation'][$idSituation]['critere'][$idCritere]['label'] = $critere->getLabel();
+                        $criticite = $doctrine->getManager()->getRepository(Criticite::class)->find( $data['situation'][$idSituation]['critere'][$idCritere]['criticite']);
+                        $signalement->addCriticite($criticite);
+                         $data['situation'][$idSituation]['critere'][$idCritere]['criticite']= [$criticite->getId() => ['label' => $criticite->getLabel(),'score'=>$criticite->getScore()]];
+                    }
+                }
+            }
+            $signalement->setJsonContent( $data['situation']);
             $suivi = new Suivi();
             $suivi->setCreatedBy($this->getUser());
             $suivi->setSignalement($signalement);
@@ -139,6 +160,7 @@ class BackSignalementController extends AbstractController
             $this->addFlash('success', 'Signalement modifé avec succés !');
             return $this->json(['response' => 'success_edited']);
         } else if ($form->isSubmitted()) {
+            dd($form->getErrors()[0]);
             return $this->json(['response' => 'error']);
         }
         return $this->render('back/signalement/edit.html.twig', [
