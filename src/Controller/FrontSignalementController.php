@@ -29,11 +29,13 @@ class FrontSignalementController extends AbstractController
         $title = "Signalez vos problèmes de logement";
         $etats = ["Etat moyen", "Mauvais état", "Très mauvais état"];
         $etats_classes = ["moyen", "grave", "tres-grave"];
+        $signalement = new Signalement();
         $form = $this->createForm(SignalementType::class);
         $form->handleRequest($request);
         return $this->render('front/signalement.html.twig', [
             'title' => $title,
             'situations' => $situationRepository->findAllActive(),
+            'signalement'=>$signalement,
             'form'=> $form->createView(),
             'etats' => $etats,
             'etats_classes' => $etats_classes
