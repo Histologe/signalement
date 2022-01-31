@@ -84,7 +84,7 @@ class BackSignalementController extends AbstractController
         $clotureForm = $this->createForm(ClotureType::class, $cloture);
         $clotureForm->handleRequest($request);
         if ($clotureForm->isSubmitted() && $clotureForm->isValid()) {
-            $sujet = $this->getUser()->getPartenaire()->getNom();
+            $sujet = $this->getUser()?->getPartenaire()?->getNom();
             if ($cloture->getType() === Cloture::TYPE_CLOTURE_ALL) {
                 $signalement->setStatut(Signalement::STATUS_CLOSED);
                 $sujet = 'tous les partenaires';
