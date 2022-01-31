@@ -1,3 +1,4 @@
+
 <div class="fr-tabs" id="signalement-tabs">
     <ul class="fr-tabs__list" role="tablist" aria-label="Etapes signalement">
         <li role="presentation">
@@ -6,7 +7,6 @@
                     role="tab" aria-selected="true" aria-controls="signalement-step-1-panel">1. Problèmes
             </button>
         </li>
-        {% if 'back_' not in app.request.get('_route') %}
         <li role="presentation">
             <button id="signalement-step-2"
                     class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
@@ -14,7 +14,6 @@
                 Détails
             </button>
         </li>
-        {% endif %}
         <li role="presentation">
             <button id="signalement-step-3"
                     class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
@@ -132,16 +131,12 @@
             </ul>
             <div class="fr-grid-row fr-mt-5w">
                 <div class="fr-col-12 fr-text--center">
-                    {% if 'back_' not in app.request.get('_route') %}
                         <button class="fr-btn fr-fi-arrow-right-line fr-btn--icon-right">Continuer</button>
-                    {% else %}
-                        <button class="fr-btn fr-fi-check-line fr-btn--icon-right back-signalement-edit-submit">Enregistrer</button>
-                    {% endif %}
                 </div>
             </div>
         </form>
     </section>
-    {% if 'back_' not in app.request.get('_route') %}
+
         <section id="signalement-step-2-panel" class="fr-tabs__panel" role="tabpanel"
                  aria-labelledby="signalement-step-2" tabindex="0">
             <header class="fr-callout bg-light fr-mb-5v">
@@ -165,7 +160,7 @@
                         Merci de proposer une rapide description (minimum 10 caractères).
                     </p>
                 </div>
-
+                {% if 'back_' not in app.request.get('_route') %}
                 <div class="fr-form-group">
                     <fieldset class="fr-fieldset fr-fieldset--inline">
                         <legend class="fr-label fr-pl-0">Joindre des photos du/des problème(s)</legend>
@@ -223,6 +218,7 @@
                         </div>
                     </fieldset>
                 </div>
+                {% endif %}
                 <div class="fr-grid-row">
                     <div class="fr-col-12 fr-text--center">
                         <button class="fr-btn fr-fi-arrow-right-line fr-btn--icon-right">Continuer</button>
@@ -230,7 +226,6 @@
                 </div>
             </form>
         </section>
-    {% endif %}
     <section id="signalement-step-3-panel" class="fr-tabs__panel" role="tabpanel"
              aria-labelledby="signalement-step-3" tabindex="0">
         {% if 'back_' not in app.request.get('_route') %}
@@ -317,7 +312,7 @@
                         Veuillez précisez si vous êtes allocataire
                     </p>
                 </fieldset>
-                <div class="fr-form-group fr-mt-5v fr-hidden" id="signalement-num-alloc-bloc">
+                <div class="fr-form-group fr-mt-5v {% if 'back_' not in app.request.get('_route') or not signalement.isAllocataire %}fr-hidden{% endif %}" id="signalement-num-alloc-bloc">
                     <div class="fr-input-group">
                         {{ form_label(form.numAllocataire) }}
                         {{ form_help(form.numAllocataire) }}
@@ -484,7 +479,7 @@
                     </p>
                 </fieldset>
             </div>
-            <div class="fr-form-group fr-hidden data-fr-toggle" id="signalement-raison-refus">
+            <div class="fr-form-group {% if 'back_' not in app.request.get('_route') or not signalement.isRefusIntervention %}fr-hidden{% endif %} data-fr-toggle" id="signalement-raison-refus">
                 <div class="fr-input-group">
                     {{ form_label(form.raisonRefusIntervention) }}
                     {{ form_help(form.raisonRefusIntervention) }}
@@ -496,11 +491,7 @@
             </div>
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-text--center">
-                    {% if 'back_' not in app.request.get('_route') %}
                         <button class="fr-btn fr-fi-arrow-right-line fr-btn--icon-right">Continuer</button>
-                    {% else %}
-                        <button class="fr-btn fr-fi-check-line fr-btn--icon-right back-signalement-edit-submit">Enregistrer</button>
-                    {% endif %}
                 </div>
             </div>
         </form>
@@ -518,7 +509,7 @@
                 (*) sont obligatoires.</em>
         </header>
         {% endif %}
-        <form action="#" name="signalement" class="needs-validation" novalidate>
+        <form action="{% if 'back_' in app.request.get('_route') %}{{ path('back_signalement_edit',{uuid:signalement.uuid}) }}{% else %}#{% endif %}" name="signalement" class="needs-validation" novalidate>
             {% if 'back_' not in app.request.get('_route') %}
             <div class="fr-form-group">
                 <fieldset class="fr-fieldset fr-fieldset--inline">
@@ -716,7 +707,7 @@
                     {% if 'back_' not in app.request.get('_route') %}
                         <button class="fr-btn fr-fi-arrow-right-line fr-btn--icon-right">Continuer</button>
                     {% else %}
-                        <button class="fr-btn fr-fi-check-line fr-btn--icon-right back-signalement-edit-submit">Enregistrer</button>
+                        <button class="fr-btn fr-fi-check-line fr-btn--icon-right back-signalement-edit-submit" formaction="#">Enregistrer</button>
                     {% endif %}
                 </div>
             </div>
@@ -806,7 +797,7 @@
                 </ul>
             </div>
         </div>
-        <form action="#" name="signalement" class="needs-validation" novalidate>
+        <form action="{{ path('envoi_signalement') }}" name="signalement" class="needs-validation" novalidate>
             <div class="fr-form-group fr-mb-0 fr-hidden" id="signalement-consentement-tiers-bloc">
                 <div class="fr-toggle">
                     <input type="checkbox" class="fr-toggle__input" id="signalement-consentement-tiers"
@@ -840,7 +831,11 @@
                     </button>
                 </div>
             </div>
-            <input type="hidden" name="_token" value="{{ csrf_token('new_signalement') }}">
+            {% if 'back_' not in app.request.get('_route') %}
+                <input type="hidden" name="_token" value="{{ csrf_token('new_signalement') }}">
+            {% else %}
+                {{ form_widget(form._token) }}
+            {% endif %}
         </form>
 
     </section>

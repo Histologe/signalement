@@ -4,9 +4,10 @@
 {% set picto_no = '<small class="fr-background-contrast--red-marianne fr-error-text fr-display-inline-flex fr-mt-0 fr-rounded fr-p-1v fr-text--bold fr-px-3v">Non</small>' %}
 
 {% block content %}
+
     {% include 'back/signalement/modal_affectation.html.twig' %}
     {% include 'back/signalement/modal_cloture.html.twig' %}
-    <section class="fr-p-5v {{ isInvalid ? 'signalement-invalid':'' }} {{ isInvalid ? 'signalement-invalid':'' }}" id="signalement-{{ signalement.id }}-content">
+    <section class="fr-p-5v {{ isInvalid ? 'signalement-invalid':'' }} {{ isClosedForMe ? 'signalement-invalid':'' }}" id="signalement-{{ signalement.id }}-content">
         <header>
             <div class="fr-grid-row fr-grid-row--middle ">
                 <div class="fr-col-12 fr-col-md-6">
@@ -472,19 +473,20 @@
                                     usager)
                                 </button>
                             </div>
+                            {% if signalement.statut is not same as(1) and not isClosed and not isClosedForMe and (isAffected or is_granted('ROLE_ADMIN_PARTENAIRE')) %}
                             <div class="fr-col-6 fr-text--right">
                                 <a href="#" aria-controls="cloture-modal" data-fr-opened="false"
-                                        class="fr-btn fr-btn--danger fr-fi-close-line fr-btn--icon-left">Cloturer
+                                   class="fr-btn fr-btn--danger fr-fi-close-line fr-btn--icon-left">Cloturer
                                 </a>
                             </div>
+                            {% endif %}
                         </div>
                         <input type="hidden" name="_token"
                                value="{{ csrf_token('signalement_add_suivi_'~signalement.id) }}">
                     </form>
-
                 </div>
             </div>
-            <hr>
+            <hr class=" fr-mt-5v">
         {% endif %}
         {% for suivi in signalement.suivis|reverse %}
             <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-2v">

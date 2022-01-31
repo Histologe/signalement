@@ -368,7 +368,7 @@ forms.forEach((form) => {
                                 formData.append(x, y);
                         }
                     })
-                    fetch('signalement/envoi', {
+                    fetch(form.action, {
                         method: "POST",
                         body: formData
                     }).then((r) => {
@@ -379,6 +379,8 @@ forms.forEach((form) => {
                                         el.classList.toggle('fr-hidden')
                                     })
                                     localStorage.clear();
+                                } else if(res.response === "success_edited"){
+                                    window.location.reload();
                                 } else {
                                     event.submitter.disabled = false;
                                     event.submitter.innerHTML = "Confirmer";

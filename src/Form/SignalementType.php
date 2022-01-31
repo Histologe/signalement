@@ -165,7 +165,8 @@ class SignalementType extends AbstractType
                 'help' => "Merci de renseigner votre numéro d'allocataire tel qu'il apparait sur vos documents.",
                 'help_attr' => [
                     'class' => 'fr-hint-text'
-                ]
+                ],
+                'required'=>false
             ])
             ->add('natureLogement', ChoiceType::class, [
                 'choices' => [
@@ -336,7 +337,8 @@ class SignalementType extends AbstractType
                 'help' => "Précisez la raison de votre refus, en 10 caractères minimum",
                 'help_attr' => [
                     'class' => 'fr-hint-text'
-                ]
+                ],
+                'required'=>false
             ])
             ->add('nomOccupant', TextType::class, [
                 'attr' => [
@@ -550,7 +552,8 @@ class SignalementType extends AbstractType
                 'label_attr' => [
                     'class' => 'fr-label'
                 ],
-                'label' => "Nom déclarant"
+                'label' => "Nom déclarant",
+                'required'=>false
             ])
             ->add('prenomDeclarant', TextType::class, [
                 'attr' => [
@@ -559,7 +562,8 @@ class SignalementType extends AbstractType
                 'label_attr' => [
                     'class' => 'fr-label'
                 ],
-                'label' => "Prénom déclarant"
+                'label' => "Prénom déclarant",
+                'required'=>false
             ])
             ->add('telDeclarant', TelType::class, [
                 'attr' => [
@@ -568,7 +572,8 @@ class SignalementType extends AbstractType
                 'label_attr' => [
                     'class' => 'fr-label'
                 ],
-                'label' => "N° de téléphone déclarant"
+                'label' => "N° de téléphone déclarant",
+                'required'=>false
             ])
             ->add('mailDeclarant', EmailType::class, [
                 'attr' => [
@@ -577,7 +582,8 @@ class SignalementType extends AbstractType
                 'label_attr' => [
                     'class' => 'fr-label'
                 ],
-                'label' => "Courriel déclarant"
+                'label' => "Courriel déclarant",
+                'required'=>false
             ])
             ->add('lienDeclarantOccupant', ChoiceType::class, [
                 'choices' => [
@@ -592,6 +598,7 @@ class SignalementType extends AbstractType
                     'class' => 'fr-label'
                 ],
                 'label' => "Lien avec l'occupant",
+                'required'=>false
             ])
             ->add('structureDeclarant', TextType::class, [
                 'attr' => [

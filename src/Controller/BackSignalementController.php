@@ -4,7 +4,6 @@ namespace App\Controller;
 
 
 use App\Entity\Cloture;
-use App\Entity\Partenaire;
 use App\Entity\Signalement;
 use App\Entity\SignalementUserAffectation;
 use App\Entity\Suivi;
@@ -17,25 +16,18 @@ use App\Repository\UserRepository;
 use App\Service\CriticiteCalculatorService;
 use App\Service\NewsActivitiesSinceLastLoginService;
 use App\Service\NotificationService;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Exception;
-use Symfony\Bridge\Twig\Mime\NotificationEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGenerator;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints\Positive;
-use function Symfony\Component\String\u;
 
 #[Route('/bo/s')]
 class BackSignalementController extends AbstractController
@@ -106,6 +98,8 @@ class BackSignalementController extends AbstractController
             $entityManager->persist($suivi);
             $entityManager->persist($cloture);
             $entityManager->flush();
+            $this->addFlash('success','SIgnalement cloturer avec succès !');
+            return $this->redirectToRoute('back_index');
         }
         return $this->render('back/signalement/view.html.twig', [
             'title' => $title,
@@ -123,7 +117,7 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/{uuid}/edit', name: 'back_signalement_edit', methods: ['GET', 'POST'])]
-    public function editSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine,SituationRepository $situationRepository): Response
+    public function editSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, SituationRepository $situationRepository): Response
     {
         $title = 'Administration - Edition signalement #' . $signalement->getReference();
         $etats = ["Etat moyen", "Mauvais état", "Très mauvais état"];
@@ -143,9 +137,9 @@ class BackSignalementController extends AbstractController
             $doctrine->getManager()->persist($suivi);
             $doctrine->getManager()->flush();
             $this->addFlash('success', 'Signalement modifé avec succés !');
-            return $this->redirectToRoute('back_signalement_view', [
-                'uuid' => $signalement->getUuid()
-            ]);
+            return $this->json(['response' => 'success_edited']);
+        } else if ($form->isSubmitted()) {
+            return $this->json(['response' => 'error']);
         }
         return $this->render('back/signalement/edit.html.twig', [
             'title' => $title,
@@ -270,11 +264,11 @@ class BackSignalementController extends AbstractController
         if ($this->isCsrfTokenValid('signalement_validation_response_' . $signalement->getId(), $request->get('_token'))
             && $response = $request->get('signalement-validation-response')) {
             if (isset($response['accept'])) {
-                $statut = Signalement::STATUS_NEW;
+                $statut = Signalement::STATUS_ACTIVE;
                 $description = 'validé';
                 $signalement->setCodeSuivi(md5(uniqid()));
             } else {
-                $statut = Signalement::STATUS_IS_INVALID;
+                $statut = Signalement::STATUS_INVALID;
                 $description = 'non-valide';
             }
             $suivi = new Suivi();

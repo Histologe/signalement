@@ -15,6 +15,9 @@
                     {% endif %}
                     <text><strong>Déposé le:</strong> {{ signalement.createdAt|date('d/m/Y à H:i') }}</text>
                 </div>
+                <div class="fr-col-12 fr-col-md-6 fr-text--right">
+                    <a href="{{ path('back_signalement_view',{uuid:signalement.uuid}) }}" class="fr-btn fr-btn--secondary fr-btn--icon-left fr-fi-arrow-left-s-line-double fr-mb-5v">Retour</a>
+                </div>
             </div>
         </header>
         <hr>
