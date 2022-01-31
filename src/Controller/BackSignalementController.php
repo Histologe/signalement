@@ -288,6 +288,7 @@ class BackSignalementController extends AbstractController
             if (isset($response['accept'])) {
                 $statut = Signalement::STATUS_ACTIVE;
                 $description = 'validé';
+                $signalement->setValidatedAt(new \DateTimeImmutable());
                 $signalement->setCodeSuivi(md5(uniqid()));
             } else {
                 $statut = Signalement::STATUS_INVALID;

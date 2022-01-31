@@ -228,6 +228,9 @@ class Signalement
     #[ORM\OneToMany(mappedBy: 'signalement', targetEntity: Cloture::class, orphanRemoval: true)]
     private $clotures;
 
+    #[ORM\Column(type: 'datetime_immutable',nullable: true)]
+    private $validatedAt;
+
     public function __construct()
     {
         $this->situations = new ArrayCollection();
@@ -1146,6 +1149,18 @@ class Signalement
                 $cloture->setSignalement(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getValidatedAt(): ?\DateTimeImmutable
+    {
+        return $this->validatedAt;
+    }
+
+    public function setValidatedAt(\DateTimeImmutable $validatedAt): self
+    {
+        $this->validatedAt = $validatedAt;
 
         return $this;
     }
