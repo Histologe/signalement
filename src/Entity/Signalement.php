@@ -198,13 +198,13 @@ class Signalement
     #[ORM\Column(type: 'float', nullable: true)]
     private $scoreCloture;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(type: 'string',length: 5, nullable: true)]
     private $etageOccupant;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(type: 'string',length: 10, nullable: true)]
     private $escalierOccupant;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(type: 'string',length: 10, nullable: true)]
     private $numAppartOccupant;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -1015,36 +1015,36 @@ class Signalement
         return $this;
     }
 
-    public function getEtageOccupant(): ?int
+    public function getEtageOccupant(): ?string
     {
         return $this->etageOccupant;
     }
 
-    public function setEtageOccupant(?int $etageOccupant): self
+    public function setEtageOccupant(?string $etageOccupant): self
     {
         $this->etageOccupant = $etageOccupant;
 
         return $this;
     }
 
-    public function getEscalierOccupant(): ?int
+    public function getEscalierOccupant(): ?string
     {
         return $this->escalierOccupant;
     }
 
-    public function setEscalierOccupant(?int $escalierOccupant): self
+    public function setEscalierOccupant(?string $escalierOccupant): self
     {
         $this->escalierOccupant = $escalierOccupant;
 
         return $this;
     }
 
-    public function getNumAppartOccupant(): ?int
+    public function getNumAppartOccupant(): ?string
     {
         return $this->numAppartOccupant;
     }
 
-    public function setNumAppartOccupant(?int $numAppartOccupant): self
+    public function setNumAppartOccupant(?string $numAppartOccupant): self
     {
         $this->numAppartOccupant = $numAppartOccupant;
 
