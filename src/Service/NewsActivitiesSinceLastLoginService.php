@@ -29,7 +29,7 @@ class NewsActivitiesSinceLastLoginService
         return $this->requestStack->getSession()->set('_newsActivitiesSinceLastLogin',$newsActivitiesSinceLastLogin);
     }
 
-    public function getAll(): bool|ArrayCollection
+    public function getAll(): bool|ArrayCollection|null
     {
         return $this->requestStack->getSession()->get('_newsActivitiesSinceLastLogin');
     }
