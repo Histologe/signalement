@@ -143,6 +143,7 @@ document?.querySelectorAll('[data-fr-select-target]')?.forEach(t => {
     let source = document?.querySelector('#' + t.getAttribute('data-fr-select-source'));
     let target = document?.querySelector('#' + t.getAttribute('data-fr-select-target'));
     t.addEventListeners('click touchdown', () => {
+        console.log('test')
         let selected = [...source.selectedOptions]
         selected.map(s => {
             let groupPartenaire = s.parentElement.getAttribute('data-select-group-id'), group;
