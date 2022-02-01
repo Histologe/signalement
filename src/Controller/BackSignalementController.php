@@ -101,7 +101,7 @@ class BackSignalementController extends AbstractController
             $entityManager->persist($suivi);
             $entityManager->persist($cloture);
             $entityManager->flush();
-            $this->addFlash('success', 'SIgnalement cloturer avec succès !');
+            $this->addFlash('success', 'Signalement cloturer avec succès !');
             return $this->redirectToRoute('back_index');
         }
         return $this->render('back/signalement/view.html.twig', [

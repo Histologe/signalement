@@ -126,6 +126,7 @@ forms.forEach((form) => {
                     target = form?.querySelector('#' + targetId);
                     target.querySelectorAll('input:not([type="checkbox"]),textarea,select').forEach(ipt => {
                         ipt.required = true;
+                        ipt.labels[0].classList.add('required')
                     })
                 }
                 if (target.id === "signalement-methode-contact") {

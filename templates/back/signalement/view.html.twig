@@ -44,12 +44,12 @@
                         </form>
                         <span class="fr-hint-text"><strong>Vous à été attribué le :</strong> {{ isAffected.createdAt|date('d/m/Y') }}</span>
                     {% elseif isAccepted %}
-                        <strong class="fr-valid-text"> Vous avez
+                        <strong class="fr-text-label--green-emeraude"> Vous avez
                             <u>accepté</u> ce
                             signalement</strong>
                         <span class="fr-hint-text"><strong>Le :</strong> {{ isAccepted.answeredAt|date('d/m/Y') }}</span>
                     {% elseif isRefused %}
-                        <strong class="fr-error-text"> Vous avez
+                        <strong class="fr-text-label--red-marianne"> Vous avez
                             <u>refusé</u>
                             ce
                             signalement</strong>
