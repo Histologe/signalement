@@ -21,7 +21,7 @@ class NewsActivitiesSinceLastLoginService
     public function set($user)
     {
         $newsActivitiesSinceLastLogin = new ArrayCollection();
-        $user->getPartenaire()->getAffectations()->filter(function (Affectation $affectation) use ($newsActivitiesSinceLastLogin, $user) {
+        $user?->getPartenaire()->getAffectations()->filter(function (Affectation $affectation) use ($newsActivitiesSinceLastLogin, $user) {
             $affectation->getSignalement()->getSuivis()->filter(function (Suivi $suivi) use ($newsActivitiesSinceLastLogin, $user) {
                 if ($suivi->getCreatedAt() > $user->getLastLoginAt())
                     $newsActivitiesSinceLastLogin->add($suivi);
