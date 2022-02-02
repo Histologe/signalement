@@ -126,7 +126,8 @@ forms.forEach((form) => {
                     target = form?.querySelector('#' + targetId);
                     target.querySelectorAll('input:not([type="checkbox"]),textarea,select').forEach(ipt => {
                         ipt.required = true;
-                        ipt.labels[0].classList.add('required')
+                        if (ipt.labels)
+                            ipt.labels[0].classList.add('required')
                     })
                 }
                 if (target.id === "signalement-methode-contact") {
@@ -155,7 +156,7 @@ forms.forEach((form) => {
             })
             toUnrequire && toUnrequire.split('|').map(targetId => {
                 let target = form?.querySelector('#' + targetId);
-                if(!target)
+                if (!target)
                     target = document?.querySelector('#' + targetId);
                 target.required = false;
                 target?.parentElement?.classList?.remove('fr-input-group--error')
@@ -165,7 +166,7 @@ forms.forEach((form) => {
             })
             toRequire && toRequire.split('|').map(targetId => {
                 let target = form?.querySelector('#' + targetId);
-                if(!target)
+                if (!target)
                     target = document?.querySelector('#' + targetId);
                 target.required = true;
                 target?.labels[0]?.classList.add('required')
@@ -380,7 +381,7 @@ forms.forEach((form) => {
                                         el.classList.toggle('fr-hidden')
                                     })
                                     localStorage.clear();
-                                } else if(res.response === "success_edited"){
+                                } else if (res.response === "success_edited") {
                                     window.location.reload();
                                 } else {
                                     event.submitter.disabled = false;
@@ -438,7 +439,6 @@ document?.querySelector('#signalement-step-1-panel')?.addEventListener('dsfr.dis
         }
     })
 }))
-
 
 
 const sortTableFunction = (table) => {
