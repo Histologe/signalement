@@ -68,7 +68,7 @@ class FrontSignalementController extends AbstractController
                         } catch (FileException $e) {
                             // ... handle exception if something happens during file upload
                         }
-                        $files_array[$key][] = ['file'=>$newFilename,'titre'=>$originalFilename];
+                        $files_array[$key][] = ['file'=>$newFilename,'titre'=>$originalFilename.'.' . $file_->guessExtension()];
                     }
                 }
                 if (isset($files_array['documents']))
