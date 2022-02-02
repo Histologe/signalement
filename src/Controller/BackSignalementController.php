@@ -3,11 +3,11 @@
 namespace App\Controller;
 
 
+use App\Entity\Affectation;
 use App\Entity\Cloture;
 use App\Entity\Critere;
 use App\Entity\Criticite;
 use App\Entity\Signalement;
-use App\Entity\SignalementUserAffectation;
 use App\Entity\Situation;
 use App\Entity\Suivi;
 use App\Entity\User;
@@ -20,6 +20,7 @@ use App\Service\CriticiteCalculatorService;
 use App\Service\NewsActivitiesSinceLastLoginService;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,8 +39,8 @@ class BackSignalementController extends AbstractController
     #[Positive]
     private function checkAffectation(Signalement $signalement)
     {
-        $affectationCurrentUser = $signalement->getAffectations()->filter(function (SignalementUserAffectation $affectation) {
-            if ($affectation->getUser() === $this->getUser())
+        $affectationCurrentUser = $signalement->getAffectations()->filter(function (Affectation $affectation) {
+            if ($affectation->getPartenaire() === $this->getUser()->getPartenaire())
                 return $affectation;
         });
         if ($affectationCurrentUser->isEmpty())
@@ -53,19 +54,24 @@ class BackSignalementController extends AbstractController
         $this->container->get('security.token_storage')->setToken($token);
     }
 
+    /**
+     * @throws NonUniqueResultException
+     */
     #[Route('/{uuid}', name: 'back_signalement_view')]
-    public function viewSignalement(Request $request, EntityManagerInterface $entityManager, Signalement $signalement, PartenaireRepository $partenaireRepository, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response
+    public function viewSignalement($uuid, Request $request, EntityManagerInterface $entityManager, PartenaireRepository $partenaireRepository, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response
     {
+        /** @var Signalement $signalement */
+        $signalement = $entityManager->getRepository(Signalement::class)->findByUuid($uuid);
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
             return $this->redirectToRoute('back_index');
         $title = 'Administration - Signalement #' . $signalement->getReference();
         $isRefused = $isAccepted = null;
         if ($isAffected = $this->checkAffectation($signalement)) {
             switch ($isAffected->getStatut()) {
-                case SignalementUserAffectation::STATUS_ACCEPTED:
+                case Affectation::STATUS_ACCEPTED:
                     $isAccepted = $isAffected;
                     break;
-                case SignalementUserAffectation::STATUS_REFUSED:
+                case Affectation::STATUS_REFUSED:
                     $isRefused = $isAffected;
                     break;
             }
@@ -104,8 +110,14 @@ class BackSignalementController extends AbstractController
             $this->addFlash('success', 'Signalement cloturer avec succès !');
             return $this->redirectToRoute('back_index');
         }
+        $criticitesArranged = [];
+        foreach ($signalement->getCriticites() as $criticite) {
+            $criticitesArranged[$criticite->getCritere()->getSituation()->getLabel()][$criticite->getCritere()->getLabel()] = $criticite;
+        }
         return $this->render('back/signalement/view.html.twig', [
             'title' => $title,
+            'situations' => $criticitesArranged,
+            'affectations' => $signalement->getAffectations(),
             'needValidation' => $signalement->getStatut() === Signalement::STATUS_NEED_VALIDATION,
             'isAffected' => $isAffected,
             'isAccepted' => $isAccepted,
@@ -134,22 +146,22 @@ class BackSignalementController extends AbstractController
             $signalement->setScoreCreation($score->calculate());
             $data = [];
             $data['situation'] = $form->getExtraData()['situation'];
-            foreach ( $data['situation'] as $idSituation => $criteres) {
+            foreach ($data['situation'] as $idSituation => $criteres) {
                 $situation = $doctrine->getManager()->getRepository(Situation::class)->find($idSituation);
                 $signalement->addSituation($situation);
-                 $data['situation'][$idSituation]['label'] = $situation->getLabel();
+                $data['situation'][$idSituation]['label'] = $situation->getLabel();
                 foreach ($criteres as $critere) {
                     foreach ($critere as $idCritere => $criticites) {
                         $critere = $doctrine->getManager()->getRepository(Critere::class)->find($idCritere);
                         $signalement->addCritere($critere);
                         $data['situation'][$idSituation]['critere'][$idCritere]['label'] = $critere->getLabel();
-                        $criticite = $doctrine->getManager()->getRepository(Criticite::class)->find( $data['situation'][$idSituation]['critere'][$idCritere]['criticite']);
+                        $criticite = $doctrine->getManager()->getRepository(Criticite::class)->find($data['situation'][$idSituation]['critere'][$idCritere]['criticite']);
                         $signalement->addCriticite($criticite);
-                         $data['situation'][$idSituation]['critere'][$idCritere]['criticite']= [$criticite->getId() => ['label' => $criticite->getLabel(),'score'=>$criticite->getScore()]];
+                        $data['situation'][$idSituation]['critere'][$idCritere]['criticite'] = [$criticite->getId() => ['label' => $criticite->getLabel(), 'score' => $criticite->getScore()]];
                     }
                 }
             }
-            $signalement->setJsonContent( $data['situation']);
+            $signalement->setJsonContent($data['situation']);
             $suivi = new Suivi();
             $suivi->setCreatedBy($this->getUser());
             $suivi->setSignalement($signalement);
@@ -194,46 +206,37 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/{uuid}/affectation/toggle', name: 'back_signalement_toggle_affectation')]
-    public function toggleAffectationSignalement(Signalement $signalement, ManagerRegistry $doctrine, Request $request, UserRepository $userRepository, NotificationService $notificationService): RedirectResponse|JsonResponse
+    public function toggleAffectationSignalement(Signalement $signalement, ManagerRegistry $doctrine, Request $request, PartenaireRepository $partenaireRepository, NotificationService $notificationService): RedirectResponse|JsonResponse
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
             return $this->json(['status' => 'denied'], 400);
         if ($this->isCsrfTokenValid('signalement_affectation_' . $signalement->getId(), $request->get('_token'))) {
             $data = $request->get('signalement-affectation');
-            if (isset($data['users'])) {
-                $postedUsers = $data['users'];
-                $alreadyAffectedUsers = $signalement->getAffectations()->map(function (SignalementUserAffectation $affectation) {
-                    return $affectation->getUser()->getId();
+            if (isset($data['partenaires'])) {
+                $postedPartenaire = $data['partenaires'];
+                $alreadyAffectedPartenaire = $signalement->getAffectations()->map(function (Affectation $affectation) {
+                    return $affectation->getPartenaire()->getId();
                 })->toArray();
-                $usersToAdd = array_diff($postedUsers, $alreadyAffectedUsers);
-                $usersToRemove = array_diff($alreadyAffectedUsers, $postedUsers);
-                foreach ($usersToAdd as $userIdToAdd) {
-                    $user = $userRepository->find($userIdToAdd);
-                    if ($user->getIsGenerique()) {
-                        $user->getPartenaire()->getUsers()->map(function (User $user) use ($signalement, $doctrine) {
-                            $affectation = new SignalementUserAffectation();
-                            $affectation->setUser($user);
-                            $affectation->setSignalement($signalement);
-                            $affectation->setPartenaire($user->getPartenaire());
-                            $doctrine->getManager()->persist($affectation);
-                        });
-                    } else {
-                        $affectation = new SignalementUserAffectation();
-                        $affectation->setUser($user);
-                        $affectation->setSignalement($signalement);
-                        $affectation->setPartenaire($user->getPartenaire());
-                        $doctrine->getManager()->persist($affectation);
-                    }
+                $partenairesToAdd = array_diff($postedPartenaire, $alreadyAffectedPartenaire);
+                $partenairesToRemove = array_diff($alreadyAffectedPartenaire, $postedPartenaire);
+                foreach ($partenairesToAdd as $partenaireIdToAdd) {
+                    $partenaire = $partenaireRepository->find($partenaireIdToAdd);
+                    $affectation = new Affectation();
+                    $affectation->setSignalement($signalement);
+                    $affectation->setPartenaire($partenaire);
+                    $affectation->setAffectedBy($this->getUser());
+                    $doctrine->getManager()->persist($affectation);
+
                 }
-                foreach ($usersToRemove as $userIdToRemove) {
-                    $user = $userRepository->find($userIdToRemove);
-                    $signalement->getAffectations()->filter(function (SignalementUserAffectation $affectation) use ($doctrine, $user) {
-                        if ($affectation->getUser()->getId() === $user->getId())
+                foreach ($partenairesToRemove as $partenaireIdToRemove) {
+                    $partenaire = $partenaireRepository->find($partenaireIdToRemove);
+                    $signalement->getAffectations()->filter(function (Affectation $affectation) use ($doctrine, $partenaire) {
+                        if ($affectation->getPartenaire()->getId() === $partenaire->getId())
                             $doctrine->getManager()->remove($affectation);
                     });
                 }
             } else {
-                $signalement->getAffectations()->filter(function (SignalementUserAffectation $affectation) use ($doctrine) {
+                $signalement->getAffectations()->filter(function (Affectation $affectation) use ($doctrine) {
                     $doctrine->getManager()->remove($affectation);
                 });
             }
@@ -267,7 +270,7 @@ class BackSignalementController extends AbstractController
                 } catch (Exception $e) {
                     dd($e);
                 }
-                array_push($$type, $newFilename);
+                array_push($$type, ['file' => $newFilename, 'titre' => $originalFilename, 'user' => $this->getUser()->getId()]);
             }
             $signalement->$setMethod($$type);
             $doctrine->getManager()->persist($signalement);
@@ -318,12 +321,13 @@ class BackSignalementController extends AbstractController
         if ($this->isCsrfTokenValid('signalement_affectation_response_' . $signalement->getId(), $request->get('_token'))
             && $response = $request->get('signalement-affectation-response')) {
             if (isset($response['accept']))
-                $statut = SignalementUserAffectation::STATUS_ACCEPTED;
+                $statut = Affectation::STATUS_ACCEPTED;
             else
-                $statut = SignalementUserAffectation::STATUS_REFUSED;
-            $affectation = $doctrine->getRepository(SignalementUserAffectation::class)->findOneBy(['user' => $user, 'signalement' => $signalement]);
+                $statut = Affectation::STATUS_REFUSED;
+            $affectation = $doctrine->getRepository(Affectation::class)->findOneBy(['partenaire' => $user->getPartenaire(), 'signalement' => $signalement]);
             $affectation->setStatut($statut);
             $affectation->setAnsweredAt(new \DateTimeImmutable());
+            $affectation->setAnsweredBy($this->getUser());
             $doctrine->getManager()->persist($affectation);
             $doctrine->getManager()->flush();
             $this->addFlash('success', 'Affectation mise à jour avec succès !');

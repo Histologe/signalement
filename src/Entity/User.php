@@ -17,7 +17,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     const STATUS_ARCHIVE = 2;
 
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
 
@@ -33,8 +32,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'modifiedBy', targetEntity: Signalement::class)]
     private $signalementsModified;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: SignalementUserAffectation::class)]
-    private $affectations;
 
     #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Suivi::class, orphanRemoval: true)]
     private $suivis;
@@ -70,11 +67,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
-        $this->affectations = new ArrayCollection();
         $this->suivis = new ArrayCollection();
         $this->userReports = new ArrayCollection();
         $this->statut = self::STATUS_INACTIVE;
         $this->clotures = new ArrayCollection();
+    }
+
+    public function setId($id): ?self
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getId(): ?int
@@ -177,13 +179,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection|Signalement[]
-     */
-    public function getAffectations(): Collection
-    {
-        return $this->affectations;
-    }
 
     /**
      * @return Collection|Suivi[]
@@ -322,13 +317,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function isAffectedTo(Signalement $signalement): bool
-    {
-        foreach ($this->affectations as $affectation)
-            if ($affectation->getSignalement()->getId() === $signalement->getId())
-                return true;
-        return false;
-    }
 
     public function getIsMailingActive(): ?bool
     {

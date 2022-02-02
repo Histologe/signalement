@@ -7,7 +7,6 @@ use App\Entity\Signalement;
 use App\Form\ConfigType;
 use App\Repository\ConfigRepository;
 use App\Repository\SignalementRepository;
-use App\Repository\SignalementUserAffectationRepository;
 use App\Service\NewsActivitiesSinceLastLoginService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,7 +21,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class BackController extends AbstractController
 {
     #[Route('/', name: 'back_index')]
-    public function index(SignalementRepository $signalementRepository, SignalementUserAffectationRepository $affectationRepository, Request $request): Response
+    public function index(SignalementRepository $signalementRepository, Request $request): Response
     {
         $title = 'Administration - Tableau de bord';
         $user = null;
@@ -45,7 +44,7 @@ class BackController extends AbstractController
 //        dd($signalementRepository->countByStatus($user));
         $signalements['counts'] = $signalementRepository->countByStatus($user);
 //        dd($signalementRepository->countByStatus($user));
-        if ($request->isXmlHttpRequest() && $request->get('pagination'))
+        if (/*$request->isXmlHttpRequest() && */$request->get('pagination'))
             return $this->render('back/table_result.html.twig', ['filter' => $filter, 'signalements' => $signalements]);
         return $this->render('back/index.html.twig', [
             'title' => $title,

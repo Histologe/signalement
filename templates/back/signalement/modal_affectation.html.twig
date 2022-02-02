@@ -30,14 +30,7 @@
                                         id="signalement-affectation-select-disponible"
                                         size="10" multiple>
                                     {% for partenaire in partenaires %}
-                                        {% if partenaire.usersAffectable(signalement)|length %}
-                                            <optgroup label="{{ partenaire.nom }}"
-                                                      data-select-group-id="{{ partenaire.id }}">
-                                                {% for user in partenaire.usersAffectable(signalement) %}
-                                                    <option value="{{ user.id }}">{{user.isGenerique ? '[G] ':''}}{{ user.nom[:1]|upper~'. '~user.prenom|capitalize }}</option>
-                                                {% endfor %}
-                                            </optgroup>
-                                        {% endif %}
+                                        <option value="{{ partenaire.id }}">{{ partenaire.nom|upper }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -56,16 +49,9 @@
                                     <select id="signalement-affectation-select-affecte" multiple
                                             class="fr-select" aria-multiselectable="true"
                                             size="10" data-fr-select-count="fr-modal-affectation-count"
-                                            name="signalement-affectation[users][]">
-                                        {% for partenaire in partenaires %}
-                                            {% if partenaire.usersAffected(signalement)|length %}
-                                                <optgroup label="{{ partenaire.nom }}"
-                                                          data-select-group-id="{{ partenaire.id }}">
-                                                    {% for user in partenaire.usersAffected(signalement) %}
-                                                        <option value="{{ user.id }}">{{user.isGenerique ? '[G] ':''}}{{ user.nom[:1]|upper~'. '~user.prenom|capitalize }}</option>
-                                                    {% endfor %}
-                                                </optgroup>
-                                            {% endif %}
+                                            name="signalement-affectation[partenaires][]">
+                                        {% for affectation in affectations %}
+                                            <option value="{{ affectation.partenaire.id }}">{{ affectation.partenaire.nom|upper }}</option>
                                         {% endfor %}
                                     </select>
                                     <input type="hidden" name="_token"

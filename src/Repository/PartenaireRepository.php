@@ -29,8 +29,10 @@ class PartenaireRepository extends ServiceEntityRepository
         if ($insee)
             $qb->andWhere('p.isCommune = 0 OR p.isCommune = 1 AND p.insee = :insee')
                 ->setParameter('insee', $insee);
-        $qb->leftJoin('p.users', 'users')
-            ->addSelect('users')
+        $qb
+            ->leftJoin('p.affectations', 'affectations')
+            ->leftJoin('p.users', 'users')
+            ->addSelect('users','affectations')
             ->orderBy('users.roles');
 
         return $qb

@@ -12,6 +12,7 @@ class CriticiteCalculatorService
     private Signalement $signalement;
     private ManagerRegistry $doctrine;
     private int $scoreSignalement;
+    private bool $isDanger;
 
     public function __construct(Signalement $signalement,ManagerRegistry $doctrine)
     {
@@ -30,7 +31,7 @@ class CriticiteCalculatorService
            if($criticite->getCritere()->getIsDanger())
                $this->isDanger = true;
         });
-        $score = ($this->scoreSignalement/$scoreMax)*10000;
+        $score = ($this->scoreSignalement/$scoreMax)*100;
         if ($signalement->getNbEnfantsM6() || $signalement->getNbEnfantsP6())
             $score = $score * 1.1;
         if($this->isDanger)

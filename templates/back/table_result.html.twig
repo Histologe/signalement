@@ -8,22 +8,22 @@
             <canvas id="gauge-signalement-{{ signalement.id }}" class="fr-col-4 gauge-signalement"></canvas>
         </td>
         <td>
-            {{ signalement.nomOccupant|upper~' '~signalement.prenomOccupant|capitalize }}
+            {{ signalement.nomOccupant|upper}}<br>{{ signalement.prenomOccupant|capitalize }}
         </td>
         <td>{{ signalement.villeOccupant|upper }} <br>
             <small>[{{ signalement.adresseOccupant }}]</small>
         </td>
         <td>
-            {% for affectation in signalement.affectationStatusByPartenaire %}
+            {% for affectation in signalement.affectations %}
                 {% set classe = '' %}
                 {% if affectation.statut is same as (0) %}
-                    {% set classe = 'fr-text--orange fr-fi-question-fill' %}
+                    {% set classe = 'fr-text--orange fr-fi-question-fill fr-icon--sm' %}
                 {% elseif affectation.statut is same as (1) %}
-                    {% set classe = 'fr-text-label--green-emeraude fr-fi-checkbox-circle-fill' %}
+                    {% set classe = 'fr-text-label--green-emeraude fr-fi-checkbox-circle-fill fr-icon--sm' %}
                 {% elseif affectation.statut is same as (2) %}
-                    {% set classe = 'fr-text-label--red-marianne fr-fi-close-circle-fill' %}
+                    {% set classe = 'fr-text-label--red-marianne fr-fi-close-circle-fill fr-icon--sm' %}
                 {% endif %}
-                <text class="{{ classe }} fr-display-block"><span class="fr-text--black"> {{ affectation.partenaire }}</span></text>
+                <small class="{{ classe }} fr-display-block"><span class="fr-text--black"> {{ affectation.partenaire.nom }}</span></small>
             {% else %}
                 Aucune
             {% endfor %}

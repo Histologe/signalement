@@ -12,7 +12,6 @@ use Doctrine\ORM\PersistentCollection;
 class Partenaire
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
 
@@ -21,9 +20,6 @@ class Partenaire
 
     #[ORM\OneToMany(mappedBy: 'partenaire', targetEntity: User::class)]
     private $users;
-
-    #[ORM\OneToMany(mappedBy: 'partenaire', targetEntity: SignalementUserAffectation::class)]
-    private $affectations;
 
     #[ORM\Column(type: 'boolean')]
     private $isArchive;
@@ -37,11 +33,21 @@ class Partenaire
     #[ORM\OneToMany(mappedBy: 'partenaire', targetEntity: Cloture::class, orphanRemoval: true)]
     private $clotures;
 
+    #[ORM\OneToMany(mappedBy: 'partenaire', targetEntity: Affectation::class, orphanRemoval: true)]
+    private $affectations;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->isArchive = false;
         $this->clotures = new ArrayCollection();
+        $this->affectations = new ArrayCollection();
+    }
+
+
+    public function setId($id): ?int
+    {
+        return $this->id = $id;
     }
 
     public function getId(): ?int
@@ -94,13 +100,6 @@ class Partenaire
         return $this;
     }
 
-    /**
-     * @return Collection|Signalement[]
-     */
-    public function getAffectations(): Collection
-    {
-        return $this->affectations;
-    }
 
     public function getIsArchive(): ?bool
     {
@@ -138,22 +137,6 @@ class Partenaire
         return $this;
     }
 
-    public function getUsersAffectable(Signalement $signalement): ArrayCollection|PersistentCollection
-    {
-        $usersGenerique = $this->users->filter(function (User $user)use ($signalement){
-            if($user->getIsGenerique() && !$user->isAffectedTo($signalement))
-            {
-                return $user;
-            }
-
-        });
-        if(!$usersGenerique->isEmpty())
-            return $usersGenerique;
-        return $this->users->filter(function (User $user)use ($signalement){
-            if(!$user->isAffectedTo($signalement) && !$this->hasGeneriqueUsers())
-                return $user;
-        });
-    }
 
     public function getUsersAffected(Signalement $signalement): ArrayCollection|PersistentCollection
     {
@@ -201,6 +184,36 @@ class Partenaire
             // set the owning side to null (unless already changed)
             if ($cloture->getPartenaire() === $this) {
                 $cloture->setPartenaire(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Affectation[]
+     */
+    public function getAffectations(): Collection
+    {
+        return $this->affectations;
+    }
+
+    public function addAffectation(Affectation $affectation): self
+    {
+        if (!$this->affectations->contains($affectation)) {
+            $this->affectations[] = $affectation;
+            $affectation->setPartenaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAffectation(Affectation $affectation): self
+    {
+        if ($this->affectations->removeElement($affectation)) {
+            // set the owning side to null (unless already changed)
+            if ($affectation->getPartenaire() === $this) {
+                $affectation->setPartenaire(null);
             }
         }
 

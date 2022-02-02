@@ -2,32 +2,30 @@
 
 namespace App\Entity;
 
-use App\Repository\SignalementUserAffectationRepository;
+use App\Repository\AffectationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: SignalementUserAffectationRepository::class)]
-class SignalementUserAffectation
+#[ORM\Entity(repositoryClass: AffectationRepository::class)]
+class Affectation
 {
-    const STATUS_AWAIT = 0;
+    const STATUS_WAIT = 0;
     const STATUS_ACCEPTED = 1;
     const STATUS_REFUSED = 2;
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\ManyToOne(targetEntity: Signalement::class,inversedBy: 'affectations')]
+    #[ORM\ManyToOne(targetEntity: Signalement::class, inversedBy: 'affectations')]
     #[ORM\JoinColumn(nullable: false)]
     private $signalement;
 
-    #[ORM\ManyToOne(targetEntity: User::class,inversedBy: 'affectations')]
-    #[ORM\JoinColumn(nullable: false)]
-    private $user;
-
-    #[ORM\ManyToOne(targetEntity: Partenaire::class,inversedBy: 'affectations')]
+    #[ORM\ManyToOne(targetEntity: Partenaire::class, inversedBy: 'affectations')]
     #[ORM\JoinColumn(nullable: false)]
     private $partenaire;
+
+    #[ORM\Column(type: 'datetime_immutable',nullable: true)]
+    private $answeredAt;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private $createdAt;
@@ -35,13 +33,16 @@ class SignalementUserAffectation
     #[ORM\Column(type: 'integer')]
     private $statut;
 
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private $answeredAt;
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    private $answeredBy;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    private $affectedBy;
 
     public function __construct()
     {
+        $this->statut = Affectation::STATUS_WAIT;
         $this->createdAt = new \DateTimeImmutable();
-        $this->statut = SignalementUserAffectation::STATUS_AWAIT;
     }
 
     public function getId(): ?int
@@ -61,18 +62,6 @@ class SignalementUserAffectation
         return $this;
     }
 
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): self
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
     public function getPartenaire(): ?Partenaire
     {
         return $this->partenaire;
@@ -81,6 +70,18 @@ class SignalementUserAffectation
     public function setPartenaire(?Partenaire $partenaire): self
     {
         $this->partenaire = $partenaire;
+
+        return $this;
+    }
+
+    public function getAnsweredAt(): ?\DateTimeImmutable
+    {
+        return $this->answeredAt;
+    }
+
+    public function setAnsweredAt(\DateTimeImmutable $answeredAt): self
+    {
+        $this->answeredAt = $answeredAt;
 
         return $this;
     }
@@ -109,16 +110,27 @@ class SignalementUserAffectation
         return $this;
     }
 
-    public function getAnsweredAt(): ?\DateTimeImmutable
+    public function getAnsweredBy(): ?User
     {
-        return $this->answeredAt;
+        return $this->answeredBy;
     }
 
-    public function setAnsweredAt(?\DateTimeImmutable $answeredAt): self
+    public function setAnsweredBy(?User $answeredBy): self
     {
-        $this->answeredAt = $answeredAt;
+        $this->answeredBy = $answeredBy;
 
         return $this;
     }
 
+    public function getAffectedBy(): ?User
+    {
+        return $this->affectedBy;
+    }
+
+    public function setAffectedBy(?User $affectedBy): self
+    {
+        $this->affectedBy = $affectedBy;
+
+        return $this;
+    }
 }

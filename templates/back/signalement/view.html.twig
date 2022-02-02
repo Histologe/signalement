@@ -6,8 +6,9 @@
 {% block content %}
 
     {% include 'back/signalement/modal_affectation.html.twig' %}
-    {% include 'back/signalement/modal_cloture.html.twig' %}
-    <section class="fr-p-5v {{ isInvalid ? 'signalement-invalid':'' }} {{ isClosedForMe ? 'signalement-invalid':'' }}" id="signalement-{{ signalement.id }}-content">
+     {% include 'back/signalement/modal_cloture.html.twig' %}
+    <section class="fr-p-5v {{ isInvalid ? 'signalement-invalid':'' }} {{ isClosedForMe ? 'signalement-invalid':'' }}"
+             id="signalement-{{ signalement.id }}-content">
         <header>
             <div class="fr-grid-row fr-grid-row--middle ">
                 <div class="fr-col-12 fr-col-md-6">
@@ -44,16 +45,27 @@
                         </form>
                         <span class="fr-hint-text"><strong>Vous à été attribué le :</strong> {{ isAffected.createdAt|date('d/m/Y') }}</span>
                     {% elseif isAccepted %}
-                        <strong class="fr-text-label--green-emeraude"> Vous avez
+                        <strong class="fr-text-label--green-emeraude"> {% if isAccepted.answeredBy is same as (app.user) %}  Vous avez {% else %} {{ isAccepted.answeredBy.nom[:1]|upper~'. '~isAccepted.answeredBy.prenom|capitalize }} à
+                            {% endif %}
                             <u>accepté</u> ce
                             signalement</strong>
                         <span class="fr-hint-text"><strong>Le :</strong> {{ isAccepted.answeredAt|date('d/m/Y') }}</span>
                     {% elseif isRefused %}
-                        <strong class="fr-text-label--red-marianne"> Vous avez
+                        <strong class="fr-text-label--red-marianne">{% if isRefused.answeredBy is same as (app.user) %}  Vous avez {% else %} {{ isRefused.answeredBy.nom[:1]|upper~'. '~isRefused.answeredBy.prenom|capitalize }} à
+                            {% endif %}
                             <u>refusé</u>
                             ce
                             signalement</strong>
                         <span class="fr-hint-text"><strong>Le :</strong> {{ isRefused.answeredAt|date('d/m/Y') }}</span>
+                        <form action="{{ path('back_signalement_affectation_response',{uuid:signalement.uuid,user:app.user.id}) }}">
+                            <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
+                                    name="signalement-affectation-response[accept]" value="1"
+                                    onclick="return confirm('Êtes-vous certain de vouloir acccepter ce signalement ?')">
+                                Annuler le refus
+                            </button>
+                            <input type="hidden" name="_token"
+                                   value="{{ csrf_token('signalement_affectation_response_'~signalement.id) }}">
+                        </form>
                     {% elseif needValidation and not isClosedForMe %}
                         <form action="{{ path('back_signalement_validation_response',{uuid:signalement.uuid}) }}">
                             <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
@@ -136,7 +148,7 @@
                     <li>
                         <strong>Allocataire: </strong>
                         {% if signalement.isAllocataire %}
-                            {{ picto_yes|raw }}
+                            <small class="fr-background-alt--green-emeraude fr-rounded fr-p-1v fr-text--bold fr-valid-text fr-display-inline-flex fr-mt-0 fr-px-3v">{{ signalement.isAllocataire }}</small>
                         {% else %}
                             {{ picto_no|raw }}
                         {% endif %}
@@ -222,7 +234,41 @@
                     suivants:</strong>
                 <span class="fr-hint-text">Récapitulatif des situations rencontrées par l'occupant du logement</span>
                 <ul class="fr-list--icon-img">
-                    {% for situation in signalement.jsonContent %}
+                    {% for situation,criteres in situations %}
+                        <li role="button" class="fr-background-alt--blue-france fr-mb-5v fr-px-5v fr-pt-5v fr-rounded fr-fi-arrow-down-line fr-input-wrap" aria-controls="situation-collapse-{{ loop.index }}" aria-expanded="false">
+                            <strong>{{ situation|capitalize }}</strong>
+                            <ul class="fr-list--icon-img fr-collapse" id="situation-collapse-{{ loop.index }}">
+                                {% for critere,criticite in criteres %}
+                                    {% if criticite.score is same as(1) %}
+                                        {% set icon = 'moyen' %}
+                                    {% elseif criticite.score is same as(2) %}
+                                        {% set icon = 'grave' %}
+                                    {% else %}
+                                        {% set icon = 'tres-grave' %}
+                                    {% endif %}
+                                    <li><strong>{{ critere }}</strong>
+                                        <ul class="fr-list fr-skiplinks__list fr-list--icon-img">
+                                            <li class="fr-grid-row fr-grid-row--middle fr-w-100">
+                                                <div class="fr-col-md-2 fr-col-lg-1 fr-col--middle">
+                                                    <img src="{{ asset('img/'~icon~'-actif.svg') }}" alt=""
+                                                         width="50"
+                                                         class=" fr-text--center">
+                                                </div>
+                                                <div class="fr-col-md-10 fr-col-lg-11 fr-pl-5v fr-rounded">
+                                                    {{ criticite.label|capitalize }}
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    {# {% for criticite in criticites %}
+
+
+                                    {% endfor %} #}
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                    {# {% for situation in signalement.jsonContent %}
                         <li class="fr-background-alt--blue-france fr-mb-5v fr-px-5v fr-pt-5v fr-rounded">
                             <strong>{{ situation.label|capitalize }}</strong>
                             <ul>
@@ -253,7 +299,7 @@
                                 {% endfor %}
                             </ul>
                         </li>
-                    {% endfor %}
+                    {% endfor %} #}
                 </ul>
             </div>
         </div>
@@ -327,7 +373,7 @@
                 <strong class="fr-fi-upload-2-fill fr-icon--sm fr-text-label--blue-france"> Photos et documents</strong>
                 <span class="fr-hint-text">Ci-dessous les photos et documents fournis par le déclarant et/ou les partenaires.</span>
             </div>
-            {% if is_granted('ROLE_ADMIN_PARTENAIRE') or isAffected %}
+            {% if is_granted('ROLE_ADMIN_PARTENAIRE') or (isAffected and isAccepted) %}
                 <div class="fr-col-12 fr-col-md-6 fr-text--right">
                     <div class="fr-grid-row fr-grid-row--right">
                         <form method="POST" enctype="multipart/form-data"
@@ -357,13 +403,17 @@
             {% for index,photo in signalement.photos %}
                 <div class="fr-col-6 fr-col-md-2 fr-rounded signalement-file-item">
                     <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center"
-                         style="background: url('{{ asset('_up/'~photo) }}')no-repeat center center/cover">
+                         style="background: url('{{ asset('_up/'~photo.file) }}')no-repeat center center/cover">
                         <button class="fr-btn fr-btn--sm fr-fi-eye-line" title="Voir la photo"
-                                onclick="img_box('{{ asset('_up/'~photo) }}')"></button>
-                        <button title="Supprimer la photo"
-                                data-delete="{{ path('back_signalement_delete_file',{uuid:signalement.uuid,type:'photos',file:photo}) }}"
-                                data-token="{{ csrf_token('signalement_delete_file_'~signalement.id) }}"
-                                class="fr-btn fr-btn--sm fr-btn--danger fr-fi-delete-line signalement-file-delete"></button>
+                                onclick="img_box('{{ asset('_up/'~photo.file) }}')"></button>
+                        {% if is_granted('ROLE_ADMIN_PARTENAIRE') or (isAffected and isAccepted) %}
+                            {% if photo.user is not defined or photo.user is same as(app.user.id) %}
+                                <button title="Supprimer la photo"
+                                        data-delete="{{ path('back_signalement_delete_file',{uuid:signalement.uuid,type:'photos',file:photo.file}) }}"
+                                        data-token="{{ csrf_token('signalement_delete_file_'~signalement.id) }}"
+                                        class="fr-btn fr-btn--sm fr-btn--danger fr-fi-delete-line signalement-file-delete"></button>
+                            {% endif %}
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
@@ -371,12 +421,16 @@
                 <div class="fr-col-6 fr-col-md-2 fr-rounded signalement-file-item">
                     <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center"
                          style="background: url('{{ asset('img/document.png') }}')no-repeat center center/50%">
-                        <a href="{{ asset('_up/'~document) }}" class="fr-btn fr-btn--sm fr-fi-eye-line"
+                        <a href="{{ asset('_up/'~document.file) }}" class="fr-btn fr-btn--sm fr-fi-eye-line"
                            title="Voir le document" target="_blank"></a>
-                        <button title="Supprimer le document"
-                                data-delete="{{ path('back_signalement_delete_file',{uuid:signalement.uuid,type:'documents',file:document}) }}"
-                                data-token="{{ csrf_token('signalement_delete_file_'~signalement.id) }}"
-                                class="fr-btn fr-btn--sm fr-btn--danger fr-fi-delete-line signalement-file-delete"></button>
+                        {% if is_granted('ROLE_ADMIN_PARTENAIRE') or (isAffected and isAccepted) %}
+                            {% if documenet.user is not defined or documenet.user is same as(app.user.id) %}
+                                <button title="Supprimer le document"
+                                        data-delete="{{ path('back_signalement_delete_file',{uuid:signalement.uuid,type:'documents',file:document.file}) }}"
+                                        data-token="{{ csrf_token('signalement_delete_file_'~signalement.id) }}"
+                                        class="fr-btn fr-btn--sm fr-btn--danger fr-fi-delete-line signalement-file-delete"></button>
+                            {% endif %}
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
@@ -389,7 +443,7 @@
                         partenaire</strong>
                     <span class="fr-hint-text">Ci-dessous les statuts de prise en charge des partenaires affectés au signalement</span>
                 </div>
-                {% if is_granted('ROLE_ADMIN_PARTENAIRE') and "closed" not in signalement.statut and not needValidation and not isInvalid %}
+                {% if is_granted('ROLE_ADMIN_PARTENAIRE') and signalement.statut is not same as(6) and not needValidation and not isInvalid %}
                     <div class="fr-col-12 fr-col-md-6 fr-text--right">
                         <button class="fr-btn fr-fi-add-circle-line fr-btn--icon-left" data-fr-opened="false"
                                 aria-controls="fr-modal-affectation">
@@ -404,35 +458,29 @@
                         {# STATUT EN ATTENTE #}
                         <div class="fr-col-md-2">
                             <div class="fr-background-contrast--info fr-rounded fr-p-2v">
-                                <small>[{{ affectation.user.partenaire ? affectation.user.partenaire.nom : 'AUCUN' }}]
-                                    <br>
-                                    <strong class="">{{ affectation.user.nom[:1]|upper~'. '~affectation.user.prenom|capitalize }}</strong>
-                                    en attente.</small>
-                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }}</span>
+                                <small>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]
+                                    <br>En attente.</small>
+                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} par {{ affectation.affectedBy.nom[:1]|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
                             </div>
                         </div>
                     {% elseif affectation.statut is same as(1) %}
                         {# STATUT ACCEPTE #}
                         <div class="fr-col-md-2">
                             <div class="fr-background-contrast--success fr-rounded fr-p-2v">
-                                <small>[{{ affectation.user.partenaire ? affectation.user.partenaire.nom : 'AUCUN' }}]
-                                    <br>
-                                    <strong class="">{{ affectation.user.nom[:1]|upper~'. '~affectation.user.prenom|capitalize }}</strong>
-                                    à
-                                    accepté.</small>
-                                <span class="fr-hint-text"><strong>Le :</strong> {{ affectation.answeredAt|date('d/m/Y') }}</span>
-
+                                <small>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]
+                                    <br>Accepté.</small>
+                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} par {{ affectation.affectedBy.nom[:1]|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
+                                <span class="fr-hint-text"><strong>Accepté le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} par {{ affectation.answeredBy.nom[:1]|upper~'. '~affectation.answeredBy.prenom|capitalize }}</span>
                             </div>
                         </div>
                     {% elseif affectation.statut is same as(2) %}
                         {# STATUT REFUSE #}
                         <div class="fr-col-md-2">
                             <div class="fr-background-contrast--error fr-rounded fr-p-2v">
-                                <small>[{{ affectation.user.partenaire ? affectation.user.partenaire.nom : 'AUCUN' }}]
-                                    <br>
-                                    <strong class="">{{ affectation.user.nom[:1]|upper~'. '~affectation.user.prenom|capitalize }}</strong>
-                                    à refusé.</small>
-                                <span class="fr-hint-text"><strong>Le :</strong> {{ affectation.answeredAt|date('d/m/Y') }}</span>
+                                <small>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]
+                                    <br>Refusé.</small>
+                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} par {{ affectation.affectedBy.nom[:1]|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
+                                <span class="fr-hint-text"><strong>Refusé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} par {{ affectation.answeredBy.nom[:1]|upper~'. '~affectation.answeredBy.prenom|capitalize }}</span>
                             </div>
                         </div>
                     {% endif %}
@@ -442,7 +490,7 @@
             <hr style="visibility: hidden">
         {% endif %}
         <hr id="suivis">
-        {% if is_granted('ROLE_ADMIN_PARTENAIRE') or isAffected %}
+        {% if is_granted('ROLE_ADMIN_PARTENAIRE') or (isAffected and isAccepted) %}
             <div class="fr-grid-row">
                 <div class="fr-col-12">
                     <strong class="fr-fi-calendar-fill fr-icon--sm fr-text-label--blue-france"> Suivis du
@@ -473,12 +521,12 @@
                                     usager)
                                 </button>
                             </div>
-                            {% if signalement.statut is not same as(1) and not isClosed and not isClosedForMe and (isAffected or is_granted('ROLE_ADMIN_PARTENAIRE')) %}
-                            <div class="fr-col-6 fr-text--right">
-                                <a href="#" aria-controls="cloture-modal" data-fr-opened="false"
-                                   class="fr-btn fr-btn--danger fr-fi-close-line fr-btn--icon-left">Cloturer
-                                </a>
-                            </div>
+                            {% if signalement.statut is not same as(1) and not isClosed and not isClosedForMe and ((isAffected and isAccepted) or is_granted('ROLE_ADMIN_PARTENAIRE')) %}
+                                <div class="fr-col-6 fr-text--right">
+                                    <a href="#" aria-controls="cloture-modal" data-fr-opened="false"
+                                       class="fr-btn fr-btn--danger fr-fi-close-line fr-btn--icon-left">Cloturer
+                                    </a>
+                                </div>
                             {% endif %}
                         </div>
                         <input type="hidden" name="_token"

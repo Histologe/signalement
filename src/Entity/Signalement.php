@@ -180,8 +180,6 @@ class Signalement
     #[ORM\Column(type: 'boolean')]
     private $isSituationHandicap;
 
-    #[ORM\OneToMany(mappedBy: 'signalement', targetEntity: SignalementUserAffectation::class)]
-    private $affectations;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'signalementsModified')]
     private $modifiedBy;
@@ -231,6 +229,93 @@ class Signalement
     #[ORM\Column(type: 'datetime_immutable',nullable: true)]
     private $validatedAt;
 
+    #[ORM\Column(type: 'boolean')]
+    private $isRsa;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private $prorioAvertiAt;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private $anneeConstruction;
+
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
+    private $typeEnergieLogement;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $origineSignalement;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $situationOccupant;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $situationProOccupant;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private $naissanceOccupantAt;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $isLogementCollectif;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $isConstructionAvant1948;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $isDiagSocioTechnique;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $isFondSolidariteLogement;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $isRisqueSurOccupation;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private $proprioAvertiAt;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $nomReferentSocial;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $StructureReferentSocial;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $mailSyndic;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $nomSci;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $nomRepresentantSci;
+
+    #[ORM\Column(type: 'string', length: 12, nullable: true)]
+    private $telSci;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $mailSci;
+
+    #[ORM\Column(type: 'string', length: 12, nullable: true)]
+    private $telSyndic;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $nomSyndic;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $numeroInvariant;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private $nbPiecesLogement;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private $nbChambresLogement;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private $nbNiveauxLogement;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private $nbOccupantsLogement;
+
+    #[ORM\OneToMany(mappedBy: 'signalement', targetEntity: Affectation::class, orphanRemoval: true)]
+    private $affectations;
+
     public function __construct()
     {
         $this->situations = new ArrayCollection();
@@ -238,13 +323,13 @@ class Signalement
         $this->criticites = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
         $this->statut = self::STATUS_NEED_VALIDATION;
-        $this->affectations = new ArrayCollection();
         $this->uuid = uniqid();
         $this->isSituationHandicap = false;
         $this->isOccupantPresentVisite = false;
         $this->suivis = new ArrayCollection();
         $this->scoreCreation = 0;
         $this->clotures = new ArrayCollection();
+        $this->affectations = new ArrayCollection();
     }
 
 
@@ -367,7 +452,7 @@ class Signalement
         return $this->isProprioAverti;
     }
 
-    public function setIsProprioAverti(bool $isProprioAverti): self
+    public function setIsProprioAverti(bool|null $isProprioAverti): self
     {
         $this->isProprioAverti = $isProprioAverti;
 
@@ -842,13 +927,6 @@ class Signalement
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
-    public function getAffectations(): Collection
-    {
-        return $this->affectations;
-    }
 
     public function getJsonContent(): ?array
     {
@@ -1161,6 +1239,372 @@ class Signalement
     public function setValidatedAt(\DateTimeImmutable $validatedAt): self
     {
         $this->validatedAt = $validatedAt;
+
+        return $this;
+    }
+
+    public function getIsRsa(): ?bool
+    {
+        return $this->isRsa;
+    }
+
+    public function setIsRsa(bool $isRsa): self
+    {
+        $this->isRsa = $isRsa;
+
+        return $this;
+    }
+
+    public function getProrioAvertiAt(): ?\DateTimeImmutable
+    {
+        return $this->prorioAvertiAt;
+    }
+
+    public function setProrioAvertiAt(?\DateTimeImmutable $prorioAvertiAt): self
+    {
+        $this->prorioAvertiAt = $prorioAvertiAt;
+
+        return $this;
+    }
+
+    public function getAnneeConstruction(): ?int
+    {
+        return $this->anneeConstruction;
+    }
+
+    public function setAnneeConstruction(?int $anneeConstruction): self
+    {
+        $this->anneeConstruction = $anneeConstruction;
+
+        return $this;
+    }
+
+    public function getTypeEnergieLogement(): ?string
+    {
+        return $this->typeEnergieLogement;
+    }
+
+    public function setTypeEnergieLogement(?string $typeEnergieLogement): self
+    {
+        $this->typeEnergieLogement = $typeEnergieLogement;
+
+        return $this;
+    }
+
+    public function getOrigineSignalement(): ?string
+    {
+        return $this->origineSignalement;
+    }
+
+    public function setOrigineSignalement(?string $origineSignalement): self
+    {
+        $this->origineSignalement = $origineSignalement;
+
+        return $this;
+    }
+
+    public function getSituationOccupant(): ?string
+    {
+        return $this->situationOccupant;
+    }
+
+    public function setSituationOccupant(?string $situationOccupant): self
+    {
+        $this->situationOccupant = $situationOccupant;
+
+        return $this;
+    }
+
+    public function getSituationProOccupant(): ?string
+    {
+        return $this->situationProOccupant;
+    }
+
+    public function setSituationProOccupant(?string $situationProOccupant): self
+    {
+        $this->situationProOccupant = $situationProOccupant;
+
+        return $this;
+    }
+
+    public function getNaissanceOccupantAt(): ?\DateTimeImmutable
+    {
+        return $this->naissanceOccupantAt;
+    }
+
+    public function setNaissanceOccupantAt(?\DateTimeImmutable $naissanceOccupantAt): self
+    {
+        $this->naissanceOccupantAt = $naissanceOccupantAt;
+
+        return $this;
+    }
+
+    public function getIsLogementCollectif(): ?bool
+    {
+        return $this->isLogementCollectif;
+    }
+
+    public function setIsLogementCollectif(?bool $isLogementCollectif): self
+    {
+        $this->isLogementCollectif = $isLogementCollectif;
+
+        return $this;
+    }
+
+    public function getIsConstructionAvant1948(): ?bool
+    {
+        return $this->isConstructionAvant1948;
+    }
+
+    public function setIsConstructionAvant1948(?bool $isConstructionAvant1948): self
+    {
+        $this->isConstructionAvant1948 = $isConstructionAvant1948;
+
+        return $this;
+    }
+
+    public function getIsDiagSocioTechnique(): ?bool
+    {
+        return $this->isDiagSocioTechnique;
+    }
+
+    public function setIsDiagSocioTechnique(?bool $isDiagSocioTechnique): self
+    {
+        $this->isDiagSocioTechnique = $isDiagSocioTechnique;
+
+        return $this;
+    }
+
+    public function getIsFondSolidariteLogement(): ?bool
+    {
+        return $this->isFondSolidariteLogement;
+    }
+
+    public function setIsFondSolidariteLogement(?bool $isFondSolidariteLogement): self
+    {
+        $this->isFondSolidariteLogement = $isFondSolidariteLogement;
+
+        return $this;
+    }
+
+    public function getIsRisqueSurOccupation(): ?bool
+    {
+        return $this->isRisqueSurOccupation;
+    }
+
+    public function setIsRisqueSurOccupation(?bool $isRisqueSurOccupation): self
+    {
+        $this->isRisqueSurOccupation = $isRisqueSurOccupation;
+
+        return $this;
+    }
+
+    public function getProprioAvertiAt(): ?\DateTimeImmutable
+    {
+        return $this->proprioAvertiAt;
+    }
+
+    public function setProprioAvertiAt(?\DateTimeImmutable $proprioAvertiAt): self
+    {
+        $this->proprioAvertiAt = $proprioAvertiAt;
+
+        return $this;
+    }
+
+    public function getNomReferentSocial(): ?string
+    {
+        return $this->nomReferentSocial;
+    }
+
+    public function setNomReferentSocial(?string $nomReferentSocial): self
+    {
+        $this->nomReferentSocial = $nomReferentSocial;
+
+        return $this;
+    }
+
+    public function getStructureReferentSocial(): ?string
+    {
+        return $this->StructureReferentSocial;
+    }
+
+    public function setStructureReferentSocial(?string $StructureReferentSocial): self
+    {
+        $this->StructureReferentSocial = $StructureReferentSocial;
+
+        return $this;
+    }
+
+    public function getMailSyndic(): ?string
+    {
+        return $this->mailSyndic;
+    }
+
+    public function setMailSyndic(?string $mailSyndic): self
+    {
+        $this->mailSyndic = $mailSyndic;
+
+        return $this;
+    }
+
+    public function getNomSci(): ?string
+    {
+        return $this->nomSci;
+    }
+
+    public function setNomSci(?string $nomSci): self
+    {
+        $this->nomSci = $nomSci;
+
+        return $this;
+    }
+
+    public function getNomRepresentantSci(): ?string
+    {
+        return $this->nomRepresentantSci;
+    }
+
+    public function setNomRepresentantSci(?string $nomRepresentantSci): self
+    {
+        $this->nomRepresentantSci = $nomRepresentantSci;
+
+        return $this;
+    }
+
+    public function getTelSci(): ?string
+    {
+        return $this->telSci;
+    }
+
+    public function setTelSci(?string $telSci): self
+    {
+        $this->telSci = $telSci;
+
+        return $this;
+    }
+
+    public function getMailSci(): ?string
+    {
+        return $this->mailSci;
+    }
+
+    public function setMailSci(?string $mailSci): self
+    {
+        $this->mailSci = $mailSci;
+
+        return $this;
+    }
+
+    public function getTelSyndic(): ?string
+    {
+        return $this->telSyndic;
+    }
+
+    public function setTelSyndic(?string $telSyndic): self
+    {
+        $this->telSyndic = $telSyndic;
+
+        return $this;
+    }
+
+    public function getNomSyndic(): ?string
+    {
+        return $this->nomSyndic;
+    }
+
+    public function setNomSyndic(?string $nomSyndic): self
+    {
+        $this->nomSyndic = $nomSyndic;
+
+        return $this;
+    }
+
+    public function getNumeroInvariant(): ?string
+    {
+        return $this->numeroInvariant;
+    }
+
+    public function setNumeroInvariant(?string $numeroInvariant): self
+    {
+        $this->numeroInvariant = $numeroInvariant;
+
+        return $this;
+    }
+
+    public function getNbPiecesLogement(): ?int
+    {
+        return $this->nbPiecesLogement;
+    }
+
+    public function setNbPiecesLogement(?int $nbPiecesLogement): self
+    {
+        $this->nbPiecesLogement = $nbPiecesLogement;
+
+        return $this;
+    }
+
+    public function getNbChambresLogement(): ?int
+    {
+        return $this->nbChambresLogement;
+    }
+
+    public function setNbChambresLogement(?int $nbChambresLogement): self
+    {
+        $this->nbChambresLogement = $nbChambresLogement;
+
+        return $this;
+    }
+
+    public function getNbNiveauxLogement(): ?int
+    {
+        return $this->nbNiveauxLogement;
+    }
+
+    public function setNbNiveauxLogement(?int $nbNiveauxLogement): self
+    {
+        $this->nbNiveauxLogement = $nbNiveauxLogement;
+
+        return $this;
+    }
+
+    public function getNbOccupantsLogement(): ?int
+    {
+        return $this->nbOccupantsLogement;
+    }
+
+    public function setNbOccupantsLogement(?int $nbOccupantsLogement): self
+    {
+        $this->nbOccupantsLogement = $nbOccupantsLogement;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Affectation[]
+     */
+    public function getAffectations(): Collection
+    {
+        return $this->affectations;
+    }
+
+    public function addAffectation(Affectation $affectation): self
+    {
+        if (!$this->affectations->contains($affectation)) {
+            $this->affectations[] = $affectation;
+            $affectation->setSignalement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAffectation(Affectation $affectation): self
+    {
+        if ($this->affectations->removeElement($affectation)) {
+            // set the owning side to null (unless already changed)
+            if ($affectation->getSignalement() === $this) {
+                $affectation->setSignalement(null);
+            }
+        }
 
         return $this;
     }

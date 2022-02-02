@@ -7,10 +7,12 @@ use App\Entity\SignalementUserAffectation;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
+use function Sodium\add;
 
 /**
  * @method Signalement|null find($id, $lockMode = null, $lockVersion = null)
@@ -71,16 +73,46 @@ class SignalementRepository extends ServiceEntityRepository
 
     public function countByStatus($user)
     {
-        $qb = $this->createQueryBuilder('s')
-            ->select('COUNT(s.id) as count')
-            ->addSelect('s.statut');
-        if ($user)
-            $qb->leftJoin('s.affectations', 'a', 'WITH', 'a.user = :user')
-                ->setParameter('user', $user);
+        $qb = $this->createQueryBuilder('s');
+        if(!$user){
+            $qb->select('COUNT(s.id) as count')
+                ->addSelect('s.statut');
+        } else {
+            $qb->leftJoin('s.affectations','a','WITH',':partenaire = a.partenaire')
+                ->setParameter('partenaire',$user->getPartenaire())
+                ->select('COUNT(a.signalement) as count')
+                ->addSelect('s.statut');;
+        }
         return $qb->indexBy('s', 's.statut')
             ->groupBy('s.statut')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function findByUuid($uuid)
+    {
+        $qb = $this->createQueryBuilder('s')
+            ->where('s.uuid = :uuid')
+            ->setParameter('uuid',$uuid);
+        $qb
+            ->leftJoin('s.situations','situations')
+            ->leftJoin('s.affectations','affectations')
+            ->leftJoin('situations.criteres','criteres')
+            ->leftJoin('criteres.criticites','criticites')
+            ->leftJoin('affectations.partenaire','partenaire')
+            ->addSelect('situations','affectations','criteres','criticites','partenaire');
+        /*$qb->leftJoin('s.situations','situations');
+        $qb->leftJoin('situations.criteres','criteres');
+        $qb->leftJoin('criteres.criticites','criticites');
+        $qb->leftJoin('s.affectations','affectations');
+        $qb->leftJoin('affectations.partenaire','partenaire');
+        $qb->leftJoin('partenaire.users','user');
+        $qb->leftJoin('suivis.createdBy','createdBy');
+        $qb->addSelect('affectations','partenaire','user','situations','criteres','criticites','suivis','createdBy');*/
+        return $qb->getQuery()->getOneOrNullResult();
     }
 
     public function findByStatusAndOrCityForUser(User|UserInterface $user = null, $status = null, $city = null, $search = null, $page = null): Paginator
@@ -88,27 +120,13 @@ class SignalementRepository extends ServiceEntityRepository
         $pageSize = 50;
         $firstResult = ($page - 1) * $pageSize;
         $qb = $this->createQueryBuilder('s')
+            ->select('PARTIAL s.{id,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut}')
             ->where('s.statut != :status')
             ->setParameter('status', Signalement::STATUS_ARCHIVED);
-        $qb->leftJoin('s.affectations', 'affectations')
-            ->leftJoin('s.affectations', 'awaitBy', Expr\Join::WITH, 'affectations.statut = ' . SignalementUserAffectation::STATUS_AWAIT)
-            ->leftJoin('s.affectations', 'acceptedBy', Expr\Join::WITH, 'affectations.statut = ' . SignalementUserAffectation::STATUS_ACCEPTED)
-            ->leftJoin('s.affectations', 'refusedBy', Expr\Join::WITH, 'affectations.statut = ' . SignalementUserAffectation::STATUS_REFUSED);
-        $qb->leftJoin('s.situations', 'situations')
-            ->leftJoin('affectations.partenaire', 'partenaires')
-            ->leftJoin('partenaires.users', 'partenaires_users')
-            ->leftJoin('affectations.user', 'user')
-            ->leftJoin('situations.criteres', 'criteres')
-            ->leftJoin('criteres.criticites', 'criticites')
-            ->addSelect('affectations')
-            ->addSelect('partenaires')
-            ->addSelect('partenaires_users')
-            ->addSelect('user')
-            ->addSelect('refusedBy')
-            ->addSelect('acceptedBy')
-            ->addSelect('situations')
-            ->addSelect('criteres')
-            ->addSelect('criticites');
+        $qb->leftJoin('s.affectations','affectations');
+        $qb->leftJoin('affectations.partenaire','partenaire');
+        $qb->leftJoin('partenaire.users','user');
+        $qb->addSelect('affectations','partenaire','user');
         if ($status && $status !== 'all')
             $qb->andWhere('s.statut = :statut')
                 ->setParameter('statut', $status);
@@ -116,8 +134,8 @@ class SignalementRepository extends ServiceEntityRepository
             $qb->andWhere('s.villeOccupant =:city')
                 ->setParameter('city', $city);
         if ($user)
-            $qb->andWhere('user = :user')
-                ->setParameter('user', $user);
+            $qb->andWhere('partenaire = :partenaire')
+                ->setParameter('partenaire', $user->getPartenaire());
         if ($search)
             $qb->andWhere('LOWER(s.nomOccupant) LIKE :search OR LOWER(s.prenomOccupant) LIKE :search OR LOWER(s.reference) LIKE :search')
                 ->setParameter('search', "%" . strtolower($search) . "%");
@@ -138,9 +156,9 @@ class SignalementRepository extends ServiceEntityRepository
             ->setParameter('status', Signalement::STATUS_ARCHIVED);
         if ($user)
             $qb->leftJoin('s.affectations', 'affectations')
-                ->leftJoin('affectations.user', 'user')
-                ->andWhere('user = :user')
-                ->setParameter('user', $user);
+                ->leftJoin('affectations.partenaire', 'partenaire')
+                ->andWhere('partenaire = :partenaire')
+                ->setParameter('partenaire', $user->getPArtenaire());
         return $qb->groupBy('s.villeOccupant')
             ->getQuery()
             ->getSingleColumnResult();

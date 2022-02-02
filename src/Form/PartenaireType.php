@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Partenaire;
+use SebastianBergmann\CodeCoverage\Report\Text;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -36,12 +37,11 @@ class PartenaireType extends AbstractType
                 ],
                 'label' => 'Type de partenaire'
             ])
-            ->add('insee', NumberType::class, [
+            ->add('insee', TextType::class, [
                 'attr' => [
                     'class' => 'fr-input'
                 ],
                 'required'=>false,
-                'html5' => true
             ]);
     }
 

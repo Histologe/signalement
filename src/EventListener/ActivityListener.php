@@ -4,7 +4,6 @@ namespace App\EventListener;
 
 use App\Entity\Signalement;
 use App\Entity\SignalementUserAffectation;
-use App\Entity\Suivi;
 use App\Entity\User;
 use App\Service\NotificationService;
 use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;

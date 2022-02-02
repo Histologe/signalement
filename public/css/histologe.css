@@ -44,7 +44,7 @@ html, body {
     background-color: rgba(191, 204, 251, 0.37);
 }
 
-.fr-toggle--parent, .fr-accordion, .toggle-criticite, div[role="button"], .fr-list--hover li, .fr-btn, .fr-checkbox-affectation__parent, .fr-checkbox-affectation__parent label {
+.fr-toggle--parent, .fr-accordion, .toggle-criticite, [role="button"], .fr-list--hover li, .fr-btn, .fr-checkbox-affectation__parent, .fr-checkbox-affectation__parent label {
     cursor: pointer !important;
     user-select: none;
 }

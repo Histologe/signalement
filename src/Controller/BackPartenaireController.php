@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Partenaire;
-use App\Entity\SignalementUserAffectation;
 use App\Entity\User;
 use App\Form\PartenaireType;
 use App\Repository\PartenaireRepository;
