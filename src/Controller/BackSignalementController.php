@@ -260,6 +260,7 @@ class BackSignalementController extends AbstractController
             $$type = $signalement->$getMethod();
             foreach ($files[$type] as $file) {
                 $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $titre = $originalFilename. '.' . $file->guessExtension();
                 $safeFilename = $slugger->slug($originalFilename);
                 $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
                 try {
@@ -270,7 +271,7 @@ class BackSignalementController extends AbstractController
                 } catch (Exception $e) {
                     dd($e);
                 }
-                array_push($$type, ['file' => $newFilename, 'titre' => $originalFilename.'.' . $file->guessExtension(), 'user' => $this->getUser()->getId()]);
+                array_push($$type, ['file' => $newFilename, 'titre' => $titre, 'user' => $this->getUser()->getId()]);
             }
             $signalement->$setMethod($$type);
             $doctrine->getManager()->persist($signalement);

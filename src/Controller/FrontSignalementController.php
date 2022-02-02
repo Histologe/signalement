@@ -56,6 +56,7 @@ class FrontSignalementController extends AbstractController
                 foreach ($files as $key => $file) {
                     foreach ($file as $file_) {
                         $originalFilename = pathinfo($file_->getClientOriginalName(), PATHINFO_FILENAME);
+                        $titre = $originalFilename. '.' . $file_->guessExtension();
                         // this is needed to safely include the file name as part of the URL
                         $safeFilename = $slugger->slug($originalFilename);
                         $newFilename = $safeFilename . '-' . uniqid() . '.' . $file_->guessExtension();
@@ -68,7 +69,7 @@ class FrontSignalementController extends AbstractController
                         } catch (FileException $e) {
                             // ... handle exception if something happens during file upload
                         }
-                        $files_array[$key][] = ['file'=>$newFilename,'titre'=>$originalFilename.'.' . $file_->guessExtension()];
+                        $files_array[$key][] = ['file'=>$newFilename,'titre'=>$titre];
                     }
                 }
                 if (isset($files_array['documents']))

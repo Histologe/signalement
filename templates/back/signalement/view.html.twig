@@ -417,7 +417,7 @@
                     </div>
                     <div class="fr-grid-row">
                         <div class="fr-col-12 fr-text--center">
-                            {{ photo.titre ? photo.titre : 'image' }}
+                            {{ photo.titre ?? 'image' }}
                         </div>
                     </div>
                 </div>
@@ -439,7 +439,7 @@
                     </div>
                     <div class="fr-grid-row">
                         <div class="fr-col-12 fr-text--center">
-                            {{ document.titre }}
+                            <div title="{{ document.titre }}" style="text-overflow:ellipsis">{{ document.titre[:15] }}...</div>
                         </div>
                     </div>
                 </div>
