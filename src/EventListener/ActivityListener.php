@@ -36,7 +36,7 @@ class ActivityListener implements EventSubscriberInterface
             foreach ($entities as $entity) {
                 $changeSet = $entityManager->getUnitOfWork()->getEntityChangeSet($entity);
                 if ($entity instanceof Signalement) {
-                    if (!$entityManager->contains($entity)) {
+                   /* if (!$entityManager->contains($entity)) {
                         $emails = [$entity->getMailDeclarant() ?? null, $entity->getMailOccupant() ?? null];
                         array_map(function ($email) use ($entity) {
                             null !== $this->notifier->send(NotificationService::TYPE_ACCUSE_RECEPTION, $email, ['signalement' => $entity]);
@@ -51,7 +51,7 @@ class ActivityListener implements EventSubscriberInterface
                                 ]);
                             }, $emails);
                         }
-                    }
+                    }*/
                 }
                 if ($entity instanceof SignalementUserAffectation) {
                     if (!$entityManager->contains($entity)) {

@@ -1236,7 +1236,7 @@ class Signalement
         return $this->validatedAt;
     }
 
-    public function setValidatedAt(\DateTimeImmutable $validatedAt): self
+    public function setValidatedAt(\DateTimeImmutable|null $validatedAt): self
     {
         $this->validatedAt = $validatedAt;
 

@@ -24,7 +24,7 @@ class FrontController extends AbstractController
     #[Route('/dump', name: 'dump')]
     public function dump(EntityManagerInterface $entityManager, ManagerRegistry $doctrine, AffectationRepository $affectationRepository): Response
     {
-
+        ini_set('max_execution_time','-1');
         $dbhost = "localhost";
         $dbuser = "root";
         $dbpass = "";
@@ -36,9 +36,9 @@ class FrontController extends AbstractController
         foreach ($partenaires as $partenaire)
         {
             $part = new Partenaire();
-            $part->setId($partenaire[0]);
-            $part->setNom($partenaire[2]);
-            $part->setIsCommune($partenaire[4]);
+            $part->setId($partenaire['idHPartenaire']);
+            $part->setNom($partenaire['libPartenaire']);
+            $part->setIsCommune($partenaire['isCommune']);
             $entityManager->persist($part);
         }
         $entityManager->flush();
@@ -68,7 +68,7 @@ class FrontController extends AbstractController
         $entityManager->flush();*/
         $signalementQuery = "SELECT * from hsignalement_ s
     JOIN hadresse_ a ON s.idAdresse = a.idAdresse
-    ORDER BY s.refSign DESC
+    ORDER BY s.refSign DESC LIMIT 200 OFFSET 1400
     ";
         $signalements = $conn->query($signalementQuery)->fetch_all(MYSQLI_ASSOC);
         foreach ($signalements as $signalement) {
@@ -88,7 +88,7 @@ class FrontController extends AbstractController
             $modeContactProprio = explode('/', $signalement['modeInfoProprio']);
             $sign->setReference($dateCrea->format('Y') . '-' . $signalement['refSign']);
             $sign->setNomOccupant($signalement['nomSign']);
-            $sign->setPrenomOccupant($signalement['prenomSign']);
+            $sign->setPrenomOccupant($signalement['prenomSign'] ?? 'N/R');
             $sign->setMailOccupant($signalement['courriel']);
             $sign->setCodeProcedure($signalement['procedureSign']);
             $sign->setTelOccupant($signalement['telephone']);
@@ -98,7 +98,8 @@ class FrontController extends AbstractController
             $sign->setIsLogementSocial($signalement['logSoc']);
             $sign->setIsPreavisDepart($signalement['depart']);
             $sign->setIsCguAccepted($signalement['cgu']);
-            $sign->setGeoloc($geoloc);
+            if(isset($geoloc))
+                $sign->setGeoloc($geoloc);
             $sign->setNbAdultes((int)$signalement['OccupantsAdultes']);
             $sign->setSuperficie((float)$signalement['surface']);
             $sign->setLoyer((float)$signalement['prof_montantLoyer']);
@@ -147,7 +148,7 @@ class FrontController extends AbstractController
             $sign->setIsLogementCollectif($signalement['prof_logCollectif']);
             $sign->setIsConstructionAvant1948($signalement['prof_av1948']);
             $sign->setIsRisqueSurOccupation($signalement['prof_risqOcc']);
-            $sign->setValidatedAt($signalement['dtPriseEnCharge'] ? new \DateTimeImmutable($signalement['dtPriseEnCharge']) : null);
+            $sign->setValidatedAt(null !== $signalement['dtPriseEnCharge'] ? new \DateTimeImmutable($signalement['dtPriseEnCharge']) : null);
             $sign->setIsAllocataire($signalement['prof_organismeLog']);
             $sign->setNomReferentSocial($signalement['prof_nomSocialRef']);
             $sign->setStructureReferentSocial($signalement['prof_strucSocial']);
