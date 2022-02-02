@@ -229,7 +229,7 @@ class Signalement
     #[ORM\Column(type: 'datetime_immutable',nullable: true)]
     private $validatedAt;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: 'boolean',nullable: true)]
     private $isRsa;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
