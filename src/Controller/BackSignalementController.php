@@ -270,7 +270,7 @@ class BackSignalementController extends AbstractController
                 } catch (Exception $e) {
                     dd($e);
                 }
-                array_push($$type, ['file' => $newFilename, 'titre' => $originalFilename.'.' . $file_->guessExtension(), 'user' => $this->getUser()->getId()]);
+                array_push($$type, ['file' => $newFilename, 'titre' => $originalFilename.'.' . $file->guessExtension(), 'user' => $this->getUser()->getId()]);
             }
             $signalement->$setMethod($$type);
             $doctrine->getManager()->persist($signalement);
