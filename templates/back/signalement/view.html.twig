@@ -29,9 +29,8 @@
                         <form action="{{ path('back_signalement_affectation_response',{uuid:signalement.uuid,user:app.user.id}) }}">
                             <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
                                     name="signalement-affectation-response[accept]" value="1"
-                                    onclick="return confirm('Êtes-vous certain de vouloir acccepter ce signalement ?')">
-                                Je m'en
-                                occupe
+                                    {#onclick="return confirm('Êtes-vous certain de vouloir acccepter ce signalement ?')"#}>
+                                J'ai pris connaissance du signalement
                             </button>
                             <button class="fr-btn fr-btn--danger fr-fi-close-circle-fill fr-btn--icon-left"
                                     name="signalement-affectation-response[deny]" value="1"

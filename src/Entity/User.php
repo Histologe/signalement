@@ -17,6 +17,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     const STATUS_ARCHIVE = 2;
 
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
 
@@ -73,11 +74,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->clotures = new ArrayCollection();
     }
 
-    public function setId($id): ?self
+    /*public function setId($id): ?self
     {
         $this->id = $id;
         return $this;
-    }
+    }*/
 
     public function getId(): ?int
     {

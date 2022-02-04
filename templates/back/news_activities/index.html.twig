@@ -29,7 +29,7 @@
                     <td>{{ suivi.id }}</td>
                     <td>{{ suivi.signalement.reference }}</td>
                     <td>{{ suivi.createdAt|date('d/m/Y à H:i') }}</td>
-                    <td>{{ suivi.description }}</td>
+                    <td>{{ suivi.description|raw }}</td>
                     <td>{{ suivi.createdBy.nomComplet }}</td>
                     <td class="fr-text--right"><a href="{{ path('back_signalement_view',{uuid:suivi.signalement.uuid}) }}#suivis" class="fr-btn fr-fi-eye-fill"></a></td>
                 </tr>

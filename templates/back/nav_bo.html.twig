@@ -55,7 +55,7 @@
                                 <a class="fr-sidemenu__link" href="{{ path('back_partenaire_edit',{id:app.user.partenaire.id}) }}" target="_self" {% if 'back_partenaire' is same as(app.request.get('_route')) %}aria-current="page"{% endif %}>Gestion des comptes</a>
                             </li>
                         {% endif %}
-                        {% if is_granted('ROLE_ADMIN_PARTENAIRE') %}
+                        {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
                             <li class="fr-sidemenu__item {% if 'back_config' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
                                 <a class="fr-sidemenu__link" href="{{ path('back_config') }}" target="_self" {% if 'back_config' is same as(app.request.get('_route')) %}aria-current="page"{% endif %}>Configuration</a>
                             </li>

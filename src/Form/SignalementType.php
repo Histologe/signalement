@@ -68,7 +68,7 @@ class SignalementType extends AbstractType
                 'expanded' => true,
                 'multiple' => true,
                 'label_attr' => [
-                    'class' => 'fr-label'
+                    'class' => 'fr-label required'
                 ],
                 'required' => false,
                 'label' => 'Comment avez-vous averti le propriétaire ou gestionnaire ?',

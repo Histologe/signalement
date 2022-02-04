@@ -18,21 +18,15 @@
                         {{ form_end(clotureForm) }}
                     </div>
                     <div class="fr-modal__footer">
-                        <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
+                        <ul class="fr-btns-group fr-btns-group--right fr-btns-group--icon-left">
                             <li>
-                                <button class="fr-btn fr-fi-checkbox-line" form="cloture_form" name="cloture[type]" value="1">
+                                <button class="fr-btn fr-fi-checkbox-line fr-w-100" form="cloture_form" name="cloture[type]" value="1">
                                     Cloturer pour {{ app.user.partenaire ? app.user.partenaire.nom }}
                                 </button>
                             </li>
                             <li>
-                                <button class="fr-btn fr-btn--danger fr-fi-checkbox-line" form="cloture_form" name="cloture[type]" value="2">
-                                    Cloturer
-                                </button>
-                            </li>
-                            <li>
-                                <button class="fr-btn fr-fi-close-line fr-btn--secondary"
-                                        aria-controls="cloture-modal">
-                                    Fermer
+                                <button class="fr-btn fr-btn--danger fr-fi-checkbox-line fr-w-100" form="cloture_form" name="cloture[type]" value="2">
+                                    Cloturer pour tous les partenaires
                                 </button>
                             </li>
                         </ul>

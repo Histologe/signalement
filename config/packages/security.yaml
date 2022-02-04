@@ -2,7 +2,8 @@ security:
     role_hierarchy:
         ROLE_USER_PARTENAIRE: ROLE_USER
         ROLE_ADMIN_PARTENAIRE: ROLE_USER_PARTENAIRE
-        ROLE_ADMIN: ROLE_ADMIN_PARTENAIRE
+        ROLE_ADMIN_TERRITOIRE: ROLE_ADMIN_PARTENAIRE
+        ROLE_ADMIN: ROLE_ADMIN_TERRITOIRE
 
     enable_authenticator_manager: true
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
