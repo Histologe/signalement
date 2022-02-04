@@ -242,6 +242,7 @@ class BackSignalementController extends AbstractController
             }
 
             $doctrine->getManager()->flush();
+            $this->addFlash('success','Les affectations ont bien été effectuées.');
             return $this->json(['status' => 'success']);
         }
         return $this->json(['status' => 'denied'], 400);
