@@ -25,7 +25,7 @@ class SignalementType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('details', null, [
+            ->add('details', TextareaType::class, [
                 'attr' => [
                     'class' => 'fr-input',
                     'minlength'=> 10
@@ -335,7 +335,8 @@ class SignalementType extends AbstractType
             ])
             ->add('raisonRefusIntervention', TextareaType::class, [
                 'attr' => [
-                    'class' => 'fr-input'
+                    'class' => 'fr-input',
+                    'minlength'=> 10
                 ],
                 'label_attr' => [
                     'class' => 'fr-label'
