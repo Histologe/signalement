@@ -594,7 +594,7 @@ document?.querySelectorAll('[data-fr-select-target]')?.forEach(t => {
             if (!target.querySelector('[data-select-group-id="' + groupPartenaire + '"]')) {
                 group = document.createElement('optgroup');
                 group.setAttribute('data-select-group-id', groupPartenaire);
-                group.label = s.parentElement.label;
+                group.label = 'Ajouté';
             } else {
                 group = target.querySelector('[data-select-group-id="' + groupPartenaire + '"]')
             }
