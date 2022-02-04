@@ -96,7 +96,7 @@ class BackSignalementController extends AbstractController
                 $sujet = 'tous les partenaires';
             }
             $suivi = new Suivi();
-            $suivi->setDescription('Le signalement à été cloturer pour ' . $sujet . ' avec le motif suivant: <br> <strong>' . $cloture->getMotif()->getLabel() . '</strong>');
+            $suivi->setDescription('Le signalement à été cloturé pour ' . $sujet . ' avec le motif suivant: <br> <strong>' . $cloture->getMotif()->getLabel() . '</strong>');
             $suivi->setCreatedBy($this->getUser());
             $signalement->addSuivi($suivi);
             $cloture->setSignalement($signalement);
@@ -107,7 +107,7 @@ class BackSignalementController extends AbstractController
             $entityManager->persist($suivi);
             $entityManager->persist($cloture);
             $entityManager->flush();
-            $this->addFlash('success', 'Signalement cloturer avec succès !');
+            $this->addFlash('success', 'Signalement cloturé avec succès !');
             return $this->redirectToRoute('back_index');
         }
         $criticitesArranged = [];
