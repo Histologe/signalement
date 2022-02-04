@@ -251,7 +251,8 @@ class SignalementType extends AbstractType
             ])
             ->add('dateEntree', DateType::class, [
                 'attr' => [
-                    'class' => 'fr-input fr-fi-calendar-line fr-input-wrap'
+                    'class' => 'fr-input fr-fi-calendar-line fr-input-wrap',
+                    'max'=> (new \DateTimeImmutable())->format('Y-m-d')
                 ],
                 'widget' => 'single_text',
                 'label_attr' => [
