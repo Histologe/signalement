@@ -27,7 +27,8 @@ class SignalementType extends AbstractType
         $builder
             ->add('details', null, [
                 'attr' => [
-                    'class' => 'fr-input'
+                    'class' => 'fr-input',
+                    'minlength'=> 10
                 ],
                 'label_attr' => [
                     'class' => 'fr-label'

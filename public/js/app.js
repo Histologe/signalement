@@ -341,7 +341,7 @@ forms.forEach((form) => {
                         forms.forEach((form) => {
                             form.querySelectorAll('input,textarea,select').forEach((input) => {
                                 if (document.querySelector('#recap-' + input.id))
-                                    document.querySelector('#recap-' + input.id).innerHTML = input.value;
+                                    document.querySelector('#recap-' + input.id).innerHTML = `${input.value}`;
                                 else if (input.classList.contains('signalement-situation') && input.checked)
                                     document.querySelector('#recap-signalement-situation').innerHTML += '- ' + input.value + '<br>';
                             })
