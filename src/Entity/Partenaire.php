@@ -137,19 +137,13 @@ class Partenaire
         return $this;
     }
 
-
-    public function getUsersAffected(Signalement $signalement): ArrayCollection|PersistentCollection
+    public function isAffected(Signalement $signalement)
     {
-        $usersGenerique = $this->users->filter(function (User $user)use ($signalement){
-            if($user->getIsGenerique() && $user->isAffectedTo($signalement))
-                return $user;
+        $isAffected = $this->getAffectations()->filter(function (Affectation $affectation)use($signalement) {
+            if($affectation->getSignalement()->getId() === $signalement->getId())
+                return $signalement;
         });
-        if(!$usersGenerique->isEmpty())
-            return $usersGenerique;
-        return $this->users->filter(function (User $user)use ($signalement){
-            if($user->isAffectedTo($signalement))
-                return $user;
-        });
+        return !$isAffected->isEmpty();
     }
 
     public function hasGeneriqueUsers(): bool

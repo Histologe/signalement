@@ -1,7 +1,7 @@
 {% extends 'back/base_bo.html.twig' %}
 
-{% set picto_yes = '<small class="fr-background-alt--green-emeraude fr-rounded fr-p-1v fr-text--bold fr-valid-text fr-display-inline-flex fr-mt-0 fr-px-3v">Oui</small>' %}
-{% set picto_no = '<small class="fr-background-contrast--red-marianne fr-error-text fr-display-inline-flex fr-mt-0 fr-rounded fr-p-1v fr-text--bold fr-px-3v">Non</small>' %}
+{% set picto_yes = '<p class="fr-badge fr-badge--success">Oui</p>' %}
+{% set picto_no = '<p class="fr-badge fr-badge--error">Non</p>' %}
 
 {% block content %}
 
@@ -181,11 +181,14 @@
                 <strong class="fr-fi-alert-fill fr-icon--sm fr-text-label--blue-france"> Criticité du
                     signalement</strong>
                 <span class="fr-hint-text">La criticité est calculée automatiquement en fonction des situations signalées.</span>
+                {% if signalement.scoreCreation > 80 %}
+                    <p class="fr-badge fr-badge--warning ">danger pour l'ocupant détecté</p>
+                {% endif %}
                 <ul class="fr-list--icon-img">
                     <li>
                         <div class="fr-responsive-img fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
                             <canvas id="slider-criticite" class="fr-col-4"></canvas>
-                            <div class="fr-col-8">
+                            <div class="fr-col-8 fr-col--middle">
                                 <text class="fr-display-sm"><span id="score-criticite"></span>%</text>
                             </div>
                         </div>
@@ -245,7 +248,7 @@
                                     {% else %}
                                         {% set icon = 'tres-grave' %}
                                     {% endif %}
-                                    <li><strong>{{ critere }}</strong>
+                                    <li>{% if criticite.critere.isDanger %}<p class="fr-badge fr-badge--warning">danger</p>&nbsp;&nbsp;{% endif %}<strong>{{ critere }}</strong>
                                         <ul class="fr-list fr-skiplinks__list fr-list--icon-img">
                                             <li class="fr-grid-row fr-grid-row--middle fr-w-100">
                                                 <div class="fr-col-md-2 fr-col-lg-1 fr-col--middle">
@@ -259,46 +262,10 @@
                                             </li>
                                         </ul>
                                     </li>
-                                    {# {% for criticite in criticites %}
-
-
-                                    {% endfor %} #}
                                 {% endfor %}
                             </ul>
                         </li>
                     {% endfor %}
-                    {# {% for situation in signalement.jsonContent %}
-                        <li class="fr-background-alt--blue-france fr-mb-5v fr-px-5v fr-pt-5v fr-rounded">
-                            <strong>{{ situation.label|capitalize }}</strong>
-                            <ul>
-                                {% for critere in situation.critere %}
-                                    <li><strong>{{ critere.label|capitalize }}</strong>
-                                        <ul class="fr-list fr-skiplinks__list fr-list--icon-img">
-                                            {% for criticite in critere.criticite %}
-                                                {% if criticite.score is same as(2) %}
-                                                    {% set icon = 'moyen' %}
-                                                {% elseif criticite.score is same as(4) %}
-                                                    {% set icon = 'grave' %}
-                                                {% else %}
-                                                    {% set icon = 'tres-grave' %}
-                                                {% endif %}
-                                                <li class="fr-grid-row fr-grid-row--middle">
-                                                    <div class="fr-col-1">
-                                                        <img src="{{ asset('img/'~icon~'-actif.svg') }}" alt=""
-                                                             width="50"
-                                                             class=" fr-text--center">
-                                                    </div>
-                                                    <div class="fr-col-11 fr-pl-5v">
-                                                        {{ criticite.label|capitalize }}
-                                                    </div>
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                    {% endfor %} #}
                 </ul>
             </div>
         </div>
@@ -595,7 +562,7 @@
         gauge.maxValue = 100; // set max gauge value
         gauge.setMinValue(0);  // Prefer setter over gauge.minValue = 0
         gauge.setTextField(text);  // Prefer setter over gauge.minValue = 0
-        gauge.animationSpeed = 100; // set animation speed (32 is default value)
+        gauge.animationSpeed = 1; // set animation speed (32 is default value)
         gauge.set({{ signalement.scoreCreation }}); // set actual value
         let map = L.map('map-signalement-view').setView([{{ signalement.geoloc.lng }}, {{ signalement.geoloc.lat }}], 13);
 

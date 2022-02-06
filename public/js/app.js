@@ -586,20 +586,8 @@ document?.querySelectorAll('[data-fr-select-target]')?.forEach(t => {
     let source = document?.querySelector('#' + t.getAttribute('data-fr-select-source'));
     let target = document?.querySelector('#' + t.getAttribute('data-fr-select-target'));
     t.addEventListeners('click touchdown', () => {
-        console.log('test')
-        let selected = [...source.selectedOptions]
-        selected.map(s => {
-            let groupPartenaire = s.parentElement.getAttribute('data-select-group-id'), group;
-            /*target.append(s);*/
-            if (!target.querySelector('[data-select-group-id="' + groupPartenaire + '"]')) {
-                group = document.createElement('optgroup');
-                group.setAttribute('data-select-group-id', groupPartenaire);
-                group.label = 'Ajouté';
-            } else {
-                group = target.querySelector('[data-select-group-id="' + groupPartenaire + '"]')
-            }
-            group.append(s)
-            target.append(group)
+        [...source.selectedOptions].map(s => {
+            target.append(s)
         })
     })
 })

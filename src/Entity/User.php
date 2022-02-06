@@ -66,12 +66,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'closedBy', targetEntity: Cloture::class, orphanRemoval: true)]
     private $clotures;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Job::class, orphanRemoval: true)]
+    private $jobs;
+
     public function __construct()
     {
         $this->suivis = new ArrayCollection();
         $this->userReports = new ArrayCollection();
         $this->statut = self::STATUS_INACTIVE;
         $this->clotures = new ArrayCollection();
+        $this->jobs = new ArrayCollection();
     }
 
     /*public function setId($id): ?self
@@ -355,6 +359,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($cloture->getClosedBy() === $this) {
                 $cloture->setClosedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Job[]
+     */
+    public function getJobs(): Collection
+    {
+        return $this->jobs;
+    }
+
+    public function addJob(Job $job): self
+    {
+        if (!$this->jobs->contains($job)) {
+            $this->jobs[] = $job;
+            $job->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeJob(Job $job): self
+    {
+        if ($this->jobs->removeElement($job)) {
+            // set the owning side to null (unless already changed)
+            if ($job->getUser() === $this) {
+                $job->setUser(null);
             }
         }
 

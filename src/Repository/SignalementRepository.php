@@ -120,7 +120,7 @@ class SignalementRepository extends ServiceEntityRepository
         $pageSize = 50;
         $firstResult = ($page - 1) * $pageSize;
         $qb = $this->createQueryBuilder('s')
-            ->select('PARTIAL s.{id,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut}')
+            ->select('PARTIAL s.{id,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut,createdAt}')
             ->where('s.statut != :status')
             ->setParameter('status', Signalement::STATUS_ARCHIVED);
         $qb->leftJoin('s.affectations','affectations');
