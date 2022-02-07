@@ -337,8 +337,22 @@ forms.forEach((form) => {
                     nextTabBtn = currentTabBtn.parentElement?.nextElementSibling?.querySelector('button');
                 if (nextTabBtn) {
                     if (nextTabBtn.hasAttribute('data-fr-last-step')) {
+                        let docs,photos;
+                        docs = photos = 0;
                         document.querySelector('#recap-signalement-situation').innerHTML = '';
                         forms.forEach((form) => {
+                            form.querySelectorAll('[type="file"]').forEach(file => {
+                                if (file.classList.contains("doc-file"))
+                                    docs += file.files.length
+                                if (file.classList.contains("photo-file"))
+                                    photos +=file.files.length;
+                            })
+                            for (var value of imgData.values()) {
+                                photos +=1;
+                            }
+
+                            document.querySelector('#recap-signalement_photos').innerHTML = photos+' Photo(s) transmise(s)';
+                            document.querySelector('#recap-signalement_documents').innerHTML = docs+' Document(s) transmis';
                             form.querySelectorAll('input,textarea,select').forEach((input) => {
                                 if (document.querySelector('#recap-' + input.id))
                                     document.querySelector('#recap-' + input.id).innerHTML = `${input.value}`;

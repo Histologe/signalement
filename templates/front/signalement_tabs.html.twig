@@ -172,7 +172,7 @@
                                     <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-instagram-line">
                                         <img class="fr-hidden fr-rounded fr-display-block" width="100">
                                         <input type="file" accept="image/*" name="signalement[photos][{{ i }}]"
-                                               class="fr-hidden">
+                                               class="fr-hidden photo-file">
                                     </label>
                                     <div class="fr-grid-row">
                                         <div class="fr-col fr-text--center">
@@ -198,7 +198,7 @@
                             {% for i in 0..3 %}
                                 <div class="fr-col-6 fr-col-md fr-text--center">
                                     <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-attachment-fill">
-                                        <input type="file" name="signalement[documents][{{ i }}]" class="fr-hidden"
+                                        <input type="file" name="signalement[documents][{{ i }}]" class="fr-hidden doc-file"
                                                accept=".pdf,.doc,.docx">
                                     </label>
                                     <small class="fr-text-label--red-marianne fr-icon--sm fr-hidden fr-display-block">Le
@@ -783,7 +783,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="fr-col-12">
+            <div class="fr-col-6">
                 <ul>
                     <li>
                         <strong>Description du ou des problème(s)
@@ -792,6 +792,20 @@
                         </strong>
                         <p>
                             <span id="recap-signalement_details"></span>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+            <div class="fr-col-6">
+                <ul>
+                    <li>
+                        <strong>Document(s) et photo(s) transmis
+                            <button class="fr-btn fr-btn--sm fr-btn--secondary fr-fi-edit-fill"
+                                    title="Editer les informations" data-goto-step="2"></button>
+                        </strong>
+                        <p>
+                            <span id="recap-signalement_photos"></span>
+                            <span id="recap-signalement_documents"></span>
                         </p>
                     </li>
                 </ul>
