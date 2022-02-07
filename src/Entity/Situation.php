@@ -44,7 +44,7 @@ class Situation
 
     public function __construct()
     {
-        $this->isActive = false;
+        $this->isArchive = false;
         $this->criteres = new ArrayCollection();
         $this->signalements = new ArrayCollection();
     }
