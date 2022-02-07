@@ -33,13 +33,7 @@
                 <strong class="fr-text-label--red-marianne">A valider</strong>
             {% elseif signalement.statut is same as(2) %}
                 En cours
-            {% elseif signalement.statut is same as(3) %}
-                <strong class="fr-text-label--red-marianne">Non-valide</strong>
-            {% elseif signalement.statut is same as(4) %}
-                En attente d'info. complémentaire
-            {% elseif signalement.statut is same as(5) %}
-                A revoir
-            {% else %}
+            {% elseif signalement.isCLosedFor(app.user.partenaire) or signalement.statut is same as(6) %}
                 Fermé
             {% endif %}
         </td>
