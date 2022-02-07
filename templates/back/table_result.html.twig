@@ -33,7 +33,7 @@
                 <strong class="fr-text-label--red-marianne">A valider</strong>
             {% elseif signalement.statut is same as(2) %}
                 En cours
-            {% elseif signalement.isCLosedFor(app.user.partenaire) or signalement.statut is same as(6) %}
+            {% elseif signalement.isClosedFor(app.user.partenaire) or signalement.statut is same as(6) %}
                 Fermé
             {% endif %}
         </td>
