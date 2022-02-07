@@ -29,7 +29,7 @@
                     <td>{{ partenaire.id }}</td>
                     <td>{{ partenaire.nom }}</td>
                     <td>{{ partenaire.isCommune ? 'Commune':'Partenaire' }}</td>
-                    <td>{{ partenaire.insee }}</td>
+                    <td>{{ partenaire.insee|serialize }}</td>
                     <td class="fr-text--right">
                             <a href="{{ path('back_partenaire_edit', {'id': partenaire.id}) }}"
                                class="fr-btn fr-fi-eye-fill fr-btn--sm"></a>

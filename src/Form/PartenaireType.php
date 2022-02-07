@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Partenaire;
 use SebastianBergmann\CodeCoverage\Report\Text;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -43,6 +44,16 @@ class PartenaireType extends AbstractType
                 ],
                 'required'=>false,
             ]);
+            $builder->get('insee')->addModelTransformer(new CallbackTransformer(
+                function ($tagsAsArray) {
+                    // transform the array to a string
+                    return implode(', ', $tagsAsArray);
+                },
+                function ($tagsAsString) {
+                    // transform the string back to an array
+                    return explode(', ', $tagsAsString);
+                }
+            ));
     }
 
     public function configureOptions(OptionsResolver $resolver): void
