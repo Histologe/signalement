@@ -27,8 +27,8 @@ class Partenaire
     #[ORM\Column(type: 'boolean')]
     private $isCommune;
 
-    #[ORM\Column(type: 'string', length: 10, nullable: true)]
-    private $insee;
+    #[ORM\Column(type: 'json')]
+    private $insee = [];
 
     #[ORM\OneToMany(mappedBy: 'partenaire', targetEntity: Cloture::class, orphanRemoval: true)]
     private $clotures;
@@ -125,12 +125,12 @@ class Partenaire
         return $this;
     }
 
-    public function getInsee(): ?string
+    public function getInsee(): ?array
     {
         return $this->insee;
     }
 
-    public function setInsee(?string $insee): self
+    public function setInsee(?array $insee): self
     {
         $this->insee = $insee;
 
