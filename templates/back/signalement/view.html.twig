@@ -7,7 +7,7 @@
 
     {% include 'back/signalement/modal_affectation.html.twig' %}
      {% include 'back/signalement/modal_cloture.html.twig' %}
-    <section class="fr-p-5v {{ isInvalid ? 'signalement-invalid':'' }} {{ isClosedForMe ? 'signalement-invalid':'' }}"
+    <section class="fr-p-5v {{ isClosedForMe ? 'signalement-invalid':'' }}"
              id="signalement-{{ signalement.id }}-content">
         <header>
             <div class="fr-grid-row fr-grid-row--middle ">
@@ -25,7 +25,7 @@
                     <text><strong>Déposé le:</strong> {{ signalement.createdAt|date('d/m/Y à H:i') }}</text>
                 </div>
                 <div class="fr-col-12 fr-col-md-6 fr-text--right">
-                    {% if isAffected and not isAccepted and not isRefused and not needValidation and not isInvalid and not isClosed and not isClosedForMe %}
+                    {% if isAffected and not isAccepted and not isRefused and not needValidation and  not isClosed and not isClosedForMe %}
                         <form action="{{ path('back_signalement_affectation_response',{uuid:signalement.uuid,user:app.user.id}) }}">
                             <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
                                     name="signalement-affectation-response[accept]" value="1"
@@ -81,10 +81,6 @@
                                    value="{{ csrf_token('signalement_validation_response_'~signalement.id) }}">
                         </form>
                         <span class="fr-hint-text">En tant qu'administrateur vous devez <strong><u>valider/refuser</u></strong> ce signalement</span>
-                    {% elseif isInvalid %}
-                        <strong class="fr-error-text"> Signalement
-                            non-valide</strong>
-                        <span class="fr-hint-text">Ce signalement à été marqué comme non-valide, il est donc en mode lecture seule.</span>
                     {% endif %}
                 </div>
             </div>
@@ -411,7 +407,7 @@
                 </div>
             {% endfor %}
         </div>
-        {% if not isClosed and not needValidation and not isInvalid %}
+        {% if not isClosed and not needValidation%}
             <hr class="fr-mt-5v" id="affectations">
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-col-md-6">
@@ -419,7 +415,7 @@
                         partenaire</strong>
                     <span class="fr-hint-text">Ci-dessous les statuts de prise en charge des partenaires affectés au signalement</span>
                 </div>
-                {% if is_granted('ROLE_ADMIN_PARTENAIRE') and signalement.statut is not same as(6) and not needValidation and not isInvalid %}
+                {% if is_granted('ROLE_ADMIN_PARTENAIRE') and signalement.statut is not same as(6) and not needValidation  %}
                     <div class="fr-col-12 fr-col-md-6 fr-text--right">
                         <button class="fr-btn fr-fi-add-circle-line fr-btn--icon-left" data-fr-opened="false"
                                 aria-controls="fr-modal-affectation">
@@ -535,7 +531,7 @@
 {% endblock %}
 {% block javascripts %}
     <script>
-        {% if isInvalid %}
+        {% if isClosedForMe %}
         document?.querySelector('#signalement-{{ signalement.id }}-content').querySelectorAll('button,.fr-btn').forEach(input => {
             input.remove()
         })

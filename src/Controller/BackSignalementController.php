@@ -121,7 +121,6 @@ class BackSignalementController extends AbstractController
             'needValidation' => $signalement->getStatut() === Signalement::STATUS_NEED_VALIDATION,
             'isAffected' => $isAffected,
             'isAccepted' => $isAccepted,
-            'isInvalid' => $signalement->getStatut() === Signalement::STATUS_INVALID,
             'isClosed' => $signalement->getStatut() === Signalement::STATUS_CLOSED,
             'isClosedForMe' => $isClosedForMe,
             'isRefused' => $isRefused,
