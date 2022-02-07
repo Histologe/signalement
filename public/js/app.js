@@ -228,7 +228,7 @@ forms.forEach((form) => {
     form?.querySelectorAll('[data-fr-adresse-autocomplete]').forEach((autocomplete) => {
         autocomplete.addEventListener('keyup', () => {
             if (autocomplete.value.length > 10)
-                fetch('https://api-adresse.data.gouv.fr/search/?q=' + autocomplete.value).then((res) => {
+                fetch('https://api-adresse.data.gouv.fr/search/?q=' + autocomplete.value+'&lat=43.5911679&lon=5.3102505').then((res) => {
                     res.json().then((r) => {
                         let container = form.querySelector('#signalement-adresse-suggestion')
                         container.innerHTML = '';
