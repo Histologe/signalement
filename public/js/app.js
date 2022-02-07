@@ -735,6 +735,9 @@ document?.querySelector('form[name="login-creation-mdp-form"]')?.querySelectorAl
         let repeat = document?.querySelector('form[name="login-creation-mdp-form"] #login-password-repeat').value;
         let pwdMatchError = document?.querySelector('form[name="login-creation-mdp-form"] #password-match-error');
         let submitBtn = document?.querySelector('form[name="login-creation-mdp-form"] #submitter');
+        submitBtn.addEventListener('click',(e)=>{
+            e.preventDefault()
+        })
         if (pass !== repeat) {
             document?.querySelector('form[name="login-creation-mdp-form"]').querySelectorAll('.fr-input-group').forEach(iptGroup => {
                 iptGroup.classList.add('fr-input-group--error')

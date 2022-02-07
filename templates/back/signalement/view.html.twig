@@ -46,7 +46,7 @@
                     {% elseif isAccepted %}
                         <strong class="fr-text-label--green-emeraude"> {% if isAccepted.answeredBy is same as (app.user) %}  Vous avez {% else %} {{ isAccepted.answeredBy.nom[:1]|upper~'. '~isAccepted.answeredBy.prenom|capitalize }} à
                             {% endif %}
-                            <u>accepté</u> ce
+                            <u>pris connaissance</u> du
                             signalement</strong>
                         <span class="fr-hint-text"><strong>Le :</strong> {{ isAccepted.answeredAt|date('d/m/Y') }}</span>
                     {% elseif isRefused %}

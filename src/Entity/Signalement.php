@@ -193,13 +193,13 @@ class Signalement
     #[ORM\Column(type: 'float', nullable: true)]
     private $scoreCloture;
 
-    #[ORM\Column(type: 'string',length: 5, nullable: true)]
+    #[ORM\Column(type: 'string', length: 5, nullable: true)]
     private $etageOccupant;
 
-    #[ORM\Column(type: 'string',length: 10, nullable: true)]
+    #[ORM\Column(type: 'string', length: 10, nullable: true)]
     private $escalierOccupant;
 
-    #[ORM\Column(type: 'string',length: 10, nullable: true)]
+    #[ORM\Column(type: 'string', length: 10, nullable: true)]
     private $numAppartOccupant;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -223,10 +223,10 @@ class Signalement
     #[ORM\OneToMany(mappedBy: 'signalement', targetEntity: Cloture::class, orphanRemoval: true)]
     private $clotures;
 
-    #[ORM\Column(type: 'datetime_immutable',nullable: true)]
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private $validatedAt;
 
-    #[ORM\Column(type: 'boolean',nullable: true)]
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private $isRsa;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
@@ -1606,4 +1606,14 @@ class Signalement
         return $this;
     }
 
+    public function isClosedFor(Partenaire $partenaire)
+    {
+        $isClosedFor = $this->clotures->filter(function (Cloture $cloture) use ($partenaire) {
+            if ($cloture->getPartenaire()->getId() === $partenaire->getId())
+                return $cloture;
+        });
+        if (!$isClosedFor->isEmpty())
+            return true;
+        return false;
+    }
 }

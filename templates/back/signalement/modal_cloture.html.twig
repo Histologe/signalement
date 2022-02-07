@@ -24,11 +24,13 @@
                                     Cloturer pour {{ app.user.partenaire ? app.user.partenaire.nom }}
                                 </button>
                             </li>
-                            <li>
-                                <button class="fr-btn fr-btn--danger fr-fi-checkbox-line fr-w-100" form="cloture_form" name="cloture[type]" value="2">
-                                    Cloturer pour tous les partenaires
-                                </button>
-                            </li>
+                            {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
+                                <li>
+                                    <button class="fr-btn fr-btn--danger fr-fi-checkbox-line fr-w-100" form="cloture_form" name="cloture[type]" value="2">
+                                        Cloturer pour tous les partenaires
+                                    </button>
+                                </li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
