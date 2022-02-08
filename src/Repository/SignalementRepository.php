@@ -123,10 +123,11 @@ class SignalementRepository extends ServiceEntityRepository
             ->select('PARTIAL s.{id,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut,createdAt}')
             ->where('s.statut != :status')
             ->setParameter('status', Signalement::STATUS_ARCHIVED);
+        $qb->leftJoin('s.clotures','clotures');
         $qb->leftJoin('s.affectations','affectations');
         $qb->leftJoin('affectations.partenaire','partenaire');
         $qb->leftJoin('partenaire.users','user');
-        $qb->addSelect('affectations','partenaire','user');
+        $qb->addSelect('affectations','partenaire','user','clotures');
         if ($status && $status !== 'all')
             $qb->andWhere('s.statut = :statut')
                 ->setParameter('statut', $status);
