@@ -1,4 +1,3 @@
-
 <div class="fr-tabs" id="signalement-tabs">
     <ul class="fr-tabs__list" role="tablist" aria-label="Etapes signalement">
         <li role="presentation">
@@ -10,47 +9,50 @@
         <li role="presentation">
             <button id="signalement-step-2"
                     class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
-                    role="tab" aria-selected="false" aria-controls="signalement-step-2-panel" {% if 'back_' not in app.request.get('_route') %}disabled{% endif %}>2.
+                    role="tab" aria-selected="false" aria-controls="signalement-step-2-panel"
+                    {% if 'back_' not in app.request.get('_route') %}disabled{% endif %}>2.
                 Détails
             </button>
         </li>
         <li role="presentation">
             <button id="signalement-step-3"
                     class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
-                    role="tab" aria-selected="false" aria-controls="signalement-step-3-panel" {% if 'back_' not in app.request.get('_route') %}disabled{% endif %}>3.
+                    role="tab" aria-selected="false" aria-controls="signalement-step-3-panel"
+                    {% if 'back_' not in app.request.get('_route') %}disabled{% endif %}>3.
                 Logement
             </button>
         </li>
         <li role="presentation">
             <button id="signalement-step-4"
                     class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
-                    role="tab" aria-selected="false" aria-controls="signalement-step-4-panel" {% if 'back_' not in app.request.get('_route') %}disabled{% endif %}>4.
+                    role="tab" aria-selected="false" aria-controls="signalement-step-4-panel"
+                    {% if 'back_' not in app.request.get('_route') %}disabled{% endif %}>4.
                 Identité
             </button>
         </li>
         {% if 'back_' not in app.request.get('_route') %}
-        <li role="presentation">
-            <button id="signalement-step-last"
-                    class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
-                    role="tab" aria-selected="false" aria-controls="signalement-step-last-panel"
-                    data-fr-last-step="true" disabled>5.
-                Validation
-            </button>
-        </li>
+            <li role="presentation">
+                <button id="signalement-step-last"
+                        class="fr-tabs__tab fr-fi-checkbox-circle-line fr-tabs__tab--icon-left" tabindex="-1"
+                        role="tab" aria-selected="false" aria-controls="signalement-step-last-panel"
+                        data-fr-last-step="true" disabled>5.
+                    Validation
+                </button>
+            </li>
         {% endif %}
     </ul>
     <section id="signalement-step-1-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel"
              aria-labelledby="signalement-step-1" tabindex="0">
         {% if 'back_' not in app.request.get('_route') %}
-        <header class="fr-callout bg-light fr-mb-5v">
-            <p class="fr-callout__title">Signaler un problème dans votre logement</p>
-            <p class="fr-callout__text fr-mb-5v">
-                Sélectionnez le ou les problèmes que vous rencontrez et indiquez la gravité.
-            </p>
-            <em class="fr-fi-information-line fr-text--light fr-text-label--blue-france"> Vous pouvez en
-                selectionner
-                plusieurs</em>
-        </header>
+            <header class="fr-callout bg-light fr-mb-5v">
+                <p class="fr-callout__title">Signaler un problème dans votre logement</p>
+                <p class="fr-callout__text fr-mb-5v">
+                    Sélectionnez le ou les problèmes que vous rencontrez et indiquez la gravité.
+                </p>
+                <em class="fr-fi-information-line fr-text--light fr-text-label--blue-france"> Vous pouvez en
+                    selectionner
+                    plusieurs</em>
+            </header>
         {% endif %}
         <form action="#" name="signalement" id="signalement-step-1" class="needs-validation" novalidate>
             <div role="alert" class="fr-alert fr-alert--error fr-alert--sm fr-mb-5v fr-hidden">
@@ -83,7 +85,8 @@
                                                    name="signalement[situation][{{ situation.id }}]"
                                                    class="fr-toggle__input signalement-situation"
                                                    id="signalement-situation-{{ situation.id }}-critere-{{ critere.id }}"
-                                                   value="{{ critere.label }}" {% if critere in signalement.criteres %}checked{% endif %}>
+                                                   value="{{ critere.label }}"
+                                                   {% if critere in signalement.criteres %}checked{% endif %}>
                                             <label class="fr-toggle__label fr-text--bold"
                                                    for="signalement-situation-{{ situation.id }}-critere-{{ critere.id }}">
                                                 <div class="fr-form-group fr-mb-0">
@@ -100,24 +103,27 @@
                                         <div class="fr-fieldset__content fr-collapse"
                                              id="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}">
                                             {% for index,criticite in critere.criticites %}
-                                                <div class="fr-radio-group fr-radio-rich fr-mb-5v">
-                                                    <input type="radio"
-                                                           id="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"
-                                                           name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]"
-                                                           value="{{ criticite.id }}"
-                                                           class="toggle-criticite-smiley" {% if criticite in signalement.criticites %}checked{% endif %}>
-                                                    <label class="fr-label"
-                                                           for="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"><strong>{{ etats[index] }}</strong>
-                                                        <span class="fr-hint-text">{{ criticite.label }}</span>
-                                                    </label>
-                                                    <div class="fr-radio-rich__img">
-                                                        <img src="{{ asset('img/'~etats_classes[index]~'.svg') }}"
-                                                             alt="" width="100%" class="fr-p-2v"
-                                                             data-fr-checked-icon="{{ asset('img/'~etats_classes[index]~'-actif.svg') }}"
-                                                             data-fr-unchecked-icon="{{ asset('img/'~etats_classes[index]~'.svg') }}"/>
-                                                        <!-- L’alternative de l’image (attribut alt) doit rester vide car l’image est illustrative et ne doit pas être restituée aux technologies d’assistance -->
+                                                {% if not criticite.isArchive %}
+                                                    <div class="fr-radio-group fr-radio-rich fr-mb-5v">
+                                                        <input type="radio"
+                                                               id="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"
+                                                               name="signalement[situation][{{ situation.id }}][critere][{{ critere.id }}][criticite]"
+                                                               value="{{ criticite.id }}"
+                                                               class="toggle-criticite-smiley"
+                                                               {% if criticite in signalement.criticites %}checked{% endif %}>
+                                                        <label class="fr-label"
+                                                               for="signalement-critere-{{ critere.id }}-criticite-{{ criticite.id }}"><strong>{{ etats[criticite.score-1] }}</strong>
+                                                            <span class="fr-hint-text">{{ criticite.label }}</span>
+                                                        </label>
+                                                        <div class="fr-radio-rich__img">
+                                                            <img src="{{ asset('img/'~etats_classes[criticite.score-1]~'.svg') }}"
+                                                                 alt="" width="100%" class="fr-p-2v"
+                                                                 data-fr-checked-icon="{{ asset('img/'~etats_classes[criticite.score-1]~'-actif.svg') }}"
+                                                                 data-fr-unchecked-icon="{{ asset('img/'~etats_classes[criticite.score-1]~'.svg') }}"/>
+                                                            <!-- L’alternative de l’image (attribut alt) doit rester vide car l’image est illustrative et ne doit pas être restituée aux technologies d’assistance -->
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                {% endif %}
                                             {% endfor %}
                                             <p class="fr-error-text fr-hidden">Vous devez sélectioner un état
                                                 pour cette situation</p>
@@ -131,36 +137,36 @@
             </ul>
             <div class="fr-grid-row fr-mt-5w">
                 <div class="fr-col-12 fr-text--center">
-                        <button class="fr-btn fr-fi-arrow-right-line fr-btn--icon-right">Continuer</button>
+                    <button class="fr-btn fr-fi-arrow-right-line fr-btn--icon-right">Continuer</button>
                 </div>
             </div>
         </form>
     </section>
 
-        <section id="signalement-step-2-panel" class="fr-tabs__panel" role="tabpanel"
-                 aria-labelledby="signalement-step-2" tabindex="0">
-            <header class="fr-callout bg-light fr-mb-5v">
-                <p class="fr-callout__title">Je donne des détails sur les problèmes rencontrés</p>
-                <p class="fr-callout__text fr-mb-5v">
-                    Décrivez ici en détails le problème rencontré dans votre logement. Vous pouvez ajouter des
-                    documents
-                    et photos.
+    <section id="signalement-step-2-panel" class="fr-tabs__panel" role="tabpanel"
+             aria-labelledby="signalement-step-2" tabindex="0">
+        <header class="fr-callout bg-light fr-mb-5v">
+            <p class="fr-callout__title">Je donne des détails sur les problèmes rencontrés</p>
+            <p class="fr-callout__text fr-mb-5v">
+                Décrivez ici en détails le problème rencontré dans votre logement. Vous pouvez ajouter des
+                documents
+                et photos.
+            </p>
+            <em class="fr-fi-information-line fr-text--light fr-text-label--blue-france"> Les champs marqués
+                d'un
+                astérisque
+                (*) sont obligatoires.</em>
+        </header>
+        <form action="#" name="signalement" class="needs-validation" novalidate>
+            <div class="fr-input-group">
+                {{ form_label(form.details) }}
+                {{ form_help(form.details) }}
+                {{ form_widget(form.details) }}
+                <p class="fr-error-text fr-hidden">
+                    Merci de proposer une rapide description (minimum 10 caractères).
                 </p>
-                <em class="fr-fi-information-line fr-text--light fr-text-label--blue-france"> Les champs marqués
-                    d'un
-                    astérisque
-                    (*) sont obligatoires.</em>
-            </header>
-            <form action="#" name="signalement" class="needs-validation" novalidate>
-                <div class="fr-input-group">
-                    {{ form_label(form.details) }}
-                    {{ form_help(form.details) }}
-                    {{ form_widget(form.details) }}
-                    <p class="fr-error-text fr-hidden">
-                        Merci de proposer une rapide description (minimum 10 caractères).
-                    </p>
-                </div>
-                {% if 'back_' not in app.request.get('_route') %}
+            </div>
+            {% if 'back_' not in app.request.get('_route') %}
                 <div class="fr-form-group">
                     <fieldset class="fr-fieldset fr-fieldset--inline">
                         <legend class="fr-label fr-pl-0">Joindre des photos du/des problème(s)</legend>
@@ -198,7 +204,8 @@
                             {% for i in 0..3 %}
                                 <div class="fr-col-6 fr-col-md fr-text--center">
                                     <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-attachment-fill">
-                                        <input type="file" name="signalement[documents][{{ i }}]" class="fr-hidden doc-file"
+                                        <input type="file" name="signalement[documents][{{ i }}]"
+                                               class="fr-hidden doc-file"
                                                accept=".pdf,.doc,.docx">
                                     </label>
                                     <small class="fr-text-label--red-marianne fr-icon--sm fr-hidden fr-display-block">Le
@@ -218,26 +225,26 @@
                         </div>
                     </fieldset>
                 </div>
-                {% endif %}
-                <div class="fr-grid-row">
-                    <div class="fr-col-12 fr-text--center">
-                        <button class="fr-btn fr-fi-arrow-right-line fr-btn--icon-right">Continuer</button>
-                    </div>
+            {% endif %}
+            <div class="fr-grid-row">
+                <div class="fr-col-12 fr-text--center">
+                    <button class="fr-btn fr-fi-arrow-right-line fr-btn--icon-right">Continuer</button>
                 </div>
-            </form>
-        </section>
+            </div>
+        </form>
+    </section>
     <section id="signalement-step-3-panel" class="fr-tabs__panel" role="tabpanel"
              aria-labelledby="signalement-step-3" tabindex="0">
         {% if 'back_' not in app.request.get('_route') %}
-        <header class="fr-callout bg-light fr-mb-5v">
-            <p class="fr-callout__title">Je donne des informations sur mon logement</p>
-            <p class="fr-callout__text fr-mb-5v">
-                Pour continuer, nous avons besoin d'informations complémentaires sur votre logement.
-            </p>
-            <em class="fr-fi-information-line fr-text--light text-blue-france"> Les champs marqués d'un
-                astérisque
-                (*) sont obligatoires.</em>
-        </header>
+            <header class="fr-callout bg-light fr-mb-5v">
+                <p class="fr-callout__title">Je donne des informations sur mon logement</p>
+                <p class="fr-callout__text fr-mb-5v">
+                    Pour continuer, nous avons besoin d'informations complémentaires sur votre logement.
+                </p>
+                <em class="fr-fi-information-line fr-text--light text-blue-france"> Les champs marqués d'un
+                    astérisque
+                    (*) sont obligatoires.</em>
+            </header>
         {% endif %}
         <form action="#" name="signalement" class="needs-validation" novalidate>
             <div class="fr-form-group">
@@ -312,7 +319,8 @@
                         Veuillez précisez si vous êtes allocataire
                     </p>
                 </fieldset>
-                <div class="fr-form-group fr-mt-5v {% if 'back_' not in app.request.get('_route') or not signalement.isAllocataire %}fr-hidden{% endif %}" id="signalement-num-alloc-bloc">
+                <div class="fr-form-group fr-mt-5v {% if 'back_' not in app.request.get('_route') or not signalement.isAllocataire %}fr-hidden{% endif %}"
+                     id="signalement-num-alloc-bloc">
                     <div class="fr-input-group">
                         {{ form_label(form.numAllocataire) }}
                         {{ form_help(form.numAllocataire) }}
@@ -479,7 +487,8 @@
                     </p>
                 </fieldset>
             </div>
-            <div class="fr-form-group {% if 'back_' not in app.request.get('_route') or not signalement.isRefusIntervention %}fr-hidden{% endif %} data-fr-toggle" id="signalement-raison-refus">
+            <div class="fr-form-group {% if 'back_' not in app.request.get('_route') or not signalement.isRefusIntervention %}fr-hidden{% endif %} data-fr-toggle"
+                 id="signalement-raison-refus">
                 <div class="fr-input-group">
                     {{ form_label(form.raisonRefusIntervention) }}
                     {{ form_help(form.raisonRefusIntervention) }}
@@ -491,7 +500,7 @@
             </div>
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-text--center">
-                        <button class="fr-btn fr-fi-arrow-right-line fr-btn--icon-right">Continuer</button>
+                    <button class="fr-btn fr-fi-arrow-right-line fr-btn--icon-right">Continuer</button>
                 </div>
             </div>
         </form>
@@ -499,39 +508,41 @@
     <section id="signalement-step-4-panel" class="fr-tabs__panel" role="tabpanel"
              aria-labelledby="signalement-step-4" tabindex="0">
         {% if 'back_' not in app.request.get('_route') %}
-        <header class="fr-callout bg-light fr-mb-5v">
-            <p class="fr-callout__title">Je renseigne mes coordonnées</p>
-            <p class="fr-callout__text fr-mb-5v">
-                Pour traiter votre demande, nous avons besoin de vos coordonnées.
-            </p>
-            <em class="fr-fi-information-line fr-text-label--blue-francee"> Les champs marqués d'un
-                astérisque
-                (*) sont obligatoires.</em>
-        </header>
+            <header class="fr-callout bg-light fr-mb-5v">
+                <p class="fr-callout__title">Je renseigne mes coordonnées</p>
+                <p class="fr-callout__text fr-mb-5v">
+                    Pour traiter votre demande, nous avons besoin de vos coordonnées.
+                </p>
+                <em class="fr-fi-information-line fr-text-label--blue-francee"> Les champs marqués d'un
+                    astérisque
+                    (*) sont obligatoires.</em>
+            </header>
         {% endif %}
-        <form action="{% if 'back_' in app.request.get('_route') %}{{ path('back_signalement_edit',{uuid:signalement.uuid}) }}{% else %}#{% endif %}" name="signalement" class="needs-validation" novalidate>
+        <form action="{% if 'back_' in app.request.get('_route') %}{{ path('back_signalement_edit',{uuid:signalement.uuid}) }}{% else %}#{% endif %}"
+              name="signalement" class="needs-validation" novalidate>
             {% if 'back_' not in app.request.get('_route') %}
-            <div class="fr-form-group">
-                <fieldset class="fr-fieldset fr-fieldset--inline">
-                    <legend class="fr-fieldset__legend fr-text--regular">
-                        {{ form_label(form.isNotOccupant) }}
-                        {{ form_help(form.isNotOccupant) }}
-                    </legend>
-                    <div class="fr-fieldset__content">
-                        {% for key, choice in form.isNotOccupant.children %}
-                            <div class="fr-radio-group">
-                                {{ form_widget(choice) }}
-                                {{ form_label(choice) }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <p class="fr-error-text fr-hidden">
-                        Veuillez précisez si vous êtes l'occupant du logement.
-                    </p>
-                </fieldset>
-            </div>
+                <div class="fr-form-group">
+                    <fieldset class="fr-fieldset fr-fieldset--inline">
+                        <legend class="fr-fieldset__legend fr-text--regular">
+                            {{ form_label(form.isNotOccupant) }}
+                            {{ form_help(form.isNotOccupant) }}
+                        </legend>
+                        <div class="fr-fieldset__content">
+                            {% for key, choice in form.isNotOccupant.children %}
+                                <div class="fr-radio-group">
+                                    {{ form_widget(choice) }}
+                                    {{ form_label(choice) }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <p class="fr-error-text fr-hidden">
+                            Veuillez précisez si vous êtes l'occupant du logement.
+                        </p>
+                    </fieldset>
+                </div>
             {% endif %}
-            <div class="fr-form-group {% if 'back_' not in app.request.get('_route') or not signalement.isNotOccupant %}fr-hidden{% endif%} data-fr-toggle" id="signalement-pas-occupant">
+            <div class="fr-form-group {% if 'back_' not in app.request.get('_route') or not signalement.isNotOccupant %}fr-hidden{% endif %} data-fr-toggle"
+                 id="signalement-pas-occupant">
                 <fieldset class="fr-fieldset fr-fieldset--inline">
                     <legend class="fr-fieldset__legend fr-text--regular">
                         Informations concernant <strong><u>le déclarant</u></strong>
@@ -598,7 +609,8 @@
                     {{ form_row(form.structureDeclarant) }}
                 </div>
             </div>
-            <div class="fr-form-group {% if 'back_' not in app.request.get('_route') %}fr-hidden{% endif%} data-fr-toggle" id="signalement-occupant">
+            <div class="fr-form-group {% if 'back_' not in app.request.get('_route') %}fr-hidden{% endif %} data-fr-toggle"
+                 id="signalement-occupant">
                 <fieldset class="fr-fieldset fr-fieldset--inline">
                     <legend class="fr-fieldset__legend fr-text--regular">
                         Informations concernant <strong><u>l'occupant</u></strong>
@@ -688,7 +700,8 @@
                     </div>
                 </fieldset>
             </div>
-            <div class="fr-form-group {% if 'back_' not in app.request.get('_route') %}fr-hidden{% endif%} data-fr-toggle fr-pt-5v" id="signalement-infos-proprio">
+            <div class="fr-form-group {% if 'back_' not in app.request.get('_route') %}fr-hidden{% endif %} data-fr-toggle fr-pt-5v"
+                 id="signalement-infos-proprio">
                 <fieldset class="fr-fieldset">
                     <legend class="fr-fieldset__legend fr-text--regular">
                         Informations du propriétaire ou gestionnaire bailleur
@@ -707,7 +720,9 @@
                     {% if 'back_' not in app.request.get('_route') %}
                         <button class="fr-btn fr-fi-arrow-right-line fr-btn--icon-right">Continuer</button>
                     {% else %}
-                        <button class="fr-btn fr-fi-check-line fr-btn--icon-right back-signalement-edit-submit" formaction="#">Enregistrer</button>
+                        <button class="fr-btn fr-fi-check-line fr-btn--icon-right back-signalement-edit-submit"
+                                formaction="#">Enregistrer
+                        </button>
                     {% endif %}
                 </div>
             </div>
@@ -816,7 +831,8 @@
                 <div class="fr-toggle">
                     <input type="checkbox" class="fr-toggle__input" id="signalement-consentement-tiers"
                            name="signalement[isConsentementTiers]" required>
-                    <label class="fr-toggle__label" for="signalement-consentement-tiers">Je certifie avoir le droit de déposer un signalement pour le compte d'un tiers.</label>
+                    <label class="fr-toggle__label" for="signalement-consentement-tiers">Je certifie avoir le droit de
+                        déposer un signalement pour le compte d'un tiers.</label>
                     <p class="fr-error-text fr-hidden">
                         Pour déposer un signalement au nom d'une tierce personne vous devez en avoir
                         l'autorisation.
@@ -827,7 +843,8 @@
                 <div class="fr-toggle fr-toggle--border-bottom">
                     <input type="checkbox" class="fr-toggle__input" id="signalement-accept-cgu"
                            name="signalement[isCguAccepted]" required>
-                    <label class="fr-toggle__label" for="signalement-accept-cgu">Je certifie avoir pris connaissance et accepter les
+                    <label class="fr-toggle__label" for="signalement-accept-cgu">Je certifie avoir pris connaissance et
+                        accepter les
                         <span
                                 aria-controls="cguModal" data-fr-opened="false">&nbsp;<u><b>Conditions Générales
                                         d'Utilisation</b></u></span>&nbsp;du service.</label>
