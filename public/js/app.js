@@ -362,6 +362,9 @@ forms.forEach((form) => {
                         let docs,photos;
                         docs = photos = 0;
                         document.querySelector('#recap-signalement-situation').innerHTML = '';
+                        for (var value of imgData.entries()) {
+                            photos +=1;
+                        }
                         forms.forEach((form) => {
                             form.querySelectorAll('[type="file"]').forEach(file => {
                                 if (file.classList.contains("doc-file"))
@@ -369,9 +372,6 @@ forms.forEach((form) => {
                                 if (file.classList.contains("photo-file"))
                                     photos +=file.files.length;
                             })
-                            for (var value of imgData.values()) {
-                                photos +=1;
-                            }
 
                             document.querySelector('#recap-signalement_photos').innerHTML = photos+' Photo(s) transmise(s)';
                             document.querySelector('#recap-signalement_documents').innerHTML = docs+' Document(s) transmis';

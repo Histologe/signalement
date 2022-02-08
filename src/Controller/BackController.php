@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Affectation;
+use App\Entity\Cloture;
 use App\Entity\Config;
 use App\Entity\Signalement;
 use App\Form\ConfigType;
@@ -35,13 +36,16 @@ class BackController extends AbstractController
             'page' => $request->get('page') ?? 1,
         ];
         $req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['page']);
-        if($this->getUser()->getPartenaire()){
-            foreach ($req as $signalement)
-            {
-                $signalement->getAffectations()->filter(function (Affectation $affectation)use($signalement){
-                    if($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_WAIT)
+        if ($this->getUser()->getPartenaire()) {
+            foreach ($req as $signalement) {
+                $signalement->getAffectations()->filter(function (Affectation $affectation) use ($signalement) {
+                    if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_WAIT)
                         $signalement->setStatut(Signalement::STATUS_NEED_PARTNER_RESPONSE);
-            });
+                    $signalement->getClotures()->filter(function (Cloture $cloture) use ($signalement) {
+                        if ($cloture->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $cloture->getType() === Cloture::TYPE_CLOTURE_PARTENAIRE)
+                            $signalement->setStatut(Signalement::STATUS_CLOSED);
+                    });
+                });
             }
         }
         $signalements = [
@@ -54,7 +58,7 @@ class BackController extends AbstractController
 //        dd($signalementRepository->countByStatus($user));
         $signalements['counts'] = $signalementRepository->countByStatus($user);
 //        dd($signalementRepository->countByStatus($user));
-        if (/*$request->isXmlHttpRequest() && */$request->get('pagination'))
+        if (/*$request->isXmlHttpRequest() && */ $request->get('pagination'))
             return $this->render('back/table_result.html.twig', ['filter' => $filter, 'signalements' => $signalements]);
         return $this->render('back/index.html.twig', [
             'title' => $title,
@@ -64,7 +68,8 @@ class BackController extends AbstractController
     }
 
 
-    #[Route('/news', name: 'back_news_activities')]
+    #[
+        Route('/news', name: 'back_news_activities')]
     public function newsActivitiesSinceLastLogin(NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response
     {
         $title = 'Administration - Nouveaux suivis';
