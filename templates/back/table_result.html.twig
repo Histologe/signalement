@@ -21,7 +21,7 @@
                     {% set classe = 'fr-text--orange fr-fi-question-fill fr-icon--sm' %}
                 {% elseif affectation.statut is same as (1) %}
                     {% set classe = 'fr-text-label--green-emeraude fr-fi-checkbox-circle-fill fr-icon--sm' %}
-                {% elseif affectation.statut is same as (2) %}
+                {% elseif affectation.statut is same as (2) or affectation.statut is same as (3) %}
                     {% set classe = 'fr-text-label--red-marianne fr-fi-close-circle-fill fr-icon--sm' %}
                 {% endif %}
                 <small class="{{ classe }} fr-display-block"><span
