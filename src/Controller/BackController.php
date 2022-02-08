@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Affectation;
 use App\Entity\Config;
 use App\Entity\Signalement;
 use App\Form\ConfigType;
@@ -34,6 +35,15 @@ class BackController extends AbstractController
             'page' => $request->get('page') ?? 1,
         ];
         $req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['page']);
+        if($this->getUser()->getPartenaire()){
+            foreach ($req as $signalement)
+            {
+                $signalement->getAffectations()->filter(function (Affectation $affectation)use($signalement){
+                    if($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_WAIT)
+                        $signalement->setStatut(Signalement::STATUS_NEED_PARTNER_RESPONSE);
+            });
+            }
+        }
         $signalements = [
             'list' => $req,
             'villes' => $signalementRepository->findCities($user),

@@ -12,6 +12,7 @@ class Signalement
 {
     const STATUS_NEED_VALIDATION = 1;
     const STATUS_ACTIVE = 2;
+    const STATUS_NEED_PARTNER_RESPONSE = 3;
     const STATUS_CLOSED = 6;
     const STATUS_ARCHIVED = 7;
 

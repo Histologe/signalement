@@ -5,6 +5,28 @@ Node.prototype.addEventListeners = function (eventNames, eventFunction) {
 const imgData = new FormData();
 const forms = document.querySelectorAll('form.needs-validation:not([name="bug-report"])');
 const localStorage = window.localStorage;
+const checkUserMail = (el) => {
+    let formData = new FormData();
+    formData.append('email',el.value)
+    formData.append('_token',el.getAttribute('data-token'))
+    fetch('../checkmail',{
+        method:'POST',
+        body:formData
+    }).then(r=>{
+        if(!r.ok)
+        {
+            el.classList.add('fr-input--error');
+            el.parentElement.classList.add('fr-input-group--error');
+            el.parentElement.querySelector('p.fr-error-text').classList.remove('fr-hidden');
+            document.querySelector('#submit_btn_partenaire').disabled = true;
+        } else {
+            el.classList.remove('fr-input--error');
+            el.parentElement.classList.remove('fr-input-group--error');
+            el.parentElement.querySelector('p.fr-error-text').classList.add('fr-hidden');
+            document.querySelector('#submit_btn_partenaire').disabled = false;
+        }
+    })
+}
 const serializeArray = (form) => {
     return Array.from(new FormData(form)
         .entries())

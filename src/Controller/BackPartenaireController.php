@@ -120,6 +120,19 @@ class BackPartenaireController extends AbstractController
         return $this->redirectToRoute('back_partenaire_index', [], Response::HTTP_SEE_OTHER);
     }
 
+
+    #[Route('/checkmail', name: 'back_partenaire_check_user_email', methods: ['POST'])]
+    public function checkMail(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        if (!$this->isGranted('ROLE_USER_PARTENAIRE'))
+            return $this->redirectToRoute('back_index');
+        if ($this->isCsrfTokenValid('partenaire_checkmail', $request->request->get('_token'))) {
+            if($entityManager->getRepository(User::class)->findOneBy(['email'=>$request->get('email')]))
+                return $this->json(['error'=>'email_exist'],400);
+        }
+        return $this->json(['success'=>'email_ok']);
+    }
+
     #[Route('/{id}', name: 'back_partenaire_delete', methods: ['POST'])]
     public function delete(Request $request, Partenaire $partenaire, EntityManagerInterface $entityManager): Response
     {
