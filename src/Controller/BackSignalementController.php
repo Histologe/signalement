@@ -344,7 +344,7 @@ class BackSignalementController extends AbstractController
     #[Route('/s/{uuid}/file/{type}/{file}/delete', name: 'back_signalement_delete_file')]
     public function deleteFileSignalement(Signalement $signalement, $type, $file, Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger)
     {
-        if ($this->isCsrfTokenValid('signalement_delete_file_' . $signalement->getId(), $request->get('_token'))) {
+        if ($this->isCsrfTokenValid('signalement_delete_file_' . $signalement->getId(), $request->get('_token')) )  {
             $setMethod = 'set' . ucfirst($type);
             $getMethod = 'get' . ucfirst($type);
             $$type = $signalement->$getMethod();
@@ -363,7 +363,7 @@ class BackSignalementController extends AbstractController
     #[Route('/{uuid}/delete', name: 'back_signalement_delete', methods: "POST")]
     public function deleteSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
+        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement) && !$this->isGranted('ROLE_ADMIN_TERRITOIRE'))
             return $this->redirectToRoute('back_index');
         if ($this->isCsrfTokenValid('signalement_delete_' . $signalement->getId(), $request->get('_token'))) {
             $signalement->setStatut(Signalement::STATUS_ARCHIVED);
