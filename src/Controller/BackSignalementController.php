@@ -211,7 +211,7 @@ class BackSignalementController extends AbstractController
     #[Route('/{uuid}/affectation/toggle', name: 'back_signalement_toggle_affectation')]
     public function toggleAffectationSignalement(Signalement $signalement, ManagerRegistry $doctrine, Request $request, PartenaireRepository $partenaireRepository, NotificationService $notificationService): RedirectResponse|JsonResponse
     {
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
+        if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') && !$this->checkAffectation($signalement))
             return $this->json(['status' => 'denied'], 400);
         if ($this->isCsrfTokenValid('signalement_affectation_' . $signalement->getId(), $request->get('_token'))) {
             $data = $request->get('signalement-affectation');
@@ -289,7 +289,7 @@ class BackSignalementController extends AbstractController
     #[Route('/{uuid}/validation/response', name: 'back_signalement_validation_response', methods: "GET")]
     public function validationResponseSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, NotificationService $notificationService): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
+        if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE'))
             return $this->redirectToRoute('back_index');
         if ($this->isCsrfTokenValid('signalement_validation_response_' . $signalement->getId(), $request->get('_token'))
             && $response = $request->get('signalement-validation-response')) {
@@ -299,8 +299,8 @@ class BackSignalementController extends AbstractController
                 $signalement->setValidatedAt(new \DateTimeImmutable());
                 $signalement->setCodeSuivi(md5(uniqid()));
             } else {
-                $statut = Signalement::STATUS_INVALID;
-                $description = 'non-valide';
+                $statut = Signalement::STATUS_CLOSED;
+                $description = 'cloturé car non-valide';
             }
             $suivi = new Suivi();
             $suivi->setSignalement($signalement);
