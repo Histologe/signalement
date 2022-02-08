@@ -137,6 +137,7 @@ class SignalementRepository extends ServiceEntityRepository
                 ->setParameter('city', $city);
         if ($user)
             $qb->andWhere('partenaire = :partenaire')
+                ->andWhere('s.statut = '.Signalement::STATUS_ACTIVE)
                 ->setParameter('partenaire', $user->getPartenaire());
         if ($search)
             $qb->andWhere('LOWER(s.nomOccupant) LIKE :search OR LOWER(s.prenomOccupant) LIKE :search OR LOWER(s.reference) LIKE :search OR LOWER(s.adresseOccupant) LIKE :search OR LOWER(s.villeOccupant) LIKE :search')

@@ -33,6 +33,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints\Positive;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[Route('/bo/s')]
 class BackSignalementController extends AbstractController
@@ -59,7 +60,7 @@ class BackSignalementController extends AbstractController
      * @throws NonUniqueResultException
      */
     #[Route('/{uuid}', name: 'back_signalement_view')]
-    public function viewSignalement($uuid, Request $request, EntityManagerInterface $entityManager,AffectationRepository $affectationRepository, PartenaireRepository $partenaireRepository, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response
+    public function viewSignalement($uuid, Request $request, EntityManagerInterface $entityManager,HttpClientInterface $httpClient, PartenaireRepository $partenaireRepository, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response
     {
         /** @var Signalement $signalement */
         $signalement = $entityManager->getRepository(Signalement::class)->findByUuid($uuid);
@@ -118,6 +119,11 @@ class BackSignalementController extends AbstractController
         foreach ($signalement->getCriticites() as $criticite) {
             $criticitesArranged[$criticite->getCritere()->getSituation()->getLabel()][$criticite->getCritere()->getLabel()] = $criticite;
         }
+
+        $dpe = $httpClient->request(
+            'GET',
+            'https://koumoul.com/data-fair/api/v1/datasets/dpe-france/values_agg?field=code_insee_commune_actualise&format=json&agg_size=20&q_mode=simple&geo_adresse_in=14 Rue Lespy 64000 Pau&size=100&select=%2A&sampling=neighbors'
+        );
         return $this->render('back/signalement/view.html.twig', [
             'title' => $title,
             'situations' => $criticitesArranged,
@@ -129,6 +135,7 @@ class BackSignalementController extends AbstractController
             'isClosedForMe' => $isClosedForMe,
             'isRefused' => $isRefused,
             'signalement' => $signalement,
+            'dpe'=>$dpe->toArray(),
             'partenaires' => $partenaireRepository->findAllOrByInseeIfCommune($signalement->getInseeOccupant()),
             'clotureForm' => $clotureForm->createView()
         ]);
