@@ -42,6 +42,7 @@ class SituationRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('s')
             ->where('s.isArchive != 1')
+            ->andWhere('s.isActive = 1')
             ->leftJoin('s.criteres','criteres','WITH','criteres.isArchive != 1')
             ->leftJoin('criteres.criticites','criticites','WITH','criticites.isArchive != 1')
             ->addSelect('criteres')
