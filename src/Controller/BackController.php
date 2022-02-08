@@ -27,7 +27,7 @@ class BackController extends AbstractController
     {
         $title = 'Administration - Tableau de bord';
         $user = null;
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
+        if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE'))
             $user = $this->getUser();
         $filter = [
             'search' => $request->get('search') ?? null,
