@@ -56,7 +56,7 @@ class ActivityListener implements EventSubscriberInterface
                 }
                 if ($entity instanceof Affectation) {
                     if ($entity->getStatut() === Affectation::STATUS_WAIT) {
-                        $entity->getPartenaire()->getUsers()->map(function (User $user) use ($entity) {
+                        /*$entity->getPartenaire()->getUsers()->map(function (User $user) use ($entity) {
                             if ($user->getIsMailingActive() && $user->getStatut() === User::STATUS_ACTIVE) {
                                 $this->notifier->send(NotificationService::TYPE_AFFECTATION, $user->getEmail(), [
                                     'link' => $this->urlGenerator->generate('back_signalement_view', [
@@ -64,7 +64,7 @@ class ActivityListener implements EventSubscriberInterface
                                     ], $this->urlGenerator::ABSOLUTE_PATH)
                                 ]);
                             }
-                        }) ;
+                        }) ;*/
                     }
                 }
                 if ($entity instanceof User) {

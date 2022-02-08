@@ -46,7 +46,7 @@ class FrontSignalementController extends AbstractController
      * @throws Exception
      */
     #[Route('/signalement/envoi', name: 'envoi_signalement', methods: "POST")]
-    public function envoi(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
+    public function envoi(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger,NotificationService $notificationService): Response
     {
         if ($data = $request->get('signalement')) {
             $em = $doctrine->getManager();
@@ -135,6 +135,12 @@ class FrontSignalementController extends AbstractController
             $signalement->setScoreCreation($score->calculate());
             $em->persist($signalement);
             $em->flush();
+
+            //TODO: Mail Sendinblue
+            $emails = [$signalement->getMailDeclarant() ?? null, $signalement->getMailOccupant() ?? null];
+            array_map(function ($email) use ($signalement,$notificationService) {
+                null !== $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $email, ['signalement' => $signalement]);
+            }, $emails);
 
             return $this->json(['response' => 'success']);
         }

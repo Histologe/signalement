@@ -606,7 +606,8 @@ class SignalementType extends AbstractType
                     'class' => 'fr-label'
                 ],
                 'label' => "Lien avec l'occupant",
-                'required'=>false
+                'required'=>false,
+                'placeholder' => false
             ])
             ->add('structureDeclarant', TextType::class, [
                 'attr' => [
