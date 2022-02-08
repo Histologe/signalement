@@ -139,7 +139,7 @@ class FrontSignalementController extends AbstractController
             //TODO: Mail Sendinblue
             $emails = [$signalement->getMailDeclarant() ?? null, $signalement->getMailOccupant() ?? null];
             array_map(function ($email) use ($signalement,$notificationService) {
-                null !== $email ?? $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $email, ['signalement' => $signalement]);
+                null === $email ?? $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $email, ['signalement' => $signalement]);
             }, $emails);
 
             return $this->json(['response' => 'success']);
