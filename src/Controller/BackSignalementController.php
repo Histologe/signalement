@@ -78,9 +78,9 @@ class BackSignalementController extends AbstractController
                     break;
             }
         }
-        $clotureCurrentUser = $signalement->getClotures()->filter(function (Cloture $cloture) {
-            if ($cloture->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId())
-                return $cloture;
+        $clotureCurrentUser = $signalement->getAffectations()->filter(function (Affectation $affectation) {
+            if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_CLOSED)
+                return $affectation;
         });
         if ($clotureCurrentUser->isEmpty())
             $isClosedForMe = false;
@@ -88,29 +88,27 @@ class BackSignalementController extends AbstractController
 
         $newsActivitiesSinceLastLoginService->update($signalement);
 
-        $cloture = new Cloture();
-        $clotureForm = $this->createForm(ClotureType::class, $cloture);
+        $clotureForm = $this->createForm(ClotureType::class);
         $clotureForm->handleRequest($request);
         if ($clotureForm->isSubmitted() && $clotureForm->isValid()) {
+            $motifCloture = $clotureForm->get('motif')->getData();
             $sujet = $this->getUser()?->getPartenaire()?->getNom();
-            if ($cloture->getType() === Cloture::TYPE_CLOTURE_ALL) {
+            if ($clotureForm->get('type')->getData() === 'all') {
                 $signalement->setStatut(Signalement::STATUS_CLOSED);
+                $signalement->setMotifCloture($motifCloture);
                 $sujet = 'tous les partenaires';
             }
             $suivi = new Suivi();
-            $suivi->setDescription('Le signalement à été cloturé pour ' . $sujet . ' avec le motif suivant: <br> <strong>' . $cloture->getMotif()->getLabel() . '</strong>');
+            $suivi->setDescription('Le signalement à été cloturé pour ' . $sujet . ' avec le motif suivant: <br> <strong>' . $motifCloture . '</strong>');
             $suivi->setCreatedBy($this->getUser());
             $signalement->addSuivi($suivi);
-            $cloture->setSignalement($signalement);
-            $cloture->setPartenaire($this->getUser()->getPartenaire());
             /** @var Affectation $isAffected */
             $isAffected->setStatut(Affectation::STATUS_CLOSED);
             $isAffected->setAnsweredAt(new \DateTimeImmutable());
-            $cloture->setClosedBy($this->getUser());
+            $isAffected->setMotifCloture($motifCloture);
             $entityManager->persist($signalement);
             $entityManager->persist($isAffected);
             $entityManager->persist($suivi);
-            $entityManager->persist($cloture);
             $entityManager->flush();
             $this->addFlash('success', 'Signalement cloturé avec succès !');
             return $this->redirectToRoute('back_index');

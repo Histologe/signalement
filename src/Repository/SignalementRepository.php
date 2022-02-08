@@ -100,11 +100,10 @@ class SignalementRepository extends ServiceEntityRepository
         $qb
             ->leftJoin('s.situations','situations')
             ->leftJoin('s.affectations','affectations')
-            ->leftJoin('s.clotures','clotures')
             ->leftJoin('situations.criteres','criteres')
             ->leftJoin('criteres.criticites','criticites')
             ->leftJoin('affectations.partenaire','partenaire')
-            ->addSelect('situations','affectations','criteres','criticites','partenaire','clotures');
+            ->addSelect('situations','affectations','criteres','criticites','partenaire');
         /*$qb->leftJoin('s.situations','situations');
         $qb->leftJoin('situations.criteres','criteres');
         $qb->leftJoin('criteres.criticites','criticites');
@@ -124,11 +123,10 @@ class SignalementRepository extends ServiceEntityRepository
             ->select('PARTIAL s.{id,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut,createdAt}')
             ->where('s.statut != :status')
             ->setParameter('status', Signalement::STATUS_ARCHIVED);
-        $qb->leftJoin('s.clotures','clotures');
         $qb->leftJoin('s.affectations','affectations');
         $qb->leftJoin('affectations.partenaire','partenaire');
         $qb->leftJoin('partenaire.users','user');
-        $qb->addSelect('affectations','partenaire','user','clotures');
+        $qb->addSelect('affectations','partenaire','user');
         if ($status && $status !== 'all')
             $qb->andWhere('s.statut = :statut')
                 ->setParameter('statut', $status);

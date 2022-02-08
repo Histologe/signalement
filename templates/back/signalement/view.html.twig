@@ -7,7 +7,7 @@
 
     {% include 'back/signalement/modal_affectation.html.twig' %}
      {% include 'back/signalement/modal_cloture.html.twig' %}
-    <section class="fr-p-5v {{ isClosedForMe ? 'signalement-invalid':'' }}"
+    <section class="fr-p-5v {{ isClosedForMe or signalement.statut is same as(6) ? 'signalement-invalid':'' }}"
              id="signalement-{{ signalement.id }}-content">
         <header>
             <div class="fr-grid-row fr-grid-row--middle ">
@@ -543,7 +543,7 @@
 {% endblock %}
 {% block javascripts %}
     <script>
-        {% if isClosedForMe %}
+        {% if isClosedForMe or signalement.statut is same as(6) %}
         document?.querySelector('#signalement-{{ signalement.id }}-content').querySelectorAll('button,.fr-btn').forEach(input => {
             input.remove()
         })

@@ -40,6 +40,9 @@ class Affectation
     #[ORM\ManyToOne(targetEntity: User::class)]
     private $affectedBy;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $motifCloture;
+
     public function __construct()
     {
         $this->statut = Affectation::STATUS_WAIT;
@@ -131,6 +134,18 @@ class Affectation
     public function setAffectedBy(?User $affectedBy): self
     {
         $this->affectedBy = $affectedBy;
+
+        return $this;
+    }
+
+    public function getMotifCloture(): ?string
+    {
+        return $this->motifCloture;
+    }
+
+    public function setMotifCloture(?string $motifCloture): self
+    {
+        $this->motifCloture = $motifCloture;
 
         return $this;
     }

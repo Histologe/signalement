@@ -221,8 +221,6 @@ class Signalement
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $isConsentementTiers;
 
-    #[ORM\OneToMany(mappedBy: 'signalement', targetEntity: Cloture::class, orphanRemoval: true)]
-    private $clotures;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private $validatedAt;
@@ -313,6 +311,9 @@ class Signalement
 
     #[ORM\OneToMany(mappedBy: 'signalement', targetEntity: Affectation::class, orphanRemoval: true)]
     private $affectations;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $motifCloture;
 
     public function __construct()
     {
@@ -1199,36 +1200,6 @@ class Signalement
         return $this;
     }
 
-    /**
-     * @return Collection|Cloture[]
-     */
-    public function getClotures(): Collection
-    {
-        return $this->clotures;
-    }
-
-    public function addCloture(Cloture $cloture): self
-    {
-        if (!$this->clotures->contains($cloture)) {
-            $this->clotures[] = $cloture;
-            $cloture->setSignalement($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCloture(Cloture $cloture): self
-    {
-        if ($this->clotures->removeElement($cloture)) {
-            // set the owning side to null (unless already changed)
-            if ($cloture->getSignalement() === $this) {
-                $cloture->setSignalement(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getValidatedAt(): ?\DateTimeImmutable
     {
         return $this->validatedAt;
@@ -1616,5 +1587,17 @@ class Signalement
         if (!$isClosedFor->isEmpty())
             return true;
         return false;
+    }
+
+    public function getMotifCloture(): ?string
+    {
+        return $this->motifCloture;
+    }
+
+    public function setMotifCloture(?string $motifCloture): self
+    {
+        $this->motifCloture = $motifCloture;
+
+        return $this;
     }
 }

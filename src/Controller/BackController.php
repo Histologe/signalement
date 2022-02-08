@@ -41,10 +41,8 @@ class BackController extends AbstractController
                 $signalement->getAffectations()->filter(function (Affectation $affectation) use ($signalement) {
                     if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_WAIT)
                         $signalement->setStatut(Signalement::STATUS_NEED_PARTNER_RESPONSE);
-                    $signalement->getClotures()->filter(function (Cloture $cloture) use ($signalement) {
-                        if ($cloture->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $cloture->getType() === Cloture::TYPE_CLOTURE_PARTENAIRE)
-                            $signalement->setStatut(Signalement::STATUS_CLOSED);
-                    });
+                    if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_CLOSED)
+                        $signalement->setStatut(Signalement::STATUS_CLOSED);
                 });
             }
         }
