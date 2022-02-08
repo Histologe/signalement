@@ -415,7 +415,7 @@
                         partenaire</strong>
                     <span class="fr-hint-text">Ci-dessous les statuts de prise en charge des partenaires affectés au signalement</span>
                 </div>
-                {% if is_granted('ROLE_ADMIN_PARTENAIRE') and signalement.statut is not same as(6) and not needValidation  %}
+                {% if is_granted('ROLE_ADMIN_TERRITOIRE') and signalement.statut is not same as(6) and not needValidation  %}
                     <div class="fr-col-12 fr-col-md-6 fr-text--right">
                         <button class="fr-btn fr-fi-add-circle-line fr-btn--icon-left" data-fr-opened="false"
                                 aria-controls="fr-modal-affectation">
@@ -453,6 +453,15 @@
                                     <br>Refusé.</small>
                                 <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} par {{ affectation.affectedBy.nom[:1]|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
                                 <span class="fr-hint-text"><strong>Refusé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} par {{ affectation.answeredBy.nom[:1]|upper~'. '~affectation.answeredBy.prenom|capitalize }}</span>
+                            </div>
+                        </div>
+                    {% elseif affectation.statut is same as(3) %}
+                        {# STATUT REFUSE #}
+                        <div class="fr-col-md-2">
+                            <div class="fr-background-contrast--error fr-rounded fr-p-2v">
+                                <small>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]
+                                    <br>Cloturé.</small>
+                                <span class="fr-hint-text"><strong>Cloturé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }}</span>
                             </div>
                         </div>
                     {% endif %}

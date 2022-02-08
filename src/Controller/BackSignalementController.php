@@ -13,6 +13,7 @@ use App\Entity\Suivi;
 use App\Entity\User;
 use App\Form\ClotureType;
 use App\Form\SignalementType;
+use App\Repository\AffectationRepository;
 use App\Repository\PartenaireRepository;
 use App\Repository\SituationRepository;
 use App\Repository\UserRepository;
@@ -58,7 +59,7 @@ class BackSignalementController extends AbstractController
      * @throws NonUniqueResultException
      */
     #[Route('/{uuid}', name: 'back_signalement_view')]
-    public function viewSignalement($uuid, Request $request, EntityManagerInterface $entityManager, PartenaireRepository $partenaireRepository, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response
+    public function viewSignalement($uuid, Request $request, EntityManagerInterface $entityManager,AffectationRepository $affectationRepository, PartenaireRepository $partenaireRepository, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response
     {
         /** @var Signalement $signalement */
         $signalement = $entityManager->getRepository(Signalement::class)->findByUuid($uuid);
@@ -101,9 +102,12 @@ class BackSignalementController extends AbstractController
             $signalement->addSuivi($suivi);
             $cloture->setSignalement($signalement);
             $cloture->setPartenaire($this->getUser()->getPartenaire());
+            /** @var Affectation $isAffected */
+            $isAffected->setStatut(Affectation::STATUS_CLOSED);
+            $isAffected->setAnsweredAt(new \DateTimeImmutable());
             $cloture->setClosedBy($this->getUser());
-            $entityManager->persist($suivi);
             $entityManager->persist($signalement);
+            $entityManager->persist($isAffected);
             $entityManager->persist($suivi);
             $entityManager->persist($cloture);
             $entityManager->flush();

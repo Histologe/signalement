@@ -100,10 +100,11 @@ class SignalementRepository extends ServiceEntityRepository
         $qb
             ->leftJoin('s.situations','situations')
             ->leftJoin('s.affectations','affectations')
+            ->leftJoin('s.clotures','clotures')
             ->leftJoin('situations.criteres','criteres')
             ->leftJoin('criteres.criticites','criticites')
             ->leftJoin('affectations.partenaire','partenaire')
-            ->addSelect('situations','affectations','criteres','criticites','partenaire');
+            ->addSelect('situations','affectations','criteres','criticites','partenaire','clotures');
         /*$qb->leftJoin('s.situations','situations');
         $qb->leftJoin('situations.criteres','criteres');
         $qb->leftJoin('criteres.criticites','criticites');
