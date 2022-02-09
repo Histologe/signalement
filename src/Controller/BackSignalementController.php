@@ -60,7 +60,7 @@ class BackSignalementController extends AbstractController
      * @throws NonUniqueResultException
      */
     #[Route('/{uuid}', name: 'back_signalement_view')]
-    public function viewSignalement($uuid, Request $request, EntityManagerInterface $entityManager,HttpClientInterface $httpClient, PartenaireRepository $partenaireRepository, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response
+    public function viewSignalement($uuid, Request $request, EntityManagerInterface $entityManager, HttpClientInterface $httpClient, PartenaireRepository $partenaireRepository, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response
     {
         /** @var Signalement $signalement */
         $signalement = $entityManager->getRepository(Signalement::class)->findByUuid($uuid);
@@ -78,16 +78,16 @@ class BackSignalementController extends AbstractController
                     break;
             }
         }
-       if($this->getUser()->getPartenaire())
-       {
-           $clotureCurrentUser = $signalement->getAffectations()->filter(function (Affectation $affectation) {
-               if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_CLOSED)
-                   return $affectation;
-           });
-       }
-        if ($clotureCurrentUser->isEmpty())
-            $isClosedForMe = false;
-        else $isClosedForMe = $clotureCurrentUser->first();
+        $isClosedForMe = false;
+        if ($this->getUser()->getPartenaire()) {
+            $clotureCurrentUser = $signalement->getAffectations()->filter(function (Affectation $affectation) {
+                if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_CLOSED)
+                    return $affectation;
+            });
+            if (!$clotureCurrentUser->isEmpty())
+                $isClosedForMe = $clotureCurrentUser->first();
+        }
+
 
         $newsActivitiesSinceLastLoginService->update($signalement);
 
@@ -136,7 +136,7 @@ class BackSignalementController extends AbstractController
             'isClosedForMe' => $isClosedForMe,
             'isRefused' => $isRefused,
             'signalement' => $signalement,
-            'dpe'=>$dpe->toArray(),
+            'dpe' => $dpe->toArray(),
             'partenaires' => $partenaireRepository->findAllOrByInseeIfCommune($signalement->getInseeOccupant()),
             'clotureForm' => $clotureForm->createView()
         ]);
@@ -253,7 +253,7 @@ class BackSignalementController extends AbstractController
             }
 
             $doctrine->getManager()->flush();
-            $this->addFlash('success','Les affectations ont bien été effectuées.');
+            $this->addFlash('success', 'Les affectations ont bien été effectuées.');
             return $this->json(['status' => 'success']);
         }
         return $this->json(['status' => 'denied'], 400);
@@ -272,7 +272,7 @@ class BackSignalementController extends AbstractController
             $$type = $signalement->$getMethod();
             foreach ($files[$type] as $file) {
                 $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $titre = $originalFilename. '.' . $file->guessExtension();
+                $titre = $originalFilename . '.' . $file->guessExtension();
                 $safeFilename = $slugger->slug($originalFilename);
                 $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
                 try {
@@ -352,7 +352,7 @@ class BackSignalementController extends AbstractController
     #[Route('/s/{uuid}/file/{type}/{file}/delete', name: 'back_signalement_delete_file')]
     public function deleteFileSignalement(Signalement $signalement, $type, $file, Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger)
     {
-        if ($this->isCsrfTokenValid('signalement_delete_file_' . $signalement->getId(), $request->get('_token')) )  {
+        if ($this->isCsrfTokenValid('signalement_delete_file_' . $signalement->getId(), $request->get('_token'))) {
             $setMethod = 'set' . ucfirst($type);
             $getMethod = 'get' . ucfirst($type);
             $$type = $signalement->$getMethod();
