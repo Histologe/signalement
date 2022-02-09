@@ -78,10 +78,13 @@ class BackSignalementController extends AbstractController
                     break;
             }
         }
-        $clotureCurrentUser = $signalement->getAffectations()->filter(function (Affectation $affectation) {
-            if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_CLOSED)
-                return $affectation;
-        });
+       if($this->getUser()->getPartenaire())
+       {
+           $clotureCurrentUser = $signalement->getAffectations()->filter(function (Affectation $affectation) {
+               if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_CLOSED)
+                   return $affectation;
+           });
+       }
         if ($clotureCurrentUser->isEmpty())
             $isClosedForMe = false;
         else $isClosedForMe = $clotureCurrentUser->first();
