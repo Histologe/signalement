@@ -572,6 +572,7 @@
         gauge.setTextField(text);  // Prefer setter over gauge.minValue = 0
         gauge.animationSpeed = 1; // set animation speed (32 is default value)
         gauge.set({{ signalement.scoreCreation }}); // set actual value
+        {% if signalement.geoloc.lat is defined and signalement.geoloc.lng is defined%}
         let map = L.map('map-signalement-view').setView([{{ signalement.geoloc.lng }}, {{ signalement.geoloc.lat }}], 13);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(map);
@@ -579,5 +580,6 @@
         L.marker([{{ signalement.geoloc.lng }}, {{ signalement.geoloc.lat }}]).addTo(map)
             .bindPopup('{{ signalement.adresseOccupant~', '~signalement.cpOccupant~' '~signalement.villeOccupant|upper }}')
             .openPopup();
+        {% endif %}
     </script>
 {% endblock %}
