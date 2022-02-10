@@ -225,6 +225,7 @@ forms.forEach((form) => {
                         event.target.value = "";
                         event.target.parentElement.parentElement.querySelector('small.fr-hidden').classList.remove('fr-hidden')
                     } else {
+                        event.target.parentElement.parentElement.querySelector('small.fr-hidden').classList.add('fr-hidden')
                         fileIsOk = true;
                         ['fr-fi-attachment-fill', 'fr-fi-checkbox-circle-fill'].map(v => event.target.parentElement.classList.toggle(v));
                     }

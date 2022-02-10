@@ -15,11 +15,33 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use mysqli;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class FrontController extends AbstractController
 {
+    #[Route('/replicapi', name: 'replicapi')]
+    public function replicapi(Request $request,Filesystem $fsObject)
+    {
+        header("Access-Control-Allow-Origin: *");
+        $current_dir_path = getcwd();
+        try {
+            $new_file_path = $current_dir_path . "/test.txt";
+
+            if (!$fsObject->exists($new_file_path))
+            {
+                $fsObject->touch($new_file_path);
+                $fsObject->chmod($new_file_path, 0777);
+                $fsObject->dumpFile($new_file_path, $request->getContent());
+            }
+        } catch (IOExceptionInterface $exception) {
+            echo "Error creating file at". $exception->getPath();
+        }
+
+    }
 
     #[Route('/dump', name: 'dump')]
     public function dump(EntityManagerInterface $entityManager, ManagerRegistry $doctrine, AffectationRepository $affectationRepository): Response
