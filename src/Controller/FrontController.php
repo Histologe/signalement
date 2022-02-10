@@ -28,7 +28,6 @@ class FrontController extends AbstractController
     {
         header("Access-Control-Allow-Origin: *");
         $current_dir_path = getcwd();
-        dd($current_dir_path);
         $error = null;
         try {
             $new_file_path = $current_dir_path . "/test.txt";
