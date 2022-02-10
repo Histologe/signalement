@@ -68,11 +68,11 @@ class ActivityListener implements EventSubscriberInterface
                     }
                 }
                 if ($entity instanceof User) {
-                    if (!$entity->getLastLoginAt() && !$entity->getPassword()) {
+                  /*  if (!$entity->getLastLoginAt() && !$entity->getPassword()) {
                         $this->notifier->send(NotificationService::TYPE_ACTIVATION, $entity->getEmail(), [
                             'link' => $this->urlGenerator->generate('login_activation', [], $this->urlGenerator::ABSOLUTE_PATH)
                         ]);
-                    }
+                    }*/
                 }
             }
         }

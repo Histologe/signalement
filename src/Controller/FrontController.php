@@ -10,6 +10,7 @@ use App\Entity\Signalement;
 use App\Entity\Suivi;
 use App\Entity\User;
 use App\Repository\AffectationRepository;
+use App\Repository\SignalementRepository;
 use App\Service\CriticiteCalculatorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -24,8 +25,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class FrontController extends AbstractController
 {
     #[Route('/replicapi', name: 'replicapi')]
-    public function replicapi(Request $request,Filesystem $fsObject)
+    public function replicapi(Request $request,Filesystem $fsObject,SignalementRepository $signalementRepository,ManagerRegistry $doctrine)
     {
+        foreach($signalementRepository->findAll() as $signalement)
+        {
+            $calculator = new CriticiteCalculatorService($signalement,$doctrine);
+            $score = $calculator->calculate();
+            $signalement->setScoreCreation($score);
+            $doctrine->getManager()->persist($signalement);
+        }
+        $doctrine->getManager()->flush();
+        die('ok');
         header("Access-Control-Allow-Origin: *");
         $current_dir_path = getcwd();
         $error = null;
