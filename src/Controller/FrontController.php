@@ -28,6 +28,7 @@ class FrontController extends AbstractController
     {
         header("Access-Control-Allow-Origin: *");
         $current_dir_path = getcwd();
+        $error = null;
         try {
             $new_file_path = $current_dir_path . "/test.txt";
 
@@ -38,8 +39,9 @@ class FrontController extends AbstractController
                 $fsObject->dumpFile($new_file_path, $request->getContent());
             }
         } catch (IOExceptionInterface $exception) {
-            echo "Error creating file at". $exception->getPath();
+            $error = "Error creating file at". $exception->getPath();
         }
+        return $this->json(['response'=>$error?? 'Ok']);
 
     }
 
