@@ -198,6 +198,7 @@ class FrontController extends AbstractController
             $sign->setNbChambresLogement((int)$signalement['prof_nbChambres']);
             $sign->setNbNiveauxLogement((int)$signalement['prof_nbNiveaux']);
             $sign->setNbOccupantsLogement((int)$signalement['prof_nbOccup']);
+            $sign->setStatut($signalement['etat'] === 8 ? Signalement::STATUS_CLOSED : Signalement::STATUS_ACTIVE);
 
             $criteresQuery = "SELECT * FROM hsignalement_hcritere h where h.idSignalement = '" . $signalement['idSignalement'] . "'";
             $criteres = $conn->query($criteresQuery)->fetch_all(MYSQLI_ASSOC);
@@ -258,7 +259,6 @@ class FrontController extends AbstractController
             $affectationsQuery = "SELECT * from hsign_hpart aff WHERE aff.idSignalement= '" . $signalement['idSignalement'] . "'";
             $affectations = $conn->query($affectationsQuery)->fetch_all(MYSQLI_ASSOC);
             if ($affectations) {
-                $sign->setStatut(Signalement::STATUS_ACTIVE);
                 $entityManager->persist($sign);
                 foreach ($affectations as $affectation) {
                     $user = $entityManager->getRepository(User::class)->find($affectation['idUserBO']);

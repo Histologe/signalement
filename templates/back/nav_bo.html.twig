@@ -43,7 +43,7 @@
                             <a class="fr-sidemenu__link" href="{{ path('back_cartographie') }}" target="_self" {% if 'back_cartographie' is same as(app.request.get('_route')) %}aria-current="page"{% endif %}>Cartographie</a>
                         </li>
                         <li class="fr-sidemenu__item {% if 'back_statistique' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
-                            <a class="fr-sidemenu__link" href="#" target="_self">Statistiques</a>
+                            <a class="fr-sidemenu__link" href="{{ path('back_statistique') }}" target="_self">Statistiques</a>
                         </li>
                     </ul>
                 </div>

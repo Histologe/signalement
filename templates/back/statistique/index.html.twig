@@ -1,0 +1,79 @@
+{% extends 'back/base_bo.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+{#    {{ dump(dates) }}#}
+    {{ dump(situations) }}
+    <section class="fr-grid-row fr-pt-0 fr-h-100">
+        <div class="fr-col-12 fr-p-5v">
+            <canvas id="sign-cloture" width="100%" height="25%" aria-label="Hello ARIA World" role="img"></canvas>
+        </div>
+        <div class="fr-col-12 fr-p-5v">
+            <canvas id="situations" width="100%" height="25%" aria-label="Hello ARIA World" role="img"></canvas>
+        </div>
+    </section>
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('js/chart.min.js') }}"></script>
+    <script>
+        const labelsCloture = [{% for date in dates|keys %}"{{ date }}",{% endfor %}];
+        const ctxCloture = document.getElementById('sign-cloture');
+        const chartCloture = new Chart(ctxCloture, {
+                type: 'bar',
+                data: {
+                    labels: labelsCloture,
+                    datasets: [
+                        {
+                            label: 'Signalements',
+                            data: [{% for date in dates %}"{{ date.open|length }}",{% endfor %}],
+                            backgroundColor: '#000091',
+                        },
+                        {
+                            label: 'Clôtures',
+                            data: [{% for date in dates %}"{{ date.close is defined ? date.close|length : 0 }}",{% endfor %}],
+                            backgroundColor: '#FF9940',
+                        }
+                    ]
+                },
+                options: {
+                    animation: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Signalements ({{ totaux.open }}) - Clôtures ({{ totaux.closed }})'
+                        },
+                    },
+                    responsive: true,
+
+                }
+            }
+        );
+        const labelsSituation = [{% for situation in situations|keys %}"{{ situation }}",{% endfor %}];
+        const ctxSituation  = document.getElementById('situations');
+        const chartSituation = new Chart(ctxSituation, {
+                type: 'radar',
+                data: {
+                    labels: labelsSituation,
+                    datasets: [
+                        {
+                            data: [{% for situation,count in situations %}"{{ count }}",{% endfor %}],
+                            backgroundColor: '#00009115',
+                        },
+                    ]
+                },
+                options: {
+                    animation: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Signalements ({{ totaux.open }}) - Clôtures ({{ totaux.closed }})'
+                        },
+                    },
+                    responsive: true,
+
+                }
+            }
+        );
+    </script>
+{% endblock %}
