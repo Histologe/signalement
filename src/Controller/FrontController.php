@@ -30,7 +30,7 @@ class FrontController extends AbstractController
         $current_dir_path = getcwd();
         $error = null;
         try {
-            $new_file_path = '../var/'.$current_dir_path . "/test.txt";
+            $new_file_path = '../var'.$current_dir_path . "/test.txt";
 
             if (!$fsObject->exists($new_file_path))
             {
