@@ -56,7 +56,7 @@ class BackPartenaireController extends AbstractController
     #[Route('/', name: 'back_partenaire_index', methods: ['GET'])]
     public function index(PartenaireRepository $partenaireRepository): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN'))
+        if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE'))
             return $this->redirectToRoute('back_index');
         return $this->render('back/partenaire/index.html.twig', [
             'partenaires' => $partenaireRepository->findAllOrByInseeIfCommune(),
@@ -66,7 +66,7 @@ class BackPartenaireController extends AbstractController
     #[Route('/new', name: 'back_partenaire_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN'))
+        if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE'))
             return $this->redirectToRoute('back_index');
         $partenaire = new Partenaire();
         $form = $this->createForm(PartenaireType::class, $partenaire);
