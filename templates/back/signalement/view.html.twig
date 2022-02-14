@@ -599,9 +599,11 @@
                                let col = document.createElement('div')
                                let imgDpe = document.createElement('img');
                                let imgGes = document.createElement('img');
+                               let modalDpeContent = document.querySelector('#modal-dpe-content');
                                imgDpe.src = '{{ asset('img/dpe_') }}'+classeDpe+'.png';
                                imgGes.src = '{{ asset('img/ges_') }}'+classeGes+'.png';
-                               document.querySelector('#modal-dpe-content').append(col);
+                               modalDpeContent.innerHTML = '';
+                               modalDpeContent.append(col);
                                col.insertAdjacentHTML('beforebegin',`<h5 class="fr-h3 fr-col-12 fr-mb-0">${dpe.date_etablissement_dpe}</h5>`)
                                col.insertAdjacentHTML('beforebegin',`<h6>Consommation énergie ${dpe.consommation_energie}</h6>`);
                                [imgDpe,imgGes].map(img=>{img.classList.add('fr-col-6')})
