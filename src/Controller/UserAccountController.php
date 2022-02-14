@@ -25,7 +25,6 @@ use Symfony\Component\Security\Http\LoginLink\LoginLinkNotification;
 class UserAccountController extends AbstractController
 {
     /**
-     * @throws TransportExceptionInterface
      */
     #[Route('/activation', name: 'login_activation')]
     public function requestLoginLink(NotificationService$notificationService,LoginLinkHandlerInterface $loginLinkHandler, UserRepository $userRepository, Request $request, MailerInterface $mailer): \Symfony\Component\HttpFoundation\Response

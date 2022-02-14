@@ -29,11 +29,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class FrontController extends AbstractController
 {
     #[Route('/replicapi', name: 'replicapi')]
-    public function replicapi(Request $request,Filesystem $fsObject,SignalementRepository $signalementRepository,ManagerRegistry $doctrine,NotificationService $notificationService)
+    public function replicapi(Request $request, Filesystem $fsObject, SignalementRepository $signalementRepository, ManagerRegistry $doctrine, NotificationService $notificationService)
     {
-        foreach($signalementRepository->findAll() as $signalement)
-        {
-            $calculator = new CriticiteCalculatorService($signalement,$doctrine);
+        $signalement = $signalementRepository->findAll()[0];
+
+
+        foreach ($signalementRepository->findAll() as $signalement) {
+            $calculator = new CriticiteCalculatorService($signalement, $doctrine);
             $score = $calculator->calculate();
             $signalement->setScoreCreation($score);
             $doctrine->getManager()->persist($signalement);
@@ -46,23 +48,22 @@ class FrontController extends AbstractController
         try {
             $new_file_path = $current_dir_path . "/test.txt";
 
-            if (!$fsObject->exists($new_file_path))
-            {
+            if (!$fsObject->exists($new_file_path)) {
                 $fsObject->touch($new_file_path);
                 $fsObject->chmod($new_file_path, 0777);
                 $fsObject->dumpFile($new_file_path, $request->getContent());
             }
         } catch (IOExceptionInterface $exception) {
-            $error = "Error creating file at". $exception->getPath();
+            $error = "Error creating file at" . $exception->getPath();
         }
-        return $this->json(['response'=>$error?? 'Ok']);
+        return $this->json(['response' => $error ?? 'Ok']);
 
     }
 
     #[Route('/dump', name: 'dump')]
     public function dump(EntityManagerInterface $entityManager, ManagerRegistry $doctrine, AffectationRepository $affectationRepository): Response
     {
-        ini_set('max_execution_time','-1');
+        ini_set('max_execution_time', '-1');
         $dbhost = "localhost";
         $dbuser = "root";
         $dbpass = "";
@@ -130,13 +131,13 @@ class FrontController extends AbstractController
             $sign->setMailOccupant($signalement['courriel']);
             $sign->setCodeProcedure($signalement['procedureSign']);
             $sign->setTelOccupant($signalement['telephone']);
-            $sign->setDetails(str_replace('/r/n','<br>',$signalement['description']));
+            $sign->setDetails(str_replace('/r/n', '<br>', $signalement['description']));
             $sign->setIsProprioAverti($signalement['proprio_info']);
             $sign->setModeContactProprio($modeContactProprio);
             $sign->setIsLogementSocial($signalement['logSoc']);
             $sign->setIsPreavisDepart($signalement['depart']);
             $sign->setIsCguAccepted($signalement['cgu']);
-            if(isset($geoloc))
+            if (isset($geoloc))
                 $sign->setGeoloc($geoloc);
             $sign->setNbAdultes((int)$signalement['OccupantsAdultes']);
             $sign->setSuperficie((float)$signalement['surface']);

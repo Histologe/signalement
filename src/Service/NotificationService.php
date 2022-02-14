@@ -65,6 +65,8 @@ class NotificationService
         $message = $this->renderMailContentWithParamsByType($type, $params);
         $message->to($email);
         $message->from(new Address('notifications@hitologe.fr','HISTOLOGE'));
+        if(!empty($params['attach']))
+            $message->attachFromPath($params['attach']);
         if($this->configuration->get()->getEmailReponse() !== null)
             $message->replyTo($this->configuration->get()->getEmailReponse());
         try {

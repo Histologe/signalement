@@ -4,4 +4,9 @@
     <p>Bonjour,</p>
     <p>Nous accusons réception de votre signalement concernant le logement situé <br> <b>{{ signalement.adresseOccupant~', '~signalement.cpOccupant~' '~signalement.villeOccupant|upper }}</b>
         <br> ce dernier à bien été enregistré, vous serez informé par courriel lorsqu'il aura été traité par nos service.</p>
+    {% if not signalement.isProprioAverti %}
+        <p>
+            Vous avez mentionné ne pas encore avoir alerté votre propriétaire. Il est nécessaire de l'informer de la situation. Vous trouverez ci-joint un modèle de courrier pour alerter votre propriétaire.
+        </p>
+    {% endif %}
 {% endblock %}

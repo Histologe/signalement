@@ -136,11 +136,12 @@ class FrontSignalementController extends AbstractController
             $em->persist($signalement);
             $em->flush();
 
+            $attachment = file_exists($this->getParameter('mail_attachment_dir') . 'ModeleCourrier.pdf') ? $this->getParameter('mail_attachment_dir') . 'ModeleCourrier.pdf' : null;
             //TODO: Mail Sendinblue
             if($signalement->getMailOccupant())
-                $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $signalement->getMailOccupant(), ['signalement' => $signalement]);
+                $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $signalement->getMailOccupant(), ['signalement' => $signalement, 'attach' => $attachment]);
             if($signalement->getMailDeclarant())
-                $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $signalement->getMailDeclarant(), ['signalement' => $signalement]);
+                $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $signalement->getMailDeclarant(), ['signalement' => $signalement, 'attach' => $attachment]);
 
             return $this->json(['response' => 'success']);
         }
