@@ -33,4 +33,5 @@ class Job
 
         return $this;
     }
+
 }

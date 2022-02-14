@@ -404,4 +404,17 @@ class BackSignalementController extends AbstractController
             $this->addFlash('error', 'Une erreur est survenu lors de la suppression');
         return $this->redirectToRoute('back_index');
     }
+
+    #[Route('/{uuid}/export', name: 'back_signalement_export_pdf', methods: "POST")]
+    public function exportSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
+    {
+        if (!$this->isGranted('ROLE_USER_PARTENAIRE') && !$this->checkAffectation($signalement) && !$this->isGranted('ROLE_ADMIN_TERRITOIRE'))
+            return $this->redirectToRoute('back_index');
+        if ($this->isCsrfTokenValid('signalement_export_' . $signalement->getId(), $request->get('_token'))) {
+            $this->file();
+            $this->addFlash('success', 'Signalement supprimé avec succès !');
+        } else
+            $this->addFlash('error', 'Une erreur est survenu lors de la suppression');
+        return $this->redirectToRoute('back_index');
+    }
 }
