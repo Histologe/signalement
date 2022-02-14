@@ -7,6 +7,7 @@
 
     {% include 'back/signalement/modal_affectation.html.twig' %}
      {% include 'back/signalement/modal_cloture.html.twig' %}
+     {% include 'back/signalement/modal_dpe.html.twig' %}
     <section class="fr-p-5v {{ isClosedForMe or signalement.statut is same as(6) ? 'signalement-invalid':'' }}"
              id="signalement-{{ signalement.id }}-content">
         <header>
@@ -170,6 +171,9 @@
                             <div id="map-signalement-view" class="fr-rounded fr-mt-5v fr-col-12"
                                  style="height: 300px;"></div>
                         </div>
+                    </li>
+                    <li>
+                        <button class="fr-btn" data-fr-opened="false" id="modal-dpe-opener" aria-controls="modal-dpe" data-dpe-url="https://koumoul.com/data-fair/api/v1/datasets/dpe-france/values_agg?field=code_insee_commune_actualise&format=json&agg_size=20&q_mode=simple&geo_adresse_in={{ signalement.adresseOccupant~' '~signalement.cpOccupant~' '~signalement.villeOccupant }}&size=100&select=%2A&sampling=neighbors">Consulter le(s) DPE</button>
                     </li>
                     {#<li>
                         {{ dump(dpe) }}
@@ -501,8 +505,7 @@
                                         name="signalement-add-suivi[isPublic]" value="0"> Enregistrer
                                 </button>
                                 <button type="submit" class="fr-btn fr-btn--secondary fr-fi-eye-fill fr-btn--icon-left"
-                                        name="signalement-add-suivi[isPublic]" value="1"> Enregistrer (visible par
-                                    usager)
+                                        name="signalement-add-suivi[isPublic]" value="1"> Enregistrer et envoyer à l'usager
                                 </button>
                             </div>
                             {% if signalement.statut is not same as(1) and not isClosed and not isClosedForMe and ((isAffected and isAccepted) or is_granted('ROLE_ADMIN_PARTENAIRE')) %}

@@ -17,30 +17,41 @@
                 </li>
                 {% if newsActivitiesSinceLastLogin.count %}
                     <li class="fr-sidemenu__item">
-                        <a class="fr-sidemenu__link" href="{{ path('back_news_activities') }}">Nouveaux suivis<span class="fr-puce fr-puce--danger">{{ newsActivitiesSinceLastLogin.count }}</span></a>
+                        <a class="fr-sidemenu__link" href="{{ path('back_news_activities') }}">Nouveaux suivis<span
+                                    class="fr-puce fr-puce--danger">{{ newsActivitiesSinceLastLogin.count }}</span></a>
                     </li>
                 {% endif %}
-                <button class="fr-sidemenu__btn" aria-expanded="{% if 'back_index' in app.request.get('_route') or 'back_signalement' in app.request.get('_route') %}true{% else %}false{% endif %}" aria-controls="fr-sidemenu-signalement">Signalements</button>
+                <button class="fr-sidemenu__btn"
+                        aria-expanded="{% if 'back_index' in app.request.get('_route') or 'back_signalement' in app.request.get('_route') %}true{% else %}false{% endif %}"
+                        aria-controls="fr-sidemenu-signalement">Signalements
+                </button>
                 <div class="fr-collapse" id="fr-sidemenu-signalement">
                     <ul class="fr-sidemenu__list">
                         <li class="fr-sidemenu__item {% if 'back_index' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
-                            <a class="fr-sidemenu__link" href="{{ path('back_index') }}" target="_self" {% if 'back_index' is same as(app.request.get('_route')) %}aria-current="page" {% endif %}>Liste</a>
+                            <a class="fr-sidemenu__link" href="{{ path('back_index') }}" target="_self"
+                               {% if 'back_index' is same as(app.request.get('_route')) %}aria-current="page" {% endif %}>Liste</a>
                         </li>
                         <li class="fr-sidemenu__item">
-                            <a class="fr-sidemenu__link" href="{{ path('front_signalement') }}" target="_self">Créer un signalement</a>
+                            <a class="fr-sidemenu__link" href="{{ path('front_signalement') }}" target="_self">Créer un
+                                signalement</a>
                         </li>
                         {% if 'back_signalement_view' in app.request.get('_route') %}
-                        <li class="fr-sidemenu__item">
-                            <a class="fr-sidemenu__link" href="#" target="_self" aria-current="page">Détail {{ signalement.reference }}</a>
-                        </li>
+                            <li class="fr-sidemenu__item">
+                                <a class="fr-sidemenu__link" href="#" target="_self"
+                                   aria-current="page">Détail {{ signalement.reference }}</a>
+                            </li>
                         {% endif %}
                     </ul>
                 </div>
-                <button class="fr-sidemenu__btn" aria-expanded="{% if 'back_cartographie' is same as(app.request.get('_route')) or 'back_statistique' is same as(app.request.get('_route')) %}true{% else %}false{% endif %}" aria-controls="fr-sidemenu-pilotage">Pilotage</button>
+                <button class="fr-sidemenu__btn"
+                        aria-expanded="{% if 'back_cartographie' is same as(app.request.get('_route')) or 'back_statistique' is same as(app.request.get('_route')) %}true{% else %}false{% endif %}"
+                        aria-controls="fr-sidemenu-pilotage">Données chiffrées
+                </button>
                 <div class="fr-collapse" id="fr-sidemenu-pilotage">
                     <ul class="fr-sidemenu__list">
                         <li class="fr-sidemenu__item {% if 'back_cartographie' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
-                            <a class="fr-sidemenu__link" href="{{ path('back_cartographie') }}" target="_self" {% if 'back_cartographie' is same as(app.request.get('_route')) %}aria-current="page"{% endif %}>Cartographie</a>
+                            <a class="fr-sidemenu__link" href="{{ path('back_cartographie') }}" target="_self"
+                               {% if 'back_cartographie' is same as(app.request.get('_route')) %}aria-current="page"{% endif %}>Cartographie</a>
                         </li>
                         <li class="fr-sidemenu__item {% if 'back_statistique' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
                             <a class="fr-sidemenu__link" href="{{ path('back_statistique') }}" target="_self">Statistiques</a>
@@ -48,34 +59,52 @@
                     </ul>
                 </div>
                 {% if is_granted('ROLE_ADMIN_PARTENAIRE') %}
-                    <button class="fr-sidemenu__btn" aria-expanded="{% if 'back_user_report_index' is same as(app.request.get('_route')) or 'back_situation_' in app.request.get('_route') or 'back_partenaire_' in app.request.get('_route') %}true{% else %}false{% endif %}" aria-controls="fr-sidemenu-outils-admin">Outils Admin</button>
+                    <button class="fr-sidemenu__btn"
+                            aria-expanded="{% if 'back_user_report_index' is same as(app.request.get('_route')) or 'back_situation_' in app.request.get('_route') or 'back_partenaire_' in app.request.get('_route') %}true{% else %}false{% endif %}"
+                            aria-controls="fr-sidemenu-outils-admin">Outils Admin
+                    </button>
                     <div class="fr-collapse" id="fr-sidemenu-outils-admin">
                         <ul class="fr-sidemenu__list">
-                            {% if is_granted('ROLE_ADMIN_PARTENAIRE') and app.user.partenaire %}
+                            {% if not is_granted('ROLE_ADMIN_TERRITOIRE') %}
                                 <li class="fr-sidemenu__item {% if 'back_partenaire' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
-                                    <a class="fr-sidemenu__link" href="{{ path('back_partenaire_edit',{id:app.user.partenaire.id}) }}" target="_self" {% if 'back_partenaire' is same as(app.request.get('_route')) %}aria-current="page"{% endif %}>Gestion des comptes</a>
-                                </li>
-                            {% endif %}
-                            {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
-                                <li class="fr-sidemenu__item {% if 'back_config' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
-                                    <a class="fr-sidemenu__link" href="{{ path('back_config') }}" target="_self" {% if 'back_config' is same as(app.request.get('_route')) %}aria-current="page"{% endif %}>Configuration</a>
+                                    <a class="fr-sidemenu__link"
+                                       href="{{ path('back_partenaire_edit',{id:app.user.partenaire.id}) }}"
+                                       target="_self"
+                                       {% if 'back_partenaire' is same as(app.request.get('_route')) %}aria-current="page"{% endif %}>Gestion
+                                        des comptes</a>
                                 </li>
                             {% endif %}
                             {% if is_granted('ROLE_ADMIN') %}
                                 <li class="fr-sidemenu__item {% if 'back_situation_critere_criticite' in app.request.get('_route') %}fr-sidemenu__item--active{% endif %}">
-                                    <a class="fr-sidemenu__link" href="{{ path('back_situation_critere_criticite_index') }}" target="_self" {% if 'back_situation_critere_criticite' in app.request.get('_route') %}aria-current="page"{% endif %}>Editeur de grille</a>
-                                </li>
-                                <li class="fr-sidemenu__item {% if 'back_partenaire' in app.request.get('_route') %}fr-sidemenu__item--active{% endif %}">
-                                    <a class="fr-sidemenu__link" href="{{ path('back_partenaire_index') }}" target="_self" {% if 'back_partenaire' in app.request.get('_route') %}aria-current="page"{% endif %}>Partenaires</a>
+                                    <a class="fr-sidemenu__link"
+                                       href="{{ path('back_situation_critere_criticite_index') }}" target="_self"
+                                       {% if 'back_situation_critere_criticite' in app.request.get('_route') %}aria-current="page"{% endif %}>Editeur
+                                        de grille</a>
                                 </li>
                                 <li class="fr-sidemenu__item {% if 'back_user_report' in app.request.get('_route') %}fr-sidemenu__item--active{% endif %}">
-                                    <a class="fr-sidemenu__link" href="{{ path('back_user_report_index') }}" target="_self" {% if 'back_user_report' in app.request.get('_route') %}aria-current="page"{% endif %}>Bugs & Retours</a>
+                                    <a class="fr-sidemenu__link" href="{{ path('back_user_report_index') }}"
+                                       target="_self"
+                                       {% if 'back_user_report' in app.request.get('_route') %}aria-current="page"{% endif %}>Bugs
+                                        & Retours</a>
                                 </li>
+                            {% endif %}
+                            {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
+                                <li class="fr-sidemenu__item {% if 'back_config' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
+                                    <a class="fr-sidemenu__link" href="{{ path('back_config') }}" target="_self"
+                                       {% if 'back_config' is same as(app.request.get('_route')) %}aria-current="page"{% endif %}>Configuration</a>
+                                </li>
+
+                                <li class="fr-sidemenu__item {% if 'back_partenaire' in app.request.get('_route') %}fr-sidemenu__item--active{% endif %}">
+                                    <a class="fr-sidemenu__link" href="{{ path('back_partenaire_index') }}"
+                                       target="_self"
+                                       {% if 'back_partenaire' in app.request.get('_route') %}aria-current="page"{% endif %}>Partenaires</a>
+                                </li>
+
                             {% endif %}
                         </ul>
                     </div>
                 {% endif %}
-               {# <li class="fr-sidemenu__item">
+                {# <li class="fr-sidemenu__item">
                     <a class="fr-sidemenu__link fr-link--icon-left" href="{{ path('signalement') }}">Créer un signalement</a>
                 </li>
                 <li class="fr-sidemenu__item {% if 'back_index' is same as(app.request.get('_route')) or 'back_signalement_' in app.request.get('_route') %}fr-sidemenu__item--active{% endif %}">
@@ -97,10 +126,9 @@
                             </ul>
                     {% endif %}
                 </li>
-
-               #}{# <li class="fr-sidemenu__item {% if 'back_export' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
+                #}{# <li class="fr-sidemenu__item {% if 'back_export' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
                     <a class="fr-sidemenu__link" href="#" target="_self">Export</a>
-                </li>#}{#
+                </li> #}{#
                 {% if is_granted('ROLE_ADMIN_PARTENAIRE') and app.user.partenaire %}
                     <li class="fr-sidemenu__item {% if 'back_partenaire' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
                         <a class="fr-sidemenu__link" href="{{ path('back_partenaire_edit',{id:app.user.partenaire.id}) }}" target="_self" {% if 'back_partenaire' is same as(app.request.get('_route')) %}aria-current="page"{% endif %}>Paramètres</a>
@@ -110,7 +138,8 @@
             </ul>
             <ul class="fr-sidemenu__list fr-sidemenu__list-bottom" style="position: fixed;bottom: 1.5rem">
                 <li class="fr-sidemenu__item">
-                    <a class="fr-sidemenu__link" data-fr-opened="false" aria-controls="fr-bug-report-modal" href="#">Envoyez un feedback</a>
+                    <a class="fr-sidemenu__link" data-fr-opened="false" aria-controls="fr-bug-report-modal" href="#">Envoyez
+                        un feedback</a>
                 </li>
                 <li class="fr-sidemenu__item">
                     <a class="fr-sidemenu__link fr-fi-logout-box-r-line"

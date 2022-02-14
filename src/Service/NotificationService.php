@@ -15,6 +15,7 @@ class NotificationService
     const TYPE_AFFECTATION = 4;
     const TYPE_SIGNALEMENT_VALIDE = 5;
     const TYPE_ACCUSE_RECEPTION = 6;
+    const TYPE_NOUVEAU_SUIVI = 7;
 
     private MailerInterface $mailer;
     private ConfigurationService $configuration;
@@ -56,6 +57,11 @@ class NotificationService
             NotificationService::TYPE_ACCUSE_RECEPTION => [
                 'template' => 'accuse_reception_email',
                 'subject' => 'Accusé de réception de votre signalement',
+            ],
+            NotificationService::TYPE_NOUVEAU_SUIVI => [
+                'template' => 'nouveau_suivi_signalement_email',
+                'subject' => 'Votre signalement à été mis à jour',
+                'btntext'=>"Suivre mon signalement"
             ]
         };
     }

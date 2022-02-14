@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 
+use ApiPlatform\Core\Api\UrlGeneratorInterface;
 use App\Entity\Affectation;
 use App\Entity\Cloture;
 use App\Entity\Critere;
@@ -38,6 +39,20 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 #[Route('/bo/s')]
 class BackSignalementController extends AbstractController
 {
+    private static function sendMailOcupantDeclarant(Signalement $signalement,NotificationService $notificationService,UrlGeneratorInterface $urlGenerator,$type)
+    {
+        if($signalement->getMailOccupant())
+            $notificationService->send($type, $signalement->getMailOccupant(), [
+                'signalement' => $signalement,
+                'lien_suivi' => $urlGenerator->generate('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 1)
+            ]);
+        if($signalement->getMailDeclarant())
+            $notificationService->send($type, $signalement->getMailDeclarant(), [
+                'signalement' => $signalement,
+                'lien_suivi' => $urlGenerator->generate('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 1)
+            ]);
+    }
+
     #[Positive]
     private function checkAffectation(Signalement $signalement)
     {
@@ -121,10 +136,6 @@ class BackSignalementController extends AbstractController
             $criticitesArranged[$criticite->getCritere()->getSituation()->getLabel()][$criticite->getCritere()->getLabel()] = $criticite;
         }
 
-        $dpe = $httpClient->request(
-            'GET',
-            'https://koumoul.com/data-fair/api/v1/datasets/dpe-france/values_agg?field=code_insee_commune_actualise&format=json&agg_size=20&q_mode=simple&geo_adresse_in=14 Rue Lespy 64000 Pau&size=100&select=%2A&sampling=neighbors'
-        );
         return $this->render('back/signalement/view.html.twig', [
             'title' => $title,
             'situations' => $criticitesArranged,
@@ -136,7 +147,6 @@ class BackSignalementController extends AbstractController
             'isClosedForMe' => $isClosedForMe,
             'isRefused' => $isRefused,
             'signalement' => $signalement,
-            'dpe' => $dpe->toArray(),
             'partenaires' => $partenaireRepository->findAllOrByInseeIfCommune($signalement->getInseeOccupant()),
             'clotureForm' => $clotureForm->createView()
         ]);
@@ -197,7 +207,7 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/s/{uuid}/suivi/add', name: 'back_signalement_add_suivi', methods: "POST")]
-    public function addSuiviSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
+    public function addSuiviSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine,NotificationService $notificationService,UrlGeneratorInterface $urlGenerator): Response
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
             return $this->redirectToRoute('back_index');
@@ -211,6 +221,8 @@ class BackSignalementController extends AbstractController
             $doctrine->getManager()->persist($suivi);
             $doctrine->getManager()->flush();
             $this->addFlash('success', 'Suivi publié avec succès !');
+            //TODO: Mail Sendinblue
+            self::sendMailOcupantDeclarant($signalement,$notificationService,$urlGenerator,NotificationService::TYPE_NOUVEAU_SUIVI);
         } else
             $this->addFlash('error', 'Une erreur est survenu lors de la publication');
         return $this->redirect($this->generateUrl('back_signalement_view', ['uuid' => $signalement->getUuid()]) . '#suivis');
@@ -304,7 +316,7 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/{uuid}/validation/response', name: 'back_signalement_validation_response', methods: "GET")]
-    public function validationResponseSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, NotificationService $notificationService): Response
+    public function validationResponseSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine,UrlGeneratorInterface$urlGenerator, NotificationService $notificationService): Response
     {
         if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE'))
             return $this->redirectToRoute('back_index');
@@ -316,16 +328,7 @@ class BackSignalementController extends AbstractController
                 $signalement->setValidatedAt(new \DateTimeImmutable());
                 $signalement->setCodeSuivi(md5(uniqid()));
                 //TODO: Mail Sendinblue
-                if($signalement->getMailOccupant())
-                    $notificationService->send(NotificationService::TYPE_SIGNALEMENT_VALIDE, $signalement->getMailOccupant(), [
-                        'signalement' => $signalement,
-                        'lien_suivi' => $this->generateUrl('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 1)
-                    ]);
-                if($signalement->getMailDeclarant())
-                    $notificationService->send(NotificationService::TYPE_SIGNALEMENT_VALIDE, $signalement->getMailDeclarant(), [
-                        'signalement' => $signalement,
-                        'lien_suivi' => $this->generateUrl('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 1)
-                    ]);
+                self::sendMailOcupantDeclarant($signalement,$notificationService,$urlGenerator,NotificationService::TYPE_SIGNALEMENT_VALIDE);
 
             } else {
                 $statut = Signalement::STATUS_CLOSED;
