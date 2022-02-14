@@ -7,14 +7,13 @@ const forms = document.querySelectorAll('form.needs-validation:not([name="bug-re
 const localStorage = window.localStorage;
 const checkUserMail = (el) => {
     let formData = new FormData();
-    formData.append('email',el.value)
-    formData.append('_token',el.getAttribute('data-token'))
-    fetch('../checkmail',{
-        method:'POST',
-        body:formData
-    }).then(r=>{
-        if(!r.ok)
-        {
+    formData.append('email', el.value)
+    formData.append('_token', el.getAttribute('data-token'))
+    fetch('../checkmail', {
+        method: 'POST',
+        body: formData
+    }).then(r => {
+        if (!r.ok) {
             el.classList.add('fr-input--error');
             el.parentElement.classList.add('fr-input-group--error');
             el.parentElement.querySelector('p.fr-error-text').classList.remove('fr-hidden');
@@ -147,9 +146,11 @@ forms.forEach((form) => {
                 } else {
                     target = form?.querySelector('#' + targetId);
                     target.querySelectorAll('input:not([type="checkbox"]),textarea,select').forEach(ipt => {
-                        ipt.required = true;
-                        if (ipt.labels)
-                            ipt.labels[0].classList.add('required')
+                        if (ipt.name !== "signalement[numAllocataire]") {
+                            ipt.required = true;
+                            if (ipt.labels)
+                                ipt.labels[0].classList.add('required')
+                        }
                     })
                 }
                 if (target.id === "signalement-methode-contact") {
@@ -251,7 +252,7 @@ forms.forEach((form) => {
     form?.querySelectorAll('[data-fr-adresse-autocomplete]').forEach((autocomplete) => {
         autocomplete.addEventListener('keyup', () => {
             if (autocomplete.value.length > 10)
-                fetch('https://api-adresse.data.gouv.fr/search/?q=' + autocomplete.value+'&lat=43.5911679&lon=5.3102505').then((res) => {
+                fetch('https://api-adresse.data.gouv.fr/search/?q=' + autocomplete.value + '&lat=43.5911679&lon=5.3102505').then((res) => {
                     res.json().then((r) => {
                         let container = form.querySelector('#signalement-adresse-suggestion')
                         container.innerHTML = '';
@@ -360,22 +361,22 @@ forms.forEach((form) => {
                     nextTabBtn = currentTabBtn.parentElement?.nextElementSibling?.querySelector('button');
                 if (nextTabBtn) {
                     if (nextTabBtn.hasAttribute('data-fr-last-step')) {
-                        let docs,photos;
+                        let docs, photos;
                         docs = photos = 0;
                         document.querySelector('#recap-signalement-situation').innerHTML = '';
                         for (var value of imgData.entries()) {
-                            photos +=1;
+                            photos += 1;
                         }
                         forms.forEach((form) => {
                             form.querySelectorAll('[type="file"]').forEach(file => {
                                 if (file.classList.contains("doc-file"))
                                     docs += file.files.length
                                 if (file.classList.contains("photo-file"))
-                                    photos +=file.files.length;
+                                    photos += file.files.length;
                             })
 
-                            document.querySelector('#recap-signalement_photos').innerHTML = photos+' Photo(s) transmise(s)';
-                            document.querySelector('#recap-signalement_documents').innerHTML = docs+' Document(s) transmis';
+                            document.querySelector('#recap-signalement_photos').innerHTML = photos + ' Photo(s) transmise(s)';
+                            document.querySelector('#recap-signalement_documents').innerHTML = docs + ' Document(s) transmis';
                             form.querySelectorAll('input,textarea,select').forEach((input) => {
                                 if (document.querySelector('#recap-' + input.id))
                                     document.querySelector('#recap-' + input.id).innerHTML = `${input.value}`;
@@ -758,7 +759,7 @@ document?.querySelector('form[name="login-creation-mdp-form"]')?.querySelectorAl
         let repeat = document?.querySelector('form[name="login-creation-mdp-form"] #login-password-repeat').value;
         let pwdMatchError = document?.querySelector('form[name="login-creation-mdp-form"] #password-match-error');
         let submitBtn = document?.querySelector('form[name="login-creation-mdp-form"] #submitter');
-        submitBtn.addEventListener('click',(e)=>{
+        submitBtn.addEventListener('click', (e) => {
             e.preventDefault()
         })
         if (pass !== repeat) {

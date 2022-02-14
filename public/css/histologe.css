@@ -61,7 +61,7 @@ html, body {
 .fr-rounded {
     border-radius: .25rem;
 }
-input:not([type="radio"]) + label.required::after,input:not([type="checkbox"]) + label.required::after {
+label.required::after {
     color: #F60700;
     content: '*';
 }

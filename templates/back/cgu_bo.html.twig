@@ -1026,7 +1026,7 @@
 <h2 class="c22" id="h.j7i9by43lhd2"><span>7</span><span class="c1 c14">&nbsp;- Protection des donn&eacute;es &agrave; caract&egrave;re personnel</span>
 </h2>
 <h3 class="c9" id="h.gkajncapgbln"><span class="c8 c0">7.1 Responsable de traitement</span></h3>
-<p class="c5"><span class="c0">Le responsable de traitement est &nbsp;</span><span class="c0 c11">&lt;coordonn&eacute;s du responsable de traitement (personne physique ou morale : Pr&eacute;fet, Directeur DDTM, Pr&eacute;sident de collectivit&eacute;, collectivit&eacute;, ...)&gt;</span><span
+<p class="c5"><span class="c0">Le responsable de traitement est &nbsp;</span><span class="c0 c11">{{ config.get.nomDpo }}</span><span
             class="c0">.</span></p>
 <p class="c4"><span class="c8 c0"></span></p>
 <h3 class="c9" id="h.fosvsbeflu2x"><span class="c8 c0">7.2 Donn&eacute;es personnelles trait&eacute;es</span></h3>
@@ -1127,11 +1127,9 @@
 </ul>
 <p class="c4"><span class="c1 c0"></span></p>
 <p class="c5"><span class="c0">Vous pouvez exercer ces droits en &eacute;crivant</span></p>
-<p class="c5"><span class="c14 c25">par mail</span><span class="c0">&nbsp;&agrave; </span><span class="c0 c11">&lt;Contact </span><span
-            class="c11">Responsable de la Protection des Donn&eacute;es</span><span class="c1 c0 c11">&gt;</span></p>
+<p class="c5"><span class="c14 c25">par mail</span><span class="c0">&nbsp;&agrave; </span><span class="c0 c11">{{ config.get.mailDpo }}</span></p>
 <p class="c5"><span class="c0">ou </span><span class="c14 c25">par courrier</span></p>
-<p class="c5"><span class="c0 c11">&lt;Contact </span><span
-            class="c11">Responsable de la Protection des Donn&eacute;es</span><span class="c1 c0 c11">&gt;</span></p>
+<p class="c5"><span class="c0 c11">{{ config.get.adresseDpo }}</span></p>
 <p class="c4"><span class="c1 c0"></span></p>
 <p class="c5"><span class="c0">En raison de l&rsquo;obligation de s&eacute;curit&eacute; et de confidentialit&eacute; dans le traitement des donn&eacute;es &agrave; caract&egrave;re personnel qui incombe au responsable de traitement, votre demande ne sera trait&eacute;e que si vous rapportez la preuve de votre identit&eacute;. Pour vous aider dans votre d&eacute;marche, vous trouverez ici </span><span
             class="c2 c28"><a class="c32"

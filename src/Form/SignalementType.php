@@ -150,7 +150,9 @@ class SignalementType extends AbstractType
                 'help' => "Le cas échéant, merci de renseigner votre numéro d'allocataire.",
                 'help_attr' => [
                     'class' => 'fr-hint-text'
-                ]
+                ],
+                "required"=>false,
+                'placeholder'=>false
             ])
             ->add('numAllocataire', TextType::class, [
                 'attr' => [
