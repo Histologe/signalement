@@ -584,5 +584,34 @@
             .bindPopup('{{ signalement.adresseOccupant~', '~signalement.cpOccupant~' '~signalement.villeOccupant|upper }}')
             .openPopup();
         {% endif %}
+        document.querySelector('#modal-dpe-opener').addEventListener('click',(event)=>{
+            let urlDpe = event.target.getAttribute('data-dpe-url');
+            fetch(urlDpe).then(r=>{
+                r.json().then(res=>{
+                    if(res.total > 1)
+                    {
+                        console.log(res.aggs[0].results)
+                        res.aggs[0].results.map(dpe=>{
+                            let classeDpe = dpe.classe_consommation_energie;
+                           if(classeDpe !== "N")
+                           {
+                               let classeGes = dpe.classe_estimation_ges;
+                               let col = document.createElement('div')
+                               let imgDpe = document.createElement('img');
+                               let imgGes = document.createElement('img');
+                               imgDpe.src = '{{ asset('img/dpe_') }}'+classeDpe+'.png';
+                               imgGes.src = '{{ asset('img/ges_') }}'+classeGes+'.png';
+                               document.querySelector('#modal-dpe-content').append(col);
+                               col.insertAdjacentHTML('beforebegin',`<h5 class="fr-h3 fr-col-12 fr-mb-0">${dpe.date_etablissement_dpe}</h5>`)
+                               col.insertAdjacentHTML('beforebegin',`<h6>Consommation énergie ${dpe.consommation_energie}</h6>`);
+                               [imgDpe,imgGes].map(img=>{img.classList.add('fr-col-6')})
+                               col.append(imgDpe,imgGes)
+                           }
+                        })
+                    }
+                })
+            })
+        })
+
     </script>
 {% endblock %}

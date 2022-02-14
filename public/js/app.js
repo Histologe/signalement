@@ -779,11 +779,3 @@ document?.querySelector('form[name="login-creation-mdp-form"]')?.querySelectorAl
         }
     })
 })
-document.querySelector('#modal-dpe-opener').addEventListener('click',(event)=>{
-   let urlDpe = event.target.getAttribute('data-dpe-url');
-   fetch(urlDpe).then(r=>{
-       r.json().then(res=>{
-           console.log(res)
-       })
-   })
-})
