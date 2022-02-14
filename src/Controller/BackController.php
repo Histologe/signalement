@@ -46,7 +46,6 @@ class BackController extends AbstractController
                 });
             }
         }
-        dd(count($req));
         $signalements = [
             'list' => $req,
             'villes' => $signalementRepository->findCities($user),
