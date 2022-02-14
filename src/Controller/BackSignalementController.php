@@ -237,7 +237,16 @@ class BackSignalementController extends AbstractController
                     $affectation->setPartenaire($partenaire);
                     $affectation->setAffectedBy($this->getUser());
                     $doctrine->getManager()->persist($affectation);
-
+                    //TODO: Mail Sendinblue
+                    $partenaire->getUsers()->map(function (User $user) use ($signalement,$notificationService) {
+                        if ($user->getIsMailingActive() && $user->getStatut() === User::STATUS_ACTIVE) {
+                            $notificationService->send(NotificationService::TYPE_AFFECTATION, $user->getEmail(), [
+                                'link' => $this->generateUrl('back_signalement_view', [
+                                    'uuid' => $signalement->getUuid()
+                                ],1)
+                            ]);
+                        }
+                    });
                 }
                 foreach ($partenairesToRemove as $partenaireIdToRemove) {
                     $partenaire = $partenaireRepository->find($partenaireIdToRemove);
@@ -306,6 +315,18 @@ class BackSignalementController extends AbstractController
                 $description = 'validé';
                 $signalement->setValidatedAt(new \DateTimeImmutable());
                 $signalement->setCodeSuivi(md5(uniqid()));
+                //TODO: Mail Sendinblue
+                if($signalement->getMailOccupant())
+                    $notificationService->send(NotificationService::TYPE_SIGNALEMENT_VALIDE, $signalement->getMailOccupant(), [
+                        'signalement' => $signalement,
+                        'lien_suivi' => $this->generateUrl('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 1)
+                    ]);
+                if($signalement->getMailDeclarant())
+                    $notificationService->send(NotificationService::TYPE_SIGNALEMENT_VALIDE, $signalement->getMailDeclarant(), [
+                        'signalement' => $signalement,
+                        'lien_suivi' => $this->generateUrl('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 1)
+                    ]);
+
             } else {
                 $statut = Signalement::STATUS_CLOSED;
                 $description = 'cloturé car non-valide';

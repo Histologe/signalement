@@ -12,6 +12,7 @@ use App\Entity\User;
 use App\Repository\AffectationRepository;
 use App\Repository\SignalementRepository;
 use App\Service\CriticiteCalculatorService;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use mysqli;
@@ -20,12 +21,15 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Header\MetadataHeader;
+use Symfony\Component\Mailer\Header\TagHeader;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
 
 class FrontController extends AbstractController
 {
     #[Route('/replicapi', name: 'replicapi')]
-    public function replicapi(Request $request,Filesystem $fsObject,SignalementRepository $signalementRepository,ManagerRegistry $doctrine)
+    public function replicapi(Request $request,Filesystem $fsObject,SignalementRepository $signalementRepository,ManagerRegistry $doctrine,NotificationService $notificationService)
     {
         foreach($signalementRepository->findAll() as $signalement)
         {

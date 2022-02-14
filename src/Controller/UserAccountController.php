@@ -63,20 +63,14 @@ class UserAccountController extends AbstractController
     }
 
     #[Route('/mot-de-pass-perdu', name: 'login_mdp_perdu')]
-    public function requestNewPass(LoginLinkHandlerInterface $loginLinkHandler, UserRepository $userRepository, Request $request, MailerInterface $mailer)
+    public function requestNewPass(LoginLinkHandlerInterface $loginLinkHandler, UserRepository $userRepository, Request $request,NotificationService $notificationService)
     {
         $title = 'Récupération de votre mot de passe';
         if ($request->isMethod('POST') && $email = $request->request->get('email')) {
             $user = $userRepository->findOneBy(['email' => $email]);
             $loginLinkDetails = $loginLinkHandler->createLoginLink($user);
             $loginLink = $loginLinkDetails->getUrl();
-            //NOTIFICATION
-            $notif = new NotificationEmail();
-            $notif->htmlTemplate('emails/login_link_email.html.twig')
-                ->context(['link' => $loginLink])
-                ->to($email)
-                ->subject('Histologe - Activation');
-            $mailer->send($notif);
+            $notificationService->send(NotificationService::TYPE_ACTIVATION,$email,['link'=>$loginLink]);
             //END NOTIFICATION
             return $this->render('security/login_link_sent.html.twig', [
                 'title' => 'Lien de récupération envoyé !',
