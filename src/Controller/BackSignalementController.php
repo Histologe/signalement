@@ -3,9 +3,7 @@
 namespace App\Controller;
 
 
-use ApiPlatform\Core\Api\UrlGeneratorInterface;
 use App\Entity\Affectation;
-use App\Entity\Cloture;
 use App\Entity\Critere;
 use App\Entity\Criticite;
 use App\Entity\Signalement;
@@ -14,10 +12,9 @@ use App\Entity\Suivi;
 use App\Entity\User;
 use App\Form\ClotureType;
 use App\Form\SignalementType;
-use App\Repository\AffectationRepository;
 use App\Repository\PartenaireRepository;
 use App\Repository\SituationRepository;
-use App\Repository\UserRepository;
+
 use App\Service\CriticiteCalculatorService;
 use App\Service\NewsActivitiesSinceLastLoginService;
 use App\Service\NotificationService;
@@ -31,6 +28,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints\Positive;
@@ -39,7 +37,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 #[Route('/bo/s')]
 class BackSignalementController extends AbstractController
 {
-    private static function sendMailOcupantDeclarant(Signalement $signalement,NotificationService $notificationService,UrlGeneratorInterface $urlGenerator,$type)
+    private static function sendMailOcupantDeclarant(Signalement $signalement, NotificationService $notificationService, UrlGeneratorInterface $urlGenerator, $type)
     {
         if($signalement->getMailOccupant())
             $notificationService->send($type, $signalement->getMailOccupant(), [
