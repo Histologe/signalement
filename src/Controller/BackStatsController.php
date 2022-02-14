@@ -18,9 +18,10 @@ class BackStatsController extends AbstractController
     {
         $title = 'Statistiques';
         $dates = [];
-        $totaux = ['open' => 0, 'closed' => 0];
+        $totaux = ['open' => 0, 'closed' => 0,'all'=>0];
         $situations = [];
         $criteres = [];
+        $villes = [];
         $signalements = $signalementRepository->findAll();
         foreach ($signalements as $signalement) {
             if ($signalement->getStatut() === Signalement::STATUS_CLOSED) {
@@ -30,6 +31,11 @@ class BackStatsController extends AbstractController
                 $dates[$signalement->getCreatedAt()->format('M Y')]['open'][] = $signalement;
                 $totaux['open']++;
             }
+            if(!isset($villes[$signalement->getVilleOccupant()])) {
+                $villes[$signalement->getVilleOccupant()] = 1;
+            } else
+                $villes[$signalement->getVilleOccupant()]++;
+            $totaux['all']++;
         }
         foreach ($situationRepository->findAllWithCritereAndCriticite() as $situation){
             $situations[$situation->getLabel()] = $situation->getSignalements()->count();
@@ -38,12 +44,14 @@ class BackStatsController extends AbstractController
                 $criteres[$critere->getLabel()] = $critere->getSignalements()->count();
             }
         }
+        arsort($criteres);
         return $this->render('back/statistique/index.html.twig', [
             'title' => $title,
             'dates' => $dates,
             'totaux'=>$totaux,
             'situations' => $situations,
             'criteres' => $criteres,
+            'villes'=>$villes
         ]);
     }
 }

@@ -4,13 +4,25 @@
 
 {% block content %}
 {#    {{ dump(dates) }}#}
-    {{ dump(situations) }}
-    <section class="fr-grid-row fr-pt-0 fr-h-100">
+    {{ dump(situations) }} {{ dump(totaux) }}{{ dump(criteres) }}{{ dump(villes) }}
+    <section class="fr-grid-row fr-pt-0 fr-grid-row--center">
         <div class="fr-col-12 fr-p-5v">
             <canvas id="sign-cloture" width="100%" height="25%" aria-label="Hello ARIA World" role="img"></canvas>
         </div>
-        <div class="fr-col-12 fr-p-5v">
+    </section>
+    <section class="fr-grid-row fr-pt-0 fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-p-5v">
             <canvas id="situations" width="100%" height="25%" aria-label="Hello ARIA World" role="img"></canvas>
+        </div>
+    </section>
+    <section class="fr-grid-row fr-pt-0 fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-p-5v">
+            <canvas id="criteres" width="100%" height="100%" aria-label="Hello ARIA World" role="img"></canvas>
+        </div>
+    </section>
+    <section class="fr-grid-row fr-pt-0 fr-grid-row--center">
+        <div class="fr-col-12 fr-p-5v">
+            <canvas id="villes" width="100%" height="25%" aria-label="Hello ARIA World" role="img"></canvas>
         </div>
     </section>
 {% endblock %}
@@ -49,7 +61,7 @@
                 }
             }
         );
-        const labelsSituation = [{% for situation in situations|keys %}"{{ situation }}",{% endfor %}];
+        const labelsSituation = [{% for situation in situations|keys %}"{{ situation|upper|raw }}",{% endfor %}];
         const ctxSituation  = document.getElementById('situations');
         const chartSituation = new Chart(ctxSituation, {
                 type: 'radar',
@@ -57,8 +69,8 @@
                     labels: labelsSituation,
                     datasets: [
                         {
-                            data: [{% for situation,count in situations %}"{{ count }}",{% endfor %}],
-                            backgroundColor: '#00009115',
+                            data: [{% for situation,count in situations %}"{{ (count/totaux.all)*100 }}",{% endfor %}],
+                            backgroundColor: '#00009199',
                         },
                     ]
                 },
@@ -67,7 +79,60 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Signalements ({{ totaux.open }}) - Clôtures ({{ totaux.closed }})'
+                            text: 'Par situation (en % du total des signalements)'
+                        },
+                    },
+                    responsive: true,
+
+                }
+            }
+        );
+        const labelsCritere = [{% for critere in criteres|keys[:15] %}"{{ critere|upper|raw }}",{% endfor %}];
+        const ctxCritere  = document.getElementById('criteres');
+        const chartCritere = new Chart(ctxCritere, {
+                type: 'radar',
+                data: {
+                    labels: labelsCritere,
+                    datasets: [
+                        {
+                            data: [{% for critere,count in criteres[:15] %}"{{ (count/totaux.all)*100 }}",{% endfor %}],
+                            backgroundColor: '#FF994099',
+                        },
+                    ]
+                },
+                options: {
+                    animation: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'TOP 15 par critères (en % du total des signalements)'
+                        },
+                    },
+                    responsive: true,
+
+                }
+            }
+        );
+        const labelsVille = [{% for ville in villes|keys %}"{{ ville|upper|raw }}",{% endfor %}];
+        const ctxVille  = document.getElementById('villes');
+        const chartVille = new Chart(ctxVille, {
+                type: 'bar',
+                data: {
+                    labels: labelsVille,
+                    datasets: [
+                        {
+                            label:'Ville',
+                            data: [{% for ville,count in villes[:15] %}"{{ count }}",{% endfor %}],
+                            backgroundColor: '#FF994099',
+                        },
+                    ]
+                },
+                options: {
+                    animation: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Répartition par Ville'
                         },
                     },
                     responsive: true,
