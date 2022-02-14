@@ -14,11 +14,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class BackStatsController extends AbstractController
 {
     #[Route('/', name: 'back_statistique')]
-    public function index(SignalementRepository $signalementRepository,SituationRepository $situationRepository): Response
+    public function index(SignalementRepository $signalementRepository, SituationRepository $situationRepository): Response
     {
         $title = 'Statistiques';
         $dates = [];
-        $totaux = ['open' => 0, 'closed' => 0,'all'=>0];
+        $totaux = ['open' => 0, 'closed' => 0, 'all' => 0];
         $situations = [];
         $criteres = [];
         $villes = [];
@@ -31,27 +31,25 @@ class BackStatsController extends AbstractController
                 $dates[$signalement->getCreatedAt()->format('M Y')]['open'][] = $signalement;
                 $totaux['open']++;
             }
-            if(!isset($villes[$signalement->getVilleOccupant()])) {
-                $villes[$signalement->getVilleOccupant()] = 1;
-            } else
-                $villes[$signalement->getVilleOccupant()]++;
+            true === !isset($villes[mb_strtoupper($signalement->getVilleOccupant())]) ?
+                $villes[mb_strtoupper($signalement->getVilleOccupant())] = 1 : $villes[mb_strtoupper($signalement->getVilleOccupant())]++;
             $totaux['all']++;
         }
-        foreach ($situationRepository->findAllWithCritereAndCriticite() as $situation){
+        foreach ($situationRepository->findAllWithCritereAndCriticite() as $situation) {
             $situations[$situation->getLabel()] = $situation->getSignalements()->count();
-            foreach ($situation->getCriteres() as $critere)
-            {
+            foreach ($situation->getCriteres() as $critere) {
                 $criteres[$critere->getLabel()] = $critere->getSignalements()->count();
             }
         }
         arsort($criteres);
+        arsort($villes);
         return $this->render('back/statistique/index.html.twig', [
             'title' => $title,
             'dates' => $dates,
-            'totaux'=>$totaux,
+            'totaux' => $totaux,
             'situations' => $situations,
             'criteres' => $criteres,
-            'villes'=>$villes
+            'villes' => $villes
         ]);
     }
 }

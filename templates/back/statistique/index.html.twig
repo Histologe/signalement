@@ -113,7 +113,7 @@
                 }
             }
         );
-        const labelsVille = [{% for ville in villes|keys %}"{{ ville|upper|raw }}",{% endfor %}];
+        const labelsVille = [{% for ville in villes|keys[:15] %}"{{ ville|upper|raw }}",{% endfor %}];
         const ctxVille  = document.getElementById('villes');
         const chartVille = new Chart(ctxVille, {
                 type: 'bar',
@@ -132,7 +132,7 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Répartition par Ville'
+                            text: 'TOP 15 répartition par Ville'
                         },
                     },
                     responsive: true,
