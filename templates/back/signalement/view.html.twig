@@ -5,7 +5,9 @@
 
 {% block content %}
     {% include 'back/signalement/modal_affectation.html.twig' %}
-    {% include 'back/signalement/modal_cloture.html.twig' %}
+    {% if signalement.statut is not same as(1) and not isClosed and not isClosedForMe and ((isAffected and isAccepted)) %}
+        {% include 'back/signalement/modal_cloture.html.twig' %}
+    {% endif %}
     {% include 'back/signalement/modal_dpe.html.twig' %}
     <section class="fr-p-5v {{ isClosedForMe or signalement.statut is same as(6) ? 'signalement-invalid':'' }}"
              id="signalement-{{ signalement.id }}-content">
@@ -516,7 +518,7 @@
                                     l'usager
                                 </button>
                             </div>
-                            {% if signalement.statut is not same as(1) and not isClosed and not isClosedForMe and ((isAffected and isAccepted) or is_granted('ROLE_ADMIN_PARTENAIRE')) %}
+                            {% if signalement.statut is not same as(1) and not isClosed and not isClosedForMe and ((isAffected and isAccepted)) %}
                                 <div class="fr-col-6 fr-text--right">
                                     <a href="#" aria-controls="cloture-modal" data-fr-opened="false"
                                        class="fr-btn fr-btn--danger fr-fi-close-line fr-btn--icon-left">Cloturer

@@ -28,7 +28,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class FrontController extends AbstractController
 {
-    #[Route('/replicapi', name: 'replicapi')]
+    #[Route('/replicapi', name: 'replicapi',host: 'localhost')]
     public function replicapi(Request $request, Filesystem $fsObject, SignalementRepository $signalementRepository, ManagerRegistry $doctrine, NotificationService $notificationService)
     {
         $signalement = $signalementRepository->findAll()[0];
@@ -60,7 +60,7 @@ class FrontController extends AbstractController
 
     }
 
-    #[Route('/dump', name: 'dump')]
+    #[Route('/dump', name: 'dump',host: 'localhost')]
     public function dump(EntityManagerInterface $entityManager, ManagerRegistry $doctrine, AffectationRepository $affectationRepository): Response
     {
         ini_set('max_execution_time', '-1');
