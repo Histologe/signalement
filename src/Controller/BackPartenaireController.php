@@ -109,7 +109,7 @@ class BackPartenaireController extends AbstractController
     #[Route('/{user}/delete', name: 'back_partenaire_user_delete', methods: ['POST'])]
     public function deleteUser(Request $request,User $user, EntityManagerInterface $entityManager): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN'))
+        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
             return $this->redirectToRoute('back_index');
         if ($this->isCsrfTokenValid('partenaire_user_delete_'.$user->getId(), $request->request->get('_token'))) {
             $user->setStatut(User::STATUS_ARCHIVE);
@@ -136,7 +136,7 @@ class BackPartenaireController extends AbstractController
     #[Route('/{id}', name: 'back_partenaire_delete', methods: ['POST'])]
     public function delete(Request $request, Partenaire $partenaire, EntityManagerInterface $entityManager): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN'))
+        if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE'))
             return $this->redirectToRoute('back_index');
         if ($this->isCsrfTokenValid('partenaire_delete_' . $partenaire->getId(), $request->request->get('_token'))) {
             $partenaire->setIsArchive(true);
