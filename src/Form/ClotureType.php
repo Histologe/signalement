@@ -16,6 +16,7 @@ class ClotureType extends AbstractType
         $builder
             ->add('motif', ChoiceType::class, [
                 'choices' => [
+                    "Problème résolu" =>'RESOLU',
                     "Indécence" => 'INDECENCE',
                     "Infraction RSD" => 'INFRACTION RSD',
                     "Insalubrité" => "INSALUBRITE",

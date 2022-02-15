@@ -24,7 +24,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class FrontSignalementController extends AbstractController
 {
     #[Route('/signalement', name: 'front_signalement')]
-    public function index(SituationRepository $situationRepository,Request$request): Response
+    public function index(SituationRepository $situationRepository, Request $request): Response
     {
         $title = "Signalez vos problèmes de logement";
         $etats = ["Etat moyen", "Mauvais état", "Très mauvais état"];
@@ -35,8 +35,8 @@ class FrontSignalementController extends AbstractController
         return $this->render('front/signalement.html.twig', [
             'title' => $title,
             'situations' => $situationRepository->findAllActive(),
-            'signalement'=>$signalement,
-            'form'=> $form->createView(),
+            'signalement' => $signalement,
+            'form' => $form->createView(),
             'etats' => $etats,
             'etats_classes' => $etats_classes
         ]);
@@ -46,7 +46,7 @@ class FrontSignalementController extends AbstractController
      * @throws Exception
      */
     #[Route('/signalement/envoi', name: 'envoi_signalement', methods: "POST")]
-    public function envoi(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger,NotificationService $notificationService): Response
+    public function envoi(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger, NotificationService $notificationService): Response
     {
         if ($data = $request->get('signalement')) {
             $em = $doctrine->getManager();
@@ -56,7 +56,7 @@ class FrontSignalementController extends AbstractController
                 foreach ($files as $key => $file) {
                     foreach ($file as $file_) {
                         $originalFilename = pathinfo($file_->getClientOriginalName(), PATHINFO_FILENAME);
-                        $titre = $originalFilename. '.' . $file_->guessExtension();
+                        $titre = $originalFilename . '.' . $file_->guessExtension();
                         // this is needed to safely include the file name as part of the URL
                         $safeFilename = $slugger->slug($originalFilename);
                         $newFilename = $safeFilename . '-' . uniqid() . '.' . $file_->guessExtension();
@@ -69,7 +69,7 @@ class FrontSignalementController extends AbstractController
                         } catch (FileException $e) {
                             // ... handle exception if something happens during file upload
                         }
-                        $files_array[$key][] = ['file'=>$newFilename,'titre'=>$titre];
+                        $files_array[$key][] = ['file' => $newFilename, 'titre' => $titre];
                     }
                 }
                 if (isset($files_array['documents']))
@@ -92,7 +92,7 @@ class FrontSignalementController extends AbstractController
                                     $data[$key][$idSituation]['critere'][$idCritere]['label'] = $critere->getLabel();
                                     $criticite = $em->getRepository(Criticite::class)->find($data[$key][$idSituation]['critere'][$idCritere]['criticite']);
                                     $signalement->addCriticite($criticite);
-                                    $data[$key][$idSituation]['critere'][$idCritere]['criticite']= [$criticite->getId() => ['label' => $criticite->getLabel(),'score'=>$criticite->getScore()]];
+                                    $data[$key][$idSituation]['critere'][$idCritere]['criticite'] = [$criticite->getId() => ['label' => $criticite->getLabel(), 'score' => $criticite->getScore()]];
                                 }
                             }
                         }
@@ -113,8 +113,7 @@ class FrontSignalementController extends AbstractController
                         $signalement->$method($value);
                 }
             }
-            if(!$signalement->getIsNotOccupant())
-            {
+            if (!$signalement->getIsNotOccupant()) {
                 $signalement->setNomDeclarant(null);
                 $signalement->setPrenomDeclarant(null);
                 $signalement->setMailDeclarant(null);
@@ -131,17 +130,18 @@ class FrontSignalementController extends AbstractController
             //TODO: Repartir a zéro pour chaque année
             $signalement->setReference((new \DateTime())->format('Y') . '-' . $id);
 
-            $score = new CriticiteCalculatorService($signalement,$doctrine);
+            $score = new CriticiteCalculatorService($signalement, $doctrine);
             $signalement->setScoreCreation($score->calculate());
             $em->persist($signalement);
             $em->flush();
 
-            $attachment = file_exists($this->getParameter('mail_attachment_dir') . 'ModeleCourrier.pdf') ? $this->getParameter('mail_attachment_dir') . 'ModeleCourrier.pdf' : null;
+            if (!$signalement->getIsProprioAverti())
+                $attachment = file_exists($this->getParameter('mail_attachment_dir') . 'ModeleCourrier.pdf') ? $this->getParameter('mail_attachment_dir') . 'ModeleCourrier.pdf' : null;
             //TODO: Mail Sendinblue
-            if($signalement->getMailOccupant())
-                $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $signalement->getMailOccupant(), ['signalement' => $signalement, 'attach' => $attachment]);
-            if($signalement->getMailDeclarant())
-                $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $signalement->getMailDeclarant(), ['signalement' => $signalement, 'attach' => $attachment]);
+            if ($signalement->getMailOccupant())
+                $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $signalement->getMailOccupant(), ['signalement' => $signalement, 'attach' => $attachment ?? null]);
+            if ($signalement->getMailDeclarant())
+                $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $signalement->getMailDeclarant(), ['signalement' => $signalement, 'attach' => $attachment?? null]);
 
             return $this->json(['response' => 'success']);
         }
@@ -149,16 +149,15 @@ class FrontSignalementController extends AbstractController
     }
 
     #[Route('/suivre-mon-signalement/{code}', name: 'front_suivi_signalement', methods: "GET")]
-    public function suiviSignalement(string $code,SignalementRepository $signalementRepository)
+    public function suiviSignalement(string $code, SignalementRepository $signalementRepository)
     {
-        if($signalement = $signalementRepository->findOneBy(['codeSuivi'=>$code]))
-        {
+        if ($signalement = $signalementRepository->findOneBy(['codeSuivi' => $code])) {
             //TODO: Verif info perso pour plus de sécu
-            return $this->render('front/suivi_signalement.html.twig',[
-                'signalement'=> $signalement
+            return $this->render('front/suivi_signalement.html.twig', [
+                'signalement' => $signalement
             ]);
         }
-        $this->addFlash('error','Le lien utilisé est expiré ou invalide, verifier votre saisie.');
+        $this->addFlash('error', 'Le lien utilisé est expiré ou invalide, verifier votre saisie.');
         return $this->redirectToRoute('front_signalement');
     }
 }
