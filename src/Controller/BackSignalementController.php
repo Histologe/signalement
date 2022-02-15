@@ -40,7 +40,7 @@ class BackSignalementController extends AbstractController
     private static function sendMailOcupantDeclarant(Signalement $signalement, NotificationService $notificationService, UrlGeneratorInterface $urlGenerator, $type)
     {
 
-        dd($urlGenerator->generate('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 1));
+        dd($urlGenerator->generate('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], UrlGeneratorInterface::ABSOLUTE_URL));
         if($signalement->getMailOccupant())
             $notificationService->send($type, $signalement->getMailOccupant(), [
                 'signalement' => $signalement,
