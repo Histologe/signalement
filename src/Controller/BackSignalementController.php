@@ -227,7 +227,8 @@ class BackSignalementController extends AbstractController
             $doctrine->getManager()->flush();
             $this->addFlash('success', 'Suivi publié avec succès !');
             //TODO: Mail Sendinblue
-            self::sendMailOcupantDeclarant($signalement,$notificationService,$urlGenerator,NotificationService::TYPE_NOUVEAU_SUIVI);
+           if($suivi->getIsPublic())
+               self::sendMailOcupantDeclarant($signalement,$notificationService,$urlGenerator,NotificationService::TYPE_NOUVEAU_SUIVI);
         } else
             $this->addFlash('error', 'Une erreur est survenu lors de la publication');
         return $this->redirect($this->generateUrl('back_signalement_view', ['uuid' => $signalement->getUuid()]) . '#suivis');

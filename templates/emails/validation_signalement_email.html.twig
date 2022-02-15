@@ -2,8 +2,9 @@
 
 {% block body %}
     <p>Bonjour,</p>
-    <p>Nous vous informons que votre signalement conercant le logement situé <br> <b>{{ signalement.adresseOccupant~', '~signalement.cpOccupant~' '~signalement.villeOccupant|upper }}</b>
-        <br> vient d'être validé par le service Histologe, vous pouvez désormais suivre l'avancé du traitement de votre signalement en cliquant sur le bouton ci-dessous.</p>
+    <p>Nous vous informons que votre signalement concernant le logement situé <br> <b>{{ signalement.adresseOccupant~', '~signalement.cpOccupant~' '~signalement.villeOccupant|upper }}</b>
+        <br>a bien été validé par le service Histologe.</p>
+    <p>Vous pouvez désormais suivre l'avancée de son traitement en cliquant sur le bouton ci-dessous :</p>
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="text-align: center">
         <tbody>
         <tr>
@@ -12,7 +13,7 @@
                     <tbody>
                     <tr style="text-align: center;width: 100%">
                         <td>
-                            <a href="{{ lien_suivi|raw }}" target="_blank">{{ btntext }}</a></td>
+                            <a href="{{ lien_suivi|raw }}" target="_blank">{{ btntext|capitalize }}</a></td>
                     </tr>
                     </tbody>
                 </table>

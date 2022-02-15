@@ -52,7 +52,7 @@ class NotificationService
             ],
             NotificationService::TYPE_SIGNALEMENT_VALIDE => [
                 'template' => 'validation_signalement_email',
-                'subject' => 'Votre signalement à été validé par nos service',
+                'subject' => 'Votre signalement est validé !',
                 'btntext'=>"Suivre mon signalement"
             ],
             NotificationService::TYPE_NOTIFICATION_MAIL_FRONT => [
@@ -61,11 +61,11 @@ class NotificationService
             ],
             NotificationService::TYPE_ACCUSE_RECEPTION => [
                 'template' => 'accuse_reception_email',
-                'subject' => 'Accusé de réception de votre signalement',
+                'subject' => 'Votre signalement a bien été reçu !',
             ],
             NotificationService::TYPE_NOUVEAU_SUIVI => [
                 'template' => 'nouveau_suivi_signalement_email',
-                'subject' => 'Votre signalement à été mis à jour',
+                'subject' => 'Nouvelle mise à jour de votre signalement !',
                 'btntext'=>"Suivre mon signalement"
             ]
         };
