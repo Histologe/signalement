@@ -39,17 +39,15 @@ class BackSignalementController extends AbstractController
 {
     private static function sendMailOcupantDeclarant(Signalement $signalement, NotificationService $notificationService, UrlGeneratorInterface $urlGenerator, $type)
     {
-
-        dd($urlGenerator->generate('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], UrlGeneratorInterface::ABSOLUTE_URL));
         if($signalement->getMailOccupant())
             $notificationService->send($type, $signalement->getMailOccupant(), [
                 'signalement' => $signalement,
-                'lien_suivi' => $urlGenerator->generate('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 1)
+                'lien_suivi' => $urlGenerator->generate('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 0)
             ]);
         if($signalement->getMailDeclarant())
             $notificationService->send($type, $signalement->getMailDeclarant(), [
                 'signalement' => $signalement,
-                'lien_suivi' => $urlGenerator->generate('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 1)
+                'lien_suivi' => $urlGenerator->generate('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 0)
             ]);
     }
 
@@ -263,7 +261,7 @@ class BackSignalementController extends AbstractController
                             $notificationService->send(NotificationService::TYPE_AFFECTATION, $user->getEmail(), [
                                 'link' => $this->generateUrl('back_signalement_view', [
                                     'uuid' => $signalement->getUuid()
-                                ],1)
+                                ],0)
                             ]);
                         }
                     });
