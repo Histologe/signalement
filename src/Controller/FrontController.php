@@ -310,7 +310,7 @@ $doctrine->getManager()->flush();
         $title = 'Un service public pour les locataires et propriétaires';
         $total = $signalementRepository->findAllWithAffectations();
         $stats['total'] = count($total);
-        $stats['pec'] = floor(($signalementRepository->createQueryBuilder('s')->select('COUNT(s.id)')->join('s.affectations','affectations','WITH','affectations IS NOT NULL')->getQuery()->getSingleScalarResult()/$stats['total'])*100);
+        $stats['pec'] = floor(($affectationRepository->createQueryBuilder('a')->select('COUNT(DISTINCT a.signalement)')->getQuery()->getSingleScalarResult()/$stats['total'])*100);
         $stats['res'] = floor(($affectationRepository->createQueryBuilder('a')->select('COUNT(DISTINCT a.signalement)')->where('a.statut = 1')->getQuery()->getSingleScalarResult()/$stats['total'])*100);
         return $this->render('front/index.html.twig', [
             'title' => $title,
