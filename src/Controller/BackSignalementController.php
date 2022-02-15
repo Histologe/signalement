@@ -113,6 +113,10 @@ class BackSignalementController extends AbstractController
                 $signalement->setStatut(Signalement::STATUS_CLOSED);
                 $signalement->setMotifCloture($motifCloture);
                 $sujet = 'tous les partenaires';
+                $signalement->getAffectations()->map(function (Affectation $affectation)use ($entityManager){
+                   $affectation->setStatut(Affectation::STATUS_CLOSED);
+                   $entityManager->persist($affectation);
+                });
             }
             $suivi = new Suivi();
             $suivi->setDescription('Le signalement à été cloturé pour ' . $sujet . ' avec le motif suivant: <br> <strong>' . $motifCloture . '</strong>');
