@@ -67,6 +67,8 @@ class SignalementRepository extends ServiceEntityRepository
             ->addSelect('s.uuid')
             ->addSelect('s.reference')
             ->where('s.geoloc IS NOT NULL')
+            ->andWhere('s.geoloc LIKE :lat')
+            ->setParameter('lat','%lat%')
             ->getQuery()
             ->getResult();
     }
