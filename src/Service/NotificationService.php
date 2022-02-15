@@ -16,6 +16,7 @@ class NotificationService
     const TYPE_SIGNALEMENT_VALIDE = 5;
     const TYPE_ACCUSE_RECEPTION = 6;
     const TYPE_NOUVEAU_SUIVI = 7;
+    const TYPE_NOTIFICATION_MAIL_FRONT = 8;
 
     private MailerInterface $mailer;
     private ConfigurationService $configuration;
@@ -54,6 +55,10 @@ class NotificationService
                 'subject' => 'Votre signalement à été validé par nos service',
                 'btntext'=>"Suivre mon signalement"
             ],
+            NotificationService::TYPE_NOTIFICATION_MAIL_FRONT => [
+                'template' => 'nouveau_mail_front',
+                'subject' => 'Vous avez reçu un message depuis la page Histologe',
+            ],
             NotificationService::TYPE_ACCUSE_RECEPTION => [
                 'template' => 'accuse_reception_email',
                 'subject' => 'Accusé de réception de votre signalement',
@@ -73,8 +78,8 @@ class NotificationService
         $message->from(new Address('notifications@hitologe.fr','HISTOLOGE'));
         if(!empty($params['attach']))
             $message->attachFromPath($params['attach']);
-        if($this->configuration->get()->getEmailReponse() !== null)
-            $message->replyTo($this->configuration->get()->getEmailReponse());
+        if($this->configuration->get()->getEmailReponse() !== null || isset($params['reply']))
+            $message->replyTo($params['reply'] ?? $this->configuration->get()->getEmailReponse());
         try {
             $this->mailer->send($message);
             return true;

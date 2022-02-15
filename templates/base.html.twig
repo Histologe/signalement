@@ -43,7 +43,9 @@
         {% for message in messages %}
             <div class="fr-form-group">
                 <div role="alert" class="fr-alert fr-alert--{{ label }} fr-alert--sm">
+                    {% if label is same as('error') %}
                     <strong>Erreur...</strong>
+                    {% endif %}
                     <p>{{ message }}</p>
                 </div>
             </div>

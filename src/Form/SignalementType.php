@@ -477,7 +477,7 @@ class SignalementType extends AbstractType
                 'label_attr' => [
                     'class' => 'fr-label required'
                 ],
-                'label' => "Nom ou raison sociale du proriétaire",
+                'label' => "Nom ou raison sociale du propriétaire",
                 'required' => true
             ])
             ->add('adresseProprio', TextType::class, [
@@ -490,7 +490,7 @@ class SignalementType extends AbstractType
                 'label_attr' => [
                     'class' => 'fr-label'
                 ],
-                'label' => "Adresse du proriétaire",
+                'label' => "Adresse du propriétaire",
                 'required' => false
             ])
             ->add('telProprio', TelType::class, [
@@ -503,7 +503,7 @@ class SignalementType extends AbstractType
                 'label_attr' => [
                     'class' => 'fr-label'
                 ],
-                'label' => "N° de téléphone du proriétaire",
+                'label' => "N° de téléphone du propriétaire",
                 'required' => false
             ])
             ->add('mailProprio', EmailType::class, [
@@ -516,7 +516,7 @@ class SignalementType extends AbstractType
                 'label_attr' => [
                     'class' => 'fr-label'
                 ],
-                'label' => "Courriel du proriétaire",
+                'label' => "Courriel du propriétaire",
                 'required' => false
             ])
             ->add('isNotOccupant', ChoiceType::class, [

@@ -36,6 +36,7 @@ class CriticiteCalculatorService
             $score = $score * 1.1;
         if($this->isDanger)
             $score = 100;
+        $score < 100 ?? $score = 100;
         return $score;
     }
 }

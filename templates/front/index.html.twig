@@ -3,6 +3,7 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block body %}
+    {{ dump(stats) }}
     <main class="fr-container--fluid">
         <section
                 class="fr-container--fluid fr-artwork-decorative--blue-france fr-background--blue-france fr-py-5w fr-py-md-10w">
@@ -318,7 +319,7 @@
                         <figure class="fr-grid-row fr-grid-row--middle">
                             <img src="{{ asset('img/icon-house-info.svg') }}" alt="Info" class="fr-col-2">
                             <figcaption class="fr-col-10 text-white fr-pl-2v">
-                                <strong class="fr-display-block">225</strong>
+                                <strong class="fr-display-block">{{ stats.total }}</strong>
                                 signalements enregistrés
                             </figcaption>
                         </figure>
@@ -327,7 +328,7 @@
                         <figure class="fr-grid-row fr-grid-row--middle">
                             <img src="{{ asset('img/icon-chart-bubble.svg') }}" alt="Info" class="fr-col-2">
                             <figcaption class="fr-col-10 text-white fr-pl-2v">
-                                <strong class="fr-display-block">95%</strong>
+                                <strong class="fr-display-block">{{ stats.pec }}%</strong>
                                 des signalements pris en charge
                             </figcaption>
                         </figure>
@@ -336,7 +337,7 @@
                         <figure class="fr-grid-row fr-grid-row--middle">
                             <img src="{{ asset('img/icon-pass.svg') }}" alt="Info" class="fr-col-2">
                             <figcaption class="fr-col-10 text-white fr-pl-2v">
-                                <strong class="fr-display-block">77%</strong>
+                                <strong class="fr-display-block">{{ stats.res }}%</strong>
                                 de résolutions déclenchées
                             </figcaption>
                         </figure>

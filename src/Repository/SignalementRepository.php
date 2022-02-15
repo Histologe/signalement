@@ -72,7 +72,16 @@ class SignalementRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function countByStatus($user)
+    public function findAllWithAffectations()
+    {
+        return $this->createQueryBuilder('s')
+            ->leftJoin('s.affectations','affectations')
+            ->addSelect('affectations','s')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function countByStatus($user = null)
     {
         $qb = $this->createQueryBuilder('s');
         if(!$user){

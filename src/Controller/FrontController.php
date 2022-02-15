@@ -9,6 +9,7 @@ use App\Entity\Partenaire;
 use App\Entity\Signalement;
 use App\Entity\Suivi;
 use App\Entity\User;
+use App\Form\ContactType;
 use App\Repository\AffectationRepository;
 use App\Repository\SignalementRepository;
 use App\Service\CriticiteCalculatorService;
@@ -28,7 +29,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class FrontController extends AbstractController
 {
-    #[Route('/replicapi', name: 'replicapi',host: 'localhost')]
+    #[Route('/replicapi', name: 'replicapi', host: 'localhost')]
     public function replicapi(Request $request, Filesystem $fsObject, SignalementRepository $signalementRepository, ManagerRegistry $doctrine, NotificationService $notificationService)
     {
         $signalement = $signalementRepository->findAll()[0];
@@ -60,14 +61,14 @@ class FrontController extends AbstractController
 
     }
 
-    #[Route('/dump', name: 'dump',host: 'localhost')]
+    #[Route('/dump', name: 'dump', host: 'localhost')]
     public function dump(EntityManagerInterface $entityManager, ManagerRegistry $doctrine, AffectationRepository $affectationRepository): Response
     {
         ini_set('max_execution_time', '-1');
         $dbhost = "localhost";
         $dbuser = "root";
         $dbpass = "";
-        $db = "dumpbdr";
+        $db = "dumpbdrold";
         $conn = new mysqli($dbhost, $dbuser, $dbpass, $db) or die("Connect failed: %s\n" . $conn->error);
         $count = 0;
 
@@ -82,32 +83,32 @@ class FrontController extends AbstractController
         }
         $entityManager->flush();*/
 
-       /* $usersQuery = "SELECT * from husers_bo";
-        $users = $conn->query($usersQuery)->fetch_all(MYSQLI_ASSOC);
-        foreach ($users as $user) {
-            $partenaire = $entityManager->getRepository(Partenaire::class)->find($user['idPartenaire']);
-            $u = new User();
-            $u->setPartenaire($partenaire);
-            if (str_contains($user['nom_bo'], 'GéNéRIQUE')) {
-                $nom = str_replace('GéNéRIQUE', '', $user['nom_bo']);
-                $isGenerique = 1;
-            } else {
-                $nom = $user['nom_bo'];
-                $isGenerique = 0;
-            }
-            $u->setId($user['id_userbo']);
-            $u->setNom($nom);
-            $u->setPrenom($user['prenom_bo']);
-            $u->setEmail($user['courriel']);
-            $u->setIsMailingActive($user['sendAlert']);
-            $u->setIsGenerique($isGenerique);
-            $u->setRoles(['ROLE_USER_PARTENAIRE']);
-            $entityManager->persist($u);
-        }
-        $entityManager->flush();*/
-       $signalementQuery = "SELECT * from hsignalement_ s
+        /* $usersQuery = "SELECT * from husers_bo";
+         $users = $conn->query($usersQuery)->fetch_all(MYSQLI_ASSOC);
+         foreach ($users as $user) {
+             $partenaire = $entityManager->getRepository(Partenaire::class)->find($user['idPartenaire']);
+             $u = new User();
+             $u->setPartenaire($partenaire);
+             if (str_contains($user['nom_bo'], 'GéNéRIQUE')) {
+                 $nom = str_replace('GéNéRIQUE', '', $user['nom_bo']);
+                 $isGenerique = 1;
+             } else {
+                 $nom = $user['nom_bo'];
+                 $isGenerique = 0;
+             }
+             $u->setId($user['id_userbo']);
+             $u->setNom($nom);
+             $u->setPrenom($user['prenom_bo']);
+             $u->setEmail($user['courriel']);
+             $u->setIsMailingActive($user['sendAlert']);
+             $u->setIsGenerique($isGenerique);
+             $u->setRoles(['ROLE_USER_PARTENAIRE']);
+             $entityManager->persist($u);
+         }
+         $entityManager->flush();*/
+        $signalementQuery = "SELECT * from hsignalement_ s
     JOIN hadresse_ a ON s.idAdresse = a.idAdresse
-    ORDER BY s.refSign DESC LIMIT 200 OFFSET 1600
+    ORDER BY s.refSign LIMIT 500 OFFSET 3800
     ";
         $signalements = $conn->query($signalementQuery)->fetch_all(MYSQLI_ASSOC);
         foreach ($signalements as $signalement) {
@@ -147,8 +148,8 @@ class FrontController extends AbstractController
             $sign->setMailProprio($signalement['prof_mailProp']);
             $sign->setAdresseProprio($signalement['prof_adresseProp']);
             $sign->setNatureLogement($signalement['prof_natureLog']);
-            $sign->setNbEnfantsM6($signalement['prof_nbEnfM6']);
-            $sign->setNbEnfantsP6($signalement['prof_nbEnfP6']);
+            $sign->setNbEnfantsM6((int)$signalement['prof_nbEnfM6']);
+            $sign->setNbEnfantsP6((int)$signalement['prof_nbEnfP6']);
             $sign->setIsBailEnCours($signalement['prof_bail']);
             $sign->setIsRelogement($signalement['prof_demRelog']);
             $sign->setIsRefusIntervention(!$signalement['prof_accVisit']);
@@ -299,16 +300,20 @@ class FrontController extends AbstractController
 
 
     #[Route('/', name: 'home')]
-    public function index(): Response
+    public function index(SignalementRepository $signalementRepository,AffectationRepository $affectationRepository): Response
     {
         $title = 'Un service public pour les locataires et propriétaires';
+        $total = $signalementRepository->findAllWithAffectations();
+        $stats['total'] = count($total);
+        $stats['pec'] = floor(($signalementRepository->createQueryBuilder('s')->select('COUNT(s.id)')->join('s.affectations','affectations','WITH','affectations IS NOT NULL')->getQuery()->getSingleScalarResult()/$stats['total'])*100);
+        $stats['res'] = floor(($affectationRepository->createQueryBuilder('a')->select('COUNT(DISTINCT a.signalement)')->where('a.statut = 1')->getQuery()->getSingleScalarResult()/$stats['total'])*100);
         return $this->render('front/index.html.twig', [
-            'title' => $title
-            //TODO: Includes stats
+            'title' => $title,
+            'stats' => $stats
         ]);
     }
 
-    #[Route('/qui-sommes-nous', name: 'about')]
+    #[Route('/qui-sommes-nous', name: 'front_about')]
     public function about(): Response
     {
         $title = 'Qui sommes-nous ?';
@@ -317,25 +322,29 @@ class FrontController extends AbstractController
         ]);
     }
 
-    #[Route('/contact', name: 'contact')]
-    public function contact(): Response
+    #[Route('/contact', name: 'front_contact')]
+    public function contact(Request $request, NotificationService $notificationService): Response
     {
         $title = "Conditions Générales d'Utilisation";
-        return $this->render('front/cgu.html.twig', [
-            'title' => $title
+        $form = $this->createForm(ContactType::class,[]);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $notificationService->send(NotificationService::TYPE_NOTIFICATION_MAIL_FRONT, 'notifications@histologe.fr', [
+                'nom' => $form->get('nom')->getData(),
+                'mail' => $form->get('email')->getData(),
+                'reply' => $form->get('email')->getData(),
+                'message' => $form->get('message')->getData(),
+            ]);
+            $this->addFlash('success', 'Votre message à bien été envoyé !');
+            return $this->redirectToRoute('front_contact');
+        }
+        return $this->render('front/contact.html.twig', [
+            'title' => $title,
+            'form' => $form->createView()
         ]);
     }
 
-    #[Route('/faq', name: 'faq')]
-    public function faq(): Response
-    {
-        $title = "Conditions Générales d'Utilisation";
-        return $this->render('front/cgu.html.twig', [
-            'title' => $title
-        ]);
-    }
-
-    #[Route('/cgu', name: 'cgu')]
+    #[Route('/cgu', name: 'front_cgu')]
     public function cgu(): Response
     {
         $title = "Conditions Générales d'Utilisation";

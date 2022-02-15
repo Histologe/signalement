@@ -6,7 +6,7 @@
         </td>
         <td>{{ signalement.createdAt|date('d/m/Y') }}</td>
         <td>
-            <canvas id="gauge-signalement-{{ signalement.id }}" class="fr-col-4 gauge-signalement"></canvas>
+            <canvas id="gauge-signalement-{{ signalement.id }}" class="fr-col-12 fr-col-md-10 fr-col-lg-6 gauge-signalement"></canvas>
         </td>
         <td>
             {{ signalement.nomOccupant|upper }}<br>{{ signalement.prenomOccupant|capitalize }}
