@@ -75,6 +75,7 @@ class SignalementRepository extends ServiceEntityRepository
     public function findAllWithAffectations()
     {
         return $this->createQueryBuilder('s')
+            ->where('s.statut != 7')
             ->leftJoin('s.affectations','affectations')
             ->addSelect('affectations','s')
             ->getQuery()
