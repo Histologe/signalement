@@ -119,11 +119,14 @@ class BackSignalementController extends AbstractController
             $suivi->setCreatedBy($this->getUser());
             $signalement->addSuivi($suivi);
             /** @var Affectation $isAffected */
-            $isAffected->setStatut(Affectation::STATUS_CLOSED);
-            $isAffected->setAnsweredAt(new \DateTimeImmutable());
-            $isAffected->setMotifCloture($motifCloture);
+            if($isAffected)
+            {
+                $isAffected->setStatut(Affectation::STATUS_CLOSED);
+                $isAffected->setAnsweredAt(new \DateTimeImmutable());
+                $isAffected->setMotifCloture($motifCloture);
+                $entityManager->persist($isAffected);
+            }
             $entityManager->persist($signalement);
-            $entityManager->persist($isAffected);
             $entityManager->persist($suivi);
             $entityManager->flush();
             $this->addFlash('success', 'Signalement cloturé avec succès !');
