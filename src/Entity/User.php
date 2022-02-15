@@ -361,5 +361,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function setId(mixed $id_userbo)
+    {
+        $this->id = $id_userbo;
+    }
+
 
 }

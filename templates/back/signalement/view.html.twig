@@ -4,10 +4,9 @@
 {% set picto_no = '<p class="fr-badge fr-badge--error">Non</p>' %}
 
 {% block content %}
-
     {% include 'back/signalement/modal_affectation.html.twig' %}
-     {% include 'back/signalement/modal_cloture.html.twig' %}
-     {% include 'back/signalement/modal_dpe.html.twig' %}
+    {% include 'back/signalement/modal_cloture.html.twig' %}
+    {% include 'back/signalement/modal_dpe.html.twig' %}
     <section class="fr-p-5v {{ isClosedForMe or signalement.statut is same as(6) ? 'signalement-invalid':'' }}"
              id="signalement-{{ signalement.id }}-content">
         <header>
@@ -30,7 +29,7 @@
                         <form action="{{ path('back_signalement_affectation_response',{uuid:signalement.uuid,user:app.user.id}) }}">
                             <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
                                     name="signalement-affectation-response[accept]" value="1"
-                                    {#onclick="return confirm('Êtes-vous certain de vouloir acccepter ce signalement ?')"#}>
+                                    {# onclick="return confirm('Êtes-vous certain de vouloir acccepter ce signalement ?')" #}>
                                 J'ai pris connaissance du signalement
                             </button>
                             <button class="fr-btn fr-btn--danger fr-fi-close-circle-fill fr-btn--icon-left"
@@ -173,11 +172,14 @@
                         </div>
                     </li>
                     <li>
-                        <button class="fr-btn" data-fr-opened="false" id="modal-dpe-opener" aria-controls="modal-dpe" data-dpe-url="https://koumoul.com/data-fair/api/v1/datasets/dpe-france/values_agg?field=code_insee_commune_actualise&format=json&agg_size=20&q_mode=simple&geo_adresse_in={{ signalement.adresseOccupant~' '~signalement.cpOccupant~' '~signalement.villeOccupant }}&size=100&select=%2A&sampling=neighbors">Consulter le(s) DPE</button>
+                        <button class="fr-btn" data-fr-opened="false" id="modal-dpe-opener" aria-controls="modal-dpe"
+                                data-dpe-url="https://koumoul.com/data-fair/api/v1/datasets/dpe-france/values_agg?field=code_insee_commune_actualise&format=json&agg_size=20&q_mode=simple&geo_adresse_in={{ (signalement.adresseOccupant~' '~signalement.cpOccupant~' '~signalement.villeOccupant)|replace({'  ':' '})|url_encode }}&size=100&select=%2A&sampling=neighbors">
+                            Consulter le(s) DPE
+                        </button>
                     </li>
-                    {#<li>
+                    {# <li>
                         {{ dump(dpe) }}
-                    </li>#}
+                    </li> #}
                 </ul>
             </div>
             <div class="fr-col-12 fr-col-md-6">
@@ -240,7 +242,9 @@
                 <span class="fr-hint-text">Récapitulatif des situations rencontrées par l'occupant du logement</span>
                 <ul class="fr-list--icon-img">
                     {% for situation,criteres in situations %}
-                        <li role="button" class="fr-background-alt--blue-france fr-mb-5v fr-px-5v fr-pt-5v fr-rounded fr-fi-arrow-down-line fr-input-wrap" aria-controls="situation-collapse-{{ loop.index }}" aria-expanded="false">
+                        <li role="button"
+                            class="fr-background-alt--blue-france fr-mb-5v fr-px-5v fr-pt-5v fr-rounded fr-fi-arrow-down-line fr-input-wrap"
+                            aria-controls="situation-collapse-{{ loop.index }}" aria-expanded="false">
                             <strong>{{ situation|capitalize }}</strong>
                             <ul class="fr-list--icon-img fr-collapse" id="situation-collapse-{{ loop.index }}">
                                 {% for critere,criticite in criteres %}
@@ -251,7 +255,8 @@
                                     {% else %}
                                         {% set icon = 'tres-grave' %}
                                     {% endif %}
-                                    <li>{% if criticite.critere.isDanger %}<p class="fr-badge fr-badge--warning">danger</p>&nbsp;&nbsp;{% endif %}<strong>{{ critere }}</strong>
+                                    <li>{% if criticite.critere.isDanger %}<p class="fr-badge fr-badge--warning">
+                                        danger</p>&nbsp;&nbsp;{% endif %}<strong>{{ critere }}</strong>
                                         <ul class="fr-list fr-skiplinks__list fr-list--icon-img">
                                             <li class="fr-grid-row fr-grid-row--middle fr-w-100">
                                                 <div class="fr-col-md-2 fr-col-lg-1 fr-col--middle">
@@ -408,13 +413,15 @@
                     </div>
                     <div class="fr-grid-row">
                         <div class="fr-col-12 fr-text--center">
-                            <div title="{{ document.titre }}" style="text-overflow:ellipsis">{{ document.titre[:15] }}...</div>
+                            <div title="{{ document.titre }}" style="text-overflow:ellipsis">{{ document.titre[:15] }}
+                                ...
+                            </div>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
-        {% if not isClosed and not needValidation%}
+        {% if not isClosed and not needValidation %}
             <hr class="fr-mt-5v" id="affectations">
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-col-md-6">
@@ -422,7 +429,7 @@
                         partenaire</strong>
                     <span class="fr-hint-text">Ci-dessous les statuts de prise en charge des partenaires affectés au signalement</span>
                 </div>
-                {% if is_granted('ROLE_ADMIN_TERRITOIRE') and signalement.statut is not same as(6) and not needValidation  %}
+                {% if is_granted('ROLE_ADMIN_TERRITOIRE') and signalement.statut is not same as(6) and not needValidation %}
                     <div class="fr-col-12 fr-col-md-6 fr-text--right">
                         <button class="fr-btn fr-fi-add-circle-line fr-btn--icon-left" data-fr-opened="false"
                                 aria-controls="fr-modal-affectation">
@@ -505,7 +512,8 @@
                                         name="signalement-add-suivi[isPublic]" value="0"> Enregistrer
                                 </button>
                                 <button type="submit" class="fr-btn fr-btn--secondary fr-fi-eye-fill fr-btn--icon-left"
-                                        name="signalement-add-suivi[isPublic]" value="1"> Enregistrer et envoyer à l'usager
+                                        name="signalement-add-suivi[isPublic]" value="1"> Enregistrer et envoyer à
+                                    l'usager
                                 </button>
                             </div>
                             {% if signalement.statut is not same as(1) and not isClosed and not isClosedForMe and ((isAffected and isAccepted) or is_granted('ROLE_ADMIN_PARTENAIRE')) %}
@@ -575,7 +583,7 @@
         gauge.setTextField(text);  // Prefer setter over gauge.minValue = 0
         gauge.animationSpeed = 1; // set animation speed (32 is default value)
         gauge.set({{ signalement.scoreCreation }}); // set actual value
-        {% if signalement.geoloc.lat is defined and signalement.geoloc.lng is defined%}
+        {% if signalement.geoloc.lat is defined and signalement.geoloc.lng is defined %}
         let map = L.map('map-signalement-view').setView([{{ signalement.geoloc.lng }}, {{ signalement.geoloc.lat }}], 13);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(map);
@@ -584,36 +592,35 @@
             .bindPopup('{{ signalement.adresseOccupant~', '~signalement.cpOccupant~' '~signalement.villeOccupant|upper }}')
             .openPopup();
         {% endif %}
-        document.querySelector('#modal-dpe-opener').addEventListener('click',(event)=>{
+        document.querySelector('#modal-dpe-opener').addEventListener('click', (event) => {
             let urlDpe = event.target.getAttribute('data-dpe-url');
-            fetch(urlDpe).then(r=>{
-                r.json().then(res=>{
-                    if(res.total > 1)
-                    {
-                        console.log(res.aggs[0].results)
-                        res.aggs[0].results.map(dpe=>{
-                            let classeDpe = dpe.classe_consommation_energie;
-                           if(classeDpe !== "N")
-                           {
-                               let classeGes = dpe.classe_estimation_ges;
-                               let col = document.createElement('div')
-                               let imgDpe = document.createElement('img');
-                               let imgGes = document.createElement('img');
-                               let modalDpeContent = document.querySelector('#modal-dpe-content');
-                               imgDpe.src = '{{ asset('img/dpe_') }}'+classeDpe+'.png';
-                               imgGes.src = '{{ asset('img/ges_') }}'+classeGes+'.png';
-                               modalDpeContent.innerHTML = '';
-                               modalDpeContent.append(col);
-                               col.insertAdjacentHTML('beforebegin',`<h5 class="fr-h3 fr-col-12 fr-mb-0">${dpe.date_etablissement_dpe}</h5>`)
-                               col.insertAdjacentHTML('beforebegin',`<h6>Consommation énergie ${dpe.consommation_energie}</h6>`);
-                               [imgDpe,imgGes].map(img=>{img.classList.add('fr-col-6')})
-                               col.append(imgDpe,imgGes)
-                           }
+            fetch(urlDpe).then(r => {
+                r.json().then(res => {
+                    if (res.total > 1) {
+                        let modalDpeContent = document.querySelector('#modal-dpe-content');
+                        modalDpeContent.innerHTML = '';
+                        res.aggs.map(agg => {
+                            agg.results.map(dpe => {
+                                let classeDpe = dpe.classe_consommation_energie;
+                                if (classeDpe !== "N") {
+                                    console.log(dpe)
+                                    let classeGes = dpe.classe_estimation_ges, col = document.createElement('div'),
+                                        imgDpe = document.createElement('img'), imgGes = document.createElement('img');
+                                    imgDpe.src = '{{ asset('img/dpe_') }}' + classeDpe + '.png';
+                                    imgGes.src = '{{ asset('img/ges_') }}' + classeGes + '.png';
+                                    modalDpeContent.append(col);
+                                    col.insertAdjacentHTML('beforeend', `<h5 class="fr-h3 fr-col-12 fr-mb-0">${dpe.date_etablissement_dpe}</h5>`)
+                                    col.insertAdjacentHTML('beforeend', `<h6>Consommation énergie ${dpe.consommation_energie}</h6>`);
+                                    [imgDpe, imgGes].map(img => {
+                                        img.classList.add('fr-col-6')
+                                    })
+                                    col.append(imgDpe, imgGes)
+                                }
+                            })
                         })
                     }
                 })
             })
         })
-
     </script>
 {% endblock %}

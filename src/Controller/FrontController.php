@@ -67,7 +67,7 @@ class FrontController extends AbstractController
         $dbhost = "localhost";
         $dbuser = "root";
         $dbpass = "";
-        $db = "mwplpnqboucherho";
+        $db = "dumpbdr";
         $conn = new mysqli($dbhost, $dbuser, $dbpass, $db) or die("Connect failed: %s\n" . $conn->error);
         $count = 0;
 
@@ -80,9 +80,9 @@ class FrontController extends AbstractController
             $part->setIsCommune($partenaire['isCommune']);
             $entityManager->persist($part);
         }
-        $entityManager->flush();
+        $entityManager->flush();*/
 
-        $usersQuery = "SELECT * from husers_bo";
+       /* $usersQuery = "SELECT * from husers_bo";
         $users = $conn->query($usersQuery)->fetch_all(MYSQLI_ASSOC);
         foreach ($users as $user) {
             $partenaire = $entityManager->getRepository(Partenaire::class)->find($user['idPartenaire']);
@@ -105,9 +105,9 @@ class FrontController extends AbstractController
             $entityManager->persist($u);
         }
         $entityManager->flush();*/
-        $signalementQuery = "SELECT * from hsignalement_ s
+       $signalementQuery = "SELECT * from hsignalement_ s
     JOIN hadresse_ a ON s.idAdresse = a.idAdresse
-    ORDER BY s.refSign DESC LIMIT 200 OFFSET 1400
+    ORDER BY s.refSign DESC LIMIT 200 OFFSET 1600
     ";
         $signalements = $conn->query($signalementQuery)->fetch_all(MYSQLI_ASSOC);
         foreach ($signalements as $signalement) {
@@ -203,7 +203,7 @@ class FrontController extends AbstractController
             $sign->setNbChambresLogement((int)$signalement['prof_nbChambres']);
             $sign->setNbNiveauxLogement((int)$signalement['prof_nbNiveaux']);
             $sign->setNbOccupantsLogement((int)$signalement['prof_nbOccup']);
-            $sign->setStatut($signalement['etat'] === 8 ? Signalement::STATUS_CLOSED : Signalement::STATUS_ACTIVE);
+            $sign->setStatut($signalement['etat'] === "8" ? Signalement::STATUS_CLOSED : Signalement::STATUS_ACTIVE);
 
             $criteresQuery = "SELECT * FROM hsignalement_hcritere h where h.idSignalement = '" . $signalement['idSignalement'] . "'";
             $criteres = $conn->query($criteresQuery)->fetch_all(MYSQLI_ASSOC);
