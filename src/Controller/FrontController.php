@@ -32,9 +32,14 @@ class FrontController extends AbstractController
     #[Route('/replicapi', name: 'replicapi', host: 'localhost')]
     public function replicapi(Request $request, Filesystem $fsObject, SignalementRepository $signalementRepository, ManagerRegistry $doctrine, NotificationService $notificationService)
     {
-        $signalement = $signalementRepository->findAll()[0];
-
-
+        $signalements = $signalementRepository->findAll();
+            foreach ($signalements as $signalement)
+            {
+                $signalement->setCodeSuivi(md5(uniqid()));
+                $doctrine->getManager()->persist($signalement);
+            }
+$doctrine->getManager()->flush();
+            die('ok');
         foreach ($signalementRepository->findAll() as $signalement) {
             $calculator = new CriticiteCalculatorService($signalement, $doctrine);
             $score = $calculator->calculate();
@@ -205,7 +210,7 @@ class FrontController extends AbstractController
             $sign->setNbNiveauxLogement((int)$signalement['prof_nbNiveaux']);
             $sign->setNbOccupantsLogement((int)$signalement['prof_nbOccup']);
             $sign->setStatut($signalement['etat'] === "8" ? Signalement::STATUS_CLOSED : Signalement::STATUS_ACTIVE);
-
+            $sign->setCodeSuivi(md5(uniqid()));
             $criteresQuery = "SELECT * FROM hsignalement_hcritere h where h.idSignalement = '" . $signalement['idSignalement'] . "'";
             $criteres = $conn->query($criteresQuery)->fetch_all(MYSQLI_ASSOC);
             if ($criteres) {
