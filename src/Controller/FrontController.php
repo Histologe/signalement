@@ -33,7 +33,6 @@ class FrontController extends AbstractController
     public function replicapi(Request $request, Filesystem $fsObject, SignalementRepository $signalementRepository, ManagerRegistry $doctrine, NotificationService $notificationService)
     {
 
-        dd($id);
         $signalements = $signalementRepository->findAll();
         foreach ($signalements as $signalement) {
             $signalement->setCodeSuivi(md5(uniqid()));
