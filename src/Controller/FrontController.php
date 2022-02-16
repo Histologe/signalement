@@ -29,14 +29,17 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class FrontController extends AbstractController
 {
-    #[Route('/replicapi', name: 'replicapi', host: 'localhost')]
+    #[Route('/replicapi', name: 'replicapi'/*, host: 'localhost'*/)]
     public function replicapi(Request $request, Filesystem $fsObject, SignalementRepository $signalementRepository, ManagerRegistry $doctrine, NotificationService $notificationService)
     {
 
         $signalements = $signalementRepository->findAll();
         foreach ($signalements as $signalement) {
-            $signalement->setCodeSuivi(md5(uniqid()));
+            $details= $signalement->getDetails();
+            $signalement->setDetails(str_replace(['/r/n','\r\n','<br />'],'<br>',$details));
             $doctrine->getManager()->persist($signalement);
+            /*$signalement->setCodeSuivi(md5(uniqid()));
+            */
         }
         $doctrine->getManager()->flush();
         die('ok');
