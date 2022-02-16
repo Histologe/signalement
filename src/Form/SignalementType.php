@@ -405,7 +405,6 @@ class SignalementType extends AbstractType
                 ],
                 'label' => "Code postal du logement",
                 'html5' => true,
-                'empty_data'=>75
             ])
             ->add('villeOccupant', TextType::class, [
                 'attr' => [

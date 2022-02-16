@@ -122,13 +122,19 @@ class FrontSignalementController extends AbstractController
             }
 
             //TODO: Si proprio pas averti mail avec lettre type
-            if ($em->getRepository(Signalement::class)->findOneBy([], ['id' => 'DESC'])) {
-                $id = $em->getRepository(Signalement::class)->findOneBy([], ['id' => 'DESC'])->getId() + 1;
-            } else {
+            $year = (new \DateTime())->format('Y');
+            $reqId = $doctrine->getRepository(Signalement::class)->createQueryBuilder('s')
+                ->select('s.reference')
+                ->where('YEAR(s.createdAt) = :year')
+                ->setParameter('year',2022)
+                ->orderBy('s.createdAt','DESC')
+                ->setMaxResults(1)
+                ->getQuery()->getOneOrNullResult();
+            if($reqId)
+                $id= (int)explode('-',$reqId['reference'])[1]+1;
+            else
                 $id = 1;
-            }
-            //TODO: Repartir a zéro pour chaque année
-            $signalement->setReference((new \DateTime())->format('Y') . '-' . $id);
+            $signalement->setReference($year . '-' . $id);
 
             $score = new CriticiteCalculatorService($signalement, $doctrine);
             $signalement->setScoreCreation($score->calculate());

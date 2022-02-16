@@ -32,14 +32,15 @@ class FrontController extends AbstractController
     #[Route('/replicapi', name: 'replicapi', host: 'localhost')]
     public function replicapi(Request $request, Filesystem $fsObject, SignalementRepository $signalementRepository, ManagerRegistry $doctrine, NotificationService $notificationService)
     {
+
+        dd($id);
         $signalements = $signalementRepository->findAll();
-            foreach ($signalements as $signalement)
-            {
-                $signalement->setCodeSuivi(md5(uniqid()));
-                $doctrine->getManager()->persist($signalement);
-            }
-$doctrine->getManager()->flush();
-            die('ok');
+        foreach ($signalements as $signalement) {
+            $signalement->setCodeSuivi(md5(uniqid()));
+            $doctrine->getManager()->persist($signalement);
+        }
+        $doctrine->getManager()->flush();
+        die('ok');
         foreach ($signalementRepository->findAll() as $signalement) {
             $calculator = new CriticiteCalculatorService($signalement, $doctrine);
             $score = $calculator->calculate();
@@ -66,8 +67,8 @@ $doctrine->getManager()->flush();
 
     }
 
-    #[Route('/dump', name: 'dump', host: 'localhost')]
-    public function dump(EntityManagerInterface $entityManager, ManagerRegistry $doctrine, AffectationRepository $affectationRepository): Response
+    #[Route('/dump/{offset}', name: 'dump', host: 'localhost')]
+    public function dump($offset, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, AffectationRepository $affectationRepository): Response
     {
         ini_set('max_execution_time', '-1');
         $dbhost = "localhost";
@@ -88,33 +89,36 @@ $doctrine->getManager()->flush();
         }
         $entityManager->flush();*/
 
-        /* $usersQuery = "SELECT * from husers_bo";
-         $users = $conn->query($usersQuery)->fetch_all(MYSQLI_ASSOC);
-         foreach ($users as $user) {
-             $partenaire = $entityManager->getRepository(Partenaire::class)->find($user['idPartenaire']);
-             $u = new User();
-             $u->setPartenaire($partenaire);
-             if (str_contains($user['nom_bo'], 'GéNéRIQUE')) {
-                 $nom = str_replace('GéNéRIQUE', '', $user['nom_bo']);
-                 $isGenerique = 1;
-             } else {
-                 $nom = $user['nom_bo'];
-                 $isGenerique = 0;
-             }
-             $u->setId($user['id_userbo']);
-             $u->setNom($nom);
-             $u->setPrenom($user['prenom_bo']);
-             $u->setEmail($user['courriel']);
-             $u->setIsMailingActive($user['sendAlert']);
-             $u->setIsGenerique($isGenerique);
-             $u->setRoles(['ROLE_USER_PARTENAIRE']);
-             $entityManager->persist($u);
-         }
-         $entityManager->flush();*/
+        /*$usersQuery = "SELECT * from husers_bo";
+        $users = $conn->query($usersQuery)->fetch_all(MYSQLI_ASSOC);
+        foreach ($users as $user) {
+            $partenaire = $entityManager->getRepository(Partenaire::class)->find($user['idPartenaire']);
+            $u = new User();
+            $u->setPartenaire($partenaire);
+            if (str_contains($user['nom_bo'], 'GéNéRIQUE')) {
+                $nom = str_replace('GéNéRIQUE', '', $user['nom_bo']);
+                $isGenerique = 1;
+            } else {
+                $nom = $user['nom_bo'];
+                $isGenerique = 0;
+            }
+            $u->setId($user['id_userbo']);
+            $u->setNom($nom);
+            $u->setPrenom($user['prenom_bo']);
+            $u->setEmail($user['courriel']);
+            $u->setIsMailingActive($user['sendAlert']);
+            $u->setIsGenerique($isGenerique);
+            $u->setRoles(['ROLE_USER_PARTENAIRE']);
+            $entityManager->persist($u);
+        }
+        $entityManager->flush();
+       die();*/
         $signalementQuery = "SELECT * from hsignalement_ s
     JOIN hadresse_ a ON s.idAdresse = a.idAdresse
-    ORDER BY s.refSign LIMIT 500 OFFSET 3800
+    ORDER BY s.refSign LIMIT 100 /*OFFSET 3800*/
     ";
+        if ($offset !== 0)
+            $signalementQuery .= 'OFFSET ' . $offset;
         $signalements = $conn->query($signalementQuery)->fetch_all(MYSQLI_ASSOC);
         foreach ($signalements as $signalement) {
             $sign = new Signalement();
@@ -276,11 +280,18 @@ $doctrine->getManager()->flush();
                     if ($affectation['affectBy'] !== null)
                         $affectedBy = $entityManager->getRepository(User::class)->find($affectation['affectBy']);
                     if ($user) {
-                        $statut = match ($affectation['affect']) {
-                            "0", "1" => Affectation::STATUS_WAIT,
-                            "2" => Affectation::STATUS_ACCEPTED,
-                            "3" => Affectation::STATUS_REFUSED,
-                        };
+                        if($affectation['etat'] === "8" || $affectation['etat'] === "4")
+                        {
+                            $statut = Affectation::STATUS_CLOSED;
+                        } else {
+                            $statut = match ($affectation['affect']) {
+                                "0", "1" => Affectation::STATUS_WAIT,
+                                "2" => Affectation::STATUS_ACCEPTED,
+                                "3" => Affectation::STATUS_REFUSED,
+                            };
+                        }
+                        if(!isset($affectedBy))
+                            $affectedBy = $user->getPartenaire()->getUsers()->first();
                         if (!$affectationRepository->findBy(['partenaire' => $user->getPartenaire(), 'signalement' => $sign]) && isset($affectedBy)) {
                             $a = new Affectation();
                             $a->setPartenaire($user->getPartenaire());
@@ -289,7 +300,7 @@ $doctrine->getManager()->flush();
                             $a->setAnsweredBy($user);
                             $a->setAnsweredAt(new \DateTimeImmutable($affectation['dtAffect']));
                             $a->setAffectedBy($affectedBy);
-                            $a->setCreatedAt(new \DateTimeImmutable($affectation['dtAlert']));
+                            $a->setCreatedAt(new \DateTimeImmutable($affectation['dtAlert'] ?? $affectation['dtAffect']));
                             $entityManager->persist($a);
                             $entityManager->flush();
                         }
@@ -298,20 +309,21 @@ $doctrine->getManager()->flush();
             }
             //END AFFECTATION
             $count++;
+            if (($offset + $count) === 6131)
+                dd('finish');
         }
-
-        return $this->json('Transferts de ' . $count . ' signalements sans pression !');
+            return $this->redirectToRoute('dump', ['offset' => $offset + $count]);
     }
 
 
     #[Route('/', name: 'home')]
-    public function index(SignalementRepository $signalementRepository,AffectationRepository $affectationRepository): Response
+    public function index(SignalementRepository $signalementRepository, AffectationRepository $affectationRepository): Response
     {
         $title = 'Un service public pour les locataires et propriétaires';
         $total = $signalementRepository->findAllWithAffectations();
         $stats['total'] = count($total);
-        $stats['pec'] = floor(($affectationRepository->createQueryBuilder('a')->select('COUNT(DISTINCT a.signalement)')->join('a.signalement','signalement','WITH','signalement.statut != 7')->getQuery()->getSingleScalarResult()/$stats['total'])*100);
-        $stats['res'] = floor(($affectationRepository->createQueryBuilder('a')->select('COUNT(DISTINCT a.signalement)')->where('a.statut = 1')->join('a.signalement','signalement','WITH','signalement.statut != 7')->getQuery()->getSingleScalarResult()/$stats['total'])*100);
+        $stats['pec'] = floor(($affectationRepository->createQueryBuilder('a')->select('COUNT(DISTINCT a.signalement)')->join('a.signalement', 'signalement', 'WITH', 'signalement.statut != 7')->getQuery()->getSingleScalarResult() / $stats['total']) * 100);
+        $stats['res'] = floor(($affectationRepository->createQueryBuilder('a')->select('COUNT(DISTINCT a.signalement)')->where('a.statut = 1')->join('a.signalement', 'signalement', 'WITH', 'signalement.statut != 7')->getQuery()->getSingleScalarResult() / $stats['total']) * 100);
         return $this->render('front/index.html.twig', [
             'title' => $title,
             'stats' => $stats
@@ -331,7 +343,7 @@ $doctrine->getManager()->flush();
     public function contact(Request $request, NotificationService $notificationService): Response
     {
         $title = "Conditions Générales d'Utilisation";
-        $form = $this->createForm(ContactType::class,[]);
+        $form = $this->createForm(ContactType::class, []);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $notificationService->send(NotificationService::TYPE_NOTIFICATION_MAIL_FRONT, 'notifications@histologe.fr', [

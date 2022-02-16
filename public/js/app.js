@@ -250,31 +250,9 @@ forms.forEach((form) => {
         })
     })
     form?.querySelectorAll('[data-fr-adresse-autocomplete]').forEach((autocomplete) => {
-        autocomplete.addEventListener('keyup', () => {
-            if (autocomplete.value.length > 10)
-                fetch('https://api-adresse.data.gouv.fr/search/?q=' + autocomplete.value + '&lat=43.5911679&lon=5.3102505').then((res) => {
-                    res.json().then((r) => {
-                        let container = form.querySelector('#signalement-adresse-suggestion')
-                        container.innerHTML = '';
-                        for (let feature of r.features) {
-                            let suggestion = document.createElement('div');
-                            suggestion.classList.add('fr-col-12', 'fr-p-3v', 'fr-text-label--blue-france', 'fr-adresse-suggestion');
-                            suggestion.innerHTML = feature.properties.label;
-                            suggestion.addEventListener('click', () => {
-                                // console.log(feature.geometry.coordinates)
-                                form.querySelector('#signalement_adresseOccupant').value = feature.properties.name;
-                                form.querySelector('#signalement_cpOccupant').value = feature.properties.postcode;
-                                form.querySelector('#signalement_villeOccupant').value = feature.properties.city;
-                                form.querySelector('#signalement-insee-occupant').value = feature.properties.citycode;
-                                form.querySelector('#signalement-geoloc-lat-occupant').value = feature.geometry.coordinates[0];
-                                form.querySelector('#signalement-geoloc-lng-occupant').value = feature.geometry.coordinates[1];
-                                container.innerHTML = '';
-                            })
-                            container.appendChild(suggestion)
-                        }
-                    })
-                })
-        })
+        autocomplete.addEventListener('keyup', ()=>{
+            searchAddress(form,autocomplete)
+        });
     })
     form.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -591,7 +569,7 @@ for (i = 0; i < tables.length; i++) {
         thead.addEventListener("click", sortTableFunction(table));
     }
 }
-document?.querySelectorAll(".fr-pagination__link:not([aria-current])").forEach((e => {
+/*document?.querySelectorAll(".fr-pagination__link:not([aria-current])").forEach((e => {
     let t, r, a, n = document.querySelector(".fr-pagination__link--prev"),
         i = document.querySelector(".fr-pagination__link--next"),
         u = document.querySelector(".fr-pagination__link--first"),
@@ -614,7 +592,9 @@ document?.querySelectorAll(".fr-pagination__link:not([aria-current])").forEach((
             }))
         }))))
     }))
-}));
+}));*/
+
+document.querySelector()
 document?.querySelectorAll('[name="bo-filter-form"]').forEach((filterForm) => {
     filterForm.addEventListener('change', () => {
         filterForm.submit();
@@ -780,3 +760,35 @@ document?.querySelector('form[name="login-creation-mdp-form"]')?.querySelectorAl
         }
     })
 })
+function searchAddress(form,autocomplete){
+
+    if (autocomplete.value.length > 10)
+    {
+        autocomplete.removeEventListener('keyup',searchAddress)
+        fetch('https://api-adresse.data.gouv.fr/search/?q=' + autocomplete.value + '&lat=43.5911679&lon=5.3102505').then((res) => {
+            res.json().then((r) => {
+                let container = form.querySelector('#signalement-adresse-suggestion')
+                container.innerHTML = '';
+                for (let feature of r.features) {
+                    let suggestion = document.createElement('div');
+                    suggestion.classList.add('fr-col-12', 'fr-p-3v', 'fr-text-label--blue-france', 'fr-adresse-suggestion');
+                    suggestion.innerHTML = feature.properties.label;
+                    suggestion.addEventListener('click', () => {
+                        // console.log(feature.geometry.coordinates)
+                        form.querySelector('#signalement_adresseOccupant').value = feature.properties.name;
+                        form.querySelector('#signalement_cpOccupant').value = feature.properties.postcode;
+                        form.querySelector('#signalement_villeOccupant').value = feature.properties.city;
+                        form.querySelector('#signalement-insee-occupant').value = feature.properties.citycode;
+                        form.querySelector('#signalement-geoloc-lat-occupant').value = feature.geometry.coordinates[0];
+                        form.querySelector('#signalement-geoloc-lng-occupant').value = feature.geometry.coordinates[1];
+                        container.innerHTML = '';
+                        autocomplete.addEventListeners('keyup',searchAddress(form,autocomplete));
+                    })
+                    container.appendChild(suggestion)
+
+                }
+            })
+        })
+        return false;
+    }
+}
