@@ -29,7 +29,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class FrontController extends AbstractController
 {
-    #[Route('/replicapi', name: 'replicapi', host: 'localhost')]
+    #[Route('/replicapi', name: 'replicapi')]
     public function replicapi(Request $request, Filesystem $fsObject, SignalementRepository $signalementRepository, ManagerRegistry $doctrine, NotificationService $notificationService)
     {
 
