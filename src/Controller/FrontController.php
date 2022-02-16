@@ -320,10 +320,11 @@ class FrontController extends AbstractController
     public function index(SignalementRepository $signalementRepository, AffectationRepository $affectationRepository): Response
     {
         $title = 'Un service public pour les locataires et propriétaires';
+        $year = (new \DateTimeImmutable())->format('Y');
         $total = $signalementRepository->findAllWithAffectations();
         $stats['total'] = count($total);
-        $stats['pec'] = floor(($affectationRepository->createQueryBuilder('a')->select('COUNT(DISTINCT a.signalement)')->join('a.signalement', 'signalement', 'WITH', 'signalement.statut != 7')->getQuery()->getSingleScalarResult() / $stats['total']) * 100);
-        $stats['res'] = floor(($affectationRepository->createQueryBuilder('a')->select('COUNT(DISTINCT a.signalement)')->where('a.statut = 1')->join('a.signalement', 'signalement', 'WITH', 'signalement.statut != 7')->getQuery()->getSingleScalarResult() / $stats['total']) * 100);
+        $stats['pec'] = floor(($affectationRepository->createQueryBuilder('a')->select('COUNT(DISTINCT a.signalement)')->where('YEAR(a.createdAt) = '.$year)->join('a.signalement', 'signalement', 'WITH', 'signalement.statut != 7')->getQuery()->getSingleScalarResult() / $stats['total']) * 100);
+        $stats['res'] = floor(($affectationRepository->createQueryBuilder('a')->select('COUNT(DISTINCT a.signalement)')->where('a.statut = 1 AND YEAR(a.createdAt) = '.$year)->join('a.signalement', 'signalement', 'WITH', 'signalement.statut != 7')->getQuery()->getSingleScalarResult() / $stats['total']) * 100);
         return $this->render('front/index.html.twig', [
             'title' => $title,
             'stats' => $stats
