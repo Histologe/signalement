@@ -594,7 +594,6 @@ for (i = 0; i < tables.length; i++) {
     }))
 }));*/
 
-document.querySelector()
 document?.querySelectorAll('[name="bo-filter-form"]').forEach((filterForm) => {
     filterForm.addEventListener('change', () => {
         filterForm.submit();

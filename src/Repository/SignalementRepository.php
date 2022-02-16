@@ -139,7 +139,7 @@ class SignalementRepository extends ServiceEntityRepository
         if ($search)
             $qb->andWhere('LOWER(s.nomOccupant) LIKE :search OR LOWER(s.prenomOccupant) LIKE :search OR LOWER(s.reference) LIKE :search OR LOWER(s.adresseOccupant) LIKE :search OR LOWER(s.villeOccupant) LIKE :search')
                 ->setParameter('search', "%" . strtolower($search) . "%");
-        $qb->orderBy('s.id', 'DESC')
+        $qb->orderBy('s.createdAt', 'DESC')
             ->setFirstResult($firstResult)
             ->setMaxResults($pageSize)
             ->getQuery();
