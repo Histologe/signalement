@@ -161,8 +161,9 @@ class SignalementRepository extends ServiceEntityRepository
                 ->andWhere('partenaire = :partenaire')
                 ->setParameter('partenaire', $user->getPArtenaire());
         return $qb->groupBy('s.villeOccupant')
+
             ->getQuery()
-            ->getSingleColumnResult();
+            ->getResult();
     }
 
 

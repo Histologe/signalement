@@ -37,8 +37,8 @@
                 <select name="bo-filter-ville" id="filter_ville" class="fr-select">
                     <option value="all">TOUTES</option>
                     {% for ville in signalements.villes %}
-                        <option value="{{ ville }}"
-                                {% if filter.ville is same as(ville) %}selected{% endif %}>{{ ville|upper }}</option>
+                        <option value="{{ ville.ville }}"
+                                {% if filter.ville is same as(ville.ville) %}selected{% endif %}>{{ ville.ville|upper }}</option>
                     {% endfor %}
                 </select>
             </div>
