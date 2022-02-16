@@ -569,7 +569,7 @@ for (i = 0; i < tables.length; i++) {
         thead.addEventListener("click", sortTableFunction(table));
     }
 }
-/*document?.querySelectorAll(".fr-pagination__link:not([aria-current])").forEach((e => {
+document?.querySelectorAll(".fr-pagination__link:not([aria-current])").forEach((e => {
     let t, r, a, n = document.querySelector(".fr-pagination__link--prev"),
         i = document.querySelector(".fr-pagination__link--next"),
         u = document.querySelector(".fr-pagination__link--first"),
@@ -592,7 +592,7 @@ for (i = 0; i < tables.length; i++) {
             }))
         }))))
     }))
-}));*/
+}));
 
 document?.querySelectorAll('[name="bo-filter-form"]').forEach((filterForm) => {
     filterForm.addEventListener('change', () => {
@@ -629,7 +629,7 @@ document?.querySelector('#signalement-affectation-form-submit')?.addEventListene
             /*})*/
         }
     })
-    console.log(e.target.form);
+   //console.log(e.target.form);
 })
 document?.querySelectorAll('.fr-input--file-signalement').forEach(inputFile => {
     inputFile.addEventListener('change', evt => {
@@ -713,7 +713,7 @@ document?.querySelector('#fr-bug-report-modal').addEventListeners('dsfr.disclose
                 method: 'POST',
                 body: formData
             }).then(r => r.text().then(res => {
-                console.log(res)
+               //console.log(res)
                 form.classList.add('fr-hidden');
                 event.target.querySelector('#bug-report-success').classList.remove('fr-hidden')
             }))
