@@ -44,7 +44,7 @@ class SituationRepository extends ServiceEntityRepository
             ->where('s.isArchive != 1')
             ->andWhere('s.isActive = 1')
             ->leftJoin('s.criteres','criteres','WITH','criteres.isArchive != 1')
-            ->leftJoin('criteres.criticites','criticites','WITH','criticites.isArchive != 1')
+            ->leftJoin('App\Entity\Criticite','criticites','WITH','criticites.isArchive != 1')
             ->addSelect('criteres')
             ->addSelect('criticites')
             ->orderBy('s.isActive', 'DESC')

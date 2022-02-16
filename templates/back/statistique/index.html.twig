@@ -5,6 +5,7 @@
 {% block content %}
 {#    {{ dump(dates) }}#}
     {#{{ dump(situations) }} {{ dump(totaux) }}{{ dump(criteres) }}{{ dump(villes) }}#}
+{#    {{ dump(dates) }}#}
     <section class="fr-grid-row fr-pt-0 fr-grid-row--center">
         <div class="fr-col-12 fr-p-5v">
             <canvas id="sign-cloture" width="100%" height="25%" aria-label="Hello ARIA World" role="img"></canvas>
@@ -38,12 +39,12 @@
                     datasets: [
                         {
                             label: 'Signalements',
-                            data: [{% for date in dates %}"{{ date.open|length }}",{% endfor %}],
+                            data: [{% for date in dates %}"{{ date.open }}",{% endfor %}],
                             backgroundColor: '#000091',
                         },
                         {
                             label: 'Clôtures',
-                            data: [{% for date in dates %}"{{ date.close is defined ? date.close|length : 0 }}",{% endfor %}],
+                            data: [{% for date in dates %}"{{ date.close }}",{% endfor %}],
                             backgroundColor: '#FF9940',
                         }
                     ]
@@ -69,7 +70,7 @@
                     labels: labelsSituation,
                     datasets: [
                         {
-                            data: [{% for situation,count in situations %}"{{ (count/totaux.all)*100 }}",{% endfor %}],
+                            data: [{% for situation,count in situations %}"{{ (count.count/totaux.all)*100 }}",{% endfor %}],
                             backgroundColor: '#00009199',
                         },
                     ]
@@ -95,7 +96,7 @@
                     labels: labelsCritere,
                     datasets: [
                         {
-                            data: [{% for critere,count in criteres[:15] %}"{{ (count/totaux.all)*100 }}",{% endfor %}],
+                            data: [{% for critere,count in criteres[:15] %}"{{ (count.count/totaux.all)*100 }}",{% endfor %}],
                             backgroundColor: '#FF994099',
                         },
                     ]
