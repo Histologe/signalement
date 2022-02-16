@@ -126,7 +126,7 @@ class FrontSignalementController extends AbstractController
             $reqId = $doctrine->getRepository(Signalement::class)->createQueryBuilder('s')
                 ->select('s.reference')
                 ->where('YEAR(s.createdAt) = :year')
-                ->setParameter('year',2022)
+                ->setParameter('year',$year)
                 ->orderBy('s.createdAt','DESC')
                 ->setMaxResults(1)
                 ->getQuery()->getOneOrNullResult();
