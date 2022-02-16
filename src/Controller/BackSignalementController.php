@@ -39,12 +39,12 @@ class BackSignalementController extends AbstractController
 {
     private static function sendMailOcupantDeclarant(Signalement $signalement, NotificationService $notificationService, UrlGeneratorInterface $urlGenerator, $type)
     {
-        if($signalement->getMailOccupant())
+        if ($signalement->getMailOccupant())
             $notificationService->send($type, $signalement->getMailOccupant(), [
                 'signalement' => $signalement,
                 'lien_suivi' => $urlGenerator->generate('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 0)
             ]);
-        if($signalement->getMailDeclarant())
+        if ($signalement->getMailDeclarant())
             $notificationService->send($type, $signalement->getMailDeclarant(), [
                 'signalement' => $signalement,
                 'lien_suivi' => $urlGenerator->generate('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 0)
@@ -113,9 +113,9 @@ class BackSignalementController extends AbstractController
                 $signalement->setStatut(Signalement::STATUS_CLOSED);
                 $signalement->setMotifCloture($motifCloture);
                 $sujet = 'tous les partenaires';
-                $signalement->getAffectations()->map(function (Affectation $affectation)use ($entityManager){
-                   $affectation->setStatut(Affectation::STATUS_CLOSED);
-                   $entityManager->persist($affectation);
+                $signalement->getAffectations()->map(function (Affectation $affectation) use ($entityManager) {
+                    $affectation->setStatut(Affectation::STATUS_CLOSED);
+                    $entityManager->persist($affectation);
                 });
             }
             $suivi = new Suivi();
@@ -123,8 +123,7 @@ class BackSignalementController extends AbstractController
             $suivi->setCreatedBy($this->getUser());
             $signalement->addSuivi($suivi);
             /** @var Affectation $isAffected */
-            if($isAffected)
-            {
+            if ($isAffected) {
                 $isAffected->setStatut(Affectation::STATUS_CLOSED);
                 $isAffected->setAnsweredAt(new \DateTimeImmutable());
                 $isAffected->setMotifCloture($motifCloture);
@@ -212,7 +211,7 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/s/{uuid}/suivi/add', name: 'back_signalement_add_suivi', methods: "POST")]
-    public function addSuiviSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine,NotificationService $notificationService,UrlGeneratorInterface $urlGenerator): Response
+    public function addSuiviSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, NotificationService $notificationService, UrlGeneratorInterface $urlGenerator): Response
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
             return $this->redirectToRoute('back_index');
@@ -227,8 +226,8 @@ class BackSignalementController extends AbstractController
             $doctrine->getManager()->flush();
             $this->addFlash('success', 'Suivi publié avec succès !');
             //TODO: Mail Sendinblue
-           if($suivi->getIsPublic())
-               self::sendMailOcupantDeclarant($signalement,$notificationService,$urlGenerator,NotificationService::TYPE_NOUVEAU_SUIVI);
+            if ($suivi->getIsPublic())
+                self::sendMailOcupantDeclarant($signalement, $notificationService, $urlGenerator, NotificationService::TYPE_NOUVEAU_SUIVI);
         } else
             $this->addFlash('error', 'Une erreur est survenu lors de la publication');
         return $this->redirect($this->generateUrl('back_signalement_view', ['uuid' => $signalement->getUuid()]) . '#suivis');
@@ -256,12 +255,12 @@ class BackSignalementController extends AbstractController
                     $affectation->setAffectedBy($this->getUser());
                     $doctrine->getManager()->persist($affectation);
                     //TODO: Mail Sendinblue
-                    $partenaire->getUsers()->map(function (User $user) use ($signalement,$notificationService) {
+                    $partenaire->getUsers()->map(function (User $user) use ($signalement, $notificationService) {
                         if ($user->getIsMailingActive() && $user->getStatut() === User::STATUS_ACTIVE) {
                             $notificationService->send(NotificationService::TYPE_AFFECTATION, $user->getEmail(), [
                                 'link' => $this->generateUrl('back_signalement_view', [
                                     'uuid' => $signalement->getUuid()
-                                ],0)
+                                ], 0)
                             ]);
                         }
                     });
@@ -322,7 +321,7 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/{uuid}/validation/response', name: 'back_signalement_validation_response', methods: "GET")]
-    public function validationResponseSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine,UrlGeneratorInterface$urlGenerator, NotificationService $notificationService): Response
+    public function validationResponseSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, UrlGeneratorInterface $urlGenerator, NotificationService $notificationService): Response
     {
         if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE'))
             return $this->redirectToRoute('back_index');
@@ -334,7 +333,7 @@ class BackSignalementController extends AbstractController
                 $signalement->setValidatedAt(new \DateTimeImmutable());
                 $signalement->setCodeSuivi(md5(uniqid()));
                 //TODO: Mail Sendinblue
-                self::sendMailOcupantDeclarant($signalement,$notificationService,$urlGenerator,NotificationService::TYPE_SIGNALEMENT_VALIDE);
+                self::sendMailOcupantDeclarant($signalement, $notificationService, $urlGenerator, NotificationService::TYPE_SIGNALEMENT_VALIDE);
 
             } else {
                 $statut = Signalement::STATUS_CLOSED;
@@ -386,9 +385,11 @@ class BackSignalementController extends AbstractController
             $setMethod = 'set' . ucfirst($type);
             $getMethod = 'get' . ucfirst($type);
             $$type = $signalement->$getMethod();
-            if (($key = array_search($file, $$type)) !== false) {
-                unlink($this->getParameter('uploads_dir') . $file);
-                unset($$type[$key]);
+            foreach ($$type as $k => $v) {
+                if ($file === $v['file'])
+                    if (file_exists($this->getParameter('uploads_dir') . $file))
+                        unlink($this->getParameter('uploads_dir') . $file);
+                unset($$type[$k]);
             }
             $signalement->$setMethod($$type);
             $doctrine->getManager()->persist($signalement);
