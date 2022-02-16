@@ -28,7 +28,7 @@ class PartenaireRepository extends ServiceEntityRepository
             ->where('p.isArchive != 1');
         if ($insee)
             $qb->andWhere("p.isCommune = 0 OR p.isCommune = 1 AND JSON_CONTAINS(p.insee,:insee,'$') != 0")
-                ->setParameter('insee', $insee);
+                ->setParameter('insee', '"'.$insee.'"');
         $qb
             ->leftJoin('p.affectations', 'affectations')
             ->addSelect('affectations');
