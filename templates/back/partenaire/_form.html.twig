@@ -33,6 +33,16 @@
         <select id="partenaire_users_roles_new__ID__" name="partenaire[users][new][__ID__][roles]" required="required"
                 class="fr-select">
             <option value="" selected="selected">--- Selectionnez ---</option>
+            {% if is_granted('ROLE_ADMIN') %}
+                <option value="ROLE_ADMIN">
+                    Super Admin
+                </option>
+            {% endif %}
+            {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
+                <option value="ROLE_ADMIN_TERRITOIRE">
+                    Administrateur Territoire
+                </option>
+            {% endif %}
             <option value="ROLE_ADMIN_PARTENAIRE">Administrateur</option>
             <option value="ROLE_USER_PARTENAIRE">Utilisateur</option>
         </select>
@@ -136,6 +146,16 @@
                         class="fr-text-label--red-marianne">*</sup></label>
             <select id="partenaire_users_roles_{{ user.id }}" name="partenaire[users][{{ user.id }}][roles]"
                     required="required" class="fr-select">
+                {% if is_granted('ROLE_ADMIN') %}
+                <option value="ROLE_ADMIN" {% if 'ROLE_ADMIN' in user.roles %}selected{% endif %}>
+                    Super Admin
+                </option>
+                {% endif %}
+                {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
+                    <option value="ROLE_ADMIN_TERRITOIRE" {% if 'ROLE_ADMIN_TERRITOIRE' in user.roles %}selected{% endif %}>
+                        Administrateur Territoire
+                    </option>
+                {% endif %}
                 <option value="ROLE_ADMIN_PARTENAIRE" {% if 'ROLE_ADMIN_PARTENAIRE' in user.roles %}selected{% endif %}>
                     Administrateur
                 </option>
