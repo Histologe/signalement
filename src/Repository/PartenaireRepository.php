@@ -27,13 +27,11 @@ class PartenaireRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p')
             ->where('p.isArchive != 1');
         if ($insee)
-            $qb->andWhere('p.isCommune = 0 OR p.isCommune = 1 AND p.insee LIKE :insee')
-                ->setParameter('insee', '%'.$insee.'%');
+            $qb->andWhere("p.isCommune = 0 OR p.isCommune = 1 AND JSON_CONTAINS(p.insee,:insee,'$') != 0")
+                ->setParameter('insee', $insee);
         $qb
             ->leftJoin('p.affectations', 'affectations')
-            ->leftJoin('p.users', 'users')
-            ->addSelect('users','affectations')
-            ->orderBy('users.roles');
+            ->addSelect('affectations');
 
         return $qb
             ->getQuery()

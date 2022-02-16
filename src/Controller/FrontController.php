@@ -309,7 +309,7 @@ class FrontController extends AbstractController
             }
             //END AFFECTATION
             $count++;
-            if (($offset + $count) === 6131)
+            if (($offset + $count) === 6146)
                 dd('finish');
         }
             return $this->redirectToRoute('dump', ['offset' => $offset + $count]);
