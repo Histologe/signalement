@@ -764,7 +764,7 @@ function searchAddress(form,autocomplete){
     if (autocomplete.value.length > 10)
     {
         autocomplete.removeEventListener('keyup',searchAddress)
-        fetch('https://api-adresse.data.gouv.fr/search/?q=' + autocomplete.value + '&lat=43.5911679&lon=5.3102505').then((res) => {
+        fetch('https://api-adresse.data.gouv.fr/search/?q=' + autocomplete.value).then((res) => {
             res.json().then((r) => {
                 let container = form.querySelector('#signalement-adresse-suggestion')
                 container.innerHTML = '';
@@ -781,7 +781,7 @@ function searchAddress(form,autocomplete){
                         form.querySelector('#signalement-geoloc-lat-occupant').value = feature.geometry.coordinates[0];
                         form.querySelector('#signalement-geoloc-lng-occupant').value = feature.geometry.coordinates[1];
                         container.innerHTML = '';
-                        autocomplete.addEventListeners('keyup',searchAddress(form,autocomplete));
+                        /*autocomplete.addEventListeners('keyup',searchAddress(form,autocomplete));*/
                     })
                     container.appendChild(suggestion)
 
