@@ -84,19 +84,15 @@ class FrontSignalementController extends AbstractController
                         foreach ($data[$key] as $idSituation => $criteres) {
                             $situation = $em->getRepository(Situation::class)->find($idSituation);
                             $signalement->addSituation($situation);
-                            $data[$key][$idSituation]['label'] = $situation->getLabel();
                             foreach ($criteres as $critere) {
                                 foreach ($critere as $idCritere => $criticites) {
                                     $critere = $em->getRepository(Critere::class)->find($idCritere);
                                     $signalement->addCritere($critere);
-                                    $data[$key][$idSituation]['critere'][$idCritere]['label'] = $critere->getLabel();
                                     $criticite = $em->getRepository(Criticite::class)->find($data[$key][$idSituation]['critere'][$idCritere]['criticite']);
                                     $signalement->addCriticite($criticite);
-                                    $data[$key][$idSituation]['critere'][$idCritere]['criticite'] = [$criticite->getId() => ['label' => $criticite->getLabel(), 'score' => $criticite->getScore()]];
                                 }
                             }
                         }
-                        $signalement->setJsonContent($data[$key]);
                         break;
                     case
                     'dateEntree':

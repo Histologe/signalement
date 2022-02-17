@@ -31,7 +31,7 @@ class CriticiteCalculatorService
            if($criticite->getCritere()->getIsDanger())
                $this->isDanger = true;
         });
-        $score = ($this->scoreSignalement/$scoreMax)*100;
+        $score = ($this->scoreSignalement/$scoreMax)*1000;
         if ($signalement->getNbEnfantsM6() || $signalement->getNbEnfantsP6())
             $score = $score * 1.1;
         if($this->isDanger)
