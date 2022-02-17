@@ -200,11 +200,12 @@ class BackSignalementController extends AbstractController
             dd($form->getErrors()[0]);
             return $this->json(['response' => 'error']);
         }
+
         return $this->render('back/signalement/edit.html.twig', [
             'title' => $title,
             'form' => $form->createView(),
             'signalement' => $signalement,
-            'situations' => $situationRepository->findAllWithCritereAndCriticite(),
+            'situations' => $situationRepository->findAllActive(),
             'etats' => $etats,
             'etats_classes' => $etats_classes
         ]);
