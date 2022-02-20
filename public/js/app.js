@@ -370,9 +370,9 @@ forms.forEach((form) => {
                     nextTabBtn.click();
                 }
                 if (!nextTabBtn) {
-                    event.submitter.disabled = true;
+                    event.target.querySelector('[type="submit"]').disabled = true;
                     ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v => event.submitter.classList.toggle(v));
-                    event.submitter.innerHTML = "En cours d'envoi..."
+                    event.target.querySelector('[type="submit"]').innerHTML = "En cours d'envoi..."
                     let formData = new FormData();
                     forms.forEach((form) => {
                         let data = serializeArray(form);
@@ -400,16 +400,16 @@ forms.forEach((form) => {
                                 } else if (res.response === "success_edited") {
                                     window.location.reload();
                                 } else {
-                                    event.submitter.disabled = false;
-                                    event.submitter.innerHTML = "Confirmer";
-                                    ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v => event.submitter.classList.toggle(v));
+                                    event.target.querySelector('[type="submit"]').disabled = false;
+                                    event.target.querySelector('[type="submit"]').innerHTML = "Confirmer";
+                                    ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v =>  event.target.querySelector('[type="submit"]').classList.toggle(v));
                                     alert('Erreur signalement !')
                                 }
                             })
                         } else {
-                            event.submitter.disabled = false;
-                            event.submitter.innerHTML = "Confirmer";
-                            ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v => event.submitter.classList.toggle(v));
+                            event.target.querySelector('[type="submit"]').disabled = false;
+                            event.target.querySelector('[type="submit"]').innerHTML = "Confirmer";
+                            ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v =>  event.target.querySelector('[type="submit"]').classList.toggle(v));
                             alert('Erreur signalement !')
                         }
                     })
