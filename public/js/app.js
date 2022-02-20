@@ -371,7 +371,7 @@ forms.forEach((form) => {
                 }
                 if (!nextTabBtn) {
                     event.target.querySelector('[type="submit"]').disabled = true;
-                    ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v => event.submitter.classList.toggle(v));
+                    ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v =>  event.target.querySelector('[type="submit"]').classList.toggle(v));
                     event.target.querySelector('[type="submit"]').innerHTML = "En cours d'envoi..."
                     let formData = new FormData();
                     forms.forEach((form) => {
