@@ -22,15 +22,15 @@ class BackStatsController extends AbstractController
         $dates = [];
         $totaux = ['open' => 0, 'closed' => 0, 'all' => 0];
         $villes = [];
-        $signalements = $entityManager->createQuery("SELECT s.id,s.statut,s.createdAt,s.villeOccupant FROM App\Entity\Signalement AS s")->getResult();
+        $signalements = $entityManager->createQuery("SELECT s.id,s.statut,s.createdAt,s.villeOccupant FROM App\Entity\Signalement AS s WHERE s.statut != 7")->getResult();
         foreach ($signalements as $signalement) {
-            $dates[$signalement['createdAt']->format('M Y')]['close'] ?? $dates[$signalement['createdAt']->format('M Y')]['close'] = 0;
-            $dates[$signalement['createdAt']->format('M Y')]['open'] ?? $dates[$signalement['createdAt']->format('M Y')]['open'] = 0;
+            $dates[strtotime($signalement['createdAt']->format('M Y'))]['close'] ?? $dates[strtotime($signalement['createdAt']->format('M Y'))]['close'] = 0;
+            $dates[strtotime($signalement['createdAt']->format('M Y'))]['open'] ?? $dates[strtotime($signalement['createdAt']->format('M Y'))]['open'] = 0;
             if ($signalement['statut'] === Signalement::STATUS_CLOSED) {
-                $dates[$signalement['createdAt']->format('M Y')]['close']++;
+                $dates[strtotime($signalement['createdAt']->format('M Y'))]['close']++;
                 $totaux['closed']++;
             } else {
-                $dates[$signalement['createdAt']->format('M Y')]['open']++;
+                $dates[strtotime($signalement['createdAt']->format('M Y'))]['open']++;
                 $totaux['open']++;
             }
             true === !isset($villes[mb_strtoupper($signalement['villeOccupant'])]) ?
