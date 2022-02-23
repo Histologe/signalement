@@ -122,18 +122,19 @@ class FrontSignalementController extends AbstractController
             $reqId = $doctrine->getRepository(Signalement::class)->createQueryBuilder('s')
                 ->select('s.reference')
                 ->where('YEAR(s.createdAt) = :year')
-                ->setParameter('year',$year)
-                ->orderBy('s.createdAt','DESC')
+                ->setParameter('year', $year)
+                ->orderBy('s.createdAt', 'DESC')
                 ->setMaxResults(1)
                 ->getQuery()->getOneOrNullResult();
-            if($reqId)
-                $id= (int)explode('-',$reqId['reference'])[1]+1;
+            if ($reqId)
+                $id = (int)explode('-', $reqId['reference'])[1] + 1;
             else
                 $id = 1;
             $signalement->setReference($year . '-' . $id);
 
             $score = new CriticiteCalculatorService($signalement, $doctrine);
             $signalement->setScoreCreation($score->calculate());
+            $signalement->setIsSituationHandicap(null);
             $em->persist($signalement);
             $em->flush();
 
@@ -143,7 +144,7 @@ class FrontSignalementController extends AbstractController
             if ($signalement->getMailOccupant())
                 $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $signalement->getMailOccupant(), ['signalement' => $signalement, 'attach' => $attachment ?? null]);
             if ($signalement->getMailDeclarant())
-                $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $signalement->getMailDeclarant(), ['signalement' => $signalement, 'attach' => $attachment?? null]);
+                $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $signalement->getMailDeclarant(), ['signalement' => $signalement, 'attach' => $attachment ?? null]);
 
             return $this->json(['response' => 'success']);
         }
