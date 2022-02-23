@@ -15,7 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class SignalementType extends AbstractType
+class   SignalementType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -35,11 +35,9 @@ class SignalementType extends AbstractType
                 ]
             ])
             ->add('isProprioAverti', ChoiceType::class, [
-                'choice_attr' => function ($choice, $key, $value) {
-                    $attr['class'] = 'fr-radio';
-                    'Oui' === $key ? $attr['data-fr-toggle-show'] = "signalement-methode-contact" : $attr['data-fr-toggle-hide'] = "signalement-methode-contact";
-                    return $attr;
-                },
+                'choice_attr' => [
+                    'class'=> 'fr-radio',
+                ],
                 'choices' => [
                     'Oui' => 1,
                     'Non' => 0
@@ -54,7 +52,7 @@ class SignalementType extends AbstractType
                     'class' => 'fr-hint-text'
                 ]
             ])
-            ->add('modeContactProprio', ChoiceType::class, [
+            /*->add('modeContactProprio', ChoiceType::class, [
                 'choices' => [
                     'Courrier recommandé' => 'recommandé',
                     'Courriel' => 'courriel',
@@ -68,7 +66,7 @@ class SignalementType extends AbstractType
                 ],
                 'required' => false,
                 'label' => 'Comment avez-vous averti le propriétaire ou gestionnaire ?',
-            ])
+            ])*/
             ->add('nbAdultes', ChoiceType::class, [
                 'attr' => [
                     'class' => 'fr-select'
@@ -171,100 +169,6 @@ class SignalementType extends AbstractType
                 ],
                 'required'=>false
             ])
-            ->add('natureLogement', ChoiceType::class, [
-                'choices' => [
-                    'Maison' => 'MAISON',
-                    'Appartement' => 'APPARTEMENT',
-                    'Autre' => 'AUTRE'
-                ],
-                'expanded' => true,
-                'label_attr' => [
-                    'class' => 'fr-label'
-                ],
-                'label' => 'Nature du logement concerné',
-                'help' => "Cette information nous permet d'informer le ou les service(s) concerné(s).",
-                'help_attr' => [
-                    'class' => 'fr-hint-text'
-                ]
-            ])
-            ->add('typeLogement', ChoiceType::class, [
-                'attr' => [
-                    'class' => 'fr-select'
-                ],
-                'choices' => [
-                    'Chambre' => 'CHAMBRE',
-                    'Studio' => 'STUDIO',
-                    'T1' => 'T1',
-                    'T2' => 'T2',
-                    'T3' => 'T3',
-                    'T4' => 'T4',
-                    'T5' => 'T5',
-                    'T6' => 'T6',
-                    'Plus' => 'PLUS',
-                ],
-                'label_attr' => [
-                    'class' => 'fr-label'
-                ],
-                'label' => "Typologie",
-                'placeholder' => '--- Selectionnez ---'
-            ])
-            ->add('superficie', NumberType::class, [
-                'attr' => [
-                    'class' => 'fr-input',
-                    'min' => '1',
-                    'step' => '0.01',
-                ],
-                'label_attr' => [
-                    'class' => 'fr-label'
-                ],
-                'label' => "Superficie estimée (m²)",
-                'html5' => true
-            ])
-            ->add('loyer', NumberType::class, [
-                'attr' => [
-                    'class' => 'fr-input',
-                    'min' => '1',
-                    'step' => '0.01',
-                ],
-                'label_attr' => [
-                    'class' => 'fr-label'
-                ],
-                'label' => "Loyer mensuel (€)",
-                'html5' => true
-            ])
-            ->add('isBailEnCours', ChoiceType::class, [
-                'choices' => [
-                    'Oui' => 1,
-                    'Non' => 0
-                ],
-                'expanded' => true,
-                'label_attr' => [
-                    'class' => 'fr-label'
-                ],
-                'label' => 'Le bail est-il en cours ?',
-                'help' => "Que la bail soit en cours ou non, merci de renseigner la date d'entrée dans le logement.",
-                'help_attr' => [
-                    'class' => 'fr-hint-text'
-                ]
-            ])
-            ->add('dateEntree', DateType::class, [
-                'attr' => [
-                    'class' => 'fr-input fr-fi-calendar-line fr-input-wrap',
-                    'max'=> (new \DateTimeImmutable())->format('Y-m-d')
-                ],
-                'widget' => 'single_text',
-                'label_attr' => [
-                    'class' => 'fr-label'
-                ],
-                'row_attr' => [
-                    'class' => 'fr-form-group fr-col-2'
-                ],
-                'label' => "Date d'entrée dans le logement",
-                'help' => "La date d'entrée dans le logement doit être renseignée au format (JJ/MM/AAAA).",
-                'help_attr' => [
-                    'class' => 'fr-hint-text'
-                ]
-            ])
             ->add('isLogementSocial', ChoiceType::class, [
                 'choices' => [
                     'Oui' => 1,
@@ -294,56 +198,6 @@ class SignalementType extends AbstractType
                 'help_attr' => [
                     'class' => 'fr-hint-text'
                 ]
-            ])
-            ->add('isRelogement', ChoiceType::class, [
-                'choices' => [
-                    'Oui' => 1,
-                    'Non' => 0
-                ],
-                'expanded' => true,
-                'label_attr' => [
-                    'class' => 'fr-label'
-                ],
-                'label' => 'Avez-vous engagé une démarche de relogement ?',
-                'help' => "Cette information nous aide également à optimiser le temps de traitement de votre signalement.",
-                'help_attr' => [
-                    'class' => 'fr-hint-text'
-                ]
-            ])
-            ->add('isRefusIntervention', ChoiceType::class, [
-                'choice_attr' => function ($choice, $key, $value) {
-                    $attr['class'] = 'fr-radio';
-                    'Non' === $key ? $attr['data-fr-toggle-show'] = "signalement-raison-refus" : $attr['data-fr-toggle-hide'] = "signalement-raison-refus";
-                    return $attr;
-                },
-                'choices' => [
-                    'Oui' => 0,
-                    'Non' => 1
-                ],
-                'expanded' => true,
-                'label_attr' => [
-                    'class' => 'fr-label'
-                ],
-                'label' => "Si cela est nécessaire, l'occupant accepte la visite d’un personne qualifiée et la mise en place de travaux d'amélioration ?",
-                'help' => "Le cas échéant, expliquez rapidement pourquoi vous ne souhaitez pas d'une visite de votre domicile, en 10 caractères minimum",
-                'help_attr' => [
-                    'class' => 'fr-hint-text'
-                ]
-            ])
-            ->add('raisonRefusIntervention', TextareaType::class, [
-                'attr' => [
-                    'class' => 'fr-input',
-                    'minlength'=> 10
-                ],
-                'label_attr' => [
-                    'class' => 'fr-label'
-                ],
-                'label' => "Précisez la raison de votre refus",
-                'help' => "Précisez la raison de votre refus, en 10 caractères minimum",
-                'help_attr' => [
-                    'class' => 'fr-hint-text'
-                ],
-                'required'=>false
             ])
             ->add('nomOccupant', TextType::class, [
                 'attr' => [

@@ -266,24 +266,6 @@
                     </p>
                 </fieldset>
             </div>
-            <div class="fr-form-group fr-hidden data-fr-toggle" id="signalement-methode-contact">
-                <fieldset class="fr-fieldset fr-fieldset--inline{# fr-fieldset--error #}" role="group">
-                    <legend class="fr-fieldset__legend fr-text--regular" id="checkboxes-inline-legend">
-                        {{ form_label(form.modeContactProprio) }}
-                    </legend>
-                    <div class="fr-fieldset__content">
-                        {% for key, choice in form.modeContactProprio.children %}
-                            <div class="fr-checkbox-group">
-                                {{ form_widget(choice) }}
-                                {{ form_label(choice) }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <p class="fr-error-text fr-hidden">
-                        Veuillez précisez la ou les methode(s) de contact.
-                    </p>
-                </fieldset>
-            </div>
             <div class="fr-form-group">
                 <fieldset class="fr-fieldset">
                     <legend class="fr-fieldset__legend fr-text--regular">
@@ -333,86 +315,6 @@
             </div>
             <div class="fr-form-group">
                 <fieldset class="fr-fieldset fr-fieldset--inline">
-                    <legend class="fr-fieldset__legend fr-text--regular" id='signalement-nature-logement'>
-                        {{ form_label(form.natureLogement) }}
-                        {{ form_help(form.natureLogement) }}
-                    </legend>
-                    <div class="fr-fieldset__content">
-                        {% for key, choice in form.natureLogement.children %}
-                            <div class="fr-radio-group">
-                                {{ form_widget(choice) }}
-                                {{ form_label(choice) }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <p class="fr-error-text fr-hidden">
-                        Veuillez précisez la nature du logement concerné.
-                    </p>
-                </fieldset>
-            </div>
-            <div class="fr-form-group">
-                <fieldset class="fr-fieldset">
-                    <legend class="fr-fieldset__legend fr-text--regular">
-                        Carracteristiques du logement<sup class="fr-text-default--error">*</sup>
-                        <p class="fr-hint-text">Indiquer la typologie et la superficie du logement en mètres
-                            carrés (m²) ainsi que le loyer mensuel en euros (€).</p>
-                    </legend>
-                    <div class="fr-select-group">
-                        {{ form_label(form.typeLogement) }}
-                        {{ form_widget(form.typeLogement) }}
-                        <p class="fr-error-text fr-hidden">
-                            Veuillez renseigner la typologie du logement.
-                        </p>
-                    </div>
-                    <div class="fr-input-group">
-                        {{ form_label(form.superficie) }}
-                        {{ form_widget(form.superficie) }}
-                        <p class="fr-error-text fr-hidden">
-                            Veuillez renseigner la superficie en mètres carrés du logement.
-                        </p>
-                    </div>
-                    <div class="fr-input-group">
-                        {{ form_label(form.loyer) }}
-                        {{ form_widget(form.loyer) }}
-                        <p class="fr-error-text fr-hidden">
-                            Veuillez renseigner le loyer mensuel du logement en euros.
-                        </p>
-                    </div>
-                </fieldset>
-            </div>
-            <div class="fr-form-group">
-                <fieldset class="fr-fieldset fr-fieldset--inline">
-                    <legend class="fr-fieldset__legend fr-text--regular">
-                        {{ form_label(form.isBailEnCours) }}
-                        {{ form_help(form.isBailEnCours) }}
-                    </legend>
-                    <div class="fr-fieldset__content">
-                        {% for key, choice in form.isBailEnCours.children %}
-                            <div class="fr-radio-group">
-                                {{ form_widget(choice) }}
-                                {{ form_label(choice) }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <p class="fr-error-text fr-hidden">
-                        Veuillez précisez si le bail est en cours.
-                    </p>
-                </fieldset>
-            </div>
-            <div class="fr-form-group">
-                <div class="fr-input-group">
-                    <label class="fr-label" for="signalement-date-entree">
-                        {{ form_label(form.dateEntree) }}
-                        {{ form_help(form.dateEntree) }}
-                    </label>
-                    {{ form_widget(form.dateEntree) }}
-                    <p class="fr-error-text fr-hidden">
-                        Veuillez renseigner la date d'entrée dans le logement au format (JJ/MM/AAAA).
-                    </p>
-                </div>
-            </div>
-            <div class="fr-form-group">
-                <fieldset class="fr-fieldset fr-fieldset--inline">
                     <legend class="fr-fieldset__legend fr-text--regular" id='signalement-logement-social'>
                         {{ form_label(form.isLogementSocial) }}
                         {{ form_help(form.isLogementSocial) }}
@@ -448,55 +350,6 @@
                         Veuillez précisez si vous avez déposé un préavis de départ.
                     </p>
                 </fieldset>
-            </div>
-            <div class="fr-form-group">
-                <fieldset class="fr-fieldset fr-fieldset--inline">
-                    <legend class="fr-fieldset__legend fr-text--regular" id='signalement-relogement'>
-                        {{ form_label(form.isRelogement) }}
-                        {{ form_help(form.isRelogement) }}
-                    </legend>
-                    <div class="fr-fieldset__content">
-                        {% for key, choice in form.isRelogement.children %}
-                            <div class="fr-radio-group">
-                                {{ form_widget(choice) }}
-                                {{ form_label(choice) }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <p class="fr-error-text fr-hidden">
-                        Veuillez précisez si vous avez engagé une démarche ou non.
-                    </p>
-                </fieldset>
-            </div>
-            <div class="fr-form-group">
-                <fieldset class="fr-fieldset fr-fieldset--inline">
-                    <legend class="fr-fieldset__legend fr-text--regular" id='signalement-intervention'>
-                        {{ form_label(form.isRefusIntervention) }}
-                        {{ form_help(form.isRefusIntervention) }}
-                    </legend>
-                    <div class="fr-fieldset__content">
-                        {% for key, choice in form.isRefusIntervention.children %}
-                            <div class="fr-radio-group">
-                                {{ form_widget(choice) }}
-                                {{ form_label(choice) }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <p class="fr-error-text fr-hidden">
-                        Veuillez précisez si vous acceptez une intervention dans le logement ou non.
-                    </p>
-                </fieldset>
-            </div>
-            <div class="fr-form-group {% if 'back_' not in app.request.get('_route') or not signalement.isRefusIntervention %}fr-hidden{% endif %} data-fr-toggle"
-                 id="signalement-raison-refus">
-                <div class="fr-input-group">
-                    {{ form_label(form.raisonRefusIntervention) }}
-                    {{ form_help(form.raisonRefusIntervention) }}
-                    {{ form_widget(form.raisonRefusIntervention) }}
-                    <p class="fr-error-text fr-hidden">
-                        Votre message doit contenir au moins 10 caractères.
-                    </p>
-                </div>
             </div>
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-text--center">

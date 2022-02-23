@@ -76,11 +76,11 @@ class FrontController extends AbstractController
         $dbhost = "localhost";
         $dbuser = "root";
         $dbpass = "";
-        $db = "dumpbdrold";
+        $db = "dumpahp";
         $conn = new mysqli($dbhost, $dbuser, $dbpass, $db) or die("Connect failed: %s\n" . $conn->error);
         $count = 0;
-
-        /*$partenaires = $conn->query('SELECT * from hpartenaire')->fetch_all(MYSQLI_ASSOC);
+/*
+        $partenaires = $conn->query('SELECT * from hpartenaire')->fetch_all(MYSQLI_ASSOC);
         foreach ($partenaires as $partenaire)
         {
             $part = new Partenaire();
@@ -89,9 +89,9 @@ class FrontController extends AbstractController
             $part->setIsCommune($partenaire['isCommune']);
             $entityManager->persist($part);
         }
-        $entityManager->flush();*/
-
-        /*$usersQuery = "SELECT * from husers_bo";
+        $entityManager->flush();
+        die();
+        $usersQuery = "SELECT * from husers_bo";
         $users = $conn->query($usersQuery)->fetch_all(MYSQLI_ASSOC);
         foreach ($users as $user) {
             $partenaire = $entityManager->getRepository(Partenaire::class)->find($user['idPartenaire']);
@@ -117,10 +117,10 @@ class FrontController extends AbstractController
        die();*/
         $signalementQuery = "SELECT * from hsignalement_ s
     JOIN hadresse_ a ON s.idAdresse = a.idAdresse
-    ORDER BY s.refSign LIMIT 100 /*OFFSET 3800*/
+    ORDER BY s.refSign /*LIMIT 100*/ /*OFFSET 3800*/
     ";
-        if ($offset !== 0)
-            $signalementQuery .= 'OFFSET ' . $offset;
+        /*if ($offset !== 0)
+            $signalementQuery .= 'OFFSET ' . $offset;*/
         $signalements = $conn->query($signalementQuery)->fetch_all(MYSQLI_ASSOC);
         foreach ($signalements as $signalement) {
             $sign = new Signalement();
@@ -203,13 +203,13 @@ class FrontController extends AbstractController
             $sign->setIsAllocataire($signalement['prof_organismeLog']);
             $sign->setNomReferentSocial($signalement['prof_nomSocialRef']);
             $sign->setStructureReferentSocial($signalement['prof_strucSocial']);
-            $sign->setMailSyndic($signalement['prof_mailSyndic']);
-            $sign->setNomSci($signalement['prof_nomSci']);
-            $sign->setNomRepresentantSci($signalement['prof_repSci']);
-            $sign->setTelSci($signalement['prof_telSci']);
-            $sign->setMailSci($signalement['prof_mailSci']);
-            $signalement['prof_telSyndic'] ? $sign->setTelSyndic($signalement['prof_telSyndic']) : null;
-            $signalement['prof_nomSyndic'] ? $sign->setNomSyndic($signalement['prof_nomSyndic']) : null;
+            $sign->setMailSyndic($signalement['prof_mailSyndic'] ?? '');
+            $sign->setNomSci($signalement['prof_nomSci'] ?? ''  );
+            $sign->setNomRepresentantSci($signalement['prof_repSci'] ?? '');
+            $sign->setTelSci($signalement['prof_telSci'] ?? '');
+            $sign->setMailSci($signalement['prof_mailSci'] ?? ''    );
+            $sign->setTelSyndic($signalement['prof_telSyndic'] ?? '');
+            $sign->setNomSyndic($signalement['prof_nomSyndic'] ?? '');
             $sign->setNumeroInvariant($signalement['prof_invariant']);
             $sign->setNbPiecesLogement((int)$signalement['prof_nbPieces']);
             $sign->setNbChambresLogement((int)$signalement['prof_nbChambres']);
@@ -258,17 +258,19 @@ class FrontController extends AbstractController
                     $partenaire = $entityManager->getRepository(Partenaire::class)->find($suivi['idPartenaire']);
                     if ($partenaire) {
                         $createdBy = $partenaire->getUsers()->first();
-                        if ($suivi['avisUser'] === "off")
-                            $isPublic = 0;
-                        else
-                            $isPublic = 1;
-                        $s = new Suivi();
-                        $s->setCreatedAt(new \DateTimeImmutable($suivi['dtSuivi']));
-                        $s->setSignalement($sign);
-                        $s->setDescription($suivi['descSuivi']);
-                        $s->setIsPublic($isPublic);
-                        $s->setCreatedBy($createdBy);
-                        $entityManager->persist($s);
+                        if($createdBy){
+                            if ($suivi['avisUser'] === "off")
+                                $isPublic = 0;
+                            else
+                                $isPublic = 1;
+                            $s = new Suivi();
+                            $s->setCreatedAt(new \DateTimeImmutable($suivi['dtSuivi']));
+                            $s->setSignalement($sign);
+                            $s->setDescription($suivi['descSuivi']);
+                            $s->setIsPublic($isPublic);
+                            $s->setCreatedBy($createdBy);
+                            $entityManager->persist($s);
+                        }
                     }
                 }
             }
@@ -311,9 +313,10 @@ class FrontController extends AbstractController
             }
             //END AFFECTATION
             $count++;
-            if (($offset + $count) === 6146)
-                dd('finish');
+           /* if (($offset + $count) === 6146)
+                dd('finish');*/
         }
+        die();
             return $this->redirectToRoute('dump', ['offset' => $offset + $count]);
     }
 
