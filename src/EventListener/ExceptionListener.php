@@ -18,11 +18,14 @@ class ExceptionListener
 
     public function onKernelException(ExceptionEvent $event)
     {
-        $this->notificationService->send(NotificationService::TYPE_ERROR, 'sam@bzez.dev', [
-            'url' => $_SERVER['SERVER_NAME'],
-            'code' => $event->getThrowable()->getCode(),
-            'error' => $event->getThrowable()->getMessage(),
-              'signalement' => $event->getRequest()->get('signalement') ?? null
-        ]);
+        if($event->getRequest()->get('signalement') !== null)
+        {
+            $this->notificationService->send(NotificationService::TYPE_ERROR, 'sam@bzez.dev', [
+                'url' => $_SERVER['SERVER_NAME'],
+                'code' => $event->getThrowable()->getCode(),
+                'error' => $event->getThrowable()->getMessage(),
+                'signalement' => $event->getRequest()->get('signalement')
+            ]);
+        }
     }
 }
