@@ -138,7 +138,7 @@ class Signalement
     #[ORM\Column(type: 'string', length: 100)]
     private $adresseOccupant;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: 'string', length: 5)]
     private $cpOccupant;
 
     #[ORM\Column(type: 'string', length: 100)]
@@ -194,13 +194,13 @@ class Signalement
     #[ORM\Column(type: 'float', nullable: true)]
     private $scoreCloture;
 
-    #[ORM\Column(type: 'string', length: 5, nullable: true)]
+    #[ORM\Column(type: 'string', length: 25, nullable: true)]
     private $etageOccupant;
 
-    #[ORM\Column(type: 'string', length: 10, nullable: true)]
+    #[ORM\Column(type: 'string', length: 25, nullable: true)]
     private $escalierOccupant;
 
-    #[ORM\Column(type: 'string', length: 10, nullable: true)]
+    #[ORM\Column(type: 'string', length: 25, nullable: true)]
     private $numAppartOccupant;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -830,12 +830,12 @@ class Signalement
         return $this;
     }
 
-    public function getCpOccupant(): ?int
+    public function getCpOccupant(): ?string
     {
         return $this->cpOccupant;
     }
 
-    public function setCpOccupant(int $cpOccupant): self
+    public function setCpOccupant(string $cpOccupant): self
     {
         $this->cpOccupant = $cpOccupant;
 
