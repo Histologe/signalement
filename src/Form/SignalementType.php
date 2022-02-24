@@ -219,7 +219,8 @@ class   SignalementType extends AbstractType
             ])
             ->add('telOccupant', TelType::class, [
                 'attr' => [
-                    'class' => 'fr-input'
+                    'class' => 'fr-input',
+                    'pattern'=>"[0-9]{10}"
                 ],
                 'label_attr' => [
                     'class' => 'fr-label'
@@ -353,6 +354,7 @@ class   SignalementType extends AbstractType
                 ],
                 'attr' => [
                     'class' => 'fr-input',
+                    'pattern'=>"[0-9]{10}"
                 ],
                 'label_attr' => [
                     'class' => 'fr-label'
@@ -426,7 +428,8 @@ class   SignalementType extends AbstractType
             ])
             ->add('telDeclarant', TelType::class, [
                 'attr' => [
-                    'class' => 'fr-input'
+                    'class' => 'fr-input',
+                    'pattern'=>"[0-9]{10}"
                 ],
                 'label_attr' => [
                     'class' => 'fr-label'
