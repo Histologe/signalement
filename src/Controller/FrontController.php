@@ -79,19 +79,20 @@ class FrontController extends AbstractController
         $db = "dumpahp";
         $conn = new mysqli($dbhost, $dbuser, $dbpass, $db) or die("Connect failed: %s\n" . $conn->error);
         $count = 0;
-/*
-        $partenaires = $conn->query('SELECT * from hpartenaire')->fetch_all(MYSQLI_ASSOC);
+
+        /*$partenaires = $conn->query('SELECT * from hpartenaire')->fetch_all(MYSQLI_ASSOC);
         foreach ($partenaires as $partenaire)
         {
             $part = new Partenaire();
             $part->setId($partenaire['idHPartenaire']);
             $part->setNom($partenaire['libPartenaire']);
             $part->setIsCommune($partenaire['isCommune']);
+            $part->setInsee([$partenaire['codeInsee']]);
             $entityManager->persist($part);
         }
         $entityManager->flush();
-        die();
-        $usersQuery = "SELECT * from husers_bo";
+        die();*/
+        /*$usersQuery = "SELECT * from husers_bo";
         $users = $conn->query($usersQuery)->fetch_all(MYSQLI_ASSOC);
         foreach ($users as $user) {
             $partenaire = $entityManager->getRepository(Partenaire::class)->find($user['idPartenaire']);
@@ -117,7 +118,7 @@ class FrontController extends AbstractController
        die();*/
         $signalementQuery = "SELECT * from hsignalement_ s
     JOIN hadresse_ a ON s.idAdresse = a.idAdresse
-    ORDER BY s.refSign /*LIMIT 100*/ /*OFFSET 3800*/
+    ORDER BY s.dtCreaSignalement /*LIMIT 100*/ /*OFFSET 3800*/
     ";
         /*if ($offset !== 0)
             $signalementQuery .= 'OFFSET ' . $offset;*/
@@ -187,12 +188,12 @@ class FrontController extends AbstractController
             $sign->setIsOccupantPresentVisite($signalement['prof_locPres']);
             $sign->setDateVisite($signalement['prof_dtVisit'] ? new \DateTimeImmutable($signalement['dtCreaSignalement']) : null);
             $sign->setAdresseOccupant($signalement['numeroRue'] . ' ' . $signalement['compNumRue'] . ' ' . $signalement['nomRue']);
-            $sign->setProprioAvertiAt($signalement['dtInfoProprio'] ? new \DateTimeImmutable($signalement['dtInfoProprio']) : null);
+//            $sign->setProprioAvertiAt($signalement['dtInfoProprio'] ? new \DateTimeImmutable($signalement['dtInfoProprio']) : null);
             $sign->setAnneeConstruction($signalement['anne_construct']);
             $sign->setTypeEnergieLogement($signalement['infoNrj']);
             $sign->setOrigineSignalement($signalement['prof_origine']);
             $sign->setSituationOccupant($signalement['prof_situation']);
-            $sign->setNaissanceOccupantAt($signalement['prof_dtNaiss'] ? new \DateTimeImmutable($signalement['prof_dtNaiss']) : null);
+//            $sign->setNaissanceOccupantAt($signalement['prof_dtNaiss'] ? new \DateTimeImmutable($signalement['prof_dtNaiss']) : null);
             $sign->setSituationProOccupant($signalement['prof_sitProf']);
             $sign->setIsFondSolidariteLogement($signalement['prof_fsl']);
             $sign->setIsDiagSocioTechnique($signalement['prof_diag']);
@@ -303,6 +304,11 @@ class FrontController extends AbstractController
                             $a->setStatut($statut);
                             $a->setAnsweredBy($user);
                             $a->setAnsweredAt(new \DateTimeImmutable($affectation['dtAffect']));
+                            if($sign->getStatut() === Signalement::STATUS_CLOSED)
+                            {
+                                $sign->setClosedAt(new \DateTimeImmutable($affectation['dtAffect']));
+                                $entityManager->persist($sign);
+                            }
                             $a->setAffectedBy($affectedBy);
                             $a->setCreatedAt(new \DateTimeImmutable($affectation['dtAlert'] ?? $affectation['dtAffect']));
                             $entityManager->persist($a);
@@ -316,7 +322,7 @@ class FrontController extends AbstractController
            /* if (($offset + $count) === 6146)
                 dd('finish');*/
         }
-        die();
+        die('Finish');
             return $this->redirectToRoute('dump', ['offset' => $offset + $count]);
     }
 

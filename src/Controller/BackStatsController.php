@@ -22,12 +22,12 @@ class BackStatsController extends AbstractController
         $dates = [];
         $totaux = ['open' => 0, 'closed' => 0, 'all' => 0];
         $villes = [];
-        $signalements = $entityManager->createQuery("SELECT s.id,s.statut,s.createdAt,s.villeOccupant FROM App\Entity\Signalement AS s WHERE s.statut != 7")->getResult();
+        $signalements = $entityManager->createQuery("SELECT s.id,s.statut,s.createdAt,s.villeOccupant,s.closedAt FROM App\Entity\Signalement AS s WHERE s.statut != 7")->getResult();
         foreach ($signalements as $signalement) {
-            $dates[strtotime($signalement['createdAt']->format('M Y'))]['close'] ?? $dates[strtotime($signalement['createdAt']->format('M Y'))]['close'] = 0;
             $dates[strtotime($signalement['createdAt']->format('M Y'))]['open'] ?? $dates[strtotime($signalement['createdAt']->format('M Y'))]['open'] = 0;
             if ($signalement['statut'] === Signalement::STATUS_CLOSED) {
-                $dates[strtotime($signalement['createdAt']->format('M Y'))]['close']++;
+                $dates[strtotime($signalement['closedAt']->format('M Y'))]['close'] ?? $dates[strtotime($signalement['closedAt']->format('M Y'))]['close'] = 0;
+                $dates[strtotime($signalement['closedAt']->format('M Y'))]['close']++;
                 $totaux['closed']++;
             } else {
                 $dates[strtotime($signalement['createdAt']->format('M Y'))]['open']++;
@@ -53,6 +53,7 @@ class BackStatsController extends AbstractController
 
         arsort($criteres);
         arsort($villes);
+        ksort($dates);
         return $this->render('back/statistique/index.html.twig', [
             'title' => $title,
             'dates' => $dates,

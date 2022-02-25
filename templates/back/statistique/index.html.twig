@@ -30,7 +30,7 @@
 {% block javascripts %}
     <script src="{{ asset('js/chart.min.js') }}"></script>
     <script>
-        const labelsCloture = [{% for date in dates|keys %}"{{ date }}",{% endfor %}];
+        const labelsCloture = [{% for k,date in dates %}(new Date({{ k*1000 }})).toLocaleString('default', { month: 'short' }) +' '+ (new Date({{ k*1000 }})).getUTCFullYear(),{% endfor %}];
         const ctxCloture = document.getElementById('sign-cloture');
         const chartCloture = new Chart(ctxCloture, {
                 type: 'bar',
@@ -44,7 +44,7 @@
                         },
                         {
                             label: 'Clôtures',
-                            data: [{% for date in dates %}"{{ date.close }}",{% endfor %}],
+                            data: [{% for date in dates %}"{{ date.close ?? 0 }}",{% endfor %}],
                             backgroundColor: '#FF9940',
                         }
                     ]

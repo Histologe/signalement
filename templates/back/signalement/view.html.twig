@@ -95,7 +95,7 @@
                 <span class="fr-hint-text">Ci-dessous le détails du signalement tel que rapporté par l'usager</span>
                 <ul class="fr-background-alt--blue-france fr-list--icon-img fr-rounded">
                     <li class="fr-p-5v">
-                        {{ signalement.details|raw }}
+                       <pre> {{ signalement.details|raw }}</pre>
                     </li>
                 </ul>
             </div>
@@ -242,7 +242,7 @@
                     points
                     suivants:</strong>
                 <span class="fr-hint-text">Récapitulatif des situations rencontrées par l'occupant du logement</span>
-                <ul class="fr-list--icon-img" id="signalement-toggle-situations">
+                <ul class="fr-list--icon-img">
                     {% for situation,criteres in situations %}
                         <li role="button"
                             class="fr-background-alt--blue-france fr-mb-5v fr-px-5v fr-pt-5v fr-rounded fr-fi-arrow-down-line fr-input-wrap"

@@ -77,21 +77,21 @@
                             <div class="fr-collapse" id="signalement-accordion-situation-{{ situation.id }}">
                                 <ul class="fr-toggle__list">
                                     {% for critere in situation.criteres %}
-                                        <div class="fr-toggle fr-pb-0"
+                                        <div class="{#fr-checkbox-group #}fr-pb-0 fr-mb-3v"
                                              aria-expanded="{% if critere in signalement.criteres %}true{% else %}false{% endif %}"
                                              aria-controls="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}"
                                              id="signalement-accordion-situation-{{ situation.id }}-critere-{{ critere.id }}-selector">
                                             <input type="checkbox"
                                                    name="signalement[situation][{{ situation.id }}]"
-                                                   class="fr-toggle__input signalement-situation"
+                                                   class="signalement-situation fr-hidden"
                                                    id="signalement-situation-{{ situation.id }}-critere-{{ critere.id }}"
                                                    value="{{ critere.label }}"
                                                    {% if critere in signalement.criteres %}checked{% endif %}>
-                                            <label class="fr-toggle__label fr-text--bold"
+                                            <label class="fr-toggle__label fr-text--bold "
                                                    for="signalement-situation-{{ situation.id }}-critere-{{ critere.id }}">
-                                                <div class="fr-form-group fr-mb-0">
+                                                <div class="fr-form-group fr-mb-0 fr-btn--secondary fr-hover-critere fr-rounded fr-p-3v">
                                                     <fieldset class="fr-fieldset">
-                                                        <legend class="fr-fieldset__legend">
+                                                        <legend class="fr-fieldset__legend fr-mb-0">
                                                             {{ critere.label }}
                                                             <span class="fr-hint-text fr-display-block"><strong
                                                                         class="fr-text-default--info">Quand tout va bien:</strong> {{ critere.description }}</span>

@@ -315,6 +315,9 @@ class Signalement
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $motifCloture;
 
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private $closedAt;
+
     public function __construct()
     {
         $this->situations = new ArrayCollection();
@@ -1597,6 +1600,18 @@ class Signalement
     public function setMotifCloture(?string $motifCloture): self
     {
         $this->motifCloture = $motifCloture;
+
+        return $this;
+    }
+
+    public function getClosedAt(): ?\DateTimeImmutable
+    {
+        return $this->closedAt;
+    }
+
+    public function setClosedAt(?\DateTimeImmutable $closedAt): self
+    {
+        $this->closedAt = $closedAt;
 
         return $this;
     }
