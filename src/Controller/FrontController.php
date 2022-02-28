@@ -70,8 +70,22 @@ class FrontController extends AbstractController
     }
 
     #[Route('/dump/{offset}', name: 'dump', host: 'localhost')]
-    public function dump($offset, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, AffectationRepository $affectationRepository): Response
+    public function dump($offset,SignalementRepository $signalementRepository, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, AffectationRepository $affectationRepository): Response
     {
+        /*$count = 0;
+        foreach ($signalementRepository->findAll() as $signalement)
+        {
+            foreach ($signalement->getPhotos() as $photo)
+            {
+               if(isset($photo['file']))
+                   $count++;
+            }
+            foreach ($signalement->getDocuments() as $doc) {
+                if(isset($doc['file']))
+                    $count++;
+            }
+        }
+        dd($count);*/
         ini_set('max_execution_time', '-1');
         $dbhost = "localhost";
         $dbuser = "root";
