@@ -76,7 +76,7 @@ class FrontController extends AbstractController
         $dbhost = "localhost";
         $dbuser = "root";
         $dbpass = "";
-        $db = "dumpahp";
+        $db = "dumpam";
         $conn = new mysqli($dbhost, $dbuser, $dbpass, $db) or die("Connect failed: %s\n" . $conn->error);
         $count = 0;
 
@@ -92,7 +92,7 @@ class FrontController extends AbstractController
         }
         $entityManager->flush();
         die();*/
-        /*$usersQuery = "SELECT * from husers_bo";
+       /* $usersQuery = "SELECT * from husers_bo";
         $users = $conn->query($usersQuery)->fetch_all(MYSQLI_ASSOC);
         foreach ($users as $user) {
             $partenaire = $entityManager->getRepository(Partenaire::class)->find($user['idPartenaire']);
@@ -118,7 +118,7 @@ class FrontController extends AbstractController
        die();*/
         $signalementQuery = "SELECT * from hsignalement_ s
     JOIN hadresse_ a ON s.idAdresse = a.idAdresse
-    ORDER BY s.dtCreaSignalement /*LIMIT 100*/ /*OFFSET 3800*/
+    ORDER BY s.dtCreaSignalement LIMIT 100 OFFSET 300
     ";
         /*if ($offset !== 0)
             $signalementQuery .= 'OFFSET ' . $offset;*/
@@ -297,7 +297,7 @@ class FrontController extends AbstractController
                         }
                         if(!isset($affectedBy))
                             $affectedBy = $user->getPartenaire()->getUsers()->first();
-                        if (!$affectationRepository->findBy(['partenaire' => $user->getPartenaire(), 'signalement' => $sign]) && isset($affectedBy)) {
+                        if (!$affectationRepository->findBy(['partenaire' => $user->getPartenaire(), 'signalement' => $sign]) && isset($affectedBy) && $user->getPartenaire()) {
                             $a = new Affectation();
                             $a->setPartenaire($user->getPartenaire());
                             $a->setSignalement($sign);

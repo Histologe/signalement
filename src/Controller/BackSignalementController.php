@@ -112,6 +112,7 @@ class BackSignalementController extends AbstractController
             if ($clotureForm->get('type')->getData() === 'all') {
                 $signalement->setStatut(Signalement::STATUS_CLOSED);
                 $signalement->setMotifCloture($motifCloture);
+                $signalement->setClosedAt(new \DateTimeImmutable());
                 $sujet = 'tous les partenaires';
                 $signalement->getAffectations()->map(function (Affectation $affectation) use ($entityManager) {
                     $affectation->setStatut(Affectation::STATUS_CLOSED);
