@@ -6,6 +6,7 @@ use App\Entity\Critere;
 use App\Entity\Criticite;
 use App\Entity\Signalement;
 use App\Entity\Situation;
+use App\Entity\User;
 use App\Form\SignalementType;
 use App\Repository\SignalementRepository;
 use App\Repository\SituationRepository;
@@ -144,7 +145,9 @@ class FrontSignalementController extends AbstractController
                 $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $signalement->getMailOccupant(), ['signalement' => $signalement, 'attach' => $attachment ?? null]);
             if ($signalement->getMailDeclarant())
                 $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $signalement->getMailDeclarant(), ['signalement' => $signalement, 'attach' => $attachment ?? null]);
-
+            foreach ($doctrine->getRepository(User::class)->findAdmins() as $admin) {
+                $notificationService->send(NotificationService::TYPE_NEW_SIGNALEMENT, $admin->getEmail(), ['link' => $this->generateUrl('back_signalement_view', ['uuid' => $signalement->getUuid()])]);
+            }
             return $this->json(['response' => 'success']);
         }
         return $this->json(['response' => 'error'], 400);

@@ -35,8 +35,8 @@ class FrontController extends AbstractController
 
         $signalements = $signalementRepository->findAll();
         foreach ($signalements as $signalement) {
-            $details= $signalement->getDetails();
-            $signalement->setDetails(str_replace(['/r/n','\r\n','<br />'],'<br>',$details));
+            $details = $signalement->getDetails();
+            $signalement->setDetails(str_replace(['/r/n', '\r\n', '<br />'], '<br>', $details));
             $doctrine->getManager()->persist($signalement);
             /*$signalement->setCodeSuivi(md5(uniqid()));
             */
@@ -70,7 +70,7 @@ class FrontController extends AbstractController
     }
 
     #[Route('/dump/{offset}', name: 'dump', host: 'localhost')]
-    public function dump($offset,SignalementRepository $signalementRepository, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, AffectationRepository $affectationRepository): Response
+    public function dump($offset, SignalementRepository $signalementRepository, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, AffectationRepository $affectationRepository): Response
     {
         /*$count = 0;
         foreach ($signalementRepository->findAll() as $signalement)
@@ -106,30 +106,30 @@ class FrontController extends AbstractController
         }
         $entityManager->flush();
         die();*/
-       /* $usersQuery = "SELECT * from husers_bo";
-        $users = $conn->query($usersQuery)->fetch_all(MYSQLI_ASSOC);
-        foreach ($users as $user) {
-            $partenaire = $entityManager->getRepository(Partenaire::class)->find($user['idPartenaire']);
-            $u = new User();
-            $u->setPartenaire($partenaire);
-            if (str_contains($user['nom_bo'], 'GéNéRIQUE')) {
-                $nom = str_replace('GéNéRIQUE', '', $user['nom_bo']);
-                $isGenerique = 1;
-            } else {
-                $nom = $user['nom_bo'];
-                $isGenerique = 0;
-            }
-            $u->setId($user['id_userbo']);
-            $u->setNom($nom);
-            $u->setPrenom($user['prenom_bo']);
-            $u->setEmail($user['courriel']);
-            $u->setIsMailingActive($user['sendAlert']);
-            $u->setIsGenerique($isGenerique);
-            $u->setRoles(['ROLE_USER_PARTENAIRE']);
-            $entityManager->persist($u);
-        }
-        $entityManager->flush();
-       die();*/
+        /* $usersQuery = "SELECT * from husers_bo";
+         $users = $conn->query($usersQuery)->fetch_all(MYSQLI_ASSOC);
+         foreach ($users as $user) {
+             $partenaire = $entityManager->getRepository(Partenaire::class)->find($user['idPartenaire']);
+             $u = new User();
+             $u->setPartenaire($partenaire);
+             if (str_contains($user['nom_bo'], 'GéNéRIQUE')) {
+                 $nom = str_replace('GéNéRIQUE', '', $user['nom_bo']);
+                 $isGenerique = 1;
+             } else {
+                 $nom = $user['nom_bo'];
+                 $isGenerique = 0;
+             }
+             $u->setId($user['id_userbo']);
+             $u->setNom($nom);
+             $u->setPrenom($user['prenom_bo']);
+             $u->setEmail($user['courriel']);
+             $u->setIsMailingActive($user['sendAlert']);
+             $u->setIsGenerique($isGenerique);
+             $u->setRoles(['ROLE_USER_PARTENAIRE']);
+             $entityManager->persist($u);
+         }
+         $entityManager->flush();
+        die();*/
         $signalementQuery = "SELECT * from hsignalement_ s
     JOIN hadresse_ a ON s.idAdresse = a.idAdresse
     ORDER BY s.dtCreaSignalement LIMIT 100 OFFSET 300
@@ -219,10 +219,10 @@ class FrontController extends AbstractController
             $sign->setNomReferentSocial($signalement['prof_nomSocialRef']);
             $sign->setStructureReferentSocial($signalement['prof_strucSocial']);
             $sign->setMailSyndic($signalement['prof_mailSyndic'] ?? '');
-            $sign->setNomSci($signalement['prof_nomSci'] ?? ''  );
+            $sign->setNomSci($signalement['prof_nomSci'] ?? '');
             $sign->setNomRepresentantSci($signalement['prof_repSci'] ?? '');
             $sign->setTelSci($signalement['prof_telSci'] ?? '');
-            $sign->setMailSci($signalement['prof_mailSci'] ?? ''    );
+            $sign->setMailSci($signalement['prof_mailSci'] ?? '');
             $sign->setTelSyndic($signalement['prof_telSyndic'] ?? '');
             $sign->setNomSyndic($signalement['prof_nomSyndic'] ?? '');
             $sign->setNumeroInvariant($signalement['prof_invariant']);
@@ -273,7 +273,7 @@ class FrontController extends AbstractController
                     $partenaire = $entityManager->getRepository(Partenaire::class)->find($suivi['idPartenaire']);
                     if ($partenaire) {
                         $createdBy = $partenaire->getUsers()->first();
-                        if($createdBy){
+                        if ($createdBy) {
                             if ($suivi['avisUser'] === "off")
                                 $isPublic = 0;
                             else
@@ -299,8 +299,7 @@ class FrontController extends AbstractController
                     if ($affectation['affectBy'] !== null)
                         $affectedBy = $entityManager->getRepository(User::class)->find($affectation['affectBy']);
                     if ($user) {
-                        if($affectation['etat'] === "8" || $affectation['etat'] === "4")
-                        {
+                        if ($affectation['etat'] === "8" || $affectation['etat'] === "4") {
                             $statut = Affectation::STATUS_CLOSED;
                         } else {
                             $statut = match ($affectation['affect']) {
@@ -309,7 +308,7 @@ class FrontController extends AbstractController
                                 "3" => Affectation::STATUS_REFUSED,
                             };
                         }
-                        if(!isset($affectedBy))
+                        if (!isset($affectedBy))
                             $affectedBy = $user->getPartenaire()->getUsers()->first();
                         if (!$affectationRepository->findBy(['partenaire' => $user->getPartenaire(), 'signalement' => $sign]) && isset($affectedBy) && $user->getPartenaire()) {
                             $a = new Affectation();
@@ -318,8 +317,7 @@ class FrontController extends AbstractController
                             $a->setStatut($statut);
                             $a->setAnsweredBy($user);
                             $a->setAnsweredAt(new \DateTimeImmutable($affectation['dtAffect']));
-                            if($sign->getStatut() === Signalement::STATUS_CLOSED)
-                            {
+                            if ($sign->getStatut() === Signalement::STATUS_CLOSED) {
                                 $sign->setClosedAt(new \DateTimeImmutable($affectation['dtAffect']));
                                 $entityManager->persist($sign);
                             }
@@ -333,23 +331,23 @@ class FrontController extends AbstractController
             }
             //END AFFECTATION
             $count++;
-           /* if (($offset + $count) === 6146)
-                dd('finish');*/
+            /* if (($offset + $count) === 6146)
+                 dd('finish');*/
         }
         die('Finish');
-            return $this->redirectToRoute('dump', ['offset' => $offset + $count]);
+        return $this->redirectToRoute('dump', ['offset' => $offset + $count]);
     }
 
 
     #[Route('/', name: 'home')]
-    public function index(SignalementRepository $signalementRepository, AffectationRepository $affectationRepository): Response
+    public function index(SignalementRepository $signalementRepository, AffectationRepository $affectationRepository, EntityManagerInterface $doctrine, NotificationService $notificationService): Response
     {
         $title = 'Un service public pour les locataires et propriétaires';
         $year = (new \DateTimeImmutable())->format('Y');
         $total = $signalementRepository->findAllWithAffectations($year);
         $stats['total'] = count($total);
-        $stats['pec'] = $stats['total'] !== 0 ? floor(($affectationRepository->createQueryBuilder('a')->select('COUNT(DISTINCT a.signalement)')->join('a.signalement', 'signalement', 'WITH', 'signalement.statut != 7 AND YEAR(signalement.createdAt) = '.$year)->getQuery()->getSingleScalarResult() / $stats['total']) * 100) : 0;
-        $stats['res'] = $stats['total'] !== 0 ?floor(($affectationRepository->createQueryBuilder('a')->select('COUNT(DISTINCT a.signalement)')->where('a.statut = 1')->join('a.signalement', 'signalement', 'WITH', 'signalement.statut != 7 AND YEAR(signalement.createdAt) = '.$year)->getQuery()->getSingleScalarResult() / $stats['total']) * 100):0;
+        $stats['pec'] = $stats['total'] !== 0 ? floor(($affectationRepository->createQueryBuilder('a')->select('COUNT(DISTINCT a.signalement)')->join('a.signalement', 'signalement', 'WITH', 'signalement.statut != 7 AND YEAR(signalement.createdAt) = ' . $year)->getQuery()->getSingleScalarResult() / $stats['total']) * 100) : 0;
+        $stats['res'] = $stats['total'] !== 0 ? floor(($affectationRepository->createQueryBuilder('a')->select('COUNT(DISTINCT a.signalement)')->where('a.statut = 1')->join('a.signalement', 'signalement', 'WITH', 'signalement.statut != 7 AND YEAR(signalement.createdAt) = ' . $year)->getQuery()->getSingleScalarResult() / $stats['total']) * 100) : 0;
         return $this->render('front/index.html.twig', [
             'title' => $title,
             'stats' => $stats

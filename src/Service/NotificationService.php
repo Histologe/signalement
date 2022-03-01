@@ -41,7 +41,7 @@ class NotificationService
                 'btntext'=>"Je créer un nouveau mot de passe"
             ],
             NotificationService::TYPE_NEW_SIGNALEMENT => [
-                'template' => 'login_link_email',
+                'template' => 'new_signalement_email',
                 'subject' => 'Un nouveau signalement vous attend',
                 'btntext'=>"Voir le signalement"
             ],
