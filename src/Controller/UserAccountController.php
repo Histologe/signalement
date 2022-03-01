@@ -54,6 +54,20 @@ class UserAccountController extends AbstractController
         ]);
     }
 
+    #[Route('/bo/activation/all', name: 'login_activation_all')]
+    public function requestLoginLinkAll(NotificationService$notificationService,LoginLinkHandlerInterface $loginLinkHandler, UserRepository $userRepository, Request $request, MailerInterface $mailer): \Symfony\Component\HttpFoundation\Response
+    {
+        $title = 'Activation de tout les comptes votre compte';
+        $count = 0;
+        foreach ($userRepository->findAll() as $user){
+            $loginLinkDetails = $loginLinkHandler->createLoginLink($user);
+            $loginLink = $loginLinkDetails->getUrl();
+            $notificationService->send(NotificationService::TYPE_ACTIVATION,$user->getEmail(),['link'=>$loginLink]);
+            $count++;
+        }
+        return $this->json(['response'=>$count.' Mails envoyés']);
+    }
+
     #[Route('/activation-incorrecte', name: 'login_activation_fail')]
     public function activationFail()
     {
