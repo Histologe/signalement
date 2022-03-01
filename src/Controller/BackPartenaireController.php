@@ -6,17 +6,19 @@ use App\Entity\Partenaire;
 use App\Entity\User;
 use App\Form\PartenaireType;
 use App\Repository\PartenaireRepository;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\LoginLink\LoginLinkHandlerInterface;
 
 #[Route('/bo/partenaire')]
 class BackPartenaireController extends AbstractController
 {
-    private static function checkFormExtraData(FormInterface $form,Partenaire $partenaire,EntityManagerInterface $entityManager)
+    private static function checkFormExtraData(FormInterface $form,Partenaire $partenaire,EntityManagerInterface $entityManager,LoginLinkHandlerInterface $loginLinkHandler,NotificationService $notificationService)
     {
         if (isset($form->getExtraData()['users']))
             foreach ($form->getExtraData()['users'] as $id => $userData) {
@@ -38,6 +40,10 @@ class BackPartenaireController extends AbstractController
                         $user->setPartenaire($partenaire);
                         self::setUserData($user,$newUserData['nom'],$newUserData['prenom'],$newUserData['roles'],$newUserData['email'],$newUserData['isGenerique'],$newUserData['isMailingActive']);
                         $entityManager->persist($user);
+                        $loginLinkDetails = $loginLinkHandler->createLoginLink($user);
+                        $loginLink = $loginLinkDetails->getUrl();
+                        $notificationService->send(NotificationService::TYPE_ACTIVATION,$user->getEmail(),['link'=>$loginLink]);
+
                     }
                 }
             }
@@ -64,7 +70,7 @@ class BackPartenaireController extends AbstractController
     }
 
     #[Route('/new', name: 'back_partenaire_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager,LoginLinkHandlerInterface $loginLinkHandler,NotificationService $notificationService): Response
     {
         if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE'))
             return $this->redirectToRoute('back_index');
@@ -73,7 +79,7 @@ class BackPartenaireController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            self::checkFormExtraData($form,$partenaire,$entityManager);
+            self::checkFormExtraData($form,$partenaire,$entityManager,$loginLinkHandler,$notificationService);
             $entityManager->persist($partenaire);
             $entityManager->flush();
             return $this->redirectToRoute('back_partenaire_index', [], Response::HTTP_SEE_OTHER);
@@ -86,7 +92,7 @@ class BackPartenaireController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'back_partenaire_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Partenaire $partenaire, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Partenaire $partenaire, EntityManagerInterface $entityManager,LoginLinkHandlerInterface $loginLinkHandler,NotificationService $notificationService): Response
     {
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
             return $this->redirectToRoute('back_index');
@@ -94,7 +100,7 @@ class BackPartenaireController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            self::checkFormExtraData($form,$partenaire,$entityManager);
+            self::checkFormExtraData($form,$partenaire,$entityManager,$loginLinkHandler,$notificationService);
             $entityManager->flush();
 
             return $this->redirectToRoute('back_partenaire_index', [], Response::HTTP_SEE_OTHER);
