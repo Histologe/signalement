@@ -41,7 +41,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return $this->createQueryBuilder('u')
             ->select('PARTIAL u.{id,email}')
             ->where('u.roles LIKE :role')
-            ->setParameter('role','["ROLE_ADMIN%')
+            ->setParameter('role','["ROLE_ADMIN"]')
+            ->orWhere('u.roles LIKE :role2')
+            ->setParameter('role2','["ROLE_ADMIN_TERRITOIRE"]')
             ->getQuery()
             ->getResult();
     }
