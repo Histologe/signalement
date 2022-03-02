@@ -188,8 +188,8 @@
         </div>
         <div class="fr-input-group fr-col">
            <div class="fr-grid-row fr-grid-row--gutters">
-               <div class="fr-col">
-                   <label for="partenaire_users_is_mailing_active_{{ user.id }}" class="fr-label">Notification<sup
+               <div class="fr-col-6">
+                   <label for="partenaire_users_is_mailing_active_{{ user.id }}" class="fr-label">Notif.<sup
                                class="fr-text-label--red-marianne">*</sup></label>
                    <select id="partenaire_users_is_mailing_active_{{ user.id }}"
                            name="partenaire[users][{{ user.id }}][isMailingActive]"
@@ -202,7 +202,7 @@
                        </option>
                    </select>
                </div>
-               <div class="fr-col">
+               <div class="fr-col-6">
                    <label for="partenaire_users_is_active_{{ user.id }}" class="fr-label">Activé<sup
                                class="fr-text-label--red-marianne">*</sup></label>
                    <input id="partenaire_users_is_active_{{ user.id }}" type="text" class="fr-input {% if user.statut is same as(1) %}fr-input--valid{% else %}fr-input--error{% endif %}" value="{% if user.statut is same as(1) %}Oui{% else %}Non{% endif %}" readonly>
