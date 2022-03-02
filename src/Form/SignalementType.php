@@ -23,7 +23,7 @@ class   SignalementType extends AbstractType
             ->add('details', TextareaType::class, [
                 'attr' => [
                     'class' => 'fr-input',
-                    'minlength'=> 10
+                    'minlength' => 10
                 ],
                 'label_attr' => [
                     'class' => 'fr-label'
@@ -36,11 +36,12 @@ class   SignalementType extends AbstractType
             ])
             ->add('isProprioAverti', ChoiceType::class, [
                 'choice_attr' => [
-                    'class'=> 'fr-radio',
+                    'class' => 'fr-radio',
                 ],
                 'choices' => [
                     'Oui' => 1,
-                    'Non' => 0
+                    'Non' => 0,
+                    'Ne sais pas' => ''
                 ],
                 'expanded' => true,
                 'label_attr' => [
@@ -133,11 +134,15 @@ class   SignalementType extends AbstractType
                 'choices' => [
                     'CAF' => 'CAF',
                     'MSA' => 'MSA',
-                    'Non' => 0
+                    'Non' => 0,
+                    'Ne sais pas' => ''
                 ],
                 'choice_attr' => function ($choice, $key, $value) {
                     $attr['class'] = 'fr-radio';
-                    'Non' !== $key ? $attr['data-fr-toggle-show'] = "signalement-num-alloc-bloc" : $attr['data-fr-toggle-hide'] = "signalement-num-alloc-bloc";
+                    if ($key === 'Ne sais pas' || $key === 'Non')
+                        $attr['data-fr-toggle-hide'] = "signalement-num-alloc-bloc";
+                    else
+                        $attr['data-fr-toggle-show'] = "signalement-num-alloc-bloc";
                     return $attr;
                 },
                 'expanded' => true,
@@ -149,8 +154,8 @@ class   SignalementType extends AbstractType
                 'help_attr' => [
                     'class' => 'fr-hint-text'
                 ],
-                "required"=>false,
-                'placeholder'=>false
+                "required" => false,
+                'placeholder' => false
             ])
             ->add('numAllocataire', TextType::class, [
                 'attr' => [
@@ -167,12 +172,13 @@ class   SignalementType extends AbstractType
                 'help_attr' => [
                     'class' => 'fr-hint-text'
                 ],
-                'required'=>false
+                'required' => false
             ])
             ->add('isLogementSocial', ChoiceType::class, [
                 'choices' => [
                     'Oui' => 1,
-                    'Non' => 0
+                    'Non' => 0,
+                    'Ne sais pas' => ''
                 ],
                 'expanded' => true,
                 'label_attr' => [
@@ -187,7 +193,8 @@ class   SignalementType extends AbstractType
             ->add('isPreavisDepart', ChoiceType::class, [
                 'choices' => [
                     'Oui' => 1,
-                    'Non' => 0
+                    'Non' => 0,
+                    'Ne sais pas' => ''
                 ],
                 'expanded' => true,
                 'label_attr' => [
@@ -220,7 +227,7 @@ class   SignalementType extends AbstractType
             ->add('telOccupant', TelType::class, [
                 'attr' => [
                     'class' => 'fr-input',
-                    'pattern'=>"[0-9]{10}"
+                    'pattern' => "[0-9]{10}"
                 ],
                 'label_attr' => [
                     'class' => 'fr-label'
@@ -354,7 +361,7 @@ class   SignalementType extends AbstractType
                 ],
                 'attr' => [
                     'class' => 'fr-input',
-                    'pattern'=>"[0-9]{10}"
+                    'pattern' => "[0-9]{10}"
                 ],
                 'label_attr' => [
                     'class' => 'fr-label'
@@ -414,7 +421,7 @@ class   SignalementType extends AbstractType
                     'class' => 'fr-label'
                 ],
                 'label' => "Nom déclarant",
-                'required'=>false
+                'required' => false
             ])
             ->add('prenomDeclarant', TextType::class, [
                 'attr' => [
@@ -424,18 +431,18 @@ class   SignalementType extends AbstractType
                     'class' => 'fr-label'
                 ],
                 'label' => "Prénom déclarant",
-                'required'=>false
+                'required' => false
             ])
             ->add('telDeclarant', TelType::class, [
                 'attr' => [
                     'class' => 'fr-input',
-                    'pattern'=>"[0-9]{10}"
+                    'pattern' => "[0-9]{10}"
                 ],
                 'label_attr' => [
                     'class' => 'fr-label'
                 ],
                 'label' => "N° de téléphone déclarant",
-                'required'=>false
+                'required' => false
             ])
             ->add('mailDeclarant', EmailType::class, [
                 'attr' => [
@@ -445,7 +452,7 @@ class   SignalementType extends AbstractType
                     'class' => 'fr-label'
                 ],
                 'label' => "Courriel déclarant",
-                'required'=>false
+                'required' => false
             ])
             ->add('lienDeclarantOccupant', ChoiceType::class, [
                 'choices' => [
@@ -460,7 +467,7 @@ class   SignalementType extends AbstractType
                     'class' => 'fr-label'
                 ],
                 'label' => "Lien avec l'occupant",
-                'required'=>false,
+                'required' => false,
                 'placeholder' => false
             ])
             ->add('structureDeclarant', TextType::class, [

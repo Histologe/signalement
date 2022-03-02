@@ -146,7 +146,8 @@ class FrontSignalementController extends AbstractController
             if ($signalement->getMailDeclarant())
                 $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $signalement->getMailDeclarant(), ['signalement' => $signalement, 'attach' => $attachment ?? null]);
             foreach ($doctrine->getRepository(User::class)->findAdmins() as $admin) {
-                $notificationService->send(NotificationService::TYPE_NEW_SIGNALEMENT, $admin->getEmail(), ['link' => $this->generateUrl('back_signalement_view', ['uuid' => $signalement->getUuid()],0)]);
+                if($admin->getIsMailingActive())
+                    $notificationService->send(NotificationService::TYPE_NEW_SIGNALEMENT, $admin->getEmail(), ['link' => $this->generateUrl('back_signalement_view', ['uuid' => $signalement->getUuid()],0)]);
             }
             return $this->json(['response' => 'success']);
         }

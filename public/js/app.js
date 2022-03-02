@@ -222,7 +222,7 @@ forms.forEach((form) => {
                     ['fr-fi-instagram-line', 'fr-py-7v'].map(v => event.target.parentElement.classList.toggle(v));
                     fileIsOk = true;
                 } else if (event.target.parentElement.classList.contains('fr-fi-attachment-fill')) {
-                    if (event.target.files[0].size > 2 * 1024 * 1024) {
+                    if (event.target.files[0].size > 10 * 1024 * 1024) {
                         event.target.value = "";
                         event.target.parentElement.parentElement.querySelector('small.fr-hidden').classList.remove('fr-hidden')
                     } else {

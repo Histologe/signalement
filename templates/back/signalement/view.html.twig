@@ -46,13 +46,13 @@
                         </form>
                         <span class="fr-hint-text"><strong>Vous à été attribué le :</strong> {{ isAffected.createdAt|date('d/m/Y') }}</span>
                     {% elseif isAccepted %}
-                        <strong class="fr-text-label--green-emeraude"> {% if isAccepted.answeredBy is same as (app.user) %}  Vous avez {% else %} {{ isAccepted.answeredBy.nom[:1]|upper~'. '~isAccepted.answeredBy.prenom|capitalize }} à
+                        <strong class="fr-text-label--green-emeraude"> {% if isAccepted.answeredBy is same as (app.user) %}  Vous avez {% else %} {{ isAccepted.answeredBy.nom|upper~'. '~isAccepted.answeredBy.prenom|capitalize }} à
                             {% endif %}
                             <u>pris connaissance</u> du
                             signalement</strong>
                         <span class="fr-hint-text"><strong>Le :</strong> {{ isAccepted.answeredAt|date('d/m/Y') }}</span>
                     {% elseif isRefused %}
-                        <strong class="fr-text-label--red-marianne">{% if isRefused.answeredBy is same as (app.user) %}  Vous avez {% else %} {{ isRefused.answeredBy.nom[:1]|upper~'. '~isRefused.answeredBy.prenom|capitalize }} à
+                        <strong class="fr-text-label--red-marianne">{% if isRefused.answeredBy is same as (app.user) %}  Vous avez {% else %} {{ isRefused.answeredBy.nom|upper~'. '~isRefused.answeredBy.prenom|capitalize }} à
                             {% endif %}
                             <u>refusé</u>
                             ce
@@ -448,7 +448,7 @@
                             <div class="fr-background-contrast--info fr-rounded fr-p-2v">
                                 <small>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]
                                     <br>En attente.</small>
-                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} par {{ affectation.affectedBy.nom[:1]|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
+                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} par {{ affectation.affectedBy.nom|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
                             </div>
                         </div>
                     {% elseif affectation.statut is same as(1) %}
@@ -457,8 +457,8 @@
                             <div class="fr-background-contrast--success fr-rounded fr-p-2v">
                                 <small>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]
                                     <br>Accepté.</small>
-                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} par {{ affectation.affectedBy.nom[:1]|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
-                                <span class="fr-hint-text"><strong>Accepté le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} par {{ affectation.answeredBy.nom[:1]|upper~'. '~affectation.answeredBy.prenom|capitalize }}</span>
+                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} par {{ affectation.affectedBy.nom|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
+                                <span class="fr-hint-text"><strong>Accepté le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} par {{ affectation.answeredBy.nom|upper~'. '~affectation.answeredBy.prenom|capitalize }}</span>
                             </div>
                         </div>
                     {% elseif affectation.statut is same as(2) %}
@@ -467,8 +467,8 @@
                             <div class="fr-background-contrast--error fr-rounded fr-p-2v">
                                 <small>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]
                                     <br>Refusé.</small>
-                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} par {{ affectation.affectedBy.nom[:1]|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
-                                <span class="fr-hint-text"><strong>Refusé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} par {{ affectation.answeredBy.nom[:1]|upper~'. '~affectation.answeredBy.prenom|capitalize }}</span>
+                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} par {{ affectation.affectedBy.nom|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
+                                <span class="fr-hint-text"><strong>Refusé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} par {{ affectation.answeredBy.nom|upper~'. '~affectation.answeredBy.prenom|capitalize }}</span>
                             </div>
                         </div>
                     {% elseif affectation.statut is same as(3) %}
@@ -536,7 +536,7 @@
         {% for suivi in signalement.suivis|reverse %}
             <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-2v">
                 <div class="fr-col-2">
-                    <strong> {{ suivi.createdBy.nom[:1]|upper~'. '~ suivi.createdBy.prenom|capitalize }}</strong> <br>
+                    <strong> {{ suivi.createdBy.nom|upper~'. '~ suivi.createdBy.prenom|capitalize }}</strong> <br>
                     <small>[{{ suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun' }}]</small> <br>
                     <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
                 </div>

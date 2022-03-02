@@ -26,7 +26,7 @@
                 {% if suivi.isPublic %}
                     <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-2v">
                         <div class="fr-col-2">
-                            <strong> {{ suivi.createdBy.nom[:1]|upper~'. '~ suivi.createdBy.prenom|capitalize }}</strong> <br>
+                            <strong> {{ suivi.createdBy.nom|upper~'. '~ suivi.createdBy.prenom|capitalize }}</strong> <br>
                             <small>[{{ suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun' }}]</small> <br>
                             <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
                         </div>

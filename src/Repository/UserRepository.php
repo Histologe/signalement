@@ -39,7 +39,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function findAdmins()
     {
         return $this->createQueryBuilder('u')
-            ->select('PARTIAL u.{id,email}')
+            ->select('PARTIAL u.{id,email,isMailingActive}')
             ->where('u.roles LIKE :role')
             ->setParameter('role','["ROLE_ADMIN"]')
             ->orWhere('u.roles LIKE :role2')
