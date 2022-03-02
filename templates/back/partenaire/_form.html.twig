@@ -22,7 +22,8 @@
     <div class="fr-input-group fr-col">
         <label for="partenaire_users_email_new__ID__" class="fr-label">Courriel<sup class="fr-text-label--red-marianne">*</sup></label>
         <input type="email" id="partenaire_users_email_new__ID__" name="partenaire[users][new][__ID__][email]"
-               required="required" class="fr-input" onchange="checkUserMail(this)" data-token="{{ csrf_token('partenaire_checkmail') }}">
+               required="required" class="fr-input" onchange="checkUserMail(this)"
+               data-token="{{ csrf_token('partenaire_checkmail') }}">
         <p class="fr-error-text fr-hidden">
             Courriel invalide
         </p>
@@ -147,12 +148,13 @@
             <select id="partenaire_users_roles_{{ user.id }}" name="partenaire[users][{{ user.id }}][roles]"
                     required="required" class="fr-select">
                 {% if is_granted('ROLE_ADMIN') %}
-                <option value="ROLE_ADMIN" {% if 'ROLE_ADMIN' in user.roles %}selected{% endif %}>
-                    Super Admin
-                </option>
+                    <option value="ROLE_ADMIN" {% if 'ROLE_ADMIN' in user.roles %}selected{% endif %}>
+                        Super Admin
+                    </option>
                 {% endif %}
                 {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
-                    <option value="ROLE_ADMIN_TERRITOIRE" {% if 'ROLE_ADMIN_TERRITOIRE' in user.roles %}selected{% endif %}>
+                    <option value="ROLE_ADMIN_TERRITOIRE"
+                            {% if 'ROLE_ADMIN_TERRITOIRE' in user.roles %}selected{% endif %}>
                         Administrateur Territoire
                     </option>
                 {% endif %}
@@ -185,18 +187,27 @@
             </p>
         </div>
         <div class="fr-input-group fr-col">
-            <label for="partenaire_users_is_mailing_active_{{ user.id }}" class="fr-label">Notification<sup
-                        class="fr-text-label--red-marianne">*</sup></label>
-            <select id="partenaire_users_is_mailing_active_{{ user.id }}"
-                    name="partenaire[users][{{ user.id }}][isMailingActive]"
-                    required="required" class="fr-select">
-                <option value="0" {% if not user.isMailingActive %}selected{% endif %}>
-                    Non
-                </option>
-                <option value="1" {% if user.isMailingActive %}selected{% endif %}>
-                    Oui
-                </option>
-            </select>
+           <div class="fr-grid-row fr-grid-row--gutters">
+               <div class="fr-col">
+                   <label for="partenaire_users_is_mailing_active_{{ user.id }}" class="fr-label">Notification<sup
+                               class="fr-text-label--red-marianne">*</sup></label>
+                   <select id="partenaire_users_is_mailing_active_{{ user.id }}"
+                           name="partenaire[users][{{ user.id }}][isMailingActive]"
+                           required="required" class="fr-select">
+                       <option value="0" {% if not user.isMailingActive %}selected{% endif %}>
+                           Non
+                       </option>
+                       <option value="1" {% if user.isMailingActive %}selected{% endif %}>
+                           Oui
+                       </option>
+                   </select>
+               </div>
+               <div class="fr-col">
+                   <label for="partenaire_users_is_active_{{ user.id }}" class="fr-label">Activé<sup
+                               class="fr-text-label--red-marianne">*</sup></label>
+                   <input id="partenaire_users_is_active_{{ user.id }}" type="text" class="fr-input {% if user.statut is same as(1) %}fr-input--valid{% else %}fr-input--error{% endif %}" value="{% if user.statut is same as(1) %}Oui{% else %}Non{% endif %}" readonly>
+               </div>
+           </div>
         </div>
         <div class="fr-input-group">
             <label for="partenaire_users_delete_{{ user.id }}" class="fr-label">Suppr.</label>

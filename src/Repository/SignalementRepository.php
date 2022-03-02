@@ -56,6 +56,7 @@ class SignalementRepository extends ServiceEntityRepository
             ->addSelect('s.reference')
             ->where("JSON_EXTRACT(s.geoloc,'$.lat') != ''")
             ->andWhere("JSON_EXTRACT(s.geoloc,'$.lng') != ''")
+            ->andWhere('s.statut != 7')
             ->getQuery()
             ->getResult();
     }
