@@ -579,7 +579,7 @@
                     <div class="fr-fieldset__content">
                         {{ form_label(form.nomProprio) }}
                         {% if 'back_' not in app.request.get('_route') %}
-                            {{ form_widget(form.nomDeclarant) }}
+                            {{ form_widget(form.nomProprio) }}
                         {% else %}
                             {{ form_widget(form.nomProprio,{required:false}) }}
                         {% endif %}
