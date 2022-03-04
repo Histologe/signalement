@@ -257,8 +257,15 @@ class BackSignalementController extends AbstractController
                     $affectation->setAffectedBy($this->getUser());
                     $doctrine->getManager()->persist($affectation);
                     //TODO: Mail Sendinblue
+                    if ($partenaire->getEmail()) {
+                        $notificationService->send(NotificationService::TYPE_AFFECTATION, $partenaire->getEmail(), [
+                            'link' => $this->generateUrl('back_signalement_view', [
+                                'uuid' => $signalement->getUuid()
+                            ], 0)
+                        ]);
+                    }
                     $partenaire->getUsers()->map(function (User $user) use ($signalement, $notificationService) {
-                        if ($user->getIsMailingActive() && $user->getStatut() === User::STATUS_ACTIVE) {
+                        if ($user->getIsMailingActive() && $user->getStatut() !== User::STATUS_ARCHIVE) {
                             $notificationService->send(NotificationService::TYPE_AFFECTATION, $user->getEmail(), [
                                 'link' => $this->generateUrl('back_signalement_view', [
                                     'uuid' => $signalement->getUuid()
@@ -266,6 +273,7 @@ class BackSignalementController extends AbstractController
                             ]);
                         }
                     });
+
                 }
                 foreach ($partenairesToRemove as $partenaireIdToRemove) {
                     $partenaire = $partenaireRepository->find($partenaireIdToRemove);

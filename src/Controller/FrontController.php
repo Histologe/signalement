@@ -11,7 +11,9 @@ use App\Entity\Suivi;
 use App\Entity\User;
 use App\Form\ContactType;
 use App\Repository\AffectationRepository;
+use App\Repository\PartenaireRepository;
 use App\Repository\SignalementRepository;
+use App\Repository\UserRepository;
 use App\Service\CriticiteCalculatorService;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -70,8 +72,24 @@ class FrontController extends AbstractController
     }
 
     #[Route('/dump/{offset}', name: 'dump', host: 'localhost')]
-    public function dump($offset, SignalementRepository $signalementRepository, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, AffectationRepository $affectationRepository): Response
+    public function dump($offset, SignalementRepository $signalementRepository,PartenaireRepository $partenaireRepository,UserRepository$userRepository, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, AffectationRepository $affectationRepository): Response
     {
+        foreach ($userRepository->findAll() as $user){
+            if($user->getIsGenerique())
+            {
+                $partenaire = $user->getPartenaire();
+                $partenaire->setEmail($user->getEmail());
+                $user->setStatut(User::STATUS_ARCHIVE);
+                $partenaire->getUsers()->filter(function (User $user)use ($doctrine){
+                    $user->setIsMailingActive(false);
+                    $doctrine->getManager()->persist($user);
+                });
+                $doctrine->getManager()->persist($partenaire);
+                $doctrine->getManager()->persist($user);
+            }
+        }
+        $doctrine->getManager()->flush();
+        die('Generique OK');
         /*$count = 0;
         foreach ($signalementRepository->findAll() as $signalement)
         {
@@ -90,7 +108,7 @@ class FrontController extends AbstractController
         $dbhost = "localhost";
         $dbuser = "root";
         $dbpass = "";
-        $db = "dumpam";
+        $db = "dumpvdg";
         $conn = new mysqli($dbhost, $dbuser, $dbpass, $db) or die("Connect failed: %s\n" . $conn->error);
         $count = 0;
 
@@ -105,7 +123,7 @@ class FrontController extends AbstractController
             $entityManager->persist($part);
         }
         $entityManager->flush();
-        die();*/
+        die('Partenaires OK');*/
         /* $usersQuery = "SELECT * from husers_bo";
          $users = $conn->query($usersQuery)->fetch_all(MYSQLI_ASSOC);
          foreach ($users as $user) {
@@ -123,16 +141,16 @@ class FrontController extends AbstractController
              $u->setNom($nom);
              $u->setPrenom($user['prenom_bo']);
              $u->setEmail($user['courriel']);
-             $u->setIsMailingActive($user['sendAlert']);
+             $u->setIsMailingActive($user['sendAlert'] ?? 0);
              $u->setIsGenerique($isGenerique);
              $u->setRoles(['ROLE_USER_PARTENAIRE']);
              $entityManager->persist($u);
          }
          $entityManager->flush();
-        die();*/
+        die('Users OK');*/
         $signalementQuery = "SELECT * from hsignalement_ s
     JOIN hadresse_ a ON s.idAdresse = a.idAdresse
-    ORDER BY s.dtCreaSignalement LIMIT 100 OFFSET 300
+    ORDER BY s.dtCreaSignalement LIMIT 100 
     ";
         /*if ($offset !== 0)
             $signalementQuery .= 'OFFSET ' . $offset;*/
@@ -156,7 +174,7 @@ class FrontController extends AbstractController
             $sign->setNomOccupant($signalement['nomSign']);
             $sign->setPrenomOccupant($signalement['prenomSign'] ?? 'N/R');
             $sign->setMailOccupant($signalement['courriel']);
-            $sign->setCodeProcedure($signalement['procedureSign']);
+            $sign->setCodeProcedure($signalement['procedureSign'] ?? null);
             $sign->setTelOccupant($signalement['telephone']);
             $sign->setDetails(str_replace('/r/n', '<br>', $signalement['description']));
             $sign->setIsProprioAverti($signalement['proprio_info']);
@@ -176,17 +194,17 @@ class FrontController extends AbstractController
             $sign->setNatureLogement($signalement['prof_natureLog']);
             $sign->setNbEnfantsM6((int)$signalement['prof_nbEnfM6']);
             $sign->setNbEnfantsP6((int)$signalement['prof_nbEnfP6']);
-            $sign->setIsBailEnCours($signalement['prof_bail']);
-            $sign->setIsRelogement($signalement['prof_demRelog']);
-            $sign->setIsRefusIntervention(!$signalement['prof_accVisit']);
-            $sign->setRaisonRefusIntervention($signalement['prof_refusVisit']);
-            $sign->setIsNotOccupant(!$signalement['occupDeclarant']);
-            $sign->setTypeLogement(mb_strtoupper($signalement['prof_typoLog']));
-            $sign->setNomDeclarant($signalement['nomDeclarant']);
-            $sign->setPrenomDeclarant($signalement['prenomDeclarant']);
-            $sign->setMailDeclarant($signalement['courrielDeclarant']);
-            $sign->setTelDeclarant($signalement['telDeclarant']);
-            $sign->setStructureDeclarant($signalement['structureDeclarant']);
+            $sign->setIsBailEnCours($signalement['prof_bail'] ?? 0);
+            $sign->setIsRelogement($signalement['prof_demRelog'] ?? 0);
+            $sign->setIsRefusIntervention(isset($signalement['prof_accVisit']) ? !$signalement['prof_accVisit'] : 0);
+            $sign->setRaisonRefusIntervention($signalement['prof_refusVisit'] ?? 0);
+            $sign->setIsNotOccupant(isset($signalement['occupDeclarant']) ? !$signalement['occupDeclarant'] : 0);
+            $sign->setTypeLogement(mb_strtoupper($signalement['prof_typoLog'] ?? 'appartement'));
+            $sign->setNomDeclarant($signalement['nomDeclarant'] ?? null);
+            $sign->setPrenomDeclarant($signalement['prenomDeclarant']?? null);
+            $sign->setMailDeclarant($signalement['courrielDeclarant']??null);
+            $sign->setTelDeclarant($signalement['telDeclarant']??null);
+            $sign->setStructureDeclarant($signalement['structureDeclarant']??null);
             $sign->setMontantAllocation((float)$signalement['prof_montantAlloc']);
             $sign->setNumAppartOccupant($signalement['numLog']);
             $sign->setVilleOccupant($signalement['ville']);

@@ -17,6 +17,7 @@ class NotificationService
     const TYPE_ACCUSE_RECEPTION = 6;
     const TYPE_NOUVEAU_SUIVI = 7;
     const TYPE_NOTIFICATION_MAIL_FRONT = 8;
+    const TYPE_ERREUR_SIGNALEMENT = 9;
 
     private MailerInterface $mailer;
     private ConfigurationService $configuration;
@@ -67,6 +68,10 @@ class NotificationService
                 'template' => 'nouveau_suivi_signalement_email',
                 'subject' => 'Nouvelle mise à jour de votre signalement !',
                 'btntext'=>"Suivre mon signalement"
+            ],
+            NotificationService::TYPE_ERREUR_SIGNALEMENT => [
+                'template' => 'erreur_signalement_email',
+                'subject' => 'Une erreur est survenue lors de la création d\'un signalement !',
             ]
         };
     }

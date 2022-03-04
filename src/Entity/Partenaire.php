@@ -35,6 +35,9 @@ class Partenaire
     #[ORM\OneToMany(mappedBy: 'partenaire', targetEntity: Affectation::class, orphanRemoval: true)]
     private $affectations;
 
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    private $email;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -179,6 +182,18 @@ class Partenaire
                 $affectation->setPartenaire(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): self
+    {
+        $this->email = $email;
 
         return $this;
     }

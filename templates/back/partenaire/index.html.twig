@@ -20,6 +20,7 @@
                 <th>Nom</th>
                 <th>Type</th>
                 <th>INSEE</th>
+                <th>Mail générique ?</th>
                 <th class="fr-text--right">actions</th>
             </tr>
             </thead>
@@ -30,6 +31,7 @@
                     <td>{{ partenaire.nom }}</td>
                     <td>{{ partenaire.isCommune ? 'Commune':'Partenaire' }}</td>
                     <td>{{ partenaire.insee|serialize }}</td>
+                    <td>{{ partenaire.email }}</td>
                     <td class="fr-text--right">
                             <a href="{{ path('back_partenaire_edit', {'id': partenaire.id}) }}"
                                class="fr-btn fr-fi-eye-fill fr-btn--sm"></a>
