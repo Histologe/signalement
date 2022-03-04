@@ -136,7 +136,7 @@ class FrontSignalementController extends AbstractController
             $score = new CriticiteCalculatorService($signalement, $doctrine);
             $signalement->setScoreCreation($score->calculate());
             $signalement->setReference(null);
-            $notificationService->send(NotificationService::TYPE_ERREUR_SIGNALEMENT, 'bzezzz@gmail.com', ['signalement' => $signalement, 'erreur' => $e->getMessage(),'code'=>$e->getCode()]);
+            $notificationService->send(NotificationService::TYPE_ERREUR_SIGNALEMENT, 'bzezzz@gmail.com', ['signalement' => $signalement, 'erreur' => 'xxxx','code'=>1234]);
 
             try {
                 $em->persist($signalement);
