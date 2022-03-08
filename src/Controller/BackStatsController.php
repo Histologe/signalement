@@ -25,7 +25,7 @@ class BackStatsController extends AbstractController
         $signalements = $entityManager->createQuery("SELECT s.id,s.statut,s.createdAt,s.villeOccupant,s.closedAt FROM App\Entity\Signalement AS s WHERE s.statut != 7")->getResult();
         foreach ($signalements as $signalement) {
             $dates[strtotime($signalement['createdAt']->format('M Y'))]['open'] ?? $dates[strtotime($signalement['createdAt']->format('M Y'))]['open'] = 0;
-            if ($signalement['statut'] === Signalement::STATUS_CLOSED) {
+            if ($signalement['statut'] === Signalement::STATUS_CLOSED && !empty($signalement['closedAt'])) {
                 $dates[strtotime($signalement['closedAt']->format('M Y'))]['close'] ?? $dates[strtotime($signalement['closedAt']->format('M Y'))]['close'] = 0;
                 $dates[strtotime($signalement['closedAt']->format('M Y'))]['close']++;
                 $totaux['closed']++;

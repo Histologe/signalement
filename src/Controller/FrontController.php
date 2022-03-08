@@ -74,7 +74,7 @@ class FrontController extends AbstractController
     #[Route('/dump/{offset}', name: 'dump', host: 'localhost')]
     public function dump($offset, SignalementRepository $signalementRepository,PartenaireRepository $partenaireRepository,UserRepository$userRepository, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, AffectationRepository $affectationRepository): Response
     {
-        foreach ($userRepository->findAll() as $user){
+        /*foreach ($userRepository->findAll() as $user){
             if($user->getIsGenerique())
             {
                 $partenaire = $user->getPartenaire();
@@ -89,7 +89,7 @@ class FrontController extends AbstractController
             }
         }
         $doctrine->getManager()->flush();
-        die('Generique OK');
+        die('Generique OK');*/
         /*$count = 0;
         foreach ($signalementRepository->findAll() as $signalement)
         {
@@ -108,7 +108,7 @@ class FrontController extends AbstractController
         $dbhost = "localhost";
         $dbuser = "root";
         $dbpass = "";
-        $db = "dumpvdg";
+        $db = "dumppau";
         $conn = new mysqli($dbhost, $dbuser, $dbpass, $db) or die("Connect failed: %s\n" . $conn->error);
         $count = 0;
 
@@ -124,7 +124,7 @@ class FrontController extends AbstractController
         }
         $entityManager->flush();
         die('Partenaires OK');*/
-        /* $usersQuery = "SELECT * from husers_bo";
+        /*$usersQuery = "SELECT * from husers_bo";
          $users = $conn->query($usersQuery)->fetch_all(MYSQLI_ASSOC);
          foreach ($users as $user) {
              $partenaire = $entityManager->getRepository(Partenaire::class)->find($user['idPartenaire']);
@@ -150,7 +150,7 @@ class FrontController extends AbstractController
         die('Users OK');*/
         $signalementQuery = "SELECT * from hsignalement_ s
     JOIN hadresse_ a ON s.idAdresse = a.idAdresse
-    ORDER BY s.dtCreaSignalement LIMIT 100 
+    ORDER BY s.dtCreaSignalement LIMIT 100 OFFSET 300
     ";
         /*if ($offset !== 0)
             $signalementQuery .= 'OFFSET ' . $offset;*/
@@ -258,6 +258,8 @@ class FrontController extends AbstractController
                     $criticiteEntity = $entityManager->getRepository(Criticite::class)->find($critere['idCriticite']);
                     $situationEntity = $critereEntity->getSituation();
                     $sign->addCritere($critereEntity);
+                    if(empty($criticiteEntity))
+                        $criticiteEntity = $entityManager->getRepository(Criticite::class)->find(47);
                     $sign->addCriticite($criticiteEntity);
                     $sign->addSituation($situationEntity);
                 }
