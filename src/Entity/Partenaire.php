@@ -12,7 +12,7 @@ use Doctrine\ORM\PersistentCollection;
 class Partenaire
 {
     #[ORM\Id]
-//    #[ORM\GeneratedValue]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
 
