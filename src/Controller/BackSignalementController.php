@@ -21,6 +21,8 @@ use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
+use Knp\Snappy\Pdf;
 use PHPUnit\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -435,5 +437,33 @@ class BackSignalementController extends AbstractController
         } else
             $this->addFlash('error', 'Une erreur est survenu lors de la suppression');
         return $this->redirectToRoute('back_index');
+    }
+
+    #[Route('/{uuid}/pdf',name:'back_signalement_gen_pdf')]
+    public function generatePdfSignalement(Signalement $signalement,Pdf $knpSnappyPdf,EntityManagerInterface $entityManager)
+    {
+        $criticitesArranged = [];
+        foreach ($signalement->getCriticites() as $criticite) {
+            $criticitesArranged[$criticite->getCritere()->getSituation()->getLabel()][$criticite->getCritere()->getLabel()] = $criticite;
+        }
+        $html = $this->renderView('pdf/signalement.html.twig', [
+            'signalement' => $signalement,
+            'situations' => $criticitesArranged
+        ]);
+        $options = [
+            'margin-top'    => 0,
+            'margin-right'  => 0,
+            'margin-bottom' => 0,
+            'margin-left'   => 0,
+        ];
+
+        return new Response(
+            $knpSnappyPdf->getOutputFromHtml($html,$options),
+            200,
+            array(
+                'Content-Type'          => 'application/pdf',
+                'Content-Disposition'   => 'inline; filename="'.$signalement->getReference().'.pdf"'
+            )
+        );
     }
 }

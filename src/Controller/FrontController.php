@@ -24,13 +24,11 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\Header\MetadataHeader;
-use Symfony\Component\Mailer\Header\TagHeader;
-use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
 
 class FrontController extends AbstractController
 {
+
     #[Route('/replicapi', name: 'replicapi'/*, host: 'localhost'*/)]
     public function replicapi(Request $request, Filesystem $fsObject, SignalementRepository $signalementRepository, ManagerRegistry $doctrine, NotificationService $notificationService)
     {
@@ -72,7 +70,7 @@ class FrontController extends AbstractController
     }
 
     #[Route('/dump/{offset}', name: 'dump', host: 'localhost')]
-    public function dump($offset, SignalementRepository $signalementRepository,PartenaireRepository $partenaireRepository,UserRepository$userRepository, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, AffectationRepository $affectationRepository): Response
+    public function dump($offset, SignalementRepository $signalementRepository, PartenaireRepository $partenaireRepository, UserRepository $userRepository, EntityManagerInterface $entityManager, ManagerRegistry $doctrine, AffectationRepository $affectationRepository): Response
     {
         /*foreach ($userRepository->findAll() as $user){
             if($user->getIsGenerique())
@@ -201,10 +199,10 @@ class FrontController extends AbstractController
             $sign->setIsNotOccupant(isset($signalement['occupDeclarant']) ? !$signalement['occupDeclarant'] : 0);
             $sign->setTypeLogement(mb_strtoupper($signalement['prof_typoLog'] ?? 'appartement'));
             $sign->setNomDeclarant($signalement['nomDeclarant'] ?? null);
-            $sign->setPrenomDeclarant($signalement['prenomDeclarant']?? null);
-            $sign->setMailDeclarant($signalement['courrielDeclarant']??null);
-            $sign->setTelDeclarant($signalement['telDeclarant']??null);
-            $sign->setStructureDeclarant($signalement['structureDeclarant']??null);
+            $sign->setPrenomDeclarant($signalement['prenomDeclarant'] ?? null);
+            $sign->setMailDeclarant($signalement['courrielDeclarant'] ?? null);
+            $sign->setTelDeclarant($signalement['telDeclarant'] ?? null);
+            $sign->setStructureDeclarant($signalement['structureDeclarant'] ?? null);
             $sign->setMontantAllocation((float)$signalement['prof_montantAlloc']);
             $sign->setNumAppartOccupant($signalement['numLog']);
             $sign->setVilleOccupant($signalement['ville']);
@@ -258,7 +256,7 @@ class FrontController extends AbstractController
                     $criticiteEntity = $entityManager->getRepository(Criticite::class)->find($critere['idCriticite']);
                     $situationEntity = $critereEntity->getSituation();
                     $sign->addCritere($critereEntity);
-                    if(empty($criticiteEntity))
+                    if (empty($criticiteEntity))
                         $criticiteEntity = $entityManager->getRepository(Criticite::class)->find(47);
                     $sign->addCriticite($criticiteEntity);
                     $sign->addSituation($situationEntity);
