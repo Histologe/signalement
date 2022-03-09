@@ -237,25 +237,27 @@
         </section>
     </div>
 
-    <div class="page" style="padding-top: 25px!important;">
-        <section>
-            <h2>Suivi(s)</h2>
-            <table class="fr-stripped"  style="width: 100%">
-                {% for suivi in signalement.suivis|reverse %}
-                    <tr>
-                        <td style="padding:.5rem;width: 15%">
-                            <b> {{ suivi.createdBy.nom|upper~'. '~ suivi.createdBy.prenom|capitalize }}</b>
-                            <br>
-                            <small>[{{ suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun' }}]</small>
-                            <br>
-                            <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
-                        </td>
-                        <td style="padding:.5rem;width:85%">  {{ suivi.description|raw }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
+    {% if signalement.suivis|length %}
+        <div class="page" style="padding-top: 25px!important;">
+            <section>
+                <h2>Suivi(s)</h2>
+                <table class="fr-stripped" style="width: 100%">
+                    {% for suivi in signalement.suivis|reverse %}
+                        <tr>
+                            <td style="padding:.5rem;width: 15%">
+                                <b> {{ suivi.createdBy.nom|upper~'. '~ suivi.createdBy.prenom|capitalize }}</b>
+                                <br>
+                                <small>[{{ suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun' }}
+                                    ]</small>
+                                <br>
+                                <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
+                            </td>
+                            <td style="padding:.5rem;width:85%">  {{ suivi.description|raw }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
 
-        </section>
-    </div>
-
+            </section>
+        </div>
+    {% endif %}
 {% endblock %}
