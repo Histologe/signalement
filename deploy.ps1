@@ -5,7 +5,7 @@ if($forAll -eq "--all")
 } else {
     $projects =  (Get-ChildItem -Path ../ -exclude *.idea, BDR).Name
 }
-$cmdOutput = git diff --name-only # or: $cmdOutput = @(<command>)
+$cmdOutput = git diff --name-only
 $currentLocation = Get-Location;
 $date = Get-Date -Format "dd-MM-yyyy"
 foreach($project in $projects)

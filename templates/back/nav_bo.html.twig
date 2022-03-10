@@ -9,7 +9,7 @@
                 <img src="{{ asset('img/logo_145.png') }}" alt="HISTOLOGE" width="145px">
             </div>
             <div class="fr-sidemenu__title">Tableau de bord<br>
-                <small class="fr-text-label--blue-france">{{ app.user.userIdentifier }}</small>
+                <small class="fr-text-label--blue-france">{{ app.user.nom ~' '~app.user.prenom[:1]|capitalize~'.' }}</small>
             </div>
             <ul class="fr-sidemenu__list">
                 <li class="fr-sidemenu__item">

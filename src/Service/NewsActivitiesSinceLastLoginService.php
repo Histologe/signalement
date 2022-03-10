@@ -51,4 +51,13 @@ class NewsActivitiesSinceLastLoginService
         });
         return $news;
     }
+
+    public function clear(): ArrayCollection|bool|null
+    {
+        $news = $this->getAll();
+        $news?->filter(function (Suivi $new) use ($news) {
+                $news->removeElement($new);
+        });
+        return $news;
+    }
 }

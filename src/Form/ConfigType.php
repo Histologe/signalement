@@ -6,6 +6,7 @@ use App\Entity\Config;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -32,7 +33,8 @@ class ConfigType extends AbstractType
                 'row_attr'=>[
                     'class'=> 'fr-upload-group fr-mb-5v'
                 ],
-                'data_class'=>null
+                'data_class'=>null,
+                'required'=>false
             ])
             ->add('urlTerritoire', TextType::class, [
                 'attr' => [
@@ -58,6 +60,14 @@ class ConfigType extends AbstractType
                     'class'=> 'fr-input-group'
                 ]
             ])
+            ->add('adresseDpo', TextType::class, [
+                'attr' => [
+                    'class' => 'fr-input'
+                ],
+                'row_attr'=>[
+                    'class'=> 'fr-input-group'
+                ]
+            ])
             ->add('nomResponsable', TextType::class, [
                 'attr' => [
                     'class' => 'fr-input'
@@ -74,14 +84,6 @@ class ConfigType extends AbstractType
                     'class'=> 'fr-input-group'
                 ]
             ])
-            ->add('adresseDpo', TextType::class, [
-                'attr' => [
-                    'class' => 'fr-input'
-                ],
-                'row_attr'=>[
-                    'class'=> 'fr-input-group'
-                ]
-            ])
             ->add('emailReponse', EmailType::class, [
                 'attr' => [
                     'class' => 'fr-input'
@@ -89,6 +91,22 @@ class ConfigType extends AbstractType
                 'row_attr'=>[
                     'class'=> 'fr-input-group'
                 ],'label'=>'Courriel de réponse'
+            ])
+            ->add('trackingCode',TextareaType::class,[
+                'attr' => [
+                    'class' => 'fr-input'
+                ],
+                'row_attr'=>[
+                    'class'=> 'fr-input-group'
+                ],'label'=>'Code de Tracking'
+            ])
+            ->add('tagManagerCode',TextareaType::class,[
+                'attr' => [
+                    'class' => 'fr-input'
+                ],
+                'row_attr'=>[
+                    'class'=> 'fr-input-group'
+                ],'label'=>'Code TagManager'
             ])
         ;
     }

@@ -42,6 +42,12 @@ class Config
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $emailReponse;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private $trackingCode;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private $tagManagerCode;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -151,6 +157,30 @@ class Config
     public function setEmailReponse(?string $emailReponse): self
     {
         $this->emailReponse = $emailReponse;
+
+        return $this;
+    }
+
+    public function getTrackingCode(): ?string
+    {
+        return $this->trackingCode;
+    }
+
+    public function setTrackingCode(?string $trackingCode): self
+    {
+        $this->trackingCode = $trackingCode;
+
+        return $this;
+    }
+
+    public function getTagManagerCode(): ?string
+    {
+        return $this->tagManagerCode;
+    }
+
+    public function setTagManagerCode(?string $tagManagerCode): self
+    {
+        $this->tagManagerCode = $tagManagerCode;
 
         return $this;
     }
