@@ -41,5 +41,5 @@ if($forAll -eq "--all")
 # cd ../HG && sudo php bin/console cache:clear;
 # cd ../MEL && sudo php bin/console cache:clear;
 # cd ../PAU && sudo php bin/console cache:clear;
-# cd '..\S&L\' && sudo php bin/console cache:clear;
+# cd ../S\&L && sudo php bin/console cache:clear;
 # cd ../VDG && sudo php bin/console cache:clear;

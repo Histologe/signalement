@@ -5,7 +5,7 @@ Node.prototype.addEventListeners = function (eventNames, eventFunction) {
 const imgData = new FormData();
 const forms = document.querySelectorAll('form.needs-validation:not([name="bug-report"])');
 const localStorage = window.localStorage;
-const checkUserMail = (el) => {
+checkUserMail = (el) => {
     let formData = new FormData();
     formData.append('email', el.value)
     formData.append('_token', el.getAttribute('data-token'))
@@ -26,7 +26,7 @@ const checkUserMail = (el) => {
         }
     })
 }
-const serializeArray = (form) => {
+serializeArray = (form) => {
     return Array.from(new FormData(form)
         .entries())
         .reduce(function (response, current) {
@@ -34,10 +34,10 @@ const serializeArray = (form) => {
             return response
         }, {})
 };
-const checkFirstStep = (form) => {
+checkFirstStep = (form) => {
     return !(form.id === "signalement-step-1" && null === form.querySelector('[type="radio"]:checked') || form.id === "signalement-step-1" && form.querySelectorAll('[type="checkbox"]:checked').length !== form.querySelectorAll('[type="radio"]:checked').length);
 }
-const checkFieldset = (form) => {
+checkFieldset = (form) => {
     let field = form.querySelector('fieldset[aria-required="true"]')
     if (field) {
         if (null === field.querySelector('[type="checkbox"]:checked')) {
@@ -53,10 +53,10 @@ const checkFieldset = (form) => {
     } else
         return true;
 }
-const goToStep = (step) => {
+goToStep = (step) => {
     document.querySelector('#signalement-step-' + step).click();
 }
-const resizeImage = function (image, ratio) {
+resizeImage = function (image, ratio) {
     return new Promise(function (resolve, reject) {
         const reader = new FileReader();
 
@@ -96,7 +96,7 @@ const resizeImage = function (image, ratio) {
         });
     });
 };
-const dataUrlToBlob = function (url) {
+dataUrlToBlob = function (url) {
     const arr = url.split(',');
     const mime = arr[0].match(/:(.*?);/)[1];
     const str = atob(arr[1]);
