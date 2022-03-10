@@ -2,6 +2,10 @@ $forAll=$args[0]
 if($forAll -eq "--all")
 {
     $projects =  (Get-ChildItem -Path ../ -exclude *.idea).Name
+}
+elseif($forAll -eq "--bdr")
+{
+   $projects =  @('BDR')
 } else {
     $projects =  (Get-ChildItem -Path ../ -exclude *.idea, BDR).Name
 }
@@ -26,4 +30,7 @@ foreach($project in $projects)
     Set-Location $currentLocation
     Write-Output ("$project updated")
 }
-git push
+if($forAll -eq "--all")
+{
+    git push
+}
