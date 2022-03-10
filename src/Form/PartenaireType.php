@@ -7,6 +7,7 @@ use SebastianBergmann\CodeCoverage\Report\Text;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -39,6 +40,12 @@ class PartenaireType extends AbstractType
                 'label' => 'Type de partenaire'
             ])
             ->add('insee', TextType::class, [
+                'attr' => [
+                    'class' => 'fr-input'
+                ],
+                'required'=>false,
+            ])
+            ->add('email', EmailType::class, [
                 'attr' => [
                     'class' => 'fr-input'
                 ],

@@ -87,7 +87,7 @@
 {{ form_start(form,{attr:{'class':'needs-validation','novalidate':true}}) }}
 <fieldset class="fr-fieldset fr-fieldset--inline fr-mb-5v fr-mb-md-0">
     <div class="fr-fieldset__content fr-grid-row fr-grid-row--gutters">
-        <div class="fr-input-group fr-col-12 fr-col-md-6 fr-col-lg-8 fr-pl-0 fr-pl-md-0">
+        <div class="fr-input-group fr-col-12 fr-col-md-3 fr-col-lg-6 fr-pl-0 fr-pl-md-0">
             <label for="{{ form.nom.vars.id }}" class="fr-label">Nom<sup
                         class="fr-text-label--red-marianne">*</sup></label>
             {{ form_widget(form.nom) }}
@@ -103,9 +103,13 @@
                 Vous devez renseigner le type de partenaire.
             </p>
         </div>
-        <div class="fr-select-group fr-col-12 fr-col-md-3 fr-col-lg-2 fr-p-0 fr-pr-md-0">
+        <div class="fr-input-group fr-col-12 fr-col-md-3 fr-col-lg-2">
             <label for="{{ form.insee.vars.id }}" class="fr-label">INSEE (si commune)</label>
             {{ form_widget(form.insee) }}
+        </div>
+        <div class="fr-input-group fr-col-12 fr-col-md-3 fr-col-lg-2 fr-p-0 fr-pr-md-0">
+            <label for="{{ form.insee.vars.id }}" class="fr-label">Email (si générique)</label>
+            {{ form_widget(form.email) }}
         </div>
     </div>
 </fieldset>

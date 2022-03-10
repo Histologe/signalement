@@ -34,3 +34,12 @@ if($forAll -eq "--all")
 {
     git push
 }
+# cd ../AM && sudo php bin/console cache:clear;
+# cd ../AHP && sudo php bin/console cache:clear;
+# cd ../BDR && sudo php bin/console cache:clear;
+# cd ../DEMO && sudo php bin/console cache:clear;
+# cd ../HG && sudo php bin/console cache:clear;
+# cd ../MEL && sudo php bin/console cache:clear;
+# cd ../PAU && sudo php bin/console cache:clear;
+# cd '..\S&L\' && sudo php bin/console cache:clear;
+# cd ../VDG && sudo php bin/console cache:clear;
