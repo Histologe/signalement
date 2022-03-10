@@ -1,9 +1,13 @@
 {% extends 'emails/base_email.html.twig' %}
 
 {% block body %}
-    <p>Bonjour,</p>
-    <p>Nous vous informons que votre signalement concernant le logement situé <br> <b>{{ signalement.adresseOccupant~', '~signalement.cpOccupant~' '~signalement.villeOccupant|upper }}</b>
-        <br>a bien été validé par le service Histologe.</p>
+    <p>Bonjour {{ signalement.nomOccupant|upper ~' '~signalement.prenomOccupant|capitalize }}</p>
+    {% if config.get.mailValidation and config.get.mailValidation is not null %}
+    <p>{{ config.get.mailValidation|raw }}</p>
+    {% else %}
+        <p>Nous vous informons que votre signalement concernant le logement situé <br> <b>{{ signalement.adresseOccupant~', '~signalement.cpOccupant~' '~signalement.villeOccupant|upper }}</b>
+            <br>a bien été validé par le service Histologe.</p>
+    {% endif %}
     <p>Vous pouvez désormais suivre l'avancée de son traitement en cliquant sur le bouton ci-dessous :</p>
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="text-align: center">
         <tbody>
