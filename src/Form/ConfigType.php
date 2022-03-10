@@ -94,7 +94,8 @@ class ConfigType extends AbstractType
             ])
             ->add('trackingCode',TextareaType::class,[
                 'attr' => [
-                    'class' => 'fr-input'
+                    'class' => 'fr-input',
+                    'rows' => 15
                 ],
                 'row_attr'=>[
                     'class'=> 'fr-input-group'
@@ -103,7 +104,8 @@ class ConfigType extends AbstractType
             ])
             ->add('tagManagerCode',TextareaType::class,[
                 'attr' => [
-                    'class' => 'fr-input'
+                    'class' => 'fr-input',
+                    'rows' => 10
                 ],
                 'row_attr'=>[
                     'class'=> 'fr-input-group'

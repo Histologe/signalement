@@ -91,24 +91,31 @@ class BackController extends AbstractController
             $config = $configRepository->findLast()[0];
         else
             $config = new Config();
+        $logo = $config->getLogotype();
         $form = $this->createForm(ConfigType::class, $config);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            if (isset($request->files->get('config')['logotype'])) {
+            if (!empty($request->files->get('config')['logotype'])) {
                 $logotype = $request->files->get('config')['logotype'];
                 $originalFilename = pathinfo($logotype->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
                 $newFilename = $safeFilename . '-' . uniqid() . '.' . $logotype->guessExtension();
-                try {
-                    $logotype->move(
-                        $this->getParameter('images_dir'),
-                        $newFilename
-                    );
-                    $config->setLogotype($newFilename);
-                } catch (UploadException $e) {
-                    //TODO: Notif fail upload
+                if($newFilename && $newFilename !== '')
+                {
+
+                    try {
+                        $logotype->move(
+                            $this->getParameter('images_dir'),
+                            $newFilename
+                        );
+                        $config->setLogotype($newFilename);
+                    } catch (UploadException $e) {
+                        //TODO: Notif fail upload
+                    }
                 }
 
+            } else {
+                $config->setLogotype($logo);
             }
             $entityManager->persist($config);
             $entityManager->flush();
