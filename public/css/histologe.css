@@ -20,6 +20,9 @@ html, body {
 pre {
     overflow:auto!important;
 }
+.bloc-suivi-content-row img {
+    max-width: 100%;
+}
 .signalement-invalid #signalement-toggle-situations {
     position: relative;
     z-index: 1001;

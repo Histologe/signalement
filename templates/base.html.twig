@@ -35,18 +35,18 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
     {% block stylesheets %}{% endblock %}
-    {{ config.get.trackingCode ?? '' }}
-    {{ config.get.tagManagerCode ?? '' }}
+    {{ config.get.trackingCode ? config.get.tagManagerCode|raw : '' }}
+    {{ config.get.tagManagerCode ? config.get.tagManagerCode|raw :'' }}
 </head>
 <body>
 {% if 'back_' not in app.request.get('_route') %}
-{% include "header.html.twig" %}
+    {% include "header.html.twig" %}
     {% for label, messages in app.flashes %}
         {% for message in messages %}
             <div class="fr-form-group">
                 <div role="alert" class="fr-alert fr-alert--{{ label }} fr-alert--sm">
                     {% if label is same as('error') %}
-                    <strong>Erreur...</strong>
+                        <strong>Erreur...</strong>
                     {% endif %}
                     <p>{{ message }}</p>
                 </div>
@@ -69,6 +69,13 @@
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
 <script src="{{ asset('js/gauge.min.js') }}"></script>
+<script src="{{ asset('js/tinymce/tinymce.min.js') }}"></script>
+<script>
+    tinymce.init({
+        selector: 'textarea.editor',
+        menubar: false
+    });
+</script>
 {% block javascripts %}{% endblock %}
 </body>
 </html>

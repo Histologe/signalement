@@ -98,7 +98,8 @@ class ConfigType extends AbstractType
                 ],
                 'row_attr'=>[
                     'class'=> 'fr-input-group'
-                ],'label'=>'Code de Tracking'
+                ],'label'=>'Code de Tracking',
+                'required'=>false
             ])
             ->add('tagManagerCode',TextareaType::class,[
                 'attr' => [
@@ -106,7 +107,26 @@ class ConfigType extends AbstractType
                 ],
                 'row_attr'=>[
                     'class'=> 'fr-input-group'
-                ],'label'=>'Code TagManager'
+                ],'label'=>'Code TagManager',
+                'required'=>false
+            ])
+            ->add('mailAr',TextareaType::class,[
+                'attr' => [
+                    'class' => 'fr-input editor'
+                ],
+                'row_attr'=>[
+                    'class'=> 'fr-input-group'
+                ],'label'=>'Modèle "Accusé de réception signalement"',
+                'required'=>false
+            ])
+            ->add('mailValidation',TextareaType::class,[
+                'attr' => [
+                    'class' => 'fr-input editor'
+                ],
+                'row_attr'=>[
+                    'class'=> 'fr-input-group'
+                ],'label'=>'Modèle "Validation signalement"',
+                'required'=>false
             ])
         ;
     }

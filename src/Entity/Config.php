@@ -48,6 +48,12 @@ class Config
     #[ORM\Column(type: 'text', nullable: true)]
     private $tagManagerCode;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private $mailAr;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private $mailValidation;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -181,6 +187,30 @@ class Config
     public function setTagManagerCode(?string $tagManagerCode): self
     {
         $this->tagManagerCode = $tagManagerCode;
+
+        return $this;
+    }
+
+    public function getMailAr(): ?string
+    {
+        return $this->mailAr;
+    }
+
+    public function setMailAr(?string $mailAr): self
+    {
+        $this->mailAr = $mailAr;
+
+        return $this;
+    }
+
+    public function getMailValidation(): ?string
+    {
+        return $this->mailValidation;
+    }
+
+    public function setMailValidation(?string $mailValidation): self
+    {
+        $this->mailValidation = $mailValidation;
 
         return $this;
     }

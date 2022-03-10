@@ -504,7 +504,7 @@
                             <span class="fr-hint-text"> Décrivez la ou les action(s) menée(s). 10 caractères minimum <sup
                                         class="fr-text-default--error">*</sup></span>
                             </label>
-                            <textarea class="fr-input fr-input--no-resize" id="signalement-add-suivi-content"
+                            <textarea class="fr-input fr-input--no-resize editor" id="signalement-add-suivi-content"
                                       name="signalement-add-suivi[content]" minlength="10" required></textarea>
                             <p class="fr-error-text fr-hidden">
                                 Merci de proposer une rapide description (minimum 10 caractères).
@@ -542,7 +542,7 @@
                     <small>[{{ suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun' }}]</small> <br>
                     <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
                 </div>
-                <div class="fr-col-9">
+                <div class="fr-col-9 bloc-suivi-content-row">
                     {{ suivi.description|raw }}
                 </div>
                 <div class="fr-col-1 fr-text--right">

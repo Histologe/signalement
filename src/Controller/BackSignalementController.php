@@ -222,7 +222,10 @@ class BackSignalementController extends AbstractController
         if ($this->isCsrfTokenValid('signalement_add_suivi_' . $signalement->getId(), $request->get('_token'))
             && $form = $request->get('signalement-add-suivi')) {
             $suivi = new Suivi();
-            $suivi->setDescription($form['content']);
+            $content =$form['content'];
+            $content = preg_replace('/<p[^>]*>/', '', $content); // Remove the start <p> or <p attr="">
+            $content =str_replace('</p>', '<br />', $content); // Replace the end
+            $suivi->setDescription($content);
             $suivi->setIsPublic($form['isPublic']);
             $suivi->setSignalement($signalement);
             $suivi->setCreatedBy($this->getUser());

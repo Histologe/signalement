@@ -23,6 +23,9 @@
             <div class="fr-col-12 fr-text--center">
                 <button class="fr-btn fr-rounded fr-fi-mail-fill fr-btn--icon-left" form="front_contact"> Envoyer le message</button>
             </div>
+            <div class="fr-col-12 fr-text--center fr-py-5w">
+                Par téléphone: {{ config.get.telTerritoire ?? 'Indisponible' }}
+            </div>
         </section>
     </main>
 {% endblock %}
