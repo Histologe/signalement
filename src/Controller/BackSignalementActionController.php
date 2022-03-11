@@ -21,7 +21,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 #[Route('/bo/s')]
 class BackSignalementActionController extends AbstractController
 {
-
     private AffectationCheckerService $checker;
 
     public function __construct(AffectationCheckerService $affectationCheckerService)

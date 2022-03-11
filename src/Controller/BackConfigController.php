@@ -17,6 +17,7 @@ class BackConfigController extends AbstractController
     #[Route('/config', name: 'back_config')]
     public function config(ConfigRepository $configRepository, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
+
         $title = 'Administration - Configration';
         if (isset($configRepository->findLast()[0]))
             $config = $configRepository->findLast()[0];

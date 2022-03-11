@@ -104,4 +104,5 @@ class NotificationService
             ->context(array_merge($params, $config))
             ->subject('Histologe - ' . $config['subject']);
     }
+
 }

@@ -62,7 +62,6 @@ class FrontSignalementController extends AbstractController
                         $safeFilename = $slugger->slug($originalFilename);
                         $newFilename = $safeFilename . '-' . uniqid() . '.' . $file_->guessExtension();
                         try {
-                            //TODO: Resize coté client
                             $file_->move(
                                 $this->getParameter('uploads_dir'),
                                 $newFilename

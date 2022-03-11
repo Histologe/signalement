@@ -28,5 +28,4 @@ class BackNewsActivitiesController extends AbstractController
             'suivis' => $suivis
         ]);
     }
-
 }
