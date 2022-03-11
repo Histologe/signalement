@@ -19,9 +19,10 @@ foreach($project in $projects)
     {
         if(Test-Path -Path "./$file")
             {
-
                 Copy-Item  -Path "./$file" -Destination "../$project/$file" -force
                 Write-Output ("Copy $file to ../$project/$file")
+            } else {
+                Remove-Item -Path "../$project/$file" -force
             }
     }
     Write-Output ("Push $project updates to server...")

@@ -15,6 +15,7 @@ use App\Form\SignalementType;
 use App\Repository\PartenaireRepository;
 use App\Repository\SituationRepository;
 
+use App\Service\AffectationCheckerService;
 use App\Service\CriticiteCalculatorService;
 use App\Service\NewsActivitiesSinceLastLoginService;
 use App\Service\NotificationService;
@@ -39,51 +40,23 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 #[Route('/bo/s')]
 class BackSignalementController extends AbstractController
 {
-    private static function sendMailOcupantDeclarant(Signalement $signalement, NotificationService $notificationService, UrlGeneratorInterface $urlGenerator, $type)
+    private AffectationCheckerService $checker;
+
+    public function __construct(AffectationCheckerService $affectationCheckerService)
     {
-        if ($signalement->getMailOccupant())
-            $notificationService->send($type, $signalement->getMailOccupant(), [
-                'signalement' => $signalement,
-                'lien_suivi' => $urlGenerator->generate('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 0)
-            ]);
-        if ($signalement->getMailDeclarant())
-            $notificationService->send($type, $signalement->getMailDeclarant(), [
-                'signalement' => $signalement,
-                'lien_suivi' => $urlGenerator->generate('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 0)
-            ]);
+        $this->checker = $affectationCheckerService;
     }
 
-    #[Positive]
-    private function checkAffectation(Signalement $signalement)
-    {
-        $affectationCurrentUser = $signalement->getAffectations()->filter(function (Affectation $affectation) {
-            if ($affectation->getPartenaire() === $this->getUser()->getPartenaire())
-                return $affectation;
-        });
-        if ($affectationCurrentUser->isEmpty())
-            return false;
-        return $affectationCurrentUser->first();
-    }
-
-    private function viewAs($role)
-    {
-        $token = new UsernamePasswordToken($this->getUser(), 'main', ['ROLE_USER_PARTENAIRE']);
-        $this->container->get('security.token_storage')->setToken($token);
-    }
-
-    /**
-     * @throws NonUniqueResultException
-     */
     #[Route('/{uuid}', name: 'back_signalement_view')]
-    public function viewSignalement($uuid, Request $request, EntityManagerInterface $entityManager, HttpClientInterface $httpClient, PartenaireRepository $partenaireRepository, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response
+    public function viewSignalement($uuid, Request $request, EntityManagerInterface $entityManager, PartenaireRepository $partenaireRepository, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response
     {
         /** @var Signalement $signalement */
         $signalement = $entityManager->getRepository(Signalement::class)->findByUuid($uuid);
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
+        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checker->check($signalement,$this->getUser()))
             return $this->redirectToRoute('back_index');
         $title = 'Administration - Signalement #' . $signalement->getReference();
         $isRefused = $isAccepted = null;
-        if ($isAffected = $this->checkAffectation($signalement)) {
+        if ($isAffected = $this->checker->check($signalement,$this->getUser())) {
             switch ($isAffected->getStatut()) {
                 case Affectation::STATUS_ACCEPTED:
                     $isAccepted = $isAffected;
@@ -93,17 +66,7 @@ class BackSignalementController extends AbstractController
                     break;
             }
         }
-        $isClosedForMe = false;
-        if ($this->getUser()->getPartenaire()) {
-            $clotureCurrentUser = $signalement->getAffectations()->filter(function (Affectation $affectation) {
-                if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_CLOSED)
-                    return $affectation;
-            });
-            if (!$clotureCurrentUser->isEmpty())
-                $isClosedForMe = $clotureCurrentUser->first();
-        }
-
-
+        $isClosedForMe = $this->checker->checkIfSignalementClosedForUser($this->getUser(),$signalement);
         $newsActivitiesSinceLastLoginService->update($signalement);
 
         $clotureForm = $this->createForm(ClotureType::class);
@@ -214,210 +177,10 @@ class BackSignalementController extends AbstractController
         ]);
     }
 
-    #[Route('/s/{uuid}/suivi/add', name: 'back_signalement_add_suivi', methods: "POST")]
-    public function addSuiviSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, NotificationService $notificationService, UrlGeneratorInterface $urlGenerator): Response
-    {
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
-            return $this->redirectToRoute('back_index');
-        if ($this->isCsrfTokenValid('signalement_add_suivi_' . $signalement->getId(), $request->get('_token'))
-            && $form = $request->get('signalement-add-suivi')) {
-            $suivi = new Suivi();
-            $content =$form['content'];
-            $content = preg_replace('/<p[^>]*>/', '', $content); // Remove the start <p> or <p attr="">
-            $content =str_replace('</p>', '<br />', $content); // Replace the end
-            $suivi->setDescription($content);
-            $suivi->setIsPublic($form['isPublic']);
-            $suivi->setSignalement($signalement);
-            $suivi->setCreatedBy($this->getUser());
-            $doctrine->getManager()->persist($suivi);
-            $doctrine->getManager()->flush();
-            $this->addFlash('success', 'Suivi publié avec succès !');
-            //TODO: Mail Sendinblue
-            if ($suivi->getIsPublic())
-                self::sendMailOcupantDeclarant($signalement, $notificationService, $urlGenerator, NotificationService::TYPE_NOUVEAU_SUIVI);
-        } else
-            $this->addFlash('error', 'Une erreur est survenu lors de la publication');
-        return $this->redirect($this->generateUrl('back_signalement_view', ['uuid' => $signalement->getUuid()]) . '#suivis');
-    }
-
-    #[Route('/{uuid}/affectation/toggle', name: 'back_signalement_toggle_affectation')]
-    public function toggleAffectationSignalement(Signalement $signalement, ManagerRegistry $doctrine, Request $request, PartenaireRepository $partenaireRepository, NotificationService $notificationService): RedirectResponse|JsonResponse
-    {
-        if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') && !$this->checkAffectation($signalement))
-            return $this->json(['status' => 'denied'], 400);
-        if ($this->isCsrfTokenValid('signalement_affectation_' . $signalement->getId(), $request->get('_token'))) {
-            $data = $request->get('signalement-affectation');
-            if (isset($data['partenaires'])) {
-                $postedPartenaire = $data['partenaires'];
-                $alreadyAffectedPartenaire = $signalement->getAffectations()->map(function (Affectation $affectation) {
-                    return $affectation->getPartenaire()->getId();
-                })->toArray();
-                $partenairesToAdd = array_diff($postedPartenaire, $alreadyAffectedPartenaire);
-                $partenairesToRemove = array_diff($alreadyAffectedPartenaire, $postedPartenaire);
-                foreach ($partenairesToAdd as $partenaireIdToAdd) {
-                    $partenaire = $partenaireRepository->find($partenaireIdToAdd);
-                    $affectation = new Affectation();
-                    $affectation->setSignalement($signalement);
-                    $affectation->setPartenaire($partenaire);
-                    $affectation->setAffectedBy($this->getUser());
-                    $doctrine->getManager()->persist($affectation);
-                    //TODO: Mail Sendinblue
-                    if ($partenaire->getEmail()) {
-                        $notificationService->send(NotificationService::TYPE_AFFECTATION, $partenaire->getEmail(), [
-                            'link' => $this->generateUrl('back_signalement_view', [
-                                'uuid' => $signalement->getUuid()
-                            ], 0)
-                        ]);
-                    }
-                    $partenaire->getUsers()->map(function (User $user) use ($signalement, $notificationService) {
-                        if ($user->getIsMailingActive() && $user->getStatut() !== User::STATUS_ARCHIVE) {
-                            $notificationService->send(NotificationService::TYPE_AFFECTATION, $user->getEmail(), [
-                                'link' => $this->generateUrl('back_signalement_view', [
-                                    'uuid' => $signalement->getUuid()
-                                ], 0)
-                            ]);
-                        }
-                    });
-
-                }
-                foreach ($partenairesToRemove as $partenaireIdToRemove) {
-                    $partenaire = $partenaireRepository->find($partenaireIdToRemove);
-                    $signalement->getAffectations()->filter(function (Affectation $affectation) use ($doctrine, $partenaire) {
-                        if ($affectation->getPartenaire()->getId() === $partenaire->getId())
-                            $doctrine->getManager()->remove($affectation);
-                    });
-                }
-            } else {
-                $signalement->getAffectations()->filter(function (Affectation $affectation) use ($doctrine) {
-                    $doctrine->getManager()->remove($affectation);
-                });
-            }
-
-            $doctrine->getManager()->flush();
-            $this->addFlash('success', 'Les affectations ont bien été effectuées.');
-            return $this->json(['status' => 'success']);
-        }
-        return $this->json(['status' => 'denied'], 400);
-    }
-
-    #[Route('/s/{uuid}/file/add', name: 'back_signalement_add_file')]
-    public function addFileSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger): RedirectResponse
-    {
-        if ($this->isCsrfTokenValid('signalement_add_file_' . $signalement->getId(), $request->get('_token')) && $files = $request->files->get('signalement-add-file')) {
-            if (isset($files['documents']))
-                $type = 'documents';
-            if (isset($files['photos']))
-                $type = 'photos';
-            $setMethod = 'set' . ucfirst($type);
-            $getMethod = 'get' . ucfirst($type);
-            $$type = $signalement->$getMethod();
-            foreach ($files[$type] as $file) {
-                $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $titre = $originalFilename . '.' . $file->guessExtension();
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
-                try {
-                    $file->move(
-                        $this->getParameter('uploads_dir'),
-                        $newFilename
-                    );
-                } catch (Exception $e) {
-                    dd($e);
-                }
-                array_push($$type, ['file' => $newFilename, 'titre' => $titre, 'user' => $this->getUser()->getId()]);
-            }
-            $signalement->$setMethod($$type);
-            $doctrine->getManager()->persist($signalement);
-            $doctrine->getManager()->flush();
-            $this->addFlash('success', 'Envoi de ' . ucfirst($type) . ' effectué avec succès !');
-        } else
-            $this->addFlash('error', "Une erreur est survenu lors du téléchargement");
-        return $this->redirect($this->generateUrl('back_signalement_view', ['uuid' => $signalement->getUuid()]) . '#documents');
-    }
-
-    #[Route('/{uuid}/validation/response', name: 'back_signalement_validation_response', methods: "GET")]
-    public function validationResponseSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, UrlGeneratorInterface $urlGenerator, NotificationService $notificationService): Response
-    {
-        if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE'))
-            return $this->redirectToRoute('back_index');
-        if ($this->isCsrfTokenValid('signalement_validation_response_' . $signalement->getId(), $request->get('_token'))
-            && $response = $request->get('signalement-validation-response')) {
-            if (isset($response['accept'])) {
-                $statut = Signalement::STATUS_ACTIVE;
-                $description = 'validé';
-                $signalement->setValidatedAt(new \DateTimeImmutable());
-                $signalement->setCodeSuivi(md5(uniqid()));
-                //TODO: Mail Sendinblue
-                self::sendMailOcupantDeclarant($signalement, $notificationService, $urlGenerator, NotificationService::TYPE_SIGNALEMENT_VALIDE);
-
-            } else {
-                $statut = Signalement::STATUS_CLOSED;
-                $description = 'cloturé car non-valide';
-            }
-            $suivi = new Suivi();
-            $suivi->setSignalement($signalement);
-            $suivi->setDescription('Signalement ' . $description);
-            $suivi->setCreatedBy($this->getUser());
-            $suivi->setIsPublic(true);
-            $signalement->setStatut($statut);
-            $doctrine->getManager()->persist($signalement);
-            $doctrine->getManager()->persist($suivi);
-            $doctrine->getManager()->flush();
-
-            $this->addFlash('success', 'Statut du signalement mis à jour avec succés !');
-        } else
-            $this->addFlash('error', "Une erreur est survenue...");
-        return $this->redirectToRoute('back_signalement_view', ['uuid' => $signalement->getUuid()]);
-    }
-
-    #[Route('/{uuid}/affectation/{user}/response', name: 'back_signalement_affectation_response', methods: "GET")]
-    public function affectationResponseSignalement(Signalement $signalement, User $user, Request $request, ManagerRegistry $doctrine): Response
-    {
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement))
-            return $this->redirectToRoute('back_index');
-        if ($this->isCsrfTokenValid('signalement_affectation_response_' . $signalement->getId(), $request->get('_token'))
-            && $response = $request->get('signalement-affectation-response')) {
-            if (isset($response['accept']))
-                $statut = Affectation::STATUS_ACCEPTED;
-            else
-                $statut = Affectation::STATUS_REFUSED;
-            $affectation = $doctrine->getRepository(Affectation::class)->findOneBy(['partenaire' => $user->getPartenaire(), 'signalement' => $signalement]);
-            $affectation->setStatut($statut);
-            $affectation->setAnsweredAt(new \DateTimeImmutable());
-            $affectation->setAnsweredBy($this->getUser());
-            $doctrine->getManager()->persist($affectation);
-            $doctrine->getManager()->flush();
-            $this->addFlash('success', 'Affectation mise à jour avec succès !');
-        } else
-            $this->addFlash('error', "Une erreur est survenu lors de l'affectation");
-        return $this->redirectToRoute('back_signalement_view', ['uuid' => $signalement->getUuid()]);
-    }
-
-    #[Route('/s/{uuid}/file/{type}/{file}/delete', name: 'back_signalement_delete_file')]
-    public function deleteFileSignalement(Signalement $signalement, $type, $file, Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger)
-    {
-        if ($this->isCsrfTokenValid('signalement_delete_file_' . $signalement->getId(), $request->get('_token'))) {
-            $setMethod = 'set' . ucfirst($type);
-            $getMethod = 'get' . ucfirst($type);
-            $$type = $signalement->$getMethod();
-            foreach ($$type as $k => $v) {
-                if ($file === $v['file'])
-                    if (file_exists($this->getParameter('uploads_dir') . $file))
-                        unlink($this->getParameter('uploads_dir') . $file);
-                unset($$type[$k]);
-            }
-            $signalement->$setMethod($$type);
-            $doctrine->getManager()->persist($signalement);
-            $doctrine->getManager()->flush();
-            return $this->json(['response' => 'success']);
-        } else
-            return $this->json(['response' => 'error'], 400);
-    }
-
     #[Route('/{uuid}/delete', name: 'back_signalement_delete', methods: "POST")]
     public function deleteSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checkAffectation($signalement) && !$this->isGranted('ROLE_ADMIN_TERRITOIRE'))
+        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checker->check($signalement,$this->getUser()) && !$this->isGranted('ROLE_ADMIN_TERRITOIRE'))
             return $this->redirectToRoute('back_index');
         if ($this->isCsrfTokenValid('signalement_delete_' . $signalement->getId(), $request->get('_token'))) {
             $signalement->setStatut(Signalement::STATUS_ARCHIVED);
@@ -429,44 +192,4 @@ class BackSignalementController extends AbstractController
         return $this->redirectToRoute('back_index');
     }
 
-    #[Route('/{uuid}/export', name: 'back_signalement_export_pdf', methods: "POST")]
-    public function exportSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
-    {
-        if (!$this->isGranted('ROLE_USER_PARTENAIRE') && !$this->checkAffectation($signalement) && !$this->isGranted('ROLE_ADMIN_TERRITOIRE'))
-            return $this->redirectToRoute('back_index');
-        if ($this->isCsrfTokenValid('signalement_export_' . $signalement->getId(), $request->get('_token'))) {
-            $this->file();
-            $this->addFlash('success', 'Signalement supprimé avec succès !');
-        } else
-            $this->addFlash('error', 'Une erreur est survenu lors de la suppression');
-        return $this->redirectToRoute('back_index');
-    }
-
-    #[Route('/{uuid}/pdf',name:'back_signalement_gen_pdf')]
-    public function generatePdfSignalement(Signalement $signalement,Pdf $knpSnappyPdf,EntityManagerInterface $entityManager)
-    {
-        $criticitesArranged = [];
-        foreach ($signalement->getCriticites() as $criticite) {
-            $criticitesArranged[$criticite->getCritere()->getSituation()->getLabel()][$criticite->getCritere()->getLabel()] = $criticite;
-        }
-        $html = $this->renderView('pdf/signalement.html.twig', [
-            'signalement' => $signalement,
-            'situations' => $criticitesArranged
-        ]);
-        $options = [
-            'margin-top'    => 0,
-            'margin-right'  => 0,
-            'margin-bottom' => 0,
-            'margin-left'   => 0,
-        ];
-
-        return new Response(
-            $knpSnappyPdf->getOutputFromHtml($html,$options),
-            200,
-            array(
-                'Content-Type'          => 'application/pdf',
-                'Content-Disposition'   => 'inline; filename="'.$signalement->getReference().'.pdf"'
-            )
-        );
-    }
 }

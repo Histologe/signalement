@@ -121,7 +121,6 @@ class FrontSignalementController extends AbstractController
                 $signalement->setTelDeclarant(null);
             }
 
-            //TODO: Si proprio pas averti mail avec lettre type
             $year = (new \DateTime())->format('Y');
             $reqId = $doctrine->getRepository(Signalement::class)->createQueryBuilder('s')
                 ->select('s.reference')

@@ -22,7 +22,7 @@ class NotificationService
     private MailerInterface $mailer;
     private ConfigurationService $configuration;
 
-    public function __construct(MailerInterface $mailer,ConfigurationService $configurationService)
+    public function __construct(MailerInterface $mailer, ConfigurationService $configurationService)
     {
         $this->mailer = $mailer;
         $this->configuration = $configurationService;
@@ -34,27 +34,27 @@ class NotificationService
             NotificationService::TYPE_ACTIVATION => [
                 'template' => 'login_link_email',
                 'subject' => 'Activation de votre compte',
-                'btntext'=>"J'active mon compte"
+                'btntext' => "J'active mon compte"
             ],
             NotificationService::TYPE_LOST_PASSWORD => [
                 'template' => 'lost_pass_email',
                 'subject' => 'Récupération de votre mot de passe',
-                'btntext'=>"Je créer un nouveau mot de passe"
+                'btntext' => "Je créer un nouveau mot de passe"
             ],
             NotificationService::TYPE_NEW_SIGNALEMENT => [
                 'template' => 'new_signalement_email',
                 'subject' => 'Un nouveau signalement vous attend',
-                'btntext'=>"Voir le signalement"
+                'btntext' => "Voir le signalement"
             ],
             NotificationService::TYPE_AFFECTATION => [
                 'template' => 'affectation_email',
                 'subject' => 'Vous avez été affecté à un signalement',
-                'btntext'=>"Voir le signalement"
+                'btntext' => "Voir le signalement"
             ],
             NotificationService::TYPE_SIGNALEMENT_VALIDE => [
                 'template' => 'validation_signalement_email',
                 'subject' => 'Votre signalement est validé !',
-                'btntext'=>"Suivre mon signalement"
+                'btntext' => "Suivre mon signalement"
             ],
             NotificationService::TYPE_NOTIFICATION_MAIL_FRONT => [
                 'template' => 'nouveau_mail_front',
@@ -67,7 +67,7 @@ class NotificationService
             NotificationService::TYPE_NOUVEAU_SUIVI => [
                 'template' => 'nouveau_suivi_signalement_email',
                 'subject' => 'Nouvelle mise à jour de votre signalement !',
-                'btntext'=>"Suivre mon signalement"
+                'btntext' => "Suivre mon signalement"
             ],
             NotificationService::TYPE_ERREUR_SIGNALEMENT => [
                 'template' => 'erreur_signalement_email',
@@ -76,14 +76,16 @@ class NotificationService
         };
     }
 
-    public function send(int $type, string $email, array $params): TransportExceptionInterface|\Exception|bool
+    public function send(int $type, string|array $to, array $params): TransportExceptionInterface|\Exception|bool
     {
         $message = $this->renderMailContentWithParamsByType($type, $params);
-        $message->to($email);
+        is_array($to) ? $emails = $to : $emails = [$to];
+        foreach ($emails as $email)
+            $email && $message->addTo($email);
         /*$message->from(new Address('notifications@histologe.fr','HISTOLOGE'));*/
-        if(!empty($params['attach']))
+        if (!empty($params['attach']))
             $message->attachFromPath($params['attach']);
-        if($this->configuration->get()->getEmailReponse() !== null || isset($params['reply']))
+        if ($this->configuration->get()->getEmailReponse() ?? isset($params['reply']))
             $message->replyTo($params['reply'] ?? $this->configuration->get()->getEmailReponse());
         try {
             $this->mailer->send($message);
@@ -99,7 +101,7 @@ class NotificationService
         $notification = new NotificationEmail();
         $notification->markAsPublic();
         return $notification->htmlTemplate('emails/' . $config['template'] . '.html.twig')
-            ->context(array_merge($params,$config))
+            ->context(array_merge($params, $config))
             ->subject('Histologe - ' . $config['subject']);
     }
 }
