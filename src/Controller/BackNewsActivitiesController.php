@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/bo')]
 class BackNewsActivitiesController extends AbstractController
 {
     #[Route('/news', name: 'back_news_activities')]
