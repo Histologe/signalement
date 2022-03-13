@@ -38,6 +38,9 @@ security:
                 failure_path: login_activation_fail
                 max_uses: 1
                 lifetime: 7200
+            remember_me:
+                secret: '%kernel.secret%'
+                always_remember_me: true
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

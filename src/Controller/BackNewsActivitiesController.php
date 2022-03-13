@@ -33,7 +33,6 @@ class BackNewsActivitiesController extends AbstractController
             elseif($class === "Affectation")
                 $this->affectations[] = $activity;
         });
-
         if (empty($this->suivis) && empty($this->affectations))
             return $this->redirectToRoute('back_index');
         if ($request->isMethod('POST') && $this->isCsrfTokenValid('clear_news_' . $this->getUser()->getId(), $request->get('_token'))) {

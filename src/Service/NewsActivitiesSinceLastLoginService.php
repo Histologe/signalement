@@ -27,7 +27,7 @@ class NewsActivitiesSinceLastLoginService
                     $newsActivitiesSinceLastLogin->add($suivi);
             });
             if($affectation->getStatut() === Affectation::STATUS_WAIT && $affectation->getPartenaire())
-                $newsActivitiesSinceLastLogin->add($affectation->getSignalement());
+                $newsActivitiesSinceLastLogin->add($affectation);
         });
         return $this->requestStack->getSession()->set('_newsActivitiesSinceLastLogin', $newsActivitiesSinceLastLogin);
     }

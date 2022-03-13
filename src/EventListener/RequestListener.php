@@ -3,6 +3,7 @@
 namespace App\EventListener;
 
 use App\Entity\User;
+use App\Service\NewsActivitiesSinceLastLoginService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -12,11 +13,13 @@ class RequestListener
 {
     private TokenStorage $tokenStorage;
     private UrlGeneratorInterface $urlGenerator;
+    private NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService;
 
-    public function __construct(TokenStorage $tokenStorage, UrlGeneratorInterface $urlGenerator)
+    public function __construct(TokenStorage $tokenStorage, UrlGeneratorInterface $urlGenerator,NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService)
     {
         $this->tokenStorage = $tokenStorage;
         $this->urlGenerator = $urlGenerator;
+        $this->newsActivitiesSinceLastLoginService = $newsActivitiesSinceLastLoginService;
     }
 
     public function onKernelRequest(RequestEvent $event)
@@ -26,6 +29,7 @@ class RequestListener
                 $user = $token->getUser();
                 if (!$user->getPassword() || $user->getStatut() === User::STATUS_INACTIVE)
                     $event->setResponse(new RedirectResponse($this->urlGenerator->generate('login_creation_pass')));
+                $this->newsActivitiesSinceLastLoginService->set($user);
             }
         }
     }
