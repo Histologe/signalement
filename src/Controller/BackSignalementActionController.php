@@ -40,7 +40,7 @@ class BackSignalementActionController extends AbstractController
                 $description = 'validé';
                 $signalement->setValidatedAt(new \DateTimeImmutable());
                 $signalement->setCodeSuivi(md5(uniqid()));
-                $notificationService->send(NotificationService::TYPE_SIGNALEMENT_VALIDE, [$signalement->getMailDeclarant(),$signalement->getMailOccupant()], [
+                $notificationService->send(NotificationService::TYPE_SIGNALEMENT_VALIDE, [$signalement->getMailDeclarant(), $signalement->getMailOccupant()], [
                     'signalement' => $signalement,
                     'lien_suivi' => $urlGenerator->generate('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 0)
                 ]);
@@ -65,17 +65,17 @@ class BackSignalementActionController extends AbstractController
         return $this->redirectToRoute('back_signalement_view', ['uuid' => $signalement->getUuid()]);
     }
 
-    #[Route('/s/{uuid}/suivi/add', name: 'back_signalement_add_suivi', methods: "POST")]
+    #[Route('/{uuid}/suivi/add', name: 'back_signalement_add_suivi', methods: "POST")]
     public function addSuiviSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, NotificationService $notificationService, UrlGeneratorInterface $urlGenerator): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checker->check($signalement,$this->getUser()))
+        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checker->check($signalement, $this->getUser()))
             return $this->redirectToRoute('back_index');
         if ($this->isCsrfTokenValid('signalement_add_suivi_' . $signalement->getId(), $request->get('_token'))
             && $form = $request->get('signalement-add-suivi')) {
             $suivi = new Suivi();
-            $content =$form['content'];
+            $content = $form['content'];
             $content = preg_replace('/<p[^>]*>/', '', $content); // Remove the start <p> or <p attr="">
-            $content =str_replace('</p>', '<br />', $content); // Replace the end
+            $content = str_replace('</p>', '<br />', $content); // Replace the end
             $suivi->setDescription($content);
             $suivi->setIsPublic($form['isPublic']);
             $suivi->setSignalement($signalement);
@@ -85,7 +85,7 @@ class BackSignalementActionController extends AbstractController
             $this->addFlash('success', 'Suivi publié avec succès !');
             //TODO: Mail Sendinblue
             if ($suivi->getIsPublic())
-                $notificationService->send(NotificationService::TYPE_NOUVEAU_SUIVI, [$signalement->getMailDeclarant(),$signalement->getMailOccupant()], [
+                $notificationService->send(NotificationService::TYPE_NOUVEAU_SUIVI, [$signalement->getMailDeclarant(), $signalement->getMailOccupant()], [
                     'signalement' => $signalement,
                     'lien_suivi' => $urlGenerator->generate('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 0)
                 ]);
@@ -97,7 +97,7 @@ class BackSignalementActionController extends AbstractController
     #[Route('/{uuid}/affectation/toggle', name: 'back_signalement_toggle_affectation')]
     public function toggleAffectationSignalement(Signalement $signalement, ManagerRegistry $doctrine, Request $request, PartenaireRepository $partenaireRepository, NotificationService $notificationService): RedirectResponse|JsonResponse
     {
-        if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') && !$this->checker->check($signalement,$this->getUser()))
+        if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') && !$this->checker->check($signalement, $this->getUser()))
             return $this->json(['status' => 'denied'], 400);
         if ($this->isCsrfTokenValid('signalement_affectation_' . $signalement->getId(), $request->get('_token'))) {
             $data = $request->get('signalement-affectation');
@@ -154,10 +154,44 @@ class BackSignalementActionController extends AbstractController
         return $this->json(['status' => 'denied'], 400);
     }
 
+    #[Route('/{uuid}/reopen', name: 'back_signalement_reopen')]
+    public function reopenSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine)
+    {
+        if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') && !$this->checker->check($signalement, $this->getUser()))
+            return $this->json(['status' => 'denied'], 400);
+        if ($this->isCsrfTokenValid('signalement_reopen_' . $signalement->getId(), $request->get('_token')) && $response = $request->get('signalement-action')) {
+            if ($this->isGranted('ROLE_ADMIN_PARTENAIRE')) {
+                $signalement->setStatut(Signalement::STATUS_ACTIVE);
+                $doctrine->getManager()->persist($signalement);
+                $signalement->getAffectations()->filter(function (Affectation $affectation) use ($signalement, $doctrine) {
+                    $affectation->setStatut(Affectation::STATUS_WAIT) && $doctrine->getManager()->persist($affectation);
+                });
+                $reopenFor = 'tous les partenaires';
+            } else {
+                $this->getUser()->getPartenaire()->getAffectations()->filter(function (Affectation $affectation) use ($signalement, $doctrine) {
+                    if ($affectation->getSignalement()->getId() === $signalement->getId())
+                        $affectation->setStatut(Affectation::STATUS_WAIT) && $doctrine->getManager()->persist($affectation);
+                });
+                $reopenFor = mb_strtoupper($this->getUser()->getPartenaire()->getNom());
+            }
+            $suivi = new Suivi();
+            $suivi->setSignalement($signalement);
+            $suivi->setDescription('Signalement rouvert pour ' . $reopenFor);
+            $suivi->setCreatedBy($this->getUser());
+            $suivi->setIsPublic(true);
+            $doctrine->getManager()->persist($suivi);
+            $doctrine->getManager()->flush();
+            $this->addFlash('success', 'Signalement rouvert avec succés !');
+        } else {
+            $this->addFlash('error', 'Erreur lors de la réouverture du signalement! ');
+        }
+        return $this->redirectToRoute('back_signalement_view', ['uuid' => $signalement->getUuid()]);
+    }
+
     #[Route('/{uuid}/affectation/{user}/response', name: 'back_signalement_affectation_response', methods: "GET")]
     public function affectationResponseSignalement(Signalement $signalement, User $user, Request $request, ManagerRegistry $doctrine): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checker->check($signalement,$this->getUser()))
+        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checker->check($signalement, $this->getUser()))
             return $this->redirectToRoute('back_index');
         if ($this->isCsrfTokenValid('signalement_affectation_response_' . $signalement->getId(), $request->get('_token'))
             && $response = $request->get('signalement-affectation-response')) {

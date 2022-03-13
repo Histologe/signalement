@@ -11,32 +11,39 @@
     <title>Histologe - {% block title %}{% endblock %}</title>
     <meta name="description" content="Signaler vos problèmes de logement.">
     <!-- Facebook Meta Tags -->
-    <meta property="og:url" content="https://histologe.bzez.dev/">
+    <meta property="og:url" content="\\{{ config.get.urlTerritoire }}">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Histologe">
     <meta property="og:description" content="Signaler vos problèmes de logement.">
-    <meta property="og:image" content="{{ asset('img/Logohistologe.png') }}">
+    <meta property="og:image" content="https://cdn.histologe.net/img/Logohistologe.png">
     <meta property="og:site_name" content="Histologe">
 
     <!-- Twitter Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta property="twitter:domain" content="histologe.bzez.dev">
-    <meta property="twitter:url" content="https://histologe.bzez.dev/">
+    <meta property="twitter:url" content="\\{{ config.get.urlTerritoire }}">
     <meta name="twitter:title" content="Histologe">
     <meta name="twitter:description" content="Signaler vos problèmes de logement.">
-    <meta name="twitter:image" content="{{ asset('img/Logohistologe.png') }}">
+    <meta name="twitter:image" content="https://cdn.histologe.net/img/Logohistologe.png">
     <meta name="twitter:title" content="Histologe">
     <meta name="twitter:description" content="Signaler vos problèmes de logement.">
     <meta name="apple-mobile-web-app-title" content="Histologe">
-    <link rel="icon" href="{{ asset('img/favicon.ico') }}">
-    <link rel="stylesheet" href="{{ asset('dsfr/dsfr.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/histologe.css') }}">
+    <link rel="icon" href="https://cdn.histologe.net/img/favicon.ico">
+    <link rel="stylesheet" href="https://cdn.histologe.net/dsfr/dsfr.min.css">
+    <link rel="stylesheet" href="https://cdn.histologe.net/css/histologe.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
     {% block stylesheets %}{% endblock %}
     {{ config.get.trackingCode ? config.get.tagManagerCode|raw : '' }}
     {{ config.get.tagManagerCode ? config.get.tagManagerCode|raw :'' }}
+    <script src="https://cdn.histologe.net/js/tinymce/tinymce.min.js"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea.editor',
+            menubar: false
+        });
+    </script>
 </head>
 <body>
 {% if 'back_' not in app.request.get('_route') %}
@@ -60,22 +67,15 @@
 {% if 'back_' not in app.request.get('_route') %}
     {% include "footer.html.twig" %}
 {% endif %}
-<script type="module" src="{{ asset('dsfr/dsfr.module.min.js') }}"></script>
-<script type="text/javascript" nomodule src="{{ asset('dsfr/dsfr.nomodule.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('js/screencapture.js') }}"></script>
-<script src="{{ asset('js/app.min.js') }}?v={{ random(99999) }}"></script>
-<script src="{{ asset('js/img_box.js') }}"></script>
+<script type="module" src="https://cdn.histologe.net/dsfr/dsfr.module.min.js"></script>
+<script type="text/javascript" nomodule src="https://cdn.histologe.net/dsfr/dsfr.nomodule.min.js"></script>
+<script type="text/javascript" src="https://cdn.histologe.net/js/screencapture.js"></script>
+<script src="https://cdn.histologe.net/js/app.min.js"></script>
+<script src="https://cdn.histologe.net/js/img_box.js"></script>
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
-<script src="{{ asset('js/gauge.min.js') }}"></script>
-<script src="{{ asset('js/tinymce/tinymce.min.js') }}"></script>
-<script>
-    tinymce.init({
-        selector: 'textarea.editor',
-        menubar: false
-    });
-</script>
+<script src="https://cdn.histologe.net/js/gauge.min.js"></script>
 {% block javascripts %}{% endblock %}
 </body>
 </html>

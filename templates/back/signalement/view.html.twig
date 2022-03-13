@@ -18,7 +18,8 @@
                                 href="{{ path('back_signalement_edit',{uuid:signalement.uuid}) }}"
                                 class="fr-btn fr-btn--sm fr-fi-edit-fill" title="Editer le signalement"></a>&nbsp;<a
                                 href="{{ path('back_signalement_gen_pdf',{uuid:signalement.uuid}) }}"
-                                class="fr-btn fr-btn--sm fr-btn--success fr-fi-file-pdf-fill" title="Exporter en PDF"></a></h1>
+                                class="fr-btn fr-btn--sm fr-btn--success fr-fi-file-pdf-fill"
+                                title="Exporter en PDF"></a></h1>
                     {% if signalement.isNotOccupant %}
                         <small class="fr-background-contrast--red-marianne fr-text-default--error fr-rounded fr-p-1v fr-text--bold {# fr-fi-information-fill fr-badge--icon-left #} fr-pr-3v">&nbsp;
                             Signalement par un tiers</small>
@@ -61,7 +62,7 @@
                             signalement</strong>
                         <span class="fr-hint-text"><strong>Le :</strong> {{ isRefused.answeredAt|date('d/m/Y') }}</span>
                         <form action="{{ path('back_signalement_affectation_response',{uuid:signalement.uuid,user:app.user.id}) }}">
-                            <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
+                            <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left reaffect"
                                     name="signalement-affectation-response[accept]" value="1"
                                     onclick="return confirm('Êtes-vous certain de vouloir acccepter ce signalement ?')">
                                 Annuler le refus
@@ -85,6 +86,17 @@
                                    value="{{ csrf_token('signalement_validation_response_'~signalement.id) }}">
                         </form>
                         <span class="fr-hint-text">En tant qu'administrateur vous devez <strong><u>valider/refuser</u></strong> ce signalement</span>
+                    {% elseif isClosedForMe or signalement.statut is same as(6)%}
+                        <form action="{{ path('back_signalement_reopen',{uuid:signalement.uuid}) }}">
+                            <button class="fr-btn fr-fi-lock-fill fr-btn--icon-left reopen"
+                                    name="signalement-action[reopen]" value="1"
+                                    onclick="return confirm('Êtes-vous certain de vouloir rouvrir ce signalement ?')">
+                                Rouvrir ce signalement
+                            </button>
+                            <input type="hidden" name="_token"
+                                   value="{{ csrf_token('signalement_reopen_'~signalement.id) }}">
+                        </form>
+                        <span class="fr-hint-text">Vous pouvez <strong><u>rouvrir</u></strong> ce signalement</span>
                     {% endif %}
                 </div>
             </div>
@@ -97,7 +109,7 @@
                 <span class="fr-hint-text">Ci-dessous le détails du signalement tel que rapporté par l'usager</span>
                 <ul class="fr-background-alt--blue-france fr-list--icon-img fr-rounded">
                     <li class="fr-p-5v">
-                       {{ signalement.details|raw }}
+                        {{ signalement.details|raw }}
                     </li>
                 </ul>
             </div>
@@ -244,7 +256,7 @@
                     points
                     suivants:</strong>
                 <span class="fr-hint-text">Récapitulatif des situations rencontrées par l'occupant du logement</span>
-                <ul class="fr-list--icon-img">
+                <ul class="fr-list--icon-img" id="signalement-toggle-situations">
                     {% for situation,criteres in situations %}
                         <li role="button"
                             class="fr-background-alt--blue-france fr-mb-5v fr-px-5v fr-pt-5v fr-rounded fr-fi-arrow-down-line fr-input-wrap"
@@ -264,7 +276,7 @@
                                         <ul class="fr-list fr-skiplinks__list fr-list--icon-img">
                                             <li class="fr-grid-row fr-grid-row--middle fr-w-100">
                                                 <div class="fr-col-md-2 fr-col-lg-1 fr-col--middle">
-                                                    <img src="{{ asset('img/'~icon~'-actif.svg') }}" alt=""
+                                                    <img src="https://cdn.histologe.net/img/{{ icon }}-actif.svg" alt=""
                                                          width="50"
                                                          class=" fr-text--center">
                                                 </div>
@@ -403,7 +415,7 @@
             {% for document in signalement.documents %}
                 <div class="fr-col-6 fr-col-md-2 fr-rounded signalement-file-item">
                     <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center"
-                         style="background: url('{{ asset('img/document.png') }}')no-repeat center center/50%">
+                         style="background: url('https://cdn.histologe.net/img/document.png')no-repeat center center/50%">
                         <a href="{{ asset('_up/'~document.file) }}" class="fr-btn fr-btn--sm fr-fi-eye-line"
                            title="Voir le document" target="_blank"></a>
                         {% if is_granted('ROLE_ADMIN_PARTENAIRE') or (isAffected and isAccepted) %}
@@ -489,7 +501,7 @@
             <hr style="visibility: hidden">
         {% endif %}
         <hr id="suivis">
-        {% if (is_granted('ROLE_ADMIN_PARTENAIRE') or (isAffected and isAccepted)) and signalement.statut is not same as(1) %}
+        {% if (is_granted('ROLE_ADMIN_PARTENAIRE') or (isAffected and isAccepted)) and signalement.statut is not same as(1) and signalement.statut is not same as(6) and not isClosedForMe %}
             <div class="fr-grid-row">
                 <div class="fr-col-12">
                     <strong class="fr-fi-calendar-fill fr-icon--sm fr-text-label--blue-france"> Suivis du
@@ -559,7 +571,7 @@
 {% block javascripts %}
     <script>
         {% if isClosedForMe or signalement.statut is same as(6) %}
-        document?.querySelector('#signalement-{{ signalement.id }}-content').querySelectorAll('button,.fr-btn').forEach(input => {
+        document?.querySelector('#signalement-{{ signalement.id }}-content').querySelectorAll('button:not(.reopen,.reaffect),.fr-btn:not(.reopen,.reaffect)').forEach(input => {
             input.remove()
         })
         {% endif %}
@@ -574,57 +586,33 @@
             subColor: '#666666'
         }
         opts.staticLabels = {
-            font: "10px sans-serif",  // Specifies font
-            labels: [0, 33, 66, 100],  // Print labels at these values
-            color: "#000000",  // Optional: Label text color
-            fractionDigits: 0  // Optional: Numerical precision. 0=round off.
+            font: "10px sans-serif",
+            labels: [0, 33, 66, 100],
+            color: "#000000",
+            fractionDigits: 0
         }
-        let target = document.getElementById('slider-criticite'); // your canvas element
-        let text = document.getElementById('score-criticite'); // your canvas element
-        let gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
-        gauge.maxValue = 100; // set max gauge value
-        gauge.setMinValue(0);  // Prefer setter over gauge.minValue = 0
-        gauge.setTextField(text);  // Prefer setter over gauge.minValue = 0
-        gauge.animationSpeed = 1; // set animation speed (32 is default value)
-        gauge.set({{ signalement.scoreCreation }}); // set actual value
+        let target = document.getElementById('slider-criticite');
+        let text = document.getElementById('score-criticite');
+        let gauge = new Gauge(target).setOptions(opts);
+        gauge.maxValue = 100;
+        gauge.setMinValue(0);
+        gauge.setTextField(text);
+        gauge.animationSpeed = 1;
+        gauge.set({{ signalement.scoreCreation }});
         {% if signalement.geoloc.lat is defined and signalement.geoloc.lng is defined %}
         let map = L.map('map-signalement-view').setView([{{ signalement.geoloc.lng }}, {{ signalement.geoloc.lat }}], 13);
+        map.scrollWheelZoom.disable();
+        map.on('focus', function() { map.scrollWheelZoom.enable(); });
+        map.on('blur', function() { map.scrollWheelZoom.disable(); });
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+            attribution:'&copy;'
+        }).addTo(map);
 
         L.marker([{{ signalement.geoloc.lng }}, {{ signalement.geoloc.lat }}]).addTo(map)
             .bindPopup('{{ signalement.adresseOccupant~', '~signalement.cpOccupant~' '~signalement.villeOccupant|upper }}')
             .openPopup();
         {% endif %}
-        document.querySelector('#modal-dpe-opener').addEventListener('click', (event) => {
-            let urlDpe = event.target.getAttribute('data-dpe-url');
-            fetch(urlDpe).then(r => {
-                r.json().then(res => {
-                    if (res.total > 1) {
-                        let modalDpeContent = document.querySelector('#modal-dpe-content');
-                        modalDpeContent.innerHTML = '';
-                        res.aggs.map(agg => {
-                            agg.results.map(dpe => {
-                                let classeDpe = dpe.classe_consommation_energie;
-                                if (classeDpe !== "N") {
-                                    console.log(dpe)
-                                    let classeGes = dpe.classe_estimation_ges, col = document.createElement('div'),
-                                        imgDpe = document.createElement('img'), imgGes = document.createElement('img');
-                                    imgDpe.src = '{{ asset('img/dpe_') }}' + classeDpe + '.png';
-                                    imgGes.src = '{{ asset('img/ges_') }}' + classeGes + '.png';
-                                    modalDpeContent.append(col);
-                                    col.insertAdjacentHTML('beforeend', `<h5 class="fr-h3 fr-col-12 fr-mb-0">${dpe.date_etablissement_dpe}</h5>`)
-                                    col.insertAdjacentHTML('beforeend', `<h6>Consommation énergie ${dpe.consommation_energie}</h6>`);
-                                    [imgDpe, imgGes].map(img => {
-                                        img.classList.add('fr-col-6')
-                                    })
-                                    col.append(imgDpe, imgGes)
-                                }
-                            })
-                        })
-                    }
-                })
-            })
-        })
+
     </script>
 {% endblock %}

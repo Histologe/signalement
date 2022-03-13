@@ -2,11 +2,10 @@
 {% set statuts = {
     1:'Nouveau',
     2:'En cours',
-    3:'En attente',
     6:'Fermés'
 } %}
 {% block content %}
-  {#  {{ dump(signalements.counts) }}#}
+    {# {{ dump(signalements.counts) }} #}
     <section class="fr-col-12 fr-col-md fr-background-alt--blue-france fr-p-5v">
         <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
             <div class="fr-col">
@@ -137,16 +136,19 @@
 {% block javascripts %}
     <script>
         opts.pointer = {
-            length: 0.49, // // Relative to gauge radius
-            strokeWidth: 0.1, // The thickness
-            color: '#000000' // Fill color
+            length: 0.49,
+            strokeWidth: 0.1,
+            color: '#000000'
         }
-        {% for signalement in signalements.list %}
-        gauge = new Gauge(document.getElementById('gauge-signalement-{{ signalement.id }}')).setOptions(opts); // create sexy gauge!
-        gauge.set({{ signalement.scoreCreation }}); // set actual value
-        {% endfor %}
-        gauge.maxValue = 100; // set max gauge value
-        gauge.setMinValue(0);  // Prefer setter over gauge.minValue = 0
-        gauge.animationSpeed = 32; // set animation speed (32 is default value)
+        let ids = [{{ signalements.list|map(p => "#{p.id}")|join(', ') }}],
+            scores = [{{ signalements.list|map(p => "#{p.scoreCreation}")|join(', ') }}];
+        ids.map((id, index) => {
+            gauge = new Gauge(document.getElementById(`gauge-signalement-${id}`)).setOptions(opts);
+            gauge.set(scores[index]);
+            gauge.maxValue = 100;
+            gauge.setMinValue(0);
+            gauge.animationSpeed = 32;
+        })
+
     </script>
 {% endblock %}

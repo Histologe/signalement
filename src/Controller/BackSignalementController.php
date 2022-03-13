@@ -40,6 +40,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 #[Route('/bo/s')]
 class BackSignalementController extends AbstractController
 {
+
     private AffectationCheckerService $checker;
 
     public function __construct(AffectationCheckerService $affectationCheckerService)

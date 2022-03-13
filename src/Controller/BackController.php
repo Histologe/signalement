@@ -10,6 +10,7 @@ use App\Form\ConfigType;
 use App\Repository\ConfigRepository;
 use App\Repository\SignalementRepository;
 use App\Service\NewsActivitiesSinceLastLoginService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\UploadException;
@@ -35,14 +36,17 @@ class BackController extends AbstractController
             'page' => $request->get('page') ?? 1,
         ];
         $req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['page']);
+
         if ($this->getUser()->getPartenaire()) {
-            foreach ($req as $signalement) {
-                $signalement->getAffectations()->filter(function (Affectation $affectation) use ($signalement) {
+            foreach ($req as $k => $signalement) {
+                $signalement->getAffectations()->filter(function (Affectation $affectation) use ($signalement,$filter) {
                     if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_WAIT)
                         $signalement->setStatut(Signalement::STATUS_NEED_PARTNER_RESPONSE);
                     if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_CLOSED)
                         $signalement->setStatut(Signalement::STATUS_CLOSED);
                 });
+               if($filter['status'] === "3" && $signalement->getStatut() !== 3)
+                   unset($req[$k]);
             }
         }
         $signalements = [

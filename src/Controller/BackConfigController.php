@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Config;
+use App\Form\ConfigType;
 use App\Repository\ConfigRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

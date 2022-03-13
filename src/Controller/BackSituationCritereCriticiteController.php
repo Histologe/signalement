@@ -17,7 +17,6 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/bo/scc')]
 class BackSituationCritereCriticiteController extends AbstractController
 {
-
     #[Route('/', name: 'back_situation_critere_criticite_index')]
     public function index(SituationRepository $situationRepository)
     {

@@ -5,13 +5,49 @@
 {% block content %}
     <section class="fr-grid-row fr-grid-row--middle fr-p-5v ">
         <div class="fr-col-6">
-            <h1 class="fr-h2 fr-mb-0">Nouveaux suivis</h1>
+            <h1 class="fr-h2 fr-mb-0">Nouvelles affectations</h1>
         </div>
         <div class="fr-col-6 fr-text--right">
             <form action="{{ path('back_news_activities') }}" method="POST">
                 <button class="fr-btn fr-btn--icon-left fr-fi-check-line" href="#">Marquer tous comme lus</button>
                 <input type="hidden" name="_token" value="{{ csrf_token('clear_news_'~app.user.id) }}">
             </form>
+        </div>
+    </section>
+    <section class="fr-col-12 fr-table fr-table--bordered fr-pt-0">
+        <table class="fr-display-inline-table">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Signalement</th>
+                <th>Date</th>
+                <td>Desc.</td>
+                <th>Par</th>
+                <th class="fr-text--right">actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for affectation in affectations %}
+                <tr class="partenaire-row">
+                    <td>{{ affectation.id }}</td>
+                    <td>{{ affectation.signalement.reference }}</td>
+                    <td>{{ affectation.createdAt|date('d/m/Y à H:i') }}</td>
+                    <td>Vous avez été affecté</td>
+                    <td>{{ affectation.affectedBy.nomComplet }}</td>
+                    <td class="fr-text--right"><a href="{{ path('back_signalement_view',{uuid:affectation.signalement.uuid}) }}#suivis" class="fr-btn fr-fi-eye-fill"></a></td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="fr-grid-row fr-grid-row--middle fr-p-5v ">
+        <div class="fr-col-6">
+            <h1 class="fr-h2 fr-mb-0">Nouveaux suivis</h1>
         </div>
     </section>
     <section class="fr-col-12 fr-table fr-table--bordered fr-pt-0">
@@ -44,6 +80,4 @@
             </tbody>
         </table>
     </section>
-
-
 {% endblock %}

@@ -26,6 +26,8 @@ class NewsActivitiesSinceLastLoginService
                 if ($suivi->getCreatedAt() > $user->getLastLoginAt())
                     $newsActivitiesSinceLastLogin->add($suivi);
             });
+            if($affectation->getStatut() === Affectation::STATUS_WAIT && $affectation->getPartenaire())
+                $newsActivitiesSinceLastLogin->add($affectation->getSignalement());
         });
         return $this->requestStack->getSession()->set('_newsActivitiesSinceLastLogin', $newsActivitiesSinceLastLogin);
     }
@@ -45,7 +47,7 @@ class NewsActivitiesSinceLastLoginService
     public function update(Signalement $signalement): ArrayCollection|bool|null
     {
         $news = $this->getAll();
-        $news?->filter(function (Suivi $new) use ($news, $signalement) {
+        $news?->filter(function (Suivi|Affectation $new) use ($news, $signalement) {
             if ($signalement->getId() === $new->getSignalement()->getId())
                 $news->removeElement($new);
         });

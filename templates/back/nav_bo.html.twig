@@ -6,7 +6,7 @@
         </button>
         <div class="fr-collapse" id="fr-sidemenu-wrapper">
             <div class="fr-pb-5v">
-                <img src="{{ asset('img/logo_145.png') }}" alt="HISTOLOGE" width="145px">
+                <img src="https://cdn.histologe.net/img/logo_145.png" alt="HISTOLOGE" width="145px">
             </div>
             <div class="fr-sidemenu__title">Tableau de bord<br>
                 <small class="fr-text-label--blue-france">{{ app.user.nom ~' '~app.user.prenom[:1]|capitalize~'.' }}</small>
@@ -17,7 +17,7 @@
                 </li>
                 {% if newsActivitiesSinceLastLogin.count %}
                     <li class="fr-sidemenu__item">
-                        <a class="fr-sidemenu__link" href="{{ path('back_news_activities') }}">Nouveaux suivis<span
+                        <a class="fr-sidemenu__link" href="{{ path('back_news_activities') }}">Nouveauté(s)<span
                                     class="fr-puce fr-puce--danger">{{ newsActivitiesSinceLastLogin.count }}</span></a>
                     </li>
                 {% endif %}

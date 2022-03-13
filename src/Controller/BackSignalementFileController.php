@@ -100,4 +100,5 @@ class BackSignalementFileController extends AbstractController
         } else
             return $this->json(['response' => 'error'], 400);
     }
+
 }
