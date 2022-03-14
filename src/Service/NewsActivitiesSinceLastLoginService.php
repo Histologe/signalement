@@ -33,7 +33,6 @@ class NewsActivitiesSinceLastLoginService
             if ($affectation->getStatut() === Affectation::STATUS_WAIT && $affectation->getPartenaire())
                 $newsActivitiesSinceLastLogin->add($affectation);
         });
-/*        $this->requestStack->getSession()->set('lastActionTime',$activities);*/
         return $this->requestStack->getSession()->set('_newsActivitiesSinceLastLogin', $newsActivitiesSinceLastLogin);
     }
 
