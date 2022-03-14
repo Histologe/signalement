@@ -22,7 +22,7 @@ class LoginListener
     {
         /** @var User $user */
         $user = $event->getAuthenticationToken()->getUser();
-
+        $this->newsActivitiesSinceLastLoginService->clear();
         if($user->getLastLoginAt())
         {
             $this->newsActivitiesSinceLastLoginService->set($user);

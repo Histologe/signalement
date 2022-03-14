@@ -12,23 +12,28 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class NewsActivitiesSinceLastLoginService
 {
     private RequestStack $requestStack;
+    private array $activities;
 
     public function __construct(RequestStack $requestStack)
     {
         $this->requestStack = $requestStack;
     }
 
+
     public function set($user)
     {
+        $activities = $this->requestStack->getSession()->get('lastActionTime');
         $newsActivitiesSinceLastLogin = new ArrayCollection();
-        $user?->getPartenaire()?->getAffectations()->filter(function (Affectation $affectation) use ($newsActivitiesSinceLastLogin, $user) {
-            $affectation->getSignalement()->getSuivis()->filter(function (Suivi $suivi) use ($newsActivitiesSinceLastLogin, $user) {
-                if ($suivi->getCreatedAt() > $user->getLastLoginAt())
+        $user->getPartenaire()?->getAffectations()->filter(function (Affectation $affectation) use ($newsActivitiesSinceLastLogin, $user,$activities) {
+            $affectation->getSignalement()->getSuivis()->filter(function (Suivi $suivi) use ($newsActivitiesSinceLastLogin, $user,$activities) {
+                if (!isset($activities[$suivi->getSignalement()->getId()]) && $suivi->getCreatedAt() > $user->getLastLoginAt()
+                    || isset($activities[$suivi->getSignalement()->getId()]) && $activities[$suivi->getSignalement()->getId()] < $suivi->getCreatedAt())
                     $newsActivitiesSinceLastLogin->add($suivi);
             });
-            if($affectation->getStatut() === Affectation::STATUS_WAIT && $affectation->getPartenaire())
+            if ($affectation->getStatut() === Affectation::STATUS_WAIT && $affectation->getPartenaire())
                 $newsActivitiesSinceLastLogin->add($affectation);
         });
+/*        $this->requestStack->getSession()->set('lastActionTime',$activities);*/
         return $this->requestStack->getSession()->set('_newsActivitiesSinceLastLogin', $newsActivitiesSinceLastLogin);
     }
 
@@ -46,9 +51,12 @@ class NewsActivitiesSinceLastLoginService
 
     public function update(Signalement $signalement): ArrayCollection|bool|null
     {
+        $activities = $this->requestStack->getSession()->get('lastActionTime');
+        $activities[$signalement->getId()] = new \DateTimeImmutable();
+        $this->requestStack->getSession()->set('lastActionTime', $activities);
         $news = $this->getAll();
         $news?->filter(function (Suivi|Affectation $new) use ($news, $signalement) {
-            if ($signalement->getId() === $new->getSignalement()->getId())
+            if ($signalement->getId() === $new->getSignalement()->getId() && $new instanceof Suivi)
                 $news->removeElement($new);
         });
         return $news;
@@ -56,9 +64,10 @@ class NewsActivitiesSinceLastLoginService
 
     public function clear(): ArrayCollection|bool|null
     {
+        $this->requestStack->getSession()->remove('lastActionTime');
         $news = $this->getAll();
-        $news?->filter(function (Suivi $new) use ($news) {
-                $news->removeElement($new);
+        $news?->filter(function (Suivi|Affectation $new) use ($news) {
+            $news->removeElement($new);
         });
         return $news;
     }
