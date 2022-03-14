@@ -2,8 +2,13 @@
 
 {% block body %}
     <p>Bonjour,</p>
-    <p>Vous avez demandez l'activation de votre compte, cliquez sur le bouton ci-dessous pour vous connecter et activer
-        votre compte</p>
+    {% if reminder is not defined %}
+        <p>Vous avez demandez l'activation de votre compte, cliquez sur le bouton ci-dessous pour vous connecter et activer
+            votre compte</p>
+    {% else %}
+        <p>Vous n'avez toujours pas activer votre compte depuis sa création, si vous le souhaitez, cliquez sur le bouton ci-dessous pour vous connecter et activer
+            votre compte</p>
+    {% endif %}
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="text-align: center">
         <tbody>
         <tr>

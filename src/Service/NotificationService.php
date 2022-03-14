@@ -10,6 +10,7 @@ use Symfony\Component\Mime\Address;
 class NotificationService
 {
     const TYPE_ACTIVATION = 1;
+    const TYPE_RAPPEL_ACTIVATION = 11;
     const TYPE_LOST_PASSWORD = 2;
     const TYPE_NEW_SIGNALEMENT = 3;
     const TYPE_AFFECTATION = 4;
@@ -34,6 +35,11 @@ class NotificationService
             NotificationService::TYPE_ACTIVATION => [
                 'template' => 'login_link_email',
                 'subject' => 'Activation de votre compte',
+                'btntext' => "J'active mon compte"
+            ],
+            NotificationService::TYPE_RAPPEL_ACTIVATION => [
+                'template' => 'login_link_email',
+                'subject' => 'Vous n\'avez toujours pas activer votre compte',
                 'btntext' => "J'active mon compte"
             ],
             NotificationService::TYPE_LOST_PASSWORD => [
@@ -78,7 +84,7 @@ class NotificationService
 
     public function send(int $type, string|array $to, array $params): TransportExceptionInterface|\Exception|bool
     {
-        $params['url'] =  $_SERVER['SERVER_NAME'];
+        $params['url'] =  $_SERVER['SERVER_NAME'] ?? null;
         $message = $this->renderMailContentWithParamsByType($type, $params);
         is_array($to) ? $emails = $to : $emails = [$to];
         foreach ($emails as $email)

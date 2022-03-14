@@ -46,5 +46,9 @@ services:
             - { name: 'kernel.event_listener', event: 'kernel.exception' }
         arguments:
             - '@App\Service\NotificationService'
+    App\Command\ActivationReminderCommand:
+        arguments:
+            $loginLinkHandler: '@security.authenticator.login_link_handler.main'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

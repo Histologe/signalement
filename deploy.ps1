@@ -1,13 +1,13 @@
 $forAll=$args[0]
 if($forAll -eq "--all")
 {
-    $projects =  (Get-ChildItem -Path ../ -exclude *.idea,DEMO, CDNASSET).Name
+    $projects =  (Get-ChildItem -Path ../ -exclude *.idea,DEMO, CDNASSETS).Name
 }
 elseif($forAll -eq "--bdr")
 {
    $projects =  @('BDR')
 } else {
-    $projects =  (Get-ChildItem -Path ../ -exclude *.idea,DEMO, BDR, CDNASSET).Name
+    $projects =  (Get-ChildItem -Path ../ -exclude *.idea,DEMO, BDR, CDNASSETS).Name
 }
 $cmdOutput = git diff --name-only
 $currentLocation = Get-Location;
