@@ -30,7 +30,7 @@ class NewsActivitiesSinceLastLoginService
                     || isset($activities[$suivi->getSignalement()->getId()]) && $activities[$suivi->getSignalement()->getId()] < $suivi->getCreatedAt())
                     $newsActivitiesSinceLastLogin->add($suivi);
             });
-            if ($affectation->getStatut() === Affectation::STATUS_WAIT && $affectation->getPartenaire())
+            if ($affectation->getStatut() === Affectation::STATUS_WAIT && $affectation->getPartenaire() && $affectation->getCreatedAt()->diff(new \DateTimeImmutable())->days < 31)
                 $newsActivitiesSinceLastLogin->add($affectation);
         });
         return $this->requestStack->getSession()->set('_newsActivitiesSinceLastLogin', $newsActivitiesSinceLastLogin);

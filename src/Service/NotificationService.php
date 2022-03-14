@@ -78,6 +78,7 @@ class NotificationService
 
     public function send(int $type, string|array $to, array $params): TransportExceptionInterface|\Exception|bool
     {
+        $params['url'] =  $_SERVER['SERVER_NAME'];
         $message = $this->renderMailContentWithParamsByType($type, $params);
         is_array($to) ? $emails = $to : $emails = [$to];
         foreach ($emails as $email)
