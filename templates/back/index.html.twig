@@ -31,7 +31,7 @@
     <section class="fr-col-12 fr-p-5v">
         <form action="#" name="bo-filter-form" method="POST"
               class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
-            <div class="fr-col-md-4">
+            <div class="fr-col-12 fr-col-md-4">
                 <label class="fr-label" for="filter_ville"><strong>Filtrer par ville</strong></label>
                 <select name="bo-filter-ville" id="filter_ville" class="fr-select">
                     <option value="all">TOUTES</option>
@@ -41,7 +41,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="fr-col-md-4">
+            <div class="fr-col-12 fr-col-md-4">
                 <label class="fr-label" for="filter_statut"><strong>Filtrer par statut</strong></label>
                 <select name="bo-filter-statut" id="filter_statut" class="fr-select">
                     <option value="all">TOUS</option>
@@ -51,7 +51,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="fr-col-md-4">
+            <div class="fr-col-12 fr-col-md-4">
                 <label class="fr-label" for="header-search-input"><strong>Rechercher</strong></label>
                 <div class="fr-search-bar fr-mt-2v" id="header-search">
                     <input class="fr-input" placeholder="Rechercher" type="search" id="header-search-input"
@@ -68,7 +68,7 @@
         </div>
     </section>
     <section class="fr-col-12 fr-table fr-table--bordered">
-        <table class="fr-display-inline-table sortable">
+        <table class="fr-display-inline-table fr-display-md-block sortable">
             <thead class="fr-background-alt--blue-france">
             <tr>
                 <th>#Ref.</th>

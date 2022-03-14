@@ -24,7 +24,7 @@
                 {% elseif affectation.statut is same as (2) or affectation.statut is same as (3) %}
                     {% set classe = 'fr-text-label--red-marianne fr-fi-close-circle-fill fr-icon--sm' %}
                 {% endif %}
-                <small class="{{ classe }} fr-display-block"><span
+                <small class="{{ classe }} fr-display-block fr-ws-nowrap"><span
                             class="fr-text--black"> {{ affectation.partenaire.nom }}</span></small>
             {% else %}
                 Aucune
