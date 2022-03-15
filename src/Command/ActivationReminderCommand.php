@@ -20,6 +20,7 @@ use Symfony\Component\Security\Http\LoginLink\LoginLinkHandlerInterface;
 )]
 class ActivationReminderCommand extends Command
 {
+
     private EntityManagerInterface $em;
     private NotificationService $notificationService;
     private LoginLinkHandlerInterface $loginLinkHandler;

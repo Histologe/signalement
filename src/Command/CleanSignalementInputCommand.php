@@ -18,6 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class CleanSignalementInputCommand extends Command
 {
+
     private EntityManagerInterface $em;
 
     public function __construct(EntityManagerInterface $entityManager)

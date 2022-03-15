@@ -19,7 +19,6 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 )]
 class GetGeolocCommand extends Command
 {
-
     private EntityManagerInterface $em;
     private HttpClientInterface $httpClient;
 
