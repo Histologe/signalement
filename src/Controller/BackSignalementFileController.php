@@ -17,8 +17,8 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route('/bo/s')]
 class BackSignalementFileController extends AbstractController
 {
-    #[Route('/{uuid}/pdf',name:'back_signalement_gen_pdf')]
-    public function generatePdfSignalement(Signalement $signalement,Pdf $knpSnappyPdf,EntityManagerInterface $entityManager)
+    #[Route('/{uuid}/pdf', name: 'back_signalement_gen_pdf')]
+    public function generatePdfSignalement(Signalement $signalement, Pdf $knpSnappyPdf, EntityManagerInterface $entityManager)
     {
         $criticitesArranged = [];
         foreach ($signalement->getCriticites() as $criticite) {
@@ -29,18 +29,18 @@ class BackSignalementFileController extends AbstractController
             'situations' => $criticitesArranged
         ]);
         $options = [
-            'margin-top'    => 0,
-            'margin-right'  => 0,
+            'margin-top' => 0,
+            'margin-right' => 0,
             'margin-bottom' => 0,
-            'margin-left'   => 0,
+            'margin-left' => 0,
         ];
 
         return new Response(
-            $knpSnappyPdf->getOutputFromHtml($html,$options),
+            $knpSnappyPdf->getOutputFromHtml($html, $options),
             200,
             array(
-                'Content-Type'          => 'application/pdf',
-                'Content-Disposition'   => 'inline; filename="'.$signalement->getReference().'.pdf"'
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $signalement->getReference() . '.pdf"'
             )
         );
     }
@@ -88,10 +88,11 @@ class BackSignalementFileController extends AbstractController
             $getMethod = 'get' . ucfirst($type);
             $$type = $signalement->$getMethod();
             foreach ($$type as $k => $v) {
-                if ($file === $v['file'])
+                if ($file === $v['file']) {
                     if (file_exists($this->getParameter('uploads_dir') . $file))
                         unlink($this->getParameter('uploads_dir') . $file);
-                unset($$type[$k]);
+                    unset($$type[$k]);
+                }
             }
             $signalement->$setMethod($$type);
             $doctrine->getManager()->persist($signalement);
