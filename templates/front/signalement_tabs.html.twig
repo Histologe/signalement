@@ -116,10 +116,10 @@
                                                             <span class="fr-hint-text">{{ criticite.label }}</span>
                                                         </label>
                                                         <div class="fr-radio-rich__img">
-                                                            <img src="https://cdn.histologe.net/img/{{ etats_classes[criticite.score-1] }}.svg"
+                                                            <img src="{{asset('img/'~ etats_classes[criticite.score-1]~'.svg') }}"
                                                                  alt="" width="100%" class="fr-p-2v"
-                                                                 data-fr-checked-icon="https://cdn.histologe.net/img/{{ etats_classes[criticite.score-1] }}-actif.svg"
-                                                                 data-fr-unchecked-icon="https://cdn.histologe.net/img/{{ etats_classes[criticite.score-1] }}.svg"/>
+                                                                 data-fr-checked-icon="{{asset('img/'~ etats_classes[criticite.score-1]~'-actif.svg') }}"
+                                                                 data-fr-unchecked-icon="{{asset('img/'~ etats_classes[criticite.score-1]~'.svg') }}"/>
                                                             <!-- L’alternative de l’image (attribut alt) doit rester vide car l’image est illustrative et ne doit pas être restituée aux technologies d’assistance -->
                                                         </div>
                                                     </div>

@@ -54,6 +54,12 @@ class Config
     #[ORM\Column(type: 'text', nullable: true)]
     private $mailValidation;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $esaboraUrl;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $esaboraToken;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -211,6 +217,30 @@ class Config
     public function setMailValidation(?string $mailValidation): self
     {
         $this->mailValidation = $mailValidation;
+
+        return $this;
+    }
+
+    public function getEsaboraUrl(): ?string
+    {
+        return $this->esaboraUrl;
+    }
+
+    public function setEsaboraUrl(?string $esaboraUrl): self
+    {
+        $this->esaboraUrl = $esaboraUrl;
+
+        return $this;
+    }
+
+    public function getEsaboraToken(): ?string
+    {
+        return $this->esaboraToken;
+    }
+
+    public function setEsaboraToken(?string $esaboraToken): self
+    {
+        $this->esaboraToken = $esaboraToken;
 
         return $this;
     }
