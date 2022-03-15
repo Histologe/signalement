@@ -38,6 +38,12 @@ class Partenaire
     #[ORM\Column(type: 'string', length: 100, nullable: true)]
     private $email;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $esaboraUrl;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $esaboraToken;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -194,6 +200,30 @@ class Partenaire
     public function setEmail(?string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getEsaboraUrl(): ?string
+    {
+        return $this->esaboraUrl;
+    }
+
+    public function setEsaboraUrl(?string $esaboraUrl): self
+    {
+        $this->esaboraUrl = $esaboraUrl;
+
+        return $this;
+    }
+
+    public function getEsaboraToken(): ?string
+    {
+        return $this->esaboraToken;
+    }
+
+    public function setEsaboraToken(?string $esaboraToken): self
+    {
+        $this->esaboraToken = $esaboraToken;
 
         return $this;
     }

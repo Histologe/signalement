@@ -8,6 +8,7 @@ use App\Entity\Suivi;
 use App\Entity\User;
 use App\Repository\PartenaireRepository;
 use App\Service\AffectationCheckerService;
+use App\Service\EsaboraService;
 use App\Service\NotificationService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -95,7 +96,7 @@ class BackSignalementActionController extends AbstractController
     }
 
     #[Route('/{uuid}/affectation/toggle', name: 'back_signalement_toggle_affectation')]
-    public function toggleAffectationSignalement(Signalement $signalement, ManagerRegistry $doctrine, Request $request, PartenaireRepository $partenaireRepository, NotificationService $notificationService): RedirectResponse|JsonResponse
+    public function toggleAffectationSignalement(Signalement $signalement,EsaboraService $esaboraService, ManagerRegistry $doctrine, Request $request, PartenaireRepository $partenaireRepository, NotificationService $notificationService): RedirectResponse|JsonResponse
     {
         if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') && !$this->checker->check($signalement, $this->getUser()))
             return $this->json(['status' => 'denied'], 400);
@@ -115,7 +116,8 @@ class BackSignalementActionController extends AbstractController
                     $affectation->setPartenaire($partenaire);
                     $affectation->setAffectedBy($this->getUser());
                     $doctrine->getManager()->persist($affectation);
-                    //TODO: Mail Sendinblue
+                    if($partenaire->getEsaboraToken() && $partenaire->getEsaboraUrl())
+                        $esaboraService->post($affectation);
                     if ($partenaire->getEmail()) {
                         $notificationService->send(NotificationService::TYPE_AFFECTATION, $partenaire->getEmail(), [
                             'link' => $this->generateUrl('back_signalement_view', [

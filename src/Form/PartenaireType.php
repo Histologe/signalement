@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -46,6 +47,18 @@ class PartenaireType extends AbstractType
                 'required'=>false,
             ])
             ->add('email', EmailType::class, [
+                'attr' => [
+                    'class' => 'fr-input'
+                ],
+                'required'=>false,
+            ])
+            ->add('esaboraUrl', UrlType::class, [
+                'attr' => [
+                    'class' => 'fr-input'
+                ],
+                'required'=>false,
+            ])
+            ->add('esaboraToken', TextType::class, [
                 'attr' => [
                     'class' => 'fr-input'
                 ],

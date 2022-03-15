@@ -2,31 +2,33 @@
 
 namespace App\Service;
 
-use App\Entity\Signalement;
-use Symfony\Component\HttpClient\CurlHttpClient;
-use Symfony\Component\HttpClient\TraceableHttpClient;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use App\Entity\Affectation;
+use App\Entity\Criticite;
+use App\Entity\Suivi;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class EsaboraService
 {
-    private ConfigurationService $config;
-    private HttpClientInterface $httpClient;
+    const ESABORA_WAIT = 'A traiter';
+    const ESABORA_ACCEPTED = 'Importé';
+    const ESABORA_REFUSED = 'Non importé';
+    const ESABORA_CLOSED = 'terminé';
 
-    public function __construct(ConfigurationService $configurationService, HttpClientInterface $httpClient)
+    private EntityManagerInterface $em;
+    private ParameterBagInterface $params;
+    private string $commentaire;
+
+    public function __construct(ParameterBagInterface $parameterBag, EntityManagerInterface $entityManager, string $commentaire = '')
     {
-        $this->config = $configurationService;
-        $this->httpClient = $httpClient;
+        $this->em = $entityManager;
+        $this->commentaire = $commentaire;
+        $this->params = $parameterBag;
     }
 
-    private function curl($method, $url, $body = [])
+    private function curl($method, $url, $token, $body = [])
     {
-        $token = $this->config->get()->getEsaboraToken();
         $curl = curl_init();
-
         curl_setopt_array($curl, array(
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
@@ -38,109 +40,149 @@ class EsaboraService
             CURLOPT_HTTPHEADER => array(
                 'Authorization: Bearer ' . $token,
             ),
-            CURLOPT_POSTFIELDS => json_encode($body),
+            CURLOPT_POSTFIELDS => json_encode($body, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
         ));
-
         $response = curl_exec($curl);
-
         curl_close($curl);
         return $response;
     }
 
-    public function post()
+    public function post(Affectation $affectation)
     {
-        $url = $this->config->get()->getEsaboraUrl();
-
-        $response = $this->curl('POST', $url . '/modbdd/?task=doTreatment', [
+        $url = $affectation->getPartenaire()->getEsaboraUrl();
+        $token = $affectation->getPartenaire()->getEsaboraToken();
+        $signalement = $affectation->getSignalement();
+        $this->commentaire = 'Points signalés:\n';
+        $signalement->getCriticites()->filter(function (Criticite $criticite) {
+            $criticiteLabel = match ($criticite->getScore()) {
+                1 => "moyen",
+                2 => "grave",
+                3 => "très grave",
+            };
+            $this->commentaire .= '\n' . $criticite->getCritere()->getLabel() . ' => Etat ' . $criticiteLabel;
+        });
+        $this->commentaire .= '\nPropriétaire averti: ' . $signalement->getIsProprioAverti() ? 'OUI' : 'NON';
+        $this->commentaire .= '\nAdultes: ' . $signalement->getNbAdultes() . ' Adultes';
+        $this->commentaire .= '\n' . $signalement->getNbEnfantsM6() + $signalement->getNbEnfantsP6() . ' Enfants';
+        $signalement->getAffectations()->filter(function (Affectation $affectation) {
+            $affectationLabel = match ($affectation->getStatut()) {
+                Affectation::STATUS_WAIT => "En attente...",
+                Affectation::STATUS_ACCEPTED => "Accepté",
+                Affectation::STATUS_REFUSED => "Refusé",
+                Affectation::STATUS_CLOSED => "Cloturé",
+            };
+            $this->commentaire .= '\n' . $affectation->getPartenaire()->getNom() . ' => ' . $affectationLabel;
+        });
+        $observationsPj = '';
+        $documentsPj = [];
+        foreach ($signalement->getDocuments() as $document) {
+            $src = $this->params->get('uploads_dir') . $document['file'];
+            $observationsPj .= $document['titre'];
+            $documentsPj[] = [
+                "documentName" => $document['titre'],
+                "documentSize" => filesize($src),
+                "documentContent" => base64_encode(file_get_contents($src))
+            ];
+        }
+        foreach ($signalement->getPhotos() as $photo) {
+            $src = $this->params->get('uploads_dir') . $photo['file'];
+            $documentsPj[] = [
+                "documentName" => 'Image téléversée',
+                "documentSize" => filesize($src),
+                "documentContent" => base64_encode(file_get_contents($src))
+            ];
+        }
+        $response = $this->curl('POST', $url . '/modbdd/?task=doTreatment', $token, [
             'treatmentName' => 'Import HISTOLOGE',
-            'fieldList'=> [
+            'fieldList' => [
                 [
-                    'fieldName'=>'Référence_Histloge',
-                    'fieldValue'=>''
+                    'fieldName' => 'Référence_Histologe',
+                    'fieldValue' => $signalement->getUuid()
                 ],
                 [
-                    'fieldName'=>'Usager_Nom',
-                    'fieldValue'=>''
+                    'fieldName' => 'Usager_Nom',
+                    'fieldValue' => $signalement->getNomOccupant()
                 ],
                 [
-                    'fieldName'=>'Usager_Prénom',
-                    'fieldValue'=>''
+                    'fieldName' => 'Usager_Prénom',
+                    'fieldValue' => $signalement->getPrenomOccupant()
                 ],
                 [
-                    'fieldName'=>'Usager_Mail',
-                    'fieldValue'=>''
+                    'fieldName' => 'Usager_Mail',
+                    'fieldValue' => $signalement->getMailOccupant()
                 ],
                 [
-                    'fieldName'=>'Usager_Téléphone',
-                    'fieldValue'=>''
+                    'fieldName' => 'Usager_Téléphone',
+                    'fieldValue' => $signalement->getTelOccupant()
                 ],
                 [
-                    'fieldName'=>'Usager_Numero',
-                    'fieldValue'=>''
+                    'fieldName' => 'Usager_Numéro',
+                    'fieldValue' => ''
                 ],
                 [
-                    'fieldName'=>'Usager_Nom_Rue',
-                    'fieldValue'=>''
+                    'fieldName' => 'Usager_Nom_Rue',
+                    'fieldValue' => $signalement->getAdresseOccupant()
                 ],
                 [
-                    'fieldName'=>'Usager_Adresse2',
-                    'fieldValue'=>''
+                    'fieldName' => 'Usager_Adresse2',
+                    'fieldValue' => ''
                 ],
                 [
-                    'fieldName'=>'Usager_CodePostal',
-                    'fieldValue'=>''
+                    'fieldName' => 'Usager_CodePostal',
+                    'fieldValue' => $signalement->getCpOccupant()
                 ],
                 [
-                    'fieldName'=>'Usager_Ville',
-                    'fieldValue'=>''
+                    'fieldName' => 'Usager_Ville',
+                    'fieldValue' => $signalement->getVilleOccupant()
                 ],
                 [
-                    'fieldName'=>'Adresse_Numéro',
-                    'fieldValue'=>''
+                    'fieldName' => 'Adresse_Numéro',
+                    'fieldValue' => ''
                 ],
                 [
-                    'fieldName'=>'Adresse_Nom_Rue',
-                    'fieldValue'=>''
+                    'fieldName' => 'Adresse_Nom_Rue',
+                    'fieldValue' => $signalement->getAdresseOccupant()
                 ],
                 [
-                    'fieldName'=>'Adresse_CodePostal',
-                    'fieldValue'=>''
+                    'fieldName' => 'Adresse_CodePostal',
+                    'fieldValue' => $signalement->getCpOccupant()
                 ],
                 [
-                    'fieldName'=>'Adresse_Ville',
-                    'fieldValue'=>''
+                    'fieldName' => 'Adresse_Ville',
+                    'fieldValue' => $signalement->getVilleOccupant()
                 ],
                 [
-                    'fieldName'=>'Adresse_Etage',
-                    'fieldValue'=>''
+                    'fieldName' => 'Adresse_Etage',
+                    'fieldValue' => $signalement->getEtageOccupant()
                 ],
                 [
-                    'fieldName'=>'Adresse_Porte',
-                    'fieldValue'=>''
+                    'fieldName' => 'Adresse_Porte',
+                    'fieldValue' => $signalement->getNumAppartOccupant()
                 ],
                 [
-                    'fieldName'=>'Adresse_Latitude',
-                    'fieldValue'=>''
+                    'fieldName' => 'Adresse_Latitude',
+                    'fieldValue' => $signalement->getGeoloc()['lat'] ?? ''
                 ],
                 [
-                    'fieldName'=>'Adresse_Longitude',
-                    'fieldValue'=>''
+                    'fieldName' => 'Adresse_Longitude',
+                    'fieldValue' => $signalement->getGeoloc()['lng'] ?? ''
                 ],
                 [
-                    'fieldName'=>'Dossier_Ouverture',
-                    'fieldValue'=>''
+                    'fieldName' => 'Dossier_Ouverture',
+                    'fieldValue' => $signalement->getCreatedAt()->format('d/m/Y')
                 ],
                 [
-                    'fieldName'=>'Dossier_Commentaire',
-                    'fieldValue'=>''
+                    'fieldName' => 'Dossier_Commentaire',
+                    'fieldValue' => $this->commentaire
                 ],
                 [
-                    'fieldName'=>'PJ_Observations',
-                    'fieldValue'=>''
+                    'fieldName' => 'PJ_Observations',
+                    'fieldValue' => $observationsPj
                 ],
                 [
-                    'fieldName'=>'PJ_Documents',
-                    'fieldValue'=>''
+                    'fieldName' => 'PJ_Documents',
+                    'fieldDocumentUpdate' => 1,
+                    'fieldValue' => $documentsPj
                 ]
             ]
         ]);
@@ -148,18 +190,62 @@ class EsaboraService
 
     }
 
-    public function get(Signalement $signalement)
+    public function get(Affectation $affectation)
     {
-        $url = $this->config->get()->getEsaboraUrl();
+        // ["SAS_Référence","SAS_Etat","Doss_ID","Doss_Numéro","Doss_Statut_Abrégé","Doss_Statut","Doss_Etat","Doss_Cloture", "Doss_Type", "Doss_Problématique"]
+        $url = $affectation->getPartenaire()->getEsaboraUrl();
+        $token = $affectation->getPartenaire()->getEsaboraToken();
 
-        $response = $this->curl('POST', $url . '/mult/?task=doSearch', [
-            'searchName' => 'WS_ETAT_DOSSIER_SAS',
-            'criterionList' => [
-                'criterionName' => 'SAS_Référence',
-                'criterionValueList' => ['"' . $signalement->getUuid() . '"']
+        $response = $this->curl('POST', $url . '/mult/?task=doSearch', $token, [
+            "searchName" => "WS_ETAT_DOSSIER_SAS",
+            "criterionList" => [
+                [
+                    "criterionName" => "SAS_Référence",
+                    "criterionValueList" => [
+                        $affectation->getSignalement()->getUuid()
+                    ]
+                ]
             ]
         ]);
-        echo $response;
-
+        $response = json_decode($response, true);
+        var_dump($response);
+        $definition = 'mis à jour';
+        $change = false;
+        $data = $response['rowList'][0]['columnDataList'];
+        $currentStatus = $affectation->getStatut();
+        switch ($data[1]) {
+            case self::ESABORA_WAIT:
+                if ($currentStatus !== Affectation::STATUS_ACCEPTED) {
+                    $affectation->setStatut(Affectation::STATUS_WAIT);
+                    $definition = 'remis en attente via Esabora';
+                    $change = true;
+                }
+                break;
+            case self::ESABORA_ACCEPTED:
+                if ($currentStatus !== Affectation::STATUS_ACCEPTED) {
+                    $affectation->setStatut(Affectation::STATUS_ACCEPTED);
+                    $definition = 'accepté via Esabora';
+                    $change = true;
+                }
+                break;
+            case self::ESABORA_REFUSED:
+                if ($currentStatus !== Affectation::STATUS_REFUSED) {
+                    $affectation->setStatut(Affectation::STATUS_REFUSED);
+                    $definition = 'refusé via Esabora';
+                    $change = true;
+                }
+                break;
+        }
+        $data[6] === self::ESABORA_CLOSED ? $affectation->getStatut() === Affectation::STATUS_CLOSED ?? $affectation->setStatut(Affectation::STATUS_CLOSED) : null && $definition = 'cloturé via Esabora' && $change = true;
+        $this->em->persist($affectation);
+        if ($change) {
+            $affectation->setAnsweredBy($affectation->getPartenaire()->getUsers()->first());
+            $suivi = new Suivi();
+            $suivi->setDescription('Signalement <b>' . $definition . '</b> par ' . $affectation->getPartenaire()->getNom());
+            $suivi->setSignalement($affectation->getSignalement());
+            $suivi->setCreatedBy($affectation->getPartenaire()->getUsers()->first());
+            $this->em->persist($suivi);
+        }
+        $this->em->flush();
     }
 }

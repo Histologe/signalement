@@ -111,6 +111,17 @@
             <label for="{{ form.insee.vars.id }}" class="fr-label">Email (si générique)</label>
             {{ form_widget(form.email) }}
         </div>
+        <div class="fr-col-12 fr-mb-5v">
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-md-4 fr-pl-0 fr-pl-md-0">
+                    <label for="{{ form.esaboraUrl.vars.id }}" class="fr-label">URL Esabora (optionel)</label>
+                    {{ form_widget(form.esaboraUrl) }}
+                </div>
+                <div class="fr-col-12 fr-col-md-8 fr-pr-md-0">
+                    <label for="{{ form.esaboraToken.vars.id }}" class="fr-label">Token Esabora (optionel)</label>
+                    {{ form_widget(form.esaboraToken) }}</div>
+            </div>
+        </div>
     </div>
 </fieldset>
 <div class="fr-grid-row">
