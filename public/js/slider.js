@@ -12,23 +12,23 @@ const HistoSlider = {
         let nbItems = items.length;
         items.forEach((item,index)=>{
             item.classList.add('fr-hidden');
-            paginationItems[index].src="https://cdn.histologe.net/img/bulle_v.PNG";
+            paginationItems[index].src="img/bulle_v.PNG";
         })
         first.classList.remove('fr-hidden');
-        paginationItems[0].src="https://cdn.histologe.net/img/bulle.PNG";
+        paginationItems[0].src="img/bulle.PNG";
         setInterval(()=>{
             currentItem++;
             items.forEach((item,index)=>{
                 item.classList.add('fr-hidden')
-                paginationItems[index].src="https://cdn.histologe.net/img/bulle_v.PNG";
+                paginationItems[index].src="img/bulle_v.PNG";
             })
             if (currentItem < nbItems)
             {
                 items[currentItem].classList.remove('fr-hidden')
-                paginationItems[currentItem].src="https://cdn.histologe.net/img/bulle.PNG";
+                paginationItems[currentItem].src="img/bulle.PNG";
             } else {
                 first.classList.remove('fr-hidden');
-                paginationItems[0].src="https://cdn.histologe.net/img/bulle.PNG";
+                paginationItems[0].src="img/bulle.PNG";
                 currentItem = 0;
             }
         },3000)

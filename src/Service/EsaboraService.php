@@ -141,7 +141,7 @@ class EsaboraService
                 [
                     'fieldName'=>'PJ_Documents',
                     'fieldValue'=>''
-                ],
+                ]
             ]
         ]);
         echo $response;

@@ -822,8 +822,8 @@ document.querySelector('#modal-dpe-opener')?.addEventListener('click', (event) =
                             console.log(dpe)
                             let classeGes = dpe.classe_estimation_ges, col = document.createElement('div'),
                                 imgDpe = document.createElement('img'), imgGes = document.createElement('img');
-                            imgDpe.src = 'https://cdn.histologe.net/img/dpe_' + classeDpe + '.png';
-                            imgGes.src = 'https://cdn.histologe.net/img/ges_' + classeGes + '.png';
+                            imgDpe.src = 'img/dpe_' + classeDpe + '.png';
+                            imgGes.src = 'img/ges_' + classeGes + '.png';
                             modalDpeContent.append(col);
                             col.insertAdjacentHTML('beforeend', `<h5 class="fr-h3 fr-col-12 fr-mb-0">${dpe.date_etablissement_dpe}</h5>`)
                             col.insertAdjacentHTML('beforeend', `<h6>Consommation énergie ${dpe.consommation_energie}</h6>`);
