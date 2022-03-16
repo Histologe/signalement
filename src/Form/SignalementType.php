@@ -401,13 +401,13 @@ class   SignalementType extends AbstractType
                         $attr = [
                             "data-fr-toggle-hide" => "signalement-pas-occupant|signalement-consentement-tiers-bloc",
                             "data-fr-toggle-show" => "signalement-occupant|signalement-infos-proprio|signalement-consentement-tiers-bloc",
-                            "data-fr-toggle-unrequire" => "signalement-consentement-tiers|signalement_adresseProprio|signalement_telProprio|signalement_mailProprio|signalement_etageOccupant|signalement_escalierOccupant|signalement_numAppartOccupant|signalement_adresseAutreOccupant|signalement_lienDeclarantOccupant_0",
+                            "data-fr-toggle-unrequire" => "signalement_telOccupantBis|signalement-consentement-tiers|signalement_adresseProprio|signalement_telProprio|signalement_mailProprio|signalement_etageOccupant|signalement_escalierOccupant|signalement_numAppartOccupant|signalement_adresseAutreOccupant|signalement_lienDeclarantOccupant_0",
                             "data-fr-toggle-require" => "signalement_mailOccupant|signalement_telOccupant",
                         ]
                         :
                         $attr = [
                             "data-fr-toggle-show" => "signalement-consentement-tiers-bloc|signalement-occupant|signalement-pas-occupant|signalement-infos-proprio",
-                            "data-fr-toggle-unrequire" => "signalement_adresseProprio|signalement_telProprio|signalement_mailProprio|signalement_nomProprio|signalement_structureDeclarant|signalement_mailOccupant|signalement_telOccupant|signalement_etageOccupant|signalement_escalierOccupant|signalement_numAppartOccupant|signalement_adresseAutreOccupant",
+                            "data-fr-toggle-unrequire" => "signalement_telOccupantBis|signalement_adresseProprio|signalement_telProprio|signalement_mailProprio|signalement_nomProprio|signalement_structureDeclarant|signalement_mailOccupant|signalement_telOccupant|signalement_etageOccupant|signalement_escalierOccupant|signalement_numAppartOccupant|signalement_adresseAutreOccupant",
                         ];
                     return $attr;
                 },
