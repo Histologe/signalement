@@ -16,7 +16,7 @@
         </td>
         <td>
             {% for affectation in signalement.affectations %}
-                {{affectation.statut }}
+
                 {% set classe = '' %}
                 {% if affectation.statut is same as (0) %}
                     {% set classe = 'fr-text--orange fr-fi-question-fill fr-icon--sm' %}
@@ -31,7 +31,7 @@
                 Aucune
             {% endfor %}
         </td>
-        <td>{{ signalement.statut }}
+        <td>
             {% if signalement.statut is same as(1) %}
                 <strong class="fr-text-label--red-marianne">A valider</strong>
             {% elseif signalement.statut is same as(2) %}
