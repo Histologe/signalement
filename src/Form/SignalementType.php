@@ -85,7 +85,7 @@ class   SignalementType extends AbstractType
                 ],
                 'row_attr' => [
                     'class' => 'fr-select-group'
-                ], 'label' => "Nombre d'adultes",
+                ], 'label' => "Nombre d'adultes (personnes majeures occupant le logement)",
                 'placeholder' => '--- Selectionnez ---'
             ])
             ->add('nbEnfantsM6', ChoiceType::class, [
