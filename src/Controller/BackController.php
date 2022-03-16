@@ -46,7 +46,7 @@ class BackController extends AbstractController
                 $signalement->getAffectations()->filter(function (Affectation $affectation) use ($signalement, $filter, $k) {
                     if ($filter['status'] === [Signalement::STATUS_CLOSED, Signalement::STATUS_ACTIVE] && $affectation->getStatut() === Affectation::STATUS_ACCEPTED)
                         unset($this->req[$k]);
-                    elseif ($filter['status'] === (string)Signalement::STATUS_ACTIVE && $signalement()->getStatut() !== Signalement::STATUS_ACTIVE && $affectation->getStatut() !== Affectation::STATUS_ACCEPTED)
+                    elseif ($filter['status'] === (string)Signalement::STATUS_ACTIVE && $affectation->getSignalement()->getStatut() !== Signalement::STATUS_ACTIVE && $affectation->getStatut() !== Affectation::STATUS_ACCEPTED)
                         unset($this->req[$k]);
                     else {
                         if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_WAIT)
