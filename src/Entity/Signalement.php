@@ -1626,7 +1626,7 @@ class Signalement
         return $this->telOccupantBis;
     }
 
-    public function setTeleOccupantBis(?string $telOccupantBis): self
+    public function setTelOccupantBis(?string $telOccupantBis): self
     {
         $this->telOccupantBis = $telOccupantBis;
 
