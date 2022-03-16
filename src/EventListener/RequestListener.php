@@ -29,7 +29,7 @@ class RequestListener
                 $user = $token->getUser();
                 if (!$user->getPassword() || $user->getStatut() === User::STATUS_INACTIVE)
                     $event->setResponse(new RedirectResponse($this->urlGenerator->generate('login_creation_pass')));
-                $this->newsActivitiesSinceLastLoginService->set($user);
+                //$this->newsActivitiesSinceLastLoginService->set($user);
             }
         }
     }
