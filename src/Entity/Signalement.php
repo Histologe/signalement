@@ -318,6 +318,9 @@ class Signalement
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private $closedAt;
 
+    #[ORM\Column(type: 'string', length: 15, nullable: true)]
+    private $telephoneOccupantBis;
+
     public function __construct()
     {
         $this->situations = new ArrayCollection();
@@ -1612,6 +1615,18 @@ class Signalement
     public function setClosedAt(?\DateTimeImmutable $closedAt): self
     {
         $this->closedAt = $closedAt;
+
+        return $this;
+    }
+
+    public function getTelephoneOccupantBis(): ?string
+    {
+        return $this->telephoneOccupantBis;
+    }
+
+    public function setTelephoneOccupantBis(?string $telephoneOccupantBis): self
+    {
+        $this->telephoneOccupantBis = $telephoneOccupantBis;
 
         return $this;
     }

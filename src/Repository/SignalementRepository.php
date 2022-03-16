@@ -46,8 +46,6 @@ class SignalementRepository extends ServiceEntityRepository
     */
 
 
-
-
     public function findAllWithGeoData()
     {
         return $this->createQueryBuilder('s')
@@ -65,9 +63,9 @@ class SignalementRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('s')
             ->where('s.statut != 7')
-            ->andWhere('YEAR(s.createdAt) = '.$year)
-            ->leftJoin('s.affectations','affectations')
-            ->addSelect('affectations','s')
+            ->andWhere('YEAR(s.createdAt) = ' . $year)
+            ->leftJoin('s.affectations', 'affectations')
+            ->addSelect('affectations', 's')
             ->getQuery()
             ->getResult();
     }
@@ -75,12 +73,12 @@ class SignalementRepository extends ServiceEntityRepository
     public function countByStatus($user = null)
     {
         $qb = $this->createQueryBuilder('s');
-        if(!$user){
+        if (!$user) {
             $qb->select('COUNT(s.id) as count')
                 ->addSelect('s.statut');
         } else {
-            $qb->leftJoin('s.affectations','a','WITH',':partenaire = a.partenaire')
-                ->setParameter('partenaire',$user->getPartenaire())
+            $qb->leftJoin('s.affectations', 'a', 'WITH', ':partenaire = a.partenaire')
+                ->setParameter('partenaire', $user->getPartenaire())
                 ->select('COUNT(a.signalement) as count')
                 ->addSelect('s.statut');;
         }
@@ -97,14 +95,14 @@ class SignalementRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('s')
             ->where('s.uuid = :uuid')
-            ->setParameter('uuid',$uuid);
+            ->setParameter('uuid', $uuid);
         $qb
-            ->leftJoin('s.situations','situations')
-            ->leftJoin('s.affectations','affectations')
-            ->leftJoin('situations.criteres','criteres')
-            ->leftJoin('criteres.criticites','criticites')
-            ->leftJoin('affectations.partenaire','partenaire')
-            ->addSelect('situations','affectations','criteres','criticites','partenaire');
+            ->leftJoin('s.situations', 'situations')
+            ->leftJoin('s.affectations', 'affectations')
+            ->leftJoin('situations.criteres', 'criteres')
+            ->leftJoin('criteres.criticites', 'criticites')
+            ->leftJoin('affectations.partenaire', 'partenaire')
+            ->addSelect('situations', 'affectations', 'criteres', 'criticites', 'partenaire');
         /*$qb->leftJoin('s.situations','situations');
         $qb->leftJoin('situations.criteres','criteres');
         $qb->leftJoin('criteres.criticites','criticites');
@@ -124,19 +122,24 @@ class SignalementRepository extends ServiceEntityRepository
             ->select('PARTIAL s.{id,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut,createdAt}')
             ->where('s.statut != :status')
             ->setParameter('status', Signalement::STATUS_ARCHIVED);
-        $qb->leftJoin('s.affectations','affectations');
-        $qb->leftJoin('affectations.partenaire','partenaire');
-        $qb->leftJoin('partenaire.users','user');
-        $qb->addSelect('affectations','partenaire','user');
-        if ($status && $status !== 'all')
-            $qb->andWhere('s.statut = :statut')
-                ->setParameter('statut', $status);
+        $qb->leftJoin('s.affectations', 'affectations');
+        $qb->leftJoin('affectations.partenaire', 'partenaire');
+        $qb->leftJoin('partenaire.users', 'user');
+        $qb->addSelect('affectations', 'partenaire', 'user');
+        if ($status && $status !== 'all') {
+            if (is_array($status))
+                foreach ($status as $stat)
+                    $qb->andWhere('s.statut = :statut')
+                        ->setParameter('statut', $stat);
+            else
+                $qb->andWhere('s.statut = :statut')
+                    ->setParameter('statut', $status);
+        }
         if ($city && $city !== 'all')
             $qb->andWhere('s.villeOccupant =:city')
                 ->setParameter('city', $city);
         if ($user)
-            $qb->andWhere('partenaire = :partenaire')
-                ->andWhere('s.statut = '.Signalement::STATUS_ACTIVE)
+            $qb->andWhere(':partenaire IN (partenaire)')
                 ->setParameter('partenaire', $user->getPartenaire());
         if ($search)
             $qb->andWhere('LOWER(s.nomOccupant) LIKE :search OR LOWER(s.prenomOccupant) LIKE :search OR LOWER(s.reference) LIKE :search OR LOWER(s.adresseOccupant) LIKE :search OR LOWER(s.villeOccupant) LIKE :search')
@@ -162,7 +165,6 @@ class SignalementRepository extends ServiceEntityRepository
                 ->andWhere('partenaire = :partenaire')
                 ->setParameter('partenaire', $user->getPArtenaire());
         return $qb->groupBy('s.villeOccupant')
-
             ->getQuery()
             ->getResult();
     }

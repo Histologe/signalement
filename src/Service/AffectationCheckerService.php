@@ -23,7 +23,7 @@ class AffectationCheckerService
     public function checkIfSignalementClosedForUser(User|UserInterface $user,Signalement $signalement){
         if ($user->getPartenaire()) {
             $clotureCurrentUser = $signalement->getAffectations()->filter(function (Affectation $affectation)use($user) {
-                if ($affectation->getPartenaire()->getId() === $user->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_CLOSED)
+                if ($affectation->getPartenaire()->getId() === $user->getPartenaire()->getId() && ($affectation->getStatut() === Affectation::STATUS_CLOSED || $affectation->getStatut() === Affectation::STATUS_REFUSED))
                     return $affectation;
             });
             if (!$clotureCurrentUser->isEmpty())

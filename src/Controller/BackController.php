@@ -22,6 +22,8 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route('/bo')]
 class BackController extends AbstractController
 {
+    private $req;
+
     #[Route('/', name: 'back_index')]
     public function index(SignalementRepository $signalementRepository, Request $request): Response
     {
@@ -35,26 +37,33 @@ class BackController extends AbstractController
             'ville' => $request->get('bo-filter-ville') ?? 'all',
             'page' => $request->get('page') ?? 1,
         ];
-        $req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['page']);
-
+        if ($user && $filter['status'] === (string)Signalement::STATUS_CLOSED)
+            $filter['status'] = [Signalement::STATUS_CLOSED, Signalement::STATUS_ACTIVE];
+        $this->req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['page']);
+        $this->req = $this->req->getIterator()->getArrayCopy();
         if ($this->getUser()->getPartenaire()) {
-            foreach ($req as $k => $signalement) {
-                $signalement->getAffectations()->filter(function (Affectation $affectation) use ($signalement,$filter) {
-                    if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_WAIT)
-                        $signalement->setStatut(Signalement::STATUS_NEED_PARTNER_RESPONSE);
-                    if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_CLOSED)
-                        $signalement->setStatut(Signalement::STATUS_CLOSED);
+            foreach ($this->req as $k => $signalement) {
+                $signalement->getAffectations()->filter(function (Affectation $affectation) use ($signalement, $filter, $k) {
+                    if ($filter['status'] === [Signalement::STATUS_CLOSED, Signalement::STATUS_ACTIVE] && $affectation->getStatut() === Affectation::STATUS_ACCEPTED)
+                        unset($this->req[$k]);
+                    elseif ($filter['status'] === (string)Signalement::STATUS_ACTIVE && $affectation->getStatut() !== Affectation::STATUS_ACCEPTED)
+                        unset($this->req[$k]);
+                    else {
+                        if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_WAIT)
+                            $signalement->setStatut(Signalement::STATUS_NEED_PARTNER_RESPONSE);
+                        if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && ($affectation->getStatut() === Affectation::STATUS_CLOSED || $affectation->getStatut() === Affectation::STATUS_REFUSED))
+                            $signalement->setStatut(Signalement::STATUS_CLOSED);
+                    }
+
                 });
-               if($filter['status'] === "3" && $signalement->getStatut() !== 3)
-                   unset($req[$k]);
             }
         }
         $signalements = [
-            'list' => $req,
+            'list' => $this->req,
             'villes' => $signalementRepository->findCities($user),
-            'total' => count($req),
+            'total' => count($this->req),
             'page' => (int)$filter['page'],
-            'pages' => (int)ceil(count($req) / 50)
+            'pages' => (int)ceil(count($this->req) / 50)
         ];
         $signalements['counts'] = $signalementRepository->countByStatus($user);
         if (/*$request->isXmlHttpRequest() && */ $request->get('pagination'))
