@@ -48,10 +48,10 @@ class Signalement
     #[ORM\Column(type: 'integer', nullable: true)]
     private $nbAdultes;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(type: 'string', nullable: true)]
     private $nbEnfantsM6;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(type: 'string', nullable: true)]
     private $nbEnfantsP6;
 
     #[ORM\Column(type: 'string', length: 3, nullable: true)]
@@ -473,24 +473,24 @@ class Signalement
         return $this;
     }
 
-    public function getNbEnfantsM6(): ?int
+    public function getNbEnfantsM6(): int|string
     {
         return $this->nbEnfantsM6;
     }
 
-    public function setNbEnfantsM6(?int $nbEnfantsM6): self
+    public function setNbEnfantsM6(int|string $nbEnfantsM6): self
     {
         $this->nbEnfantsM6 = $nbEnfantsM6;
 
         return $this;
     }
 
-    public function getNbEnfantsP6(): ?int
+    public function getNbEnfantsP6(): int|string
     {
         return $this->nbEnfantsP6;
     }
 
-    public function setNbEnfantsP6(?int $nbEnfantsP6): self
+    public function setNbEnfantsP6(int|string $nbEnfantsP6): self
     {
         $this->nbEnfantsP6 = $nbEnfantsP6;
 
