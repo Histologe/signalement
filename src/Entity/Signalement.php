@@ -322,6 +322,7 @@ class Signalement
     #[ORM\Column(type: 'string', length: 15, nullable: true)]
     private $telOccupantBis;
 
+
     public function __construct()
     {
         $this->situations = new ArrayCollection();

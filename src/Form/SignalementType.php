@@ -234,6 +234,7 @@ class   SignalementType extends AbstractType
                 ],
                 'label' => "N° téléphone de l'occupant"
             ])
+
             ->add('telOccupantBis', TelType::class, [
                 'attr' => [
                     'class' => 'fr-input',
