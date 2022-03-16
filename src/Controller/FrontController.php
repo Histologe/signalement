@@ -14,6 +14,7 @@ use App\Repository\AffectationRepository;
 use App\Repository\PartenaireRepository;
 use App\Repository\SignalementRepository;
 use App\Repository\UserRepository;
+use App\Service\ConfigurationService;
 use App\Service\CriticiteCalculatorService;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -382,13 +383,13 @@ class FrontController extends AbstractController
     }
 
     #[Route('/contact', name: 'front_contact')]
-    public function contact(Request $request, NotificationService $notificationService): Response
+    public function contact(Request $request, NotificationService $notificationService,ConfigurationService $configurationService): Response
     {
         $title = "Conditions Générales d'Utilisation";
         $form = $this->createForm(ContactType::class, []);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $notificationService->send(NotificationService::TYPE_NOTIFICATION_MAIL_FRONT, 'notifications@histologe.fr', [
+            $notificationService->send(NotificationService::TYPE_NOTIFICATION_MAIL_FRONT, ['notifications@histologe.fr',$configurationService->get()->getEmailReponse()], [
                 'nom' => $form->get('nom')->getData(),
                 'mail' => $form->get('email')->getData(),
                 'reply' => $form->get('email')->getData(),

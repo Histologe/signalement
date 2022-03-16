@@ -31,7 +31,7 @@
                             <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
                         </div>
                         <div class="fr-col-9">
-                            {{ suivi.description|capitalize }}
+                            {{ suivi.description|raw }}
                         </div>
                         <div class="fr-col-1 fr-text--right">
                             {% if suivi.isPublic %}
