@@ -234,6 +234,17 @@ class   SignalementType extends AbstractType
                 ],
                 'label' => "N° téléphone de l'occupant"
             ])
+            ->add('telOccupantBis', TelType::class, [
+                'attr' => [
+                    'class' => 'fr-input',
+                    'pattern' => "[0-9]{10}"
+                ],
+                'label_attr' => [
+                    'class' => 'fr-label'
+                ],
+                'label' => "N° téléphone secondaire de l'occupant",
+                'required'=>false
+            ])
             ->add('mailOccupant', EmailType::class, [
                 'attr' => [
                     'class' => 'fr-input'

@@ -15,7 +15,7 @@ class RequestListener
     private UrlGeneratorInterface $urlGenerator;
     private NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService;
 
-    public function __construct(TokenStorage $tokenStorage, UrlGeneratorInterface $urlGenerator,NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService)
+    public function __construct(TokenStorage $tokenStorage, UrlGeneratorInterface $urlGenerator, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService)
     {
         $this->tokenStorage = $tokenStorage;
         $this->urlGenerator = $urlGenerator;
@@ -29,7 +29,8 @@ class RequestListener
                 $user = $token->getUser();
                 if (!$user->getPassword() || $user->getStatut() === User::STATUS_INACTIVE)
                     $event->setResponse(new RedirectResponse($this->urlGenerator->generate('login_creation_pass')));
-                //$this->newsActivitiesSinceLastLoginService->set($user);
+                if (str_contains($event->getRequest()->get('_route'), 'back_'))
+                    $this->newsActivitiesSinceLastLoginService->set($user);
             }
         }
     }
