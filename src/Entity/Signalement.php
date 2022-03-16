@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: SignalementRepository::class)]
 class Signalement
 {
+
     const STATUS_NEED_VALIDATION = 1;
     const STATUS_ACTIVE = 2;
     const STATUS_NEED_PARTNER_RESPONSE = 3;
@@ -319,7 +320,7 @@ class Signalement
     private $closedAt;
 
     #[ORM\Column(type: 'string', length: 15, nullable: true)]
-    private $telephoneOccupantBis;
+    private $telOccupantBis;
 
     public function __construct()
     {
@@ -1619,14 +1620,14 @@ class Signalement
         return $this;
     }
 
-    public function getTelephoneOccupantBis(): ?string
+    public function getTelOccupantBis(): ?string
     {
-        return $this->telephoneOccupantBis;
+        return $this->telOccupantBis;
     }
 
-    public function setTelephoneOccupantBis(?string $telephoneOccupantBis): self
+    public function setTeleOccupantBis(?string $telOccupantBis): self
     {
-        $this->telephoneOccupantBis = $telephoneOccupantBis;
+        $this->telOccupantBis = $telOccupantBis;
 
         return $this;
     }

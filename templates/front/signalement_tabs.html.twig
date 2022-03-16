@@ -314,6 +314,62 @@
                 </div>
             </div>
             <div class="fr-form-group">
+                <fieldset class="fr-fieldset">
+                    <legend class="fr-fieldset__legend fr-text--regular">
+                        Carracteristiques du logement
+                        <p class="fr-hint-text">Indiquer la nature et la superficie du logement en mètres
+                            carrés (m²).</p>
+                    </legend>
+
+                    <div class="fr-radio-group">
+                        <label>
+                            <input type="number" id="signalement_superficie" name="signalement[superficie]" required="required" class="fr-input" min="0" step="0.01">
+                        </label>
+                        <p class="fr-error-text fr-hidden">
+                            Veuillez renseigner la superficie en mètres carrés du logement.
+                        </p>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="fr-form-group">
+                <fieldset class="fr-fieldset fr-fieldset--inline">
+                    <legend class="fr-fieldset__legend fr-text--regular" id='signalement-nature-logement'>
+                        {{ form_label(form.natureLogement) }}
+                        {{ form_help(form.natureLogement) }}
+                    </legend>
+                    <div class="fr-fieldset__content">
+                        {% for key, choice in form.natureLogement.children %}
+                            <div class="fr-radio-group">
+                                {{ form_widget(choice) }}
+                                {{ form_label(choice) }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <p class="fr-error-text fr-hidden">
+                        Veuillez précisez la nature du logement concerné.
+                    </p>
+                </fieldset>
+            </div>
+            <div class="fr-form-group">
+                <fieldset class="fr-fieldset fr-fieldset--inline">
+                    <legend class="fr-fieldset__legend fr-text--regular" id='signalement-annee-construction'>
+                        {{ form_label(form.isConstructionAvant1948) }}
+                        {{ form_help(form.isConstructionAvant1948) }}
+                    </legend>
+                    <div class="fr-fieldset__content">
+                        {% for key, choice in form.isConstructionAvant1948.children %}
+                            <div class="fr-radio-group">
+                                {{ form_widget(choice) }}
+                                {{ form_label(choice) }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <p class="fr-error-text fr-hidden">
+                        Veuillez précisez l'annèe de construction du logement concerné.
+                    </p>
+                </fieldset>
+            </div>
+            <div class="fr-form-group">
                 <fieldset class="fr-fieldset fr-fieldset--inline">
                     <legend class="fr-fieldset__legend fr-text--regular" id='signalement-logement-social'>
                         {{ form_label(form.isLogementSocial) }}
@@ -329,6 +385,25 @@
                     </div>
                     <p class="fr-error-text fr-hidden">
                         Veuillez précisez si le logement est un logement social ou non.
+                    </p>
+                </fieldset>
+            </div>
+            <div class="fr-form-group">
+                <fieldset class="fr-fieldset fr-fieldset--inline">
+                    <legend class="fr-fieldset__legend fr-text--regular" id='signalement-type-energie'>
+                        {{ form_label(form.typeEnergieLogement) }}
+                        {{ form_help(form.typeEnergieLogement) }}
+                    </legend>
+                    <div class="fr-fieldset__content">
+                        {% for key, choice in form.typeEnergieLogement.children %}
+                            <div class="fr-radio-group">
+                                {{ form_widget(choice) }}
+                                {{ form_label(choice) }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <p class="fr-error-text fr-hidden">
+                        Veuillez précisez si le type d'énergie du logement.
                     </p>
                 </fieldset>
             </div>

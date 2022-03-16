@@ -7,7 +7,7 @@ elseif($forAll -eq "--bdr")
 {
    $projects =  @('BDR')
 } else {
-    $projects =  (Get-ChildItem -Path ../ -exclude *.idea,DEMO, BDR, CDNASSETS).Name
+    $projects =  (Get-ChildItem -Path ../ -exclude *.idea,DEMO, BDR, CDNASSETS,AM).Name
 }
 $cmdOutput = git diff --name-only
 $currentLocation = Get-Location;
