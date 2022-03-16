@@ -192,6 +192,7 @@ class EsaboraService
 
     public function get(Affectation $affectation)
     {
+
         // ["SAS_Référence","SAS_Etat","Doss_ID","Doss_Numéro","Doss_Statut_Abrégé","Doss_Statut","Doss_Etat","Doss_Cloture", "Doss_Type", "Doss_Problématique"]
         $url = $affectation->getPartenaire()->getEsaboraUrl();
         $token = $affectation->getPartenaire()->getEsaboraToken();

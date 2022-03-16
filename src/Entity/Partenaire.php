@@ -75,7 +75,7 @@ class Partenaire
     }
 
     /**
-     * @return Collection|User[]
+     * @return Collection
      */
     public function getUsers(): Collection
     {
