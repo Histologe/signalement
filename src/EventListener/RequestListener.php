@@ -29,8 +29,8 @@ class RequestListener
                 $user = $token->getUser();
                 if (!$user->getPassword() || $user->getStatut() === User::STATUS_INACTIVE)
                     $event->setResponse(new RedirectResponse($this->urlGenerator->generate('login_creation_pass')));
-                if (str_contains($event->getRequest()->get('_route'), 'back_'))
-                    $this->newsActivitiesSinceLastLoginService->set($user);
+                /*if (str_contains($event->getRequest()->get('_route'), 'back_'))
+                    $this->newsActivitiesSinceLastLoginService->set($user);*/
             }
         }
     }
