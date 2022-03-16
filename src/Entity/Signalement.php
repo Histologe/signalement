@@ -473,24 +473,24 @@ class Signalement
         return $this;
     }
 
-    public function getNbEnfantsM6(): int|string
+    public function getNbEnfantsM6()
     {
         return $this->nbEnfantsM6;
     }
 
-    public function setNbEnfantsM6(int|string $nbEnfantsM6): self
+    public function setNbEnfantsM6($nbEnfantsM6): self
     {
         $this->nbEnfantsM6 = $nbEnfantsM6;
 
         return $this;
     }
 
-    public function getNbEnfantsP6(): int|string
+    public function getNbEnfantsP6()
     {
         return $this->nbEnfantsP6;
     }
 
-    public function setNbEnfantsP6(int|string $nbEnfantsP6): self
+    public function setNbEnfantsP6($nbEnfantsP6): self
     {
         $this->nbEnfantsP6 = $nbEnfantsP6;
 
