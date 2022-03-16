@@ -73,7 +73,6 @@ class Partenaire
 
         return $this;
     }
-
     /**
      * @return Collection
      */
