@@ -40,9 +40,10 @@ class GetGeolocCommand extends Command
             ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description');
     }
 
-    protected function setGeolocAndInsee(Signalement $signalement)
+    protected function setGeolocAndInsee($io,Signalement $signalement)
     {
         $adresse = $signalement->getAdresseOccupant() . ' ' . $signalement->getCpOccupant() . ' ' . $signalement->getVilleOccupant();
+        $io->note($adresse);
         $response = json_decode($this->httpClient->request('GET', 'https://api-adresse.data.gouv.fr/search/?q=' . $adresse)->getContent(), true);
         $coordinates = $response['features'][0]['geometry']['coordinates'];
         $insee = $response['features'][0]['properties']['citycode'];
@@ -58,16 +59,18 @@ class GetGeolocCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $repo = $em->getRepository(Signalement::class);
         $reference = $input->getArgument('reference');
-        $io->note($input->getArgument('reference'));
+        if ($reference) {
+            $io->note($input->getArgument('reference'));
+        }
         $signalements = $repo->findAll();
         if ($reference && $signalement = $repo->findOneBy(['reference' => $reference])) {
-            $this->setGeolocAndInsee($signalement);
+            $this->setGeolocAndInsee($io,$signalement);
             $em->persist($signalement);
             $i++;
         } else
             foreach ($signalements as $signalement)
                 if (!$signalement->getGeoloc() || empty($signalement->getGeoloc()['lat']) || empty($signalement->getGeoloc()['lng'])) {
-                    $this->setGeolocAndInsee($signalement);
+                    $this->setGeolocAndInsee($io,$signalement);
                     $em->persist($signalement);
                     $i++;
                 }

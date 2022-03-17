@@ -73,6 +73,7 @@ class BackSignalementController extends AbstractController
         $clotureForm->handleRequest($request);
         if ($clotureForm->isSubmitted() && $clotureForm->isValid()) {
             $motifCloture = $clotureForm->get('motif')->getData();
+            $motifSuivi = $clotureForm->getExtraData()['suivi'];
             $sujet = $this->getUser()?->getPartenaire()?->getNom();
             if ($clotureForm->get('type')->getData() === 'all') {
                 $signalement->setStatut(Signalement::STATUS_CLOSED);
@@ -84,8 +85,10 @@ class BackSignalementController extends AbstractController
                     $entityManager->persist($affectation);
                 });
             }
+            $motifSuivi = preg_replace('/<p[^>]*>/', '', $motifSuivi); // Remove the start <p> or <p attr="">
+            $motifSuivi = str_replace('</p>', '<br>', $motifSuivi); // Replace the end
             $suivi = new Suivi();
-            $suivi->setDescription('Le signalement à été cloturé pour ' . $sujet . ' avec le motif suivant: <br> <strong>' . $motifCloture . '</strong>');
+            $suivi->setDescription('Le signalement à été cloturé pour ' . $sujet . ' avec le motif suivant: <br> <strong>' . $motifCloture . '</strong><br><strong>Desc.: </strong>'.$motifSuivi);
             $suivi->setCreatedBy($this->getUser());
             $signalement->addSuivi($suivi);
             /** @var Affectation $isAffected */

@@ -42,21 +42,19 @@ class BackController extends AbstractController
             $filter['status'] = [Signalement::STATUS_CLOSED, Signalement::STATUS_ACTIVE];
         $this->req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['page']);
         $this->iterator = $this->req->getIterator()->getArrayCopy();
-        if ($this->getUser()->getPartenaire()) {
+        if ($user && $this->getUser()->getPartenaire()) {
             foreach ($this->req as $k => $signalement) {
                 $signalement->getAffectations()->filter(function (Affectation $affectation) use ($signalement, $filter, $k) {
                     if ($filter['status'] === [Signalement::STATUS_CLOSED, Signalement::STATUS_ACTIVE] && $affectation->getStatut() === Affectation::STATUS_ACCEPTED)
                         unset($this->iterator[$k]);
-                    elseif ($filter['status'] === (string)Signalement::STATUS_ACTIVE && $affectation->getSignalement()->getStatut() !== Signalement::STATUS_ACTIVE && $affectation->getStatut() !== Affectation::STATUS_ACCEPTED)
+                    elseif ($filter['status'] === (string)Signalement::STATUS_ACTIVE && ($affectation->getStatut() === Affectation::STATUS_REFUSED || $affectation->getStatut() === Affectation::STATUS_CLOSED)) {
                         unset($this->iterator[$k]);
-                    else {
-
+                    } else {
                         if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_WAIT)
                             $signalement->setStatut(Signalement::STATUS_NEED_PARTNER_RESPONSE);
                         if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && ($affectation->getStatut() === Affectation::STATUS_CLOSED || $affectation->getStatut() === Affectation::STATUS_REFUSED))
                             $signalement->setStatut(Signalement::STATUS_CLOSED);
                     }
-
                 });
             }
         }

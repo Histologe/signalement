@@ -15,7 +15,7 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Histologe">
     <meta property="og:description" content="Signaler vos problèmes de logement.">
-    <meta property="og:image" content={{asset('img/Logohistologe.png') }}>
+    <meta property="og:image" content={{ asset('img/Logohistologe.png') }}>
     <meta property="og:site_name" content="Histologe">
 
     <!-- Twitter Meta Tags -->
@@ -24,13 +24,13 @@
     <meta property="twitter:url" content="\\{{ config.get.urlTerritoire }}">
     <meta name="twitter:title" content="Histologe">
     <meta name="twitter:description" content="Signaler vos problèmes de logement.">
-    <meta name="twitter:image" content={{asset('img/Logohistologe.png') }}>
+    <meta name="twitter:image" content={{ asset('img/Logohistologe.png') }}>
     <meta name="twitter:title" content="Histologe">
     <meta name="twitter:description" content="Signaler vos problèmes de logement.">
     <meta name="apple-mobile-web-app-title" content="Histologe">
-    <link rel="icon" href={{asset('img/favicon.ico') }}>
-    <link rel="stylesheet" href={{asset('dsfr/dsfr.min.css') }}>
-    <link rel="stylesheet" href={{asset('css/histologe.css') }}>
+    <link rel="icon" href={{ asset('img/favicon.ico') }}>
+    <link rel="stylesheet" href={{ asset('dsfr/dsfr.min.css') }}>
+    <link rel="stylesheet" href={{ asset('css/histologe.css') }}>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
@@ -41,7 +41,21 @@
     <script>
         tinymce.init({
             selector: 'textarea.editor',
-            menubar: false
+            plugins: 'lists',
+            toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist',
+            menubar: false,
+            height: 320,
+            setup: function (editor) {
+                editor.on('input', function (e) {
+                    if (editor.formElement.classList.contains('tinyCheck')) {
+                        let isOk = true,
+                            submitter = document.querySelector('button[form="' + editor.formElement.id + '"]')
+                        isOk = editor.getContent().length <= 17;
+                        !isOk && document.querySelector('#'+editor.id).parentElement.classList.add('fr-input-group--error'), document.querySelector('#'+editor.id).parentElement.querySelector('.fr-error-text').classList.remove('fr-hidden');
+                        submitter.disabled = isOk;
+                    }
+                });
+            }
         });
     </script>
 </head>
@@ -67,15 +81,15 @@
 {% if 'back_' not in app.request.get('_route') %}
     {% include "footer.html.twig" %}
 {% endif %}
-<script type="module" src={{asset('dsfr/dsfr.module.min.js') }}></script>
-<script type="text/javascript" nomodule src={{asset('dsfr/dsfr.nomodule.min.js') }}></script>
-<script type="text/javascript" src={{asset('js/screencapture.js') }}></script>
+<script type="module" src={{ asset('dsfr/dsfr.module.min.js') }}></script>
+<script type="text/javascript" nomodule src={{ asset('dsfr/dsfr.nomodule.min.js') }}></script>
+<script type="text/javascript" src={{ asset('js/screencapture.js') }}></script>
 <script src="{{ asset('js/app.min.js') }}"></script>
-<script src={{asset('js/img_box.js') }}></script>
+<script src={{ asset('js/img_box.js') }}></script>
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
-<script src={{asset('js/gauge.min.js') }}></script>
+<script src={{ asset('js/gauge.min.js') }}></script>
 {% block javascripts %}{% endblock %}
 </body>
 </html>

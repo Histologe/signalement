@@ -8,7 +8,6 @@
     {% if signalement.statut is not same as(1) and not isClosed and not isClosedForMe and ((isAffected and isAccepted)) or is_granted('ROLE_ADMIN_TERRITOIRE') %}
         {% include 'back/signalement/modal_cloture.html.twig' %}
     {% endif %}
-    {% include 'back/signalement/modal_dpe.html.twig' %}
     <section class="fr-p-5v {{ isClosedForMe or signalement.statut is same as(6) ? 'signalement-invalid':'' }}"
              id="signalement-{{ signalement.id }}-content">
         <header>
@@ -31,19 +30,18 @@
                 </div>
                 <div class="fr-col-12 fr-col-md-6 fr-text--right">
                     {% if isAffected and not isAccepted and not isRefused and not needValidation and  not isClosed and not isClosedForMe %}
-                        <form action="{{ path('back_signalement_affectation_response',{uuid:signalement.uuid,user:app.user.id}) }}">
+                        <form action="{{ path('back_signalement_affectation_response',{uuid:signalement.uuid,user:app.user.id}) }}" class="tinyCheck" id="signalement-affectation-response-form" name="signalement-affectation-response-form">
                             <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
                                     name="signalement-affectation-response[accept]" value="1"
                                     {# onclick="return confirm('Êtes-vous certain de vouloir acccepter ce signalement ?')" #}>
                                 J'ai pris connaissance du signalement
                             </button>
-                            <button class="fr-btn fr-btn--danger fr-fi-close-circle-fill fr-btn--icon-left"
-                                    name="signalement-affectation-response[deny]" value="1"
-                                    onclick="return confirm('Êtes-vous certain de vouloir refuser ce signalement ?')">Ce
+                            <a href="#" class="fr-btn fr-btn--danger fr-fi-close-circle-fill fr-btn--icon-left" data-fr-opened="false" aria-controls="refus-affectation-modal">Ce
                                 n'est pas
                                 pour
                                 moi
-                            </button>
+                            </a>
+                            {% include 'back/signalement/modal_refus_affectation.html.twig' %}
                             <input type="hidden" name="_token"
                                    value="{{ csrf_token('signalement_affectation_response_'~signalement.id) }}">
                         </form>
@@ -555,7 +553,7 @@
                     <small>[{{ suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun' }}]</small> <br>
                     <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
                 </div>
-                <div class="fr-col-9 bloc-suivi-content-row">
+                <div class="fr-col-9 bloc-suivi-content-row fr-pl-3v">
                     {{ suivi.description|raw }}
                 </div>
                 <div class="fr-col-1 fr-text--right">

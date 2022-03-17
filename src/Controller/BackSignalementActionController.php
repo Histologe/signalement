@@ -96,7 +96,7 @@ class BackSignalementActionController extends AbstractController
     }
 
     #[Route('/{uuid}/affectation/toggle', name: 'back_signalement_toggle_affectation')]
-    public function toggleAffectationSignalement(Signalement $signalement,EsaboraService $esaboraService, ManagerRegistry $doctrine, Request $request, PartenaireRepository $partenaireRepository, NotificationService $notificationService): RedirectResponse|JsonResponse
+    public function toggleAffectationSignalement(Signalement $signalement, EsaboraService $esaboraService, ManagerRegistry $doctrine, Request $request, PartenaireRepository $partenaireRepository, NotificationService $notificationService): RedirectResponse|JsonResponse
     {
         if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') && !$this->checker->check($signalement, $this->getUser()))
             return $this->json(['status' => 'denied'], 400);
@@ -116,7 +116,7 @@ class BackSignalementActionController extends AbstractController
                     $affectation->setPartenaire($partenaire);
                     $affectation->setAffectedBy($this->getUser());
                     $doctrine->getManager()->persist($affectation);
-                    if($partenaire->getEsaboraToken() && $partenaire->getEsaboraUrl())
+                    if ($partenaire->getEsaboraToken() && $partenaire->getEsaboraUrl())
                         $esaboraService->post($affectation);
                     if ($partenaire->getEmail()) {
                         $notificationService->send(NotificationService::TYPE_AFFECTATION, $partenaire->getEmail(), [
@@ -199,8 +199,17 @@ class BackSignalementActionController extends AbstractController
             && $response = $request->get('signalement-affectation-response')) {
             if (isset($response['accept']))
                 $statut = Affectation::STATUS_ACCEPTED;
-            else
+            else {
+                $motifRefus = $response['suivi'];
                 $statut = Affectation::STATUS_REFUSED;
+                $motifRefus = preg_replace('/<p[^>]*>/', '', $motifRefus); // Remove the start <p> or <p attr="">
+                $motifRefus = str_replace('</p>', '<br>', $motifRefus); // Replace the end
+                $suivi = new Suivi();
+                $suivi->setDescription('Le signalement à été refusé avec le motif suivant:<br> ' . $motifRefus);
+                $suivi->setCreatedBy($this->getUser());
+                $suivi->setSignalement($signalement);
+                $doctrine->getManager()->persist($suivi);
+            }
             $affectation = $doctrine->getRepository(Affectation::class)->findOneBy(['partenaire' => $user->getPartenaire(), 'signalement' => $signalement]);
             $affectation->setStatut($statut);
             $affectation->setAnsweredAt(new \DateTimeImmutable());

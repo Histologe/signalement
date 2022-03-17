@@ -124,16 +124,16 @@ forms.forEach((form) => {
                 })
         })
     })
-    form?.querySelectorAll('.fr-hover-critere')?.forEach(fhc=>{
-        fhc.addEventListeners('click touchdown',(event)=>{
-            if(fhc.parentElement.parentElement.getAttribute('aria-expanded') === "true"){
-                let target = form?.querySelector('#'+fhc.parentElement.parentElement.getAttribute('aria-controls'))
+    form?.querySelectorAll('.fr-hover-critere')?.forEach(fhc => {
+        fhc.addEventListeners('click touchdown', (event) => {
+            if (fhc.parentElement.parentElement.getAttribute('aria-expanded') === "true") {
+                let target = form?.querySelector('#' + fhc.parentElement.parentElement.getAttribute('aria-controls'))
                 target.classList.remove('fr-fieldset--error')
-                target.querySelectorAll('input').forEach(i=>{
+                target.querySelectorAll('input').forEach(i => {
                     i.required = false;
                     i.checked = false;
                 })
-                target.querySelectorAll('.fr-radio-rich img').forEach(img=>{
+                target.querySelectorAll('.fr-radio-rich img').forEach(img => {
                     img.src = img.getAttribute('data-fr-unchecked-icon');
                 })
             }
@@ -267,8 +267,8 @@ forms.forEach((form) => {
         })
     })
     form?.querySelectorAll('[data-fr-adresse-autocomplete]').forEach((autocomplete) => {
-        autocomplete.addEventListener('keyup', ()=>{
-            searchAddress(form,autocomplete)
+        autocomplete.addEventListener('keyup', () => {
+            searchAddress(form, autocomplete)
         });
     })
     form.addEventListener('submit', (event) => {
@@ -388,7 +388,7 @@ forms.forEach((form) => {
                 }
                 if (!nextTabBtn) {
                     event.target.querySelector('[type="submit"]').disabled = true;
-                    ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v =>  event.target.querySelector('[type="submit"]').classList.toggle(v));
+                    ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v => event.target.querySelector('[type="submit"]').classList.toggle(v));
                     event.target.querySelector('[type="submit"]').innerHTML = "En cours d'envoi..."
                     let formData = new FormData();
                     forms.forEach((form) => {
@@ -419,7 +419,7 @@ forms.forEach((form) => {
                                 } else {
                                     event.target.querySelector('[type="submit"]').disabled = false;
                                     event.target.querySelector('[type="submit"]').innerHTML = "Confirmer";
-                                    ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v =>  event.target.querySelector('[type="submit"]').classList.toggle(v));
+                                    ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v => event.target.querySelector('[type="submit"]').classList.toggle(v));
                                     alert('Erreur lors de l\'enregistrement du  signalement !')
 
                                 }
@@ -427,7 +427,7 @@ forms.forEach((form) => {
                         } else {
                             event.target.querySelector('[type="submit"]').disabled = false;
                             event.target.querySelector('[type="submit"]').innerHTML = "Confirmer";
-                            ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v =>  event.target.querySelector('[type="submit"]').classList.toggle(v));
+                            ['fr-fi-checkbox-circle-fill', 'fr-fi-refresh-fill'].map(v => event.target.querySelector('[type="submit"]').classList.toggle(v));
                             alert('Erreur lors de l\'enregistrement du  signalement ! Nos équipes ont été informées du problème.')
                         }
                     })
@@ -647,7 +647,7 @@ document?.querySelector('#signalement-affectation-form-submit')?.addEventListene
             /*})*/
         }
     })
-   //console.log(e.target.form);
+    //console.log(e.target.form);
 })
 document?.querySelectorAll('.fr-input--file-signalement').forEach(inputFile => {
     inputFile.addEventListener('change', evt => {
@@ -731,7 +731,7 @@ document?.querySelector('#fr-bug-report-modal').addEventListeners('dsfr.disclose
                 method: 'POST',
                 body: formData
             }).then(r => r.text().then(res => {
-               //console.log(res)
+                //console.log(res)
                 form.classList.add('fr-hidden');
                 event.target.querySelector('#bug-report-success').classList.remove('fr-hidden')
             }))
@@ -777,11 +777,11 @@ document?.querySelector('form[name="login-creation-mdp-form"]')?.querySelectorAl
         }
     })
 })
-function searchAddress(form,autocomplete){
 
-    if (autocomplete.value.length > 10)
-    {
-        autocomplete.removeEventListener('keyup',searchAddress)
+function searchAddress(form, autocomplete) {
+
+    if (autocomplete.value.length > 10) {
+        autocomplete.removeEventListener('keyup', searchAddress)
         fetch('https://api-adresse.data.gouv.fr/search/?q=' + autocomplete.value).then((res) => {
             res.json().then((r) => {
                 let container = form.querySelector('#signalement-adresse-suggestion')
@@ -808,6 +808,7 @@ function searchAddress(form,autocomplete){
         return false;
     }
 }
+
 document.querySelector('#modal-dpe-opener')?.addEventListener('click', (event) => {
     let urlDpe = event.target.getAttribute('data-dpe-url');
     fetch(urlDpe).then(r => {

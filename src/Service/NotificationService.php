@@ -109,7 +109,7 @@ class NotificationService
         $notification->markAsPublic();
         return $notification->htmlTemplate('emails/' . $config['template'] . '.html.twig')
             ->context(array_merge($params, $config))
-            ->subject('Histologe - ' . $config['subject']);
+            ->subject('HISTOLOGE '.mb_strtoupper($this->configuration->get()->getNomTerritoire()).' - ' . $config['subject']);
     }
 
 }
