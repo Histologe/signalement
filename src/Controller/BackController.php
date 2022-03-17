@@ -23,6 +23,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class BackController extends AbstractController
 {
     private $req;
+    private $iterator;
 
     #[Route('/', name: 'back_index')]
     public function index(SignalementRepository $signalementRepository, Request $request): Response
@@ -40,14 +41,14 @@ class BackController extends AbstractController
         if ($user && $filter['status'] === (string)Signalement::STATUS_CLOSED)
             $filter['status'] = [Signalement::STATUS_CLOSED, Signalement::STATUS_ACTIVE];
         $this->req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['page']);
-        $this->req = $this->req->getIterator()->getArrayCopy();
+        $this->iterator = $this->req->getIterator()->getArrayCopy();
         if ($this->getUser()->getPartenaire()) {
             foreach ($this->req as $k => $signalement) {
                 $signalement->getAffectations()->filter(function (Affectation $affectation) use ($signalement, $filter, $k) {
                     if ($filter['status'] === [Signalement::STATUS_CLOSED, Signalement::STATUS_ACTIVE] && $affectation->getStatut() === Affectation::STATUS_ACCEPTED)
-                        unset($this->req[$k]);
+                        unset($this->iterator[$k]);
                     elseif ($filter['status'] === (string)Signalement::STATUS_ACTIVE && $affectation->getSignalement()->getStatut() !== Signalement::STATUS_ACTIVE && $affectation->getStatut() !== Affectation::STATUS_ACCEPTED)
-                        unset($this->req[$k]);
+                        unset($this->iterator[$k]);
                     else {
                         if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_WAIT)
                             $signalement->setStatut(Signalement::STATUS_NEED_PARTNER_RESPONSE);
@@ -59,7 +60,7 @@ class BackController extends AbstractController
             }
         }
         $signalements = [
-            'list' => $this->req,
+            'list' => $this->iterator,
             'villes' => $signalementRepository->findCities($user),
             'total' => count($this->req),
             'page' => (int)$filter['page'],
