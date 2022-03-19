@@ -46,7 +46,7 @@ class Signalement
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $isProprioAverti;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(type: 'string', nullable: true)]
     private $nbAdultes;
 
     #[ORM\Column(type: 'string', nullable: true)]
@@ -254,7 +254,7 @@ class Signalement
     private $isLogementCollectif;
 
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $isConstructionAvant1948;
+    private $isConstructionAvant1949;
 
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $isDiagSocioTechnique;
@@ -466,12 +466,12 @@ class Signalement
         return $this;
     }
 
-    public function getNbAdultes(): ?int
+    public function getNbAdultes()
     {
         return $this->nbAdultes;
     }
 
-    public function setNbAdultes(?int $nbAdultes): self
+    public function setNbAdultes($nbAdultes): self
     {
         $this->nbAdultes = $nbAdultes;
 
@@ -1328,14 +1328,14 @@ class Signalement
         return $this;
     }
 
-    public function getIsConstructionAvant1948(): ?bool
+    public function getIsConstructionAvant1949(): ?bool
     {
-        return $this->isConstructionAvant1948;
+        return $this->isConstructionAvant1949;
     }
 
-    public function setIsConstructionAvant1948(?bool $isConstructionAvant1948): self
+    public function setIsConstructionAvant1949(?bool $isConstructionAvant1949): self
     {
-        $this->isConstructionAvant1948 = $isConstructionAvant1948;
+        $this->isConstructionAvant1949 = $isConstructionAvant1949;
 
         return $this;
     }
