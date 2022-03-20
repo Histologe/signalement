@@ -21,25 +21,5 @@
     </main>
 {% endblock %}
 {% block javascripts %}
-    <script>
-        tinymce.init({
-            selector: 'textarea.editor',
-            plugins: 'lists',
-            toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist',
-            menubar: false,
-            height: 320,
-            setup: function (editor) {
-                editor.on('input', function (e) {
-                    if (editor.formElement.classList.contains('tinyCheck')) {
-                        let isOk = true,
-                            submitter = document.querySelector('button[form="' + editor.formElement.id + '"]')
-                        isOk = editor.getContent().length <= 17;
-                        !isOk && document.querySelector('#'+editor.id).parentElement.classList.add('fr-input-group--error'), document.querySelector('#'+editor.id).parentElement.querySelector('.fr-error-text').classList.remove('fr-hidden');
-                        submitter.disabled = isOk;
-                    }
-                });
-            }
-        });
-    </script>
 {#    <script src={{asset(''[^']*') }}></script>#}
 {% endblock %}
