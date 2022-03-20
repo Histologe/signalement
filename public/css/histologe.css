@@ -205,9 +205,15 @@ small {
 .fr-text--center {
     text-align: center !important;
 }
-
+.value-switcher:hover {
+    cursor: pointer;
+}
 .fr-text--right {
     text-align: right !important;
+}
+
+.fr-text--left {
+    text-align: left !important;
 }
 
 /*INPUTS*/
