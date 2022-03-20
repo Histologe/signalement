@@ -210,10 +210,6 @@ small {
     text-align: right !important;
 }
 
-.fr-text--left {
-    text-align: left !important;
-}
-
 /*INPUTS*/
 .fr-adresse-suggestion:hover {
     background-color: var(--artwork-minor-blue-cumulus);
