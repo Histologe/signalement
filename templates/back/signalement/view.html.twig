@@ -2,6 +2,7 @@
 
 {% set picto_yes = '<p class="fr-badge fr-badge--success">Oui</p>' %}
 {% set picto_no = '<p class="fr-badge fr-badge--error">Non</p>' %}
+{% set procedures = ["RSD" , "Mise en sécurité","Incurie","Insalubrité", "Décence", "ADIL"] %}
 
 {% block content %}
     {% include 'back/signalement/modal_affectation.html.twig' %}
@@ -99,12 +100,27 @@
                 </div>
             </div>
         </header>
-        <hr>
-        <div class="fr-grid-row">
-            <div class="fr-col-12">
+        <hr class="fr-pb-1v">
+        <div class="fr-grid-row fr-grid-row--middle">
+            <div class="fr-col-12 fr-col-md-10">
                 <strong class="fr-fi-chat-quote-fill fr-icon--sm fr-text-label--blue-france"> Description par
                     l'usager</strong>
                 <span class="fr-hint-text">Ci-dessous le détails du signalement tel que rapporté par l'usager</span>
+            </div>
+            {% if signalement.statut is not same as(0) and not isClosedForMe or isAffected and isAccepted %}
+                <div class="fr-col-12 fr-col-md-2 fr-text--right">
+                    <div class="fr-select-group">
+                        <label for="" class="fr-label fr-text-label--blue-france fr-fi-information-fill fr-fi--sm"><strong>&nbsp;Type procédure</strong></label>
+                        <select name="" id="" class="fr-select">
+                            <option disabled {% if not signalement.codeProcedure %} selected{% endif %}>-- Définir --</option>
+                            {% for procedure in procedures %}
+                                <option value="{{ procedure|upper|replace({' ':'_'}) }}" {% if signalement.codeProcedure is same as (procedure) %}selected{% endif %}>{{ procedure|upper }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="fr-col-12">
                 <ul class="fr-background-alt--blue-france fr-list--icon-img fr-rounded">
                     <li class="fr-p-5v">
                         {{ signalement.details|raw }}
@@ -547,7 +563,7 @@
             <hr class=" fr-mt-5v">
         {% endif %}
         {% for suivi in signalement.suivis|reverse %}
-            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-2v">
+            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v">
                 <div class="fr-col-2">
                     <strong> {{ suivi.createdBy.nom|upper~'. '~ suivi.createdBy.prenom|capitalize }}</strong> <br>
                     <small>[{{ suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun' }}]</small> <br>
