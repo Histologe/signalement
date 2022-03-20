@@ -839,3 +839,24 @@ document.querySelector('#modal-dpe-opener')?.addEventListener('click', (event) =
         })
     })
 })
+document.querySelectorAll('.value-switcher').forEach(sw => {
+    sw.addEventListener(sw.getAttribute('data-action') ?? 'change', (evt => {
+        let url = evt.target.getAttribute('data-url'), formData = new FormData();
+        formData.append('_token', evt.target.getAttribute('data-token'))
+        formData.append('item', evt.target.getAttribute('data-item'))
+        formData.append('value', evt?.target?.selectedIndex ? evt?.target?.options[evt?.target?.selectedIndex]?.value :'')
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        }).then(r => r.text().then(res => {
+           if(res.return === 1)
+           {
+               ['fr-badge--error','fr-badge--success'].map(c=>{
+                   evt.target.classList.toggle(c);
+               })
+               evt.target.innerText === "OUI" ? evt.target.innerText = "NON" : evt.target.innerText = "OUI"
+           }
+        }))
+
+    }))
+})
