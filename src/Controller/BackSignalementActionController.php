@@ -10,7 +10,6 @@ use App\Repository\PartenaireRepository;
 use App\Service\AffectationCheckerService;
 use App\Service\EsaboraService;
 use App\Service\NotificationService;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -163,7 +162,7 @@ class BackSignalementActionController extends AbstractController
         if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') && !$this->checker->check($signalement, $this->getUser()))
             return $this->json(['status' => 'denied'], 400);
         if ($this->isCsrfTokenValid('signalement_reopen_' . $signalement->getId(), $request->get('_token')) && $response = $request->get('signalement-action')) {
-            if ($this->isGranted('ROLE_ADMIN_TERRITOIRE')) {
+            if ($this->isGranted('ROLE_ADMIN_PARTENAIRE')) {
                 $signalement->setStatut(Signalement::STATUS_ACTIVE);
                 $doctrine->getManager()->persist($signalement);
                 $signalement->getAffectations()->filter(function (Affectation $affectation) use ($signalement, $doctrine) {
@@ -221,32 +220,6 @@ class BackSignalementActionController extends AbstractController
         } else
             $this->addFlash('error', "Une erreur est survenu lors de l'affectation");
         return $this->redirectToRoute('back_signalement_view', ['uuid' => $signalement->getUuid()]);
-    }
-
-    #[Route('/{uuid}/switch', name: "back_signalement_switch_value", methods: "POST")]
-    public function switchValue(Signalement $signalement, Request $request, EntityManagerInterface $entityManager)
-    {
-        if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') && !$this->checker->check($signalement, $this->getUser()))
-            return $this->json(['status' => 'denied'], 400);
-        if ($this->isCsrfTokenValid('signalement_switch_value_' . $signalement->getUuid(), $request->get('_token'))) {
-            $return =0;
-            $getMethod = 'get' . $request->get('item');
-            $setMethod = 'set' . $request->get('item');
-            $value = $request->get('value');
-            if (!$value)
-            {
-                $value = !(int)$signalement->$getMethod() ?? 1;
-                $return = 1;
-            }
-            $signalement->$setMethod($value);
-            $entityManager->persist($signalement);
-            $entityManager->flush();
-            if(is_bool($value))
-                return $this->json(['response' => 'success', 'return' => $return]);
-            $this->addFlash('success',$request->get('item').' mis à jour avec succès !');
-            return $this->redirectToRoute('back_signalement_view',['uuid'=>$signalement->getUuid()]);
-        }
-        return $this->json(['response' => 'error'], 400);
     }
 
 }
