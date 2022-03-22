@@ -1,3 +1,4 @@
+
 {% for index,signalement in signalements.list %}
     <tr class="{% if signalement.statut is same as(1) or signalement.statut is same as(3) %}fr-background-contrast--orange-terre-battue{% endif %} signalement-row"
         data-score="{{ signalement.scoreCreation }}">

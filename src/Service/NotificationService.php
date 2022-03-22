@@ -82,6 +82,7 @@ class NotificationService
         };
     }
 
+
     public function send(int $type, string|array $to, array $params): TransportExceptionInterface|\Exception|bool
     {
         $params['url'] =  $_SERVER['SERVER_NAME'] ?? null;

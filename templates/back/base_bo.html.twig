@@ -21,5 +21,49 @@
     </main>
 {% endblock %}
 {% block javascripts %}
+    <script src="{{ asset('js/tinymce/tinymce.min.js') }}"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea.editor',
+            plugins: 'lists',
+            toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | mybutton',
+            menubar: false,
+            height: 320,
+            setup: function (editor) {
+                editor.on('input', function (e) {
+                    if (editor.formElement.classList.contains('tinyCheck')) {
+                        let isOk = true,
+                            submitters = document.querySelectorAll('button[form="' + editor.formElement.id + '"]')
+                        isOk = editor.getContent().length <= 17;
+                        !isOk && document.querySelector('#'+editor.id).parentElement.classList.add('fr-input-group--error'), document.querySelector('#'+editor.id).parentElement.querySelector('.fr-error-text').classList.remove('fr-hidden');
+                        submitters.forEach(sbmt=>{
+                            sbmt.disabled = isOk;
+                        })
+                        if(isOk !== true)
+                            document.querySelector('#'+editor.id).parentElement.classList.remove('fr-input-group--error'), document.querySelector('#'+editor.id).parentElement.querySelector('.fr-error-text').classList.add('fr-hidden');
+                    }
+                });
+                {% if 'back_signalement_view' in app.request.get('_route') %}
+                editor.ui.registry.addMenuButton('mybutton', {
+                    text: 'Partager un document',
+                    fetch: function (callback) {
+                        var items = [
+                            {% for doc in signalement.documents %}
+                            {
+                                type: 'menuitem',
+                                text: '{{ doc.titre }}',
+                                onAction: function () {
+                                    editor.insertContent('&nbsp;<a href="{{ asset('_up/'~doc.file) }}?t={{ csrf_token('suivi_signalement_'~''|date('dmy')) }}" class="fr-btn fr-fi-eye-fill fr-btn--icon-left" title="Afficher le document" target="_blank">Consulter "{{ doc.titre }}"</a>');
+                                }
+                            },
+                            {% endfor %}
+                        ];
+                        callback(items);
+                    }
+                });
+                {% endif %}
+            }
+        });
+    </script>
 {#    <script src={{asset(''[^']*') }}></script>#}
 {% endblock %}

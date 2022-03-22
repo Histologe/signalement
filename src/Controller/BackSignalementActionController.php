@@ -251,5 +251,4 @@ class BackSignalementActionController extends AbstractController
         }
         return $this->json(['response' => 'error'], 400);
     }
-
 }
