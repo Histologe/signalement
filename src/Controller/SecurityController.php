@@ -41,8 +41,7 @@ class SecurityController extends AbstractController
     #[Route('/{folder}/{file}',name:'show_uploaded_file',requirements: ['folder' => '_up|_capture'])]
     public function showUploadedFile($folder,$file): BinaryFileResponse|RedirectResponse
     {
-        $request = Request::createFromGlobals();
-        if(!$this->isGranted('ROLE_USER_PARTENAIRE') && !$this->isCsrfTokenValid('suivi_signalement_'.(new \DateTimeImmutable())->format('dmy'),$request->get('t')))
+        if(!$this->isGranted('ROLE_USER_PARTENAIRE'))
             return $this->redirectToRoute('home');
         if($folder === '_up')
             $folder = $this->getParameter('uploads_dir');
