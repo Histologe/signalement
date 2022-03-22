@@ -1,12 +1,10 @@
 {% extends 'back/base_bo.html.twig' %}
 
-{% set picto_yes = '<p class="fr-badge fr-badge--success value-switcher" data-action="click" data-item="%s" data-url="'~path('back_signalement_switch_value',{uuid:signalement.uuid})~'" data-token="'~csrf_token('signalement_switch_value_'~signalement.uuid)~'">Oui</p>' %}
-{% set picto_no = '<p class="fr-badge fr-badge--error value-switcher" data-action="click" data-item="%s" data-url="'~path('back_signalement_switch_value',{uuid:signalement.uuid})~'" data-token="'~csrf_token('signalement_switch_value_'~signalement.uuid)~'">Non</p>' %}
-{% set procedures = ["RSD" , "Mise en sécurité","Incurie","Insalubrité", "Décence", "ADIL"] %}
+{% set picto_yes = '<p class="fr-badge fr-badge--success">Oui</p>' %}
+{% set picto_no = '<p class="fr-badge fr-badge--error">Non</p>' %}
 
 {% block content %}
     {% include 'back/signalement/modal_affectation.html.twig' %}
-    {% include 'back/signalement/modal_dpe.html.twig' %}
     {% if signalement.statut is not same as(1) and not isClosed and not isClosedForMe and ((isAffected and isAccepted)) or is_granted('ROLE_ADMIN_TERRITOIRE') %}
         {% include 'back/signalement/modal_cloture.html.twig' %}
     {% endif %}
@@ -32,22 +30,22 @@
                 </div>
                 <div class="fr-col-12 fr-col-md-6 fr-text--right">
                     {% if isAffected and not isAccepted and not isRefused and not needValidation and  not isClosed and not isClosedForMe %}
-                        <form action="{{ path('back_signalement_affectation_response',{uuid:signalement.uuid,user:app.user.id}) }}"
-                              class="tinyCheck" id="signalement-affectation-response-form"
-                              name="signalement-affectation-response-form">
+                        <form action="{{ path('back_signalement_affectation_response',{uuid:signalement.uuid,user:app.user.id}) }}" class="tinyCheck" id="signalement-affectation-response-form" name="signalement-affectation-response-form">
                             <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
                                     name="signalement-affectation-response[accept]" value="1"
                                     {# onclick="return confirm('Êtes-vous certain de vouloir acccepter ce signalement ?')" #}>
                                 J'ai pris connaissance du signalement
                             </button>
-                            <a href="#" class="fr-btn fr-btn--danger fr-fi-close-circle-fill fr-btn--icon-left"
-                               data-fr-opened="false" aria-controls="refus-affectation-modal">Refuser
+                            <a href="#" class="fr-btn fr-btn--danger fr-fi-close-circle-fill fr-btn--icon-left" data-fr-opened="false" aria-controls="refus-affectation-modal">Ce
+                                n'est pas
+                                pour
+                                moi
                             </a>
                             {% include 'back/signalement/modal_refus_affectation.html.twig' %}
                             <input type="hidden" name="_token"
                                    value="{{ csrf_token('signalement_affectation_response_'~signalement.id) }}">
                         </form>
-                        <span class="fr-hint-text"><strong>Vous a été attribué le :</strong> {{ isAffected.createdAt|date('d/m/Y') }}</span>
+                        <span class="fr-hint-text"><strong>Vous à été attribué le :</strong> {{ isAffected.createdAt|date('d/m/Y') }}</span>
                     {% elseif isAccepted %}
                         <strong class="fr-text-label--green-emeraude"> {% if isAccepted.answeredBy is same as (app.user) %}  Vous avez {% else %} {{ isAccepted.answeredBy.nom|upper~'. '~isAccepted.answeredBy.prenom|capitalize }} à
                             {% endif %}
@@ -86,7 +84,7 @@
                                    value="{{ csrf_token('signalement_validation_response_'~signalement.id) }}">
                         </form>
                         <span class="fr-hint-text">En tant qu'administrateur vous devez <strong><u>valider/refuser</u></strong> ce signalement</span>
-                    {% elseif isClosedForMe or signalement.statut is same as(6) %}
+                    {% elseif isClosedForMe or signalement.statut is same as(6)%}
                         <form action="{{ path('back_signalement_reopen',{uuid:signalement.uuid}) }}">
                             <button class="fr-btn fr-fi-lock-fill fr-btn--icon-left reopen"
                                     name="signalement-action[reopen]" value="1"
@@ -101,43 +99,12 @@
                 </div>
             </div>
         </header>
-        <hr class="fr-pb-1v">
-        <div class="fr-grid-row fr-grid-row--middle">
-            <div class="fr-col-12 fr-col-md-9">
+        <hr>
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
                 <strong class="fr-fi-chat-quote-fill fr-icon--sm fr-text-label--blue-france"> Description par
                     l'usager</strong>
                 <span class="fr-hint-text">Ci-dessous le détails du signalement tel que rapporté par l'usager</span>
-            </div>
-            {% if signalement.statut is not same as(0) and not isClosedForMe or isAffected and isAccepted %}
-                <div class="fr-col-12 fr-col-md-3 fr-text--right">
-                    <form action="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}" method="POST">
-                        <div class="fr-select-group">
-                            <label for="signalement_code_procedure_value"
-                                   class="fr-label fr-text-label--blue-france fr-fi-information-fill fr-fi--sm"><strong>&nbsp;Type
-                                    procédure</strong></label>
-                            {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
-                                <select name="value" id="signalement_code_procedure_value" class="fr-select"
-                                        onchange="this.form.submit()">
-                                    <option disabled {% if not signalement.codeProcedure %} selected{% endif %}>--
-                                        Définir --
-                                    </option>
-                                    {% for procedure in procedures %}
-                                        <option value="{{ procedure|upper }}"
-                                                {% if signalement.codeProcedure is same as (procedure|upper) %}selected{% endif %}>{{ procedure|upper }}</option>
-                                    {% endfor %}
-                                </select>
-                            {% else %}
-                                <input type="text" readonly disabled value="{{ signalement.codeProcedure ?? 'AUCUNE' }}"
-                                       name="signalement_code_procedure_value" id="signalement_code_procedure_value">
-                            {% endif %}
-                        </div>
-                        <input type="hidden" name="item" value="CodeProcedure">
-                        <input type="hidden" name="_token"
-                               value="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}">
-                    </form>
-                </div>
-            {% endif %}
-            <div class="fr-col-12">
                 <ul class="fr-background-alt--blue-france fr-list--icon-img fr-rounded">
                     <li class="fr-p-5v">
                         {{ signalement.details|raw }}
@@ -165,7 +132,7 @@
                 {% endif %}
                 <strong class="fr-fi-information-fill fr-icon--sm fr-text-label--blue-france"> Informations de
                     l'occupant</strong>
-                <span class="fr-hint-text">Ce signalement a été effectué par l'occupant du logement, les informations fournies sont les suivantes.</span>
+                <span class="fr-hint-text">Ce signalement à été effectué par l'occupant du logement, les informations fournies sont les suivantes.</span>
                 <ul class="fr-list--icon-img">
                     <li><strong>Nom: </strong> {{ signalement.nomOccupant }} -
                         <strong>Prénom: </strong> {{ signalement.prenomOccupant }}</li>
@@ -192,7 +159,7 @@
                         {% if signalement.isAllocataire %}
                             <small class="fr-background-alt--green-emeraude fr-rounded fr-p-1v fr-text--bold fr-valid-text fr-display-inline-flex fr-mt-0 fr-px-3v">{{ signalement.isAllocataire }}</small>
                         {% else %}
-                            <p class="fr-badge fr-badge--error">NON</p>
+                            {{ picto_no|raw }}
                         {% endif %}
                     </li>
                     {% if signalement.isAllocataire %}
@@ -206,9 +173,9 @@
                     <li>
                         <strong>Situation de handicap: </strong>
                         {% if signalement.isSituationHandicap %}
-                            {{ picto_yes|format('IsSituationHandicap')|raw }}
+                            {{ picto_yes|raw }}
                         {% else %}
-                            {{ picto_no|format('IsSituationHandicap')|raw }}
+                            {{ picto_no|raw }}
                         {% endif %}
 
                     </li>
@@ -253,10 +220,10 @@
                     <li>
                         <strong>Accord pour visite: </strong>
                         {% if signalement.isRefusIntervention %}
-                            {{ picto_no|format('IsRefusIntervention')|raw }}
+                            {{ picto_no|raw }}
                             <span class="fr-hint-text"><u><strong>Motif:</strong></u> {{ signalement.raisonRefusIntervention }}</span>
                         {% else %}
-                            {{ picto_yes|format('IsRefusIntervention')|raw }}
+                            {{ picto_yes|raw }}
                         {% endif %}
                     </li>
                     {% if not signalement.isRefusIntervention %}
@@ -308,7 +275,7 @@
                                             <li class="fr-grid-row fr-grid-row--middle fr-w-100">
                                                 <div class="fr-col-md-2 fr-col-lg-1 fr-col--middle">
 
-                                                    <img src="{{ asset('img/'~icon~'-actif.svg') }}" alt=""
+                                                    <img src="{{asset('img/'~icon~'-actif.svg') }}" alt=""
                                                          width="50"
                                                          class=" fr-text--center">
                                                 </div>
@@ -335,9 +302,9 @@
                     <li>
                         <strong>Propriétaire averti: </strong>
                         {% if signalement.isProprioAverti %}
-                            {{ picto_yes|format('IsProprioAverti')|raw }}
+                            {{ picto_yes|raw }}
                         {% else %}
-                            {{ picto_no|format('IsProprioAverti')|raw }}
+                            {{ picto_no|raw }}
                         {% endif %}
                     </li>
                     <li><strong>Nom: </strong> {{ signalement.nomProprio ?? 'N/R' }}
@@ -357,33 +324,33 @@
                     <li>
                         <strong>Bail en cours: </strong>
                         {% if signalement.isBailEnCours %}
-                            {{ picto_yes|format('IsBailEnCours')|raw }}
+                            {{ picto_yes|raw }}
                         {% else %}
-                            {{ picto_no|format('IsBailEnCours')|raw }}
+                            {{ picto_no|raw }}
                         {% endif %}
                     </li>
                     <li>
                         <strong>Logement social: </strong>
                         {% if signalement.isLogementSocial %}
-                            {{ picto_yes|format('IsLogementSocial')|raw }}
+                            {{ picto_yes|raw }}
                         {% else %}
-                            {{ picto_no|format('IsLogementSocial')|raw }}
+                            {{ picto_no|raw }}
                         {% endif %}
                     </li>
                     <li>
                         <strong>Demande de relogement: </strong>
                         {% if signalement.isRelogement %}
-                            {{ picto_yes|format('IsRelogement')|raw }}
+                            {{ picto_yes|raw }}
                         {% else %}
-                            {{ picto_no|format('IsRelogement')|raw }}
+                            {{ picto_no|raw }}
                         {% endif %}
                     </li>
                     <li>
                         <strong>Preavis de départ: </strong>
                         {% if signalement.isPreavisDepart %}
-                            {{ picto_yes|format('IsPreavisDepart')|raw }}
+                            {{ picto_yes|raw }}
                         {% else %}
-                            {{ picto_no|format('IsPreavisDepart')|raw }}
+                            {{ picto_no|raw }}
                         {% endif %}
                     </li>
                 </ul>
@@ -421,7 +388,7 @@
                 </div>
             {% endif %}
         </div>
-        <div class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters fr-my-3v">
+        <div class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters fr-mt-3v">
             {% for index,photo in signalement.photos %}
                 <div class="fr-col-6 fr-col-md-2 fr-rounded signalement-file-item">
                     <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center"
@@ -444,18 +411,31 @@
                     </div>
                 </div>
             {% endfor %}
+            {% for document in signalement.documents %}
+                <div class="fr-col-6 fr-col-md-2 fr-rounded signalement-file-item">
+                    <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center"
+                         style="background: url('https://cdn.histologe.net/img/document.png')no-repeat center center/50%">
+                        <a href="{{ asset('_up/'~document.file) }}" class="fr-btn fr-btn--sm fr-fi-eye-line"
+                           title="Voir le document" target="_blank"></a>
+                        {% if is_granted('ROLE_ADMIN_PARTENAIRE') or (isAffected and isAccepted) %}
+                            {% if documenet.user is not defined or documenet.user is same as(app.user.id) %}
+                                <button title="Supprimer le document"
+                                        data-delete="{{ path('back_signalement_delete_file',{uuid:signalement.uuid,type:'documents',file:document.file}) }}"
+                                        data-token="{{ csrf_token('signalement_delete_file_'~signalement.id) }}"
+                                        class="fr-btn fr-btn--sm fr-btn--danger fr-fi-delete-line signalement-file-delete"></button>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="fr-grid-row">
+                        <div class="fr-col-12 fr-text--center">
+                            <div title="{{ document.titre }}" style="text-overflow:ellipsis">{{ document.titre[:15] }}
+                                ...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-        {% for doc in signalement.documents %}
-            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-3v">
-                <div class="fr-col-10">
-                    <a href="{{ asset('_up/'~doc.file) }}" target="_blank" class="fr-link">{{ doc.titre }}</a>
-                </div>
-                <div class="fr-col-2 fr-text--right">
-                    <a href="{{ asset('_up/'~doc.file) }}"
-                       class="fr-btn fr-fi-eye-fill fr-btn--icon-left" title="Afficher le document" target="_blank">Consulter</a>
-                </div>
-            </div>
-        {% endfor %}
         {% if not isClosed and not needValidation %}
             <hr class="fr-mt-5v" id="affectations">
             <div class="fr-grid-row">
@@ -529,7 +509,7 @@
                     <strong>Nouveau suivi:</strong>
                     <form method="POST"
                           action="{{ path('back_signalement_add_suivi',{uuid:signalement.uuid}) }}"
-                          name="signalement-add-suivi" id="signalement-add-suivi-form" class="tinyCheck">
+                          name="signalement-add-suivi">
                         <div class="fr-input-group">
                             <label class="fr-label" for="signalement-add-suivi-content">
                             <span class="fr-hint-text"> Décrivez la ou les action(s) menée(s). 10 caractères minimum <sup
@@ -544,10 +524,10 @@
                         <div class="fr-grid-row">
                             <div class="fr-col-6">
                                 <button type="submit" class="fr-btn fr-fi-eye-off-fill fr-btn--icon-left"
-                                        name="signalement-add-suivi[isPublic]" value="0" form="signalement-add-suivi-form" disabled> Enregistrer
+                                        name="signalement-add-suivi[isPublic]" value="0"> Enregistrer
                                 </button>
                                 <button type="submit" class="fr-btn fr-btn--secondary fr-fi-eye-fill fr-btn--icon-left"
-                                        name="signalement-add-suivi[isPublic]"  form="signalement-add-suivi-form" disabled value="1" onclick="return confirm('Attention, ce suivi sera visible par l\'usager.\nVoulez-vous vraiment envoyer ce message de suivi ?')"> Enregistrer et envoyer à
+                                        name="signalement-add-suivi[isPublic]" value="1"> Enregistrer et envoyer à
                                     l'usager
                                 </button>
                             </div>
@@ -567,7 +547,7 @@
             <hr class=" fr-mt-5v">
         {% endif %}
         {% for suivi in signalement.suivis|reverse %}
-            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v">
+            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-2v">
                 <div class="fr-col-2">
                     <strong> {{ suivi.createdBy.nom|upper~'. '~ suivi.createdBy.prenom|capitalize }}</strong> <br>
                     <small>[{{ suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun' }}]</small> <br>
@@ -621,15 +601,11 @@
         {% if signalement.geoloc.lat is defined and signalement.geoloc.lng is defined %}
         let map = L.map('map-signalement-view').setView([{{ signalement.geoloc.lng }}, {{ signalement.geoloc.lat }}], 13);
         map.scrollWheelZoom.disable();
-        map.on('focus', function () {
-            map.scrollWheelZoom.enable();
-        });
-        map.on('blur', function () {
-            map.scrollWheelZoom.disable();
-        });
+        map.on('focus', function() { map.scrollWheelZoom.enable(); });
+        map.on('blur', function() { map.scrollWheelZoom.disable(); });
 
         L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-            attribution: '&copy;'
+            attribution:'&copy;'
         }).addTo(map);
 
         L.marker([{{ signalement.geoloc.lng }}, {{ signalement.geoloc.lat }}]).addTo(map)
