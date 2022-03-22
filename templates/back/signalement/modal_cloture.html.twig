@@ -4,11 +4,11 @@
             <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                 <div class="fr-modal__body">
                     <div class="fr-modal__header">
-                        <h1 id="cloture-modal-title" class="fr-modal__title">
+                        <h1 id="cloture-modal-title" class="fr-modal__  title">
                             <span class="fr-fi-arrow-right-line fr-fi--sm"></span>
                             Cloturer le signalement #{{ signalement.reference }}
                         </h1>
-                        <button class="fr-link--close fr-link" aria-controls="cloture-modal">Fermer</button>
+                        <a href="#" class="fr-link--close fr-link" aria-controls="cloture-modal">Fermer</a>
                     </div>
                     <div class="fr-modal__content">
                         {{ form_start(clotureForm,{attr:{
@@ -18,8 +18,8 @@
                         {{ form_help(clotureForm.motif) }}
                         {{ form_widget(clotureForm.motif) }}
                         <div class="fr-input-group fr-mt-2v">
-                            <label for="cloture_suivi" class="fr-label required">Descriptif cloture</label>
-                            <p class="fr-hint-text">Veuillez précisez le motif de cette cloture <em>(10 caractères minimum)</em></p>
+                            <label for="cloture_suivi" class="fr-label required">Détails de la clôture</label>
+                            <p class="fr-hint-text">Précisez le contexte et les raisons de la clôture <em>(10 caractères minimum)</em></p>
                             <textarea class="fr-input fr-input--no-resize editor" name="cloture[suivi]" id="cloture_suivi"></textarea>
                             <p class="fr-error-text fr-hidden">Vous devez préciser votre motif de cloture.</p>
                         </div>
