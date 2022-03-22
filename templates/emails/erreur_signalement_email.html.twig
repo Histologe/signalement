@@ -4,6 +4,5 @@
     <p>Plateforme: {{ url }}</p>
     <p>Code erreur: {{ code }}</p>
     <p>Message erreur: {{ error }}</p>
-   <p><b>Signalement :</b></p>
-    <pre>{{ signalement }}</pre>
+    {{ dump(signalement) }}
 {% endblock %}
