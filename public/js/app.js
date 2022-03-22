@@ -374,10 +374,7 @@ forms.forEach((form) => {
                             document.querySelector('#recap-signalement_documents').innerHTML = docs + ' Document(s) transmis';
                             form.querySelectorAll('input,textarea,select').forEach((input) => {
                                 if (document.querySelector('#recap-' + input.id))
-                                {
-                                    console.log(document.querySelector('#recap-' + input.id))
                                     document.querySelector('#recap-' + input.id).innerHTML = `${input.value}`;
-                                }
                                 else if (input.classList.contains('signalement-situation') && input.checked)
                                     document.querySelector('#recap-signalement-situation').innerHTML += '- ' + input.value + '<br>';
                             })
@@ -841,25 +838,4 @@ document.querySelector('#modal-dpe-opener')?.addEventListener('click', (event) =
             }
         })
     })
-})
-document.querySelectorAll('.value-switcher').forEach(sw => {
-    sw.addEventListener(sw.getAttribute('data-action') ?? 'change', (evt => {
-        let url = evt.target.getAttribute('data-url'), formData = new FormData();
-        formData.append('_token', evt.target.getAttribute('data-token'))
-        formData.append('item', evt.target.getAttribute('data-item'))
-        formData.append('value', evt?.target?.selectedIndex ? evt?.target?.options[evt?.target?.selectedIndex]?.value :'')
-        fetch(url, {
-            method: 'POST',
-            body: formData
-        }).then(r => r.json().then(res => {
-           if(res.return === 1)
-           {
-               ['fr-badge--error','fr-badge--success'].map(c=>{
-                   evt.target.classList.toggle(c);
-               })
-               evt.target.innerText === "OUI" ? evt.target.innerText = "NON" : evt.target.innerText = "OUI"
-           }
-        }))
-
-    }))
 })
