@@ -37,6 +37,27 @@
     {% block stylesheets %}{% endblock %}
     {{ config.get.trackingCode ? config.get.tagManagerCode|raw : '' }}
     {{ config.get.tagManagerCode ? config.get.tagManagerCode|raw :'' }}
+    <script src="{{ asset('js/tinymce/tinymce.min.js') }}"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea.editor',
+            plugins: 'lists',
+            toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist',
+            menubar: false,
+            height: 320,
+            setup: function (editor) {
+                editor.on('input', function (e) {
+                    if (editor.formElement.classList.contains('tinyCheck')) {
+                        let isOk = true,
+                            submitter = document.querySelector('button[form="' + editor.formElement.id + '"]')
+                        isOk = editor.getContent().length <= 17;
+                        !isOk && document.querySelector('#'+editor.id).parentElement.classList.add('fr-input-group--error'), document.querySelector('#'+editor.id).parentElement.querySelector('.fr-error-text').classList.remove('fr-hidden');
+                        submitter.disabled = isOk;
+                    }
+                });
+            }
+        });
+    </script>
 </head>
 <body>
 {% if 'back_' not in app.request.get('_route') %}
@@ -63,56 +84,12 @@
 <script type="module" src={{ asset('dsfr/dsfr.module.min.js') }}></script>
 <script type="text/javascript" nomodule src={{ asset('dsfr/dsfr.nomodule.min.js') }}></script>
 <script type="text/javascript" src={{ asset('js/screencapture.js') }}></script>
-<script src="{{ asset('js/app.js') }}"></script>
+<script src="{{ asset('js/app.min.js') }}"></script>
 <script src={{ asset('js/img_box.js') }}></script>
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
 <script src={{ asset('js/gauge.min.js') }}></script>
-<script src="{{ asset('js/tinymce/tinymce.min.js') }}"></script>
-<script>
-    tinymce.init({
-        selector: 'textarea.editor',
-        plugins: 'lists',
-        toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | mybutton',
-        menubar: false,
-        height: 320,
-        setup: function (editor) {
-            editor.on('input', function (e) {
-                if (editor.formElement.classList.contains('tinyCheck')) {
-                    let isOk = true,
-                        submitters = document.querySelectorAll('button[form="' + editor.formElement.id + '"]')
-                    isOk = editor.getContent().length <= 17;
-                    !isOk && document.querySelector('#'+editor.id).parentElement.classList.add('fr-input-group--error'), document.querySelector('#'+editor.id).parentElement.querySelector('.fr-error-text').classList.remove('fr-hidden');
-                    submitters.forEach(sbmt=>{
-                        sbmt.disabled = isOk;
-                    })
-                    if(isOk !== true)
-                        document.querySelector('#'+editor.id).parentElement.classList.remove('fr-input-group--error'), document.querySelector('#'+editor.id).parentElement.querySelector('.fr-error-text').classList.add('fr-hidden');
-                }
-            });
-            {% if 'back_signalement_view' in app.request.get('_route') %}
-            editor.ui.registry.addMenuButton('mybutton', {
-                text: 'Partager un document',
-                fetch: function (callback) {
-                    var items = [
-                        {% for doc in signalement.documents %}
-                        {
-                            type: 'menuitem',
-                            text: '{{ doc.titre }}',
-                            onAction: function () {
-                                editor.insertContent('&nbsp;<a href="{{ asset('_up/'~doc.file) }}?t={{ csrf_token('suivi_signalement_'~''|date('dmy')) }}" class="fr-btn fr-fi-eye-fill fr-btn--icon-left" title="Afficher le document" target="_blank">Consulter "{{ doc.titre }}"</a>');
-                            }
-                        },
-                        {% endfor %}
-                    ];
-                    callback(items);
-                }
-            });
-            {% endif %}
-        }
-    });
-</script>
 {% block javascripts %}{% endblock %}
 </body>
 </html>

@@ -28,6 +28,7 @@
     </section>
 {% endblock %}
 {% block javascripts %}
+    <script src={{asset(''[^']*') }}></script>
     <script>
         const labelsCloture = [{% for k,date in dates %}(new Date({{ k*1000 }})).toLocaleString('default', { month: 'short' }) +' '+ (new Date({{ k*1000 }})).getUTCFullYear(),{% endfor %}];
         const ctxCloture = document.getElementById('sign-cloture');
