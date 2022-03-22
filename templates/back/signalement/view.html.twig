@@ -4,7 +4,6 @@
 {% set picto_no = '<p class="fr-badge fr-badge--error value-switcher" data-action="click" data-item="%s" data-url="'~path('back_signalement_switch_value',{uuid:signalement.uuid})~'" data-token="'~csrf_token('signalement_switch_value_'~signalement.uuid)~'">Non</p>' %}
 {% set procedures = ["RSD" , "Mise en sécurité","Incurie","Insalubrité", "Décence", "ADIL"] %}
 
-
 {% block content %}
     {% include 'back/signalement/modal_affectation.html.twig' %}
     {% include 'back/signalement/modal_dpe.html.twig' %}
