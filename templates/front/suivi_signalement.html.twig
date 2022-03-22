@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{% endblock %}
+{% block title %}Suivre mon signalement #{{ signalement.reference }}{% endblock %}
 
 {% block body %}
     <main class="fr-container--fluid">
@@ -24,25 +24,55 @@
             <hr>
             {% for suivi in signalement.suivis|reverse %}
                 {% if suivi.isPublic %}
-                    <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-2v">
+                    <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v">
                         <div class="fr-col-2">
-
                             <small>[{{ suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun' }}]</small> <br>
                             <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
                         </div>
-                        <div class="fr-col-9">
+                        <div class="fr-col-10">
                             {{ suivi.description|raw }}
-                        </div>
-                        <div class="fr-col-1 fr-text--right">
-                            {% if suivi.isPublic %}
-                                <span class="fr-fi-eye-fill" title="Visible par l'usager"></span>
-                            {% else %}
-                                <span class="fr-fi-eye-off-fill" title="Non visible par l'usager"></span>
-                            {% endif %}
                         </div>
                     </div>
                 {% endif %}
             {% endfor %}
+            <hr>
+            <h2 class="fr-mb-0">Photo(s) liée(s) à votre signalement</h2>
+            <p class="fr-hint-text">Ci-dessous, les photos ajoutées lors du dépôt de votre signalement ainsi que celles ajoutées par le(s) partenaire(s) en charge de votre dossier.</p>
+            {% for photo in signalement.photos %}
+                <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v">
+                    <div class="fr-col-10">
+                        Photos N°{{ loop.index }}
+                    </div>
+                    <div class="fr-col-2 fr-text--right">
+                        <a href="{{ asset('_up/'~photo.file) }}?t={{ csrf_token('suivi_signalement_'~''|date('dmy')) }}" class="fr-btn fr-fi-eye-fill fr-btn--icon-left" title="Afficher la photos">Afficher</a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="fr-grid-row fr-grid-row--middle fr-background-contrast--red-marianne fr-rounded fr-p-5v">
+                    <div class="fr-col-12">
+                        Aucune photo à afficher
+                    </div>
+                </div>
+            {% endfor %}
+          {#  <hr>
+            <h2 class="fr-mb-0">Document(s) lié(s) à votre signalement</h2>
+            <p class="fr-hint-text">Ci-dessous, les documents ajoutés lors du dépôt de votre signalement ainsi que ceux ajoutés par le(s) partenaire(s) en charge de votre dossier.</p>
+            {% for doc in signalement.documents %}
+                <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v">
+                    <div class="fr-col-10">
+                        {{ doc.title }}
+                    </div>
+                    <div class="fr-col-2 fr-text--right">
+                        <a href="{{ asset('_up/'~doc.file) }}?t={{ csrf_token('suivi_signalement_'~''|date('dmy')) }}" class="fr-btn fr-fi-eye-fill fr-btn--icon-left" title="Afficher le document" target="_blank">Consulter</a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="fr-grid-row fr-grid-row--middle fr-background-contrast--red-marianne fr-rounded fr-p-5v">
+                    <div class="fr-col-12">
+                        Aucun document à afficher
+                    </div>
+                </div>
+            {% endfor %}#}
         </section>
     </main>
 {% endblock %}
