@@ -3,7 +3,9 @@
 namespace App\EventListener;
 
 use App\Service\NotificationService;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class ExceptionListener
 {
@@ -17,20 +19,11 @@ class ExceptionListener
     public function onKernelException(ExceptionEvent $event)
     {
         if ($event->getRequest()->get('signalement') !== null) {
-            $attachment =['documents'=>0,'photos'=>0];
-            if($files = $event->getRequest()->files->get('signalement')) {
-                foreach ($files as $k=> $file) {
-                    foreach ($file as $file_) {
-                        $attachment[$k]++;
-                    }
-                }
-            }
             $this->notificationService->send(NotificationService::TYPE_ERREUR_SIGNALEMENT, 'sam@bzez.dev', [
                 'url' => $_SERVER['SERVER_NAME'],
                 'code' => $event->getThrowable()->getCode(),
                 'error' => $event->getThrowable()->getMessage(),
-                'signalement' => $event->getRequest()->get('signalement'),
-                'attachment' => $attachment
+                'signalement' => $event->getRequest()->get('signalement')
             ]);
         }
     }
