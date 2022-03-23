@@ -110,11 +110,18 @@
                     </li>
                     {% if signalements.pages > 1 %}
                         {% for i in 2..signalements.pages %}
-                            <li>
+                            <li class="{% if loop.index > 2 and loop.index < signalements.pages-3 %}fr-hidden{% endif %}">
                                 <a class="fr-pagination__link" href="#" title="Page {{ i }}" data-page="{{ i }}">
                                     {{ i }}
                                 </a>
                             </li>
+                            {% if loop.index is same as(3) %}
+                                <li>
+                                    <a class="fr-pagination__link" title="placeholder">
+                                        ...
+                                    </a>
+                                </li>
+                            {% endif %}
                         {% endfor %}
                     {% endif %}
                     <li>

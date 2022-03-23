@@ -42,7 +42,7 @@ class SecurityController extends AbstractController
     public function showUploadedFile($folder,$file): BinaryFileResponse|RedirectResponse
     {
         $request = Request::createFromGlobals();
-        if(!$this->isGranted('ROLE_USER_PARTENAIRE') && !$this->isCsrfTokenValid('suivi_signalement_'.(new \DateTimeImmutable())->format('dmy'),$request->get('t')))
+        if(!$this->isGranted('ROLE_USER_PARTENAIRE') && !$this->isCsrfTokenValid('suivi_signalement_ext_file_view',$request->get('t')))
             return $this->redirectToRoute('home');
         if($folder === '_up')
             $folder = $this->getParameter('uploads_dir');
