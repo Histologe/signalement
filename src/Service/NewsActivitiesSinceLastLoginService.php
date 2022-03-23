@@ -19,7 +19,6 @@ class NewsActivitiesSinceLastLoginService
         $this->requestStack = $requestStack;
     }
 
-
     public function set($user)
     {
         $activities = $this->requestStack->getSession()->get('lastActionTime');

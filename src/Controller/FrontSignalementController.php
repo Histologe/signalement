@@ -136,7 +136,7 @@ class FrontSignalementController extends AbstractController
 
             $score = new CriticiteCalculatorService($signalement, $doctrine);
             $signalement->setScoreCreation($score->calculate());
-            $signalement->setReference(null);
+//            $signalement->setReference(null);
             $em->persist($signalement);
             $em->flush();
 
