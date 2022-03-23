@@ -109,7 +109,7 @@
                     l'usager</strong>
                 <span class="fr-hint-text">Ci-dessous le détails du signalement tel que rapporté par l'usager</span>
             </div>
-            {% if signalement.statut is not same as(0) and not isClosedForMe or isAffected and isAccepted %}
+            {#{% if signalement.statut is not same as(0) and not isClosedForMe or isAffected and isAccepted %}
                 <div class="fr-col-12 fr-col-md-3 fr-text--right">
                     <form action="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}" method="POST">
                         <div class="fr-select-group">
@@ -137,7 +137,7 @@
                                value="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}">
                     </form>
                 </div>
-            {% endif %}
+            {% endif %}#}
             <div class="fr-col-12">
                 <ul class="fr-background-alt--blue-france fr-list--icon-img fr-rounded">
                     <li class="fr-p-5v">
