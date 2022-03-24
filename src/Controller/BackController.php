@@ -45,9 +45,7 @@ class BackController extends AbstractController
         else
             $this->req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['page']);
         $this->iterator = $this->req->getIterator()->getArrayCopy();
-        if ($user && $user->getPartenaire())
-            foreach ($this->iterator as $item)
-                $item->getSignalement()->setStatut((int)$filter['status']);
+
         $signalements = [
             'list' => $this->iterator,
             'villes' => $signalementRepository->findCities($user),
@@ -56,13 +54,23 @@ class BackController extends AbstractController
             'pages' => (int)ceil(count($this->req) / 50)
         ];
         $signalements['counts'] = $signalementRepository->countByStatus();
-        if ($user){
+        if ($user) {
             $counts = $affectationRepository->countByStatusForUser($user);
             $signalements['counts'] = [
-                Signalement::STATUS_NEED_VALIDATION => $counts[0],
-                Signalement::STATUS_ACTIVE => $counts[1],
-                Signalement::STATUS_CLOSED => ['count' => $counts[3]['count'] + $counts[2]['count']],
+                Signalement::STATUS_NEED_VALIDATION => $counts[0] ?? ['count' => 0],
+                Signalement::STATUS_ACTIVE => $counts[1] ?? ['count' => 0],
+                Signalement::STATUS_CLOSED => ['count' => ($counts[3]['count'] ?? 0) + ($counts[2]['count'] ?? 0)],
             ];
+            if ($user->getPartenaire()) {
+                $status = [
+                    Affectation::STATUS_WAIT => Signalement::STATUS_NEED_VALIDATION,
+                    Affectation::STATUS_ACCEPTED => Signalement::STATUS_ACTIVE,
+                    Affectation::STATUS_CLOSED => Signalement::STATUS_CLOSED,
+                    Affectation::STATUS_REFUSED => Signalement::STATUS_CLOSED,
+                ];
+                foreach ($this->iterator as $item)
+                    $item->getSignalement()->setStatut((int)$status[$item->getStatut()]);
+            }
         }
 //        dd($signalements['counts']);
         if (/*$request->isXmlHttpRequest() && */ $request->get('pagination'))
