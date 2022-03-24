@@ -520,7 +520,7 @@
                             <div class="fr-background-contrast--error fr-rounded fr-p-2v fr-input-wrap fr-fi-lock-fill">
                                 <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]</strong>
                                     <br>Cloturé.</small>
-                                <span class="fr-hint-text"><strong>Cloturé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }}<br>par {{ affectation.answeredBy.nom|upper~'. '~affectation.answeredBy.prenom|capitalize }}</span>
+                                <span class="fr-hint-text"><strong>Cloturé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }}<br>par {{ affectation.answeredBy? affectation.answeredBy.nom|upper }}. {{ affectation.answeredBy ? affectation.answeredBy.prenom|capitalize : '' }}</span>
                             </div>
                         </div>
                     {% endif %}
