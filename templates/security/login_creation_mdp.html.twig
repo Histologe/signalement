@@ -53,10 +53,10 @@
                 <div class="fr-input-group fr-grid-row fr-grid-row--middle">
                     <label class="fr-label fr-col-12" for="login-password">
                         Mot de passe
-                        <span class="fr-hint-text">Choisissez un mot de passe <u>fort et unique</u></span>
+                        <span class="fr-hint-text">Choisissez un mot de passe <u>fort et unique</u> <em>(minimum 8 caratères)</em></span>
                     </label>
                     <input class="fr-input fr-col-11" aria-describedby="login-password-error-desc-error" type="password"
-                           id="login-password" name="password" required>
+                           id="login-password" name="password" required minlength="8">
                     <span class="fr-btn fr-fi-eye-off-fill fr-col-1 fr-mt-2v fr-password-toggle" title="Afficher/Cacher le mot de passe"></span>
                     <p id="login-password-error-desc-error" class="fr-error-text fr-hidden fr-col-12">
                         Veuillez saisir votre mot de passe.
@@ -68,7 +68,7 @@
                         <span class="fr-hint-text">Saisissez à nouveau votre mot de passe</span>
                     </label>
                     <input class="fr-input fr-col-11" aria-describedby="login-password-error-desc-error" type="password"
-                           id="login-password-repeat" name="password-repeat" required>
+                           id="login-password-repeat" name="password-repeat" required minlength="8">
                     <span class="fr-btn fr-fi-eye-off-fill fr-col-1 fr-mt-2v fr-password-toggle" title="Afficher/Cacher le mot de passe"></span>
                     <p id="login-password-error-desc-error" class="fr-error-text fr-hidden fr-col-12">
                         Veuillez confirmer votre mot de passe.

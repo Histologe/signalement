@@ -466,7 +466,7 @@
                 </div>
             </div>
         {% endfor %}
-        {% if not isClosed and not needValidation %}
+        {% if not needValidation %}
             <hr class="fr-mt-5v" id="affectations">
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-col-md-6">
@@ -488,39 +488,39 @@
                     {% if affectation.statut is same as(0) %}
                         {# STATUT EN ATTENTE #}
                         <div class="fr-col-md-2">
-                            <div class="fr-background-contrast--info fr-rounded fr-p-2v">
-                                <small>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]
+                            <div class="fr-background-contrast--info fr-rounded fr-p-2v fr-input-wrap fr-fi-refresh-line">
+                                <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]</strong>
                                     <br>En attente.</small>
-                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} par {{ affectation.affectedBy.nom|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
+                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} <br>par {{ affectation.affectedBy.nom|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
                             </div>
                         </div>
                     {% elseif affectation.statut is same as(1) %}
                         {# STATUT ACCEPTE #}
                         <div class="fr-col-md-2">
-                            <div class="fr-background-contrast--success fr-rounded fr-p-2v">
-                                <small>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]
+                            <div class="fr-background-contrast--success fr-rounded fr-p-2v fr-input-wrap fr-fi-check-line">
+                                <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]</strong>
                                     <br>Accepté.</small>
-                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} par {{ affectation.affectedBy.nom|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
-                                <span class="fr-hint-text"><strong>Accepté le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} par {{ affectation.answeredBy.nom|upper~'. '~affectation.answeredBy.prenom|capitalize }}</span>
+                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} <br>par {{ affectation.affectedBy.nom|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
+                                <span class="fr-hint-text"><strong>Accepté le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} <br>par {{ affectation.answeredBy.nom|upper~'. '~affectation.answeredBy.prenom|capitalize }}</span>
                             </div>
                         </div>
                     {% elseif affectation.statut is same as(2) %}
                         {# STATUT REFUSE #}
                         <div class="fr-col-md-2">
-                            <div class="fr-background-contrast--error fr-rounded fr-p-2v">
-                                <small>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]
+                            <div class="fr-background-contrast--error fr-rounded fr-p-2v fr-input-wrap fr-fi-close-line">
+                                <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]</strong>
                                     <br>Refusé.</small>
-                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} par {{ affectation.affectedBy.nom|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
-                                <span class="fr-hint-text"><strong>Refusé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} par {{ affectation.answeredBy.nom|upper~'. '~affectation.answeredBy.prenom|capitalize }}</span>
+                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} <br>par {{ affectation.affectedBy.nom|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
+                                <span class="fr-hint-text"><strong>Refusé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} <br>par {{ affectation.answeredBy.nom|upper~'. '~affectation.answeredBy.prenom|capitalize }}</span>
                             </div>
                         </div>
                     {% elseif affectation.statut is same as(3) %}
                         {# STATUT REFUSE #}
                         <div class="fr-col-md-2">
-                            <div class="fr-background-contrast--error fr-rounded fr-p-2v">
-                                <small>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]
+                            <div class="fr-background-contrast--error fr-rounded fr-p-2v fr-input-wrap fr-fi-lock-fill">
+                                <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]</strong>
                                     <br>Cloturé.</small>
-                                <span class="fr-hint-text"><strong>Cloturé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }}</span>
+                                <span class="fr-hint-text"><strong>Cloturé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }}<br>par {{ affectation.answeredBy.nom|upper~'. '~affectation.answeredBy.prenom|capitalize }}</span>
                             </div>
                         </div>
                     {% endif %}
