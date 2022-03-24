@@ -70,21 +70,14 @@ class SignalementRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function countByStatus($user = null)
+    public function countByStatus()
     {
         $qb = $this->createQueryBuilder('s');
-        if (!$user) {
-            $qb->select('COUNT(s.id) as count')
-                ->addSelect('s.statut');
-        } else {
-            $qb->leftJoin('s.affectations', 'a', 'WITH', ':partenaire = a.partenaire')
-                ->setParameter('partenaire', $user->getPartenaire())
-                ->select('COUNT(a.signalement) as count')
-                ->addSelect('s.statut');;
-        }
-        return $qb->indexBy('s', 's.statut')
-            ->groupBy('s.statut')
-            ->getQuery()
+        $qb->select('COUNT(s.id) as count')
+            ->addSelect('s.statut');
+        $qb->indexBy('s', 's.statut');
+        $qb->groupBy('s.statut');
+        return $qb->getQuery()
             ->getResult();
     }
 
@@ -127,13 +120,8 @@ class SignalementRepository extends ServiceEntityRepository
         $qb->leftJoin('partenaire.users', 'user');
         $qb->addSelect('affectations', 'partenaire', 'user');
         if ($status && $status !== 'all') {
-            if (is_array($status))
-                foreach ($status as $stat)
-                    $qb->andWhere('s.statut = :statut')
-                        ->setParameter('statut', $stat);
-            else
-                $qb->andWhere('s.statut = :statut')
-                    ->setParameter('statut', $status);
+            $qb->andWhere('s.statut = :statut')
+                ->setParameter('statut', $status);
         }
         if ($city && $city !== 'all')
             $qb->andWhere('s.villeOccupant =:city')
