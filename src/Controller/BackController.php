@@ -61,7 +61,6 @@ class BackController extends AbstractController
                 Signalement::STATUS_ACTIVE => $counts[1] ?? ['count' => 0],
                 Signalement::STATUS_CLOSED => ['count' => ($counts[3]['count'] ?? 0) + ($counts[2]['count'] ?? 0)],
             ];
-
             if ($user->getPartenaire()) {
                 $status = [
                     Affectation::STATUS_WAIT => Signalement::STATUS_NEED_VALIDATION,
