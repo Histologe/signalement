@@ -141,9 +141,15 @@ class SignalementRepository extends ServiceEntityRepository
         if ($user)
             $qb->andWhere(':partenaire IN (partenaire)')
                 ->setParameter('partenaire', $user->getPartenaire());
-        if ($search)
-            $qb->andWhere('LOWER(s.nomOccupant) LIKE :search OR LOWER(s.prenomOccupant) LIKE :search OR LOWER(s.reference) LIKE :search OR LOWER(s.adresseOccupant) LIKE :search OR LOWER(s.villeOccupant) LIKE :search')
-                ->setParameter('search', "%" . strtolower($search) . "%");
+        if ($search) {
+            if (preg_match('/([0-9]{4})-[0-9]{0,6}/', $search)) {
+                $qb->andWhere('s.reference = :search');
+                $qb->setParameter('search', $search);
+            } else {
+                $qb->andWhere('LOWER(s.nomOccupant) LIKE :search OR LOWER(s.prenomOccupant) LIKE :search OR LOWER(s.reference) LIKE :search OR LOWER(s.adresseOccupant) LIKE :search OR LOWER(s.villeOccupant) LIKE :search');
+                $qb->setParameter('search', "%" . strtolower($search) . "%");
+            }
+        }
         $qb->orderBy('s.createdAt', 'DESC')
             ->setFirstResult($firstResult)
             ->setMaxResults($pageSize)
