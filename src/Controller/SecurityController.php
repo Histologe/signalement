@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Signalement;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -39,7 +40,7 @@ class SecurityController extends AbstractController
 
 
     #[Route('/{folder}/{file}',name:'show_uploaded_file',requirements: ['folder' => '_up|_capture'])]
-    public function showUploadedFile($folder,$file): BinaryFileResponse|RedirectResponse
+    public function showUploadedFile($folder,$file,Signalement|null $signalement = null): BinaryFileResponse|RedirectResponse
     {
         $request = Request::createFromGlobals();
         if(!$this->isGranted('ROLE_USER_PARTENAIRE') && !$this->isCsrfTokenValid('suivi_signalement_ext_file_view',$request->get('t')))

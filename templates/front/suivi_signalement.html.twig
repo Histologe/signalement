@@ -31,7 +31,7 @@
                             <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
                         </div>
                         <div class="fr-col-10">
-                            {{ suivi.description|raw }}
+                            {{ suivi.description|replace({'___TOKEN___':csrf_token('suivi_signalement_ext_file_view')})|raw }}
                         </div>
                     </div>
                 {% endif %}
@@ -45,7 +45,7 @@
                         Photos N°{{ loop.index }}
                     </div>
                     <div class="fr-col-2 fr-text--right">
-                        <a href="{{ asset('_up/'~photo.file) }}?t={{ csrf_token('suivi_signalement_'~''|date('dmy')) }}" class="fr-btn fr-fi-eye-fill fr-btn--icon-left" title="Afficher la photos">Afficher</a>
+                        <a href="{{ asset('_up/'~photo.file) }}?t={{ csrf_token('suivi_signalement_ext_file_view') }}" class="fr-btn fr-fi-eye-fill fr-btn--icon-left" title="Afficher la photos">Afficher</a>
                     </div>
                 </div>
             {% else %}
