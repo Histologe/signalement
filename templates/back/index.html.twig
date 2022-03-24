@@ -56,7 +56,7 @@
                 <label class="fr-label" for="header-search-input"><strong>Rechercher</strong></label>
                 <div class="fr-search-bar fr-mt-2v" id="header-search">
                     <input class="fr-input" placeholder="Rechercher" type="search" id="header-search-input"
-                           name="search" value="">
+                           name="search" value="{{ filter.search ?? '' }}">
                     <button class="fr-btn" title="Rechercher">
                         Rechercher
                     </button>
