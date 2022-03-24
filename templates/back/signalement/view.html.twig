@@ -89,11 +89,20 @@
                         <span class="fr-hint-text">En tant qu'administrateur vous devez <strong><u>valider/refuser</u></strong> ce signalement</span>
                     {% elseif isClosedForMe or signalement.statut is same as(6) %}
                         <form action="{{ path('back_signalement_reopen',{uuid:signalement.uuid}) }}">
-                            <button class="fr-btn fr-fi-lock-fill fr-btn--icon-left reopen"
-                                    name="signalement-action[reopen]" value="1"
-                                    onclick="return confirm('Êtes-vous certain de vouloir rouvrir ce signalement ?')">
-                                Rouvrir ce signalement
-                            </button>
+                            {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
+                                <button class="fr-btn fr-btn--success fr-fi-lock-fill fr-btn--icon-left reopen"
+                                        name="signalement-action[reopenAll]" value="1"
+                                        onclick="return confirm('Êtes-vous certain de vouloir rouvrir ce signalement pour TOUS les partenaires ?')">
+                                    Rouvrir pous tous
+                                </button>
+                            {% endif %}
+                            {% if signalement.statut is not same as(6) or is_granted('ROLE_ADMIN_TERRITOIRE')  %}
+                                <button class="fr-btn fr-fi-lock-fill fr-btn--icon-left reopen"
+                                        name="signalement-action[reopen]" value="1"
+                                        onclick="return confirm('Êtes-vous certain de vouloir rouvrir ce signalement ?')">
+                                    Rouvrir pour {{ app.user.partenaire.nom }}
+                                </button>
+                            {% endif %}
                             <input type="hidden" name="_token"
                                    value="{{ csrf_token('signalement_reopen_'~signalement.id) }}">
                         </form>
@@ -391,7 +400,7 @@
             </div>
         </div>
         <hr id="documents">
-        <div class="fr-grid-row fr-grid-row--middle">
+        <div class="fr-grid-row fr-grid-row--middle" style="position: relative;z-index: 1001">
             <div class="fr-col-12 fr-col-md-6">
                 <strong class="fr-fi-upload-2-fill fr-icon--sm fr-text-label--blue-france"> Photos et documents</strong>
                 <span class="fr-hint-text">Ci-dessous les photos et documents fournis par le déclarant et/ou les partenaires.</span>
@@ -422,12 +431,12 @@
                 </div>
             {% endif %}
         </div>
-        <div class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters fr-my-3v">
+        <div class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters fr-my-3v" style="position: relative;z-index: 1001">
             {% for index,photo in signalement.photos %}
                 <div class="fr-col-6 fr-col-md-2 fr-rounded signalement-file-item">
                     <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center"
                          style="background: url('{{ asset('_up/'~photo.file) }}')no-repeat center center/cover">
-                        <button class="fr-btn fr-btn--sm fr-fi-eye-line" title="Voir la photo"
+                        <button class="fr-btn fr-btn--sm fr-fi-eye-line img-box" title="Voir la photo"
                                 onclick="img_box('{{ asset('_up/'~photo.file) }}')"></button>
                         {% if is_granted('ROLE_ADMIN_PARTENAIRE') or (isAffected and isAccepted) %}
                             {% if photo.user is not defined or photo.user is same as(app.user.id) %}
@@ -447,13 +456,13 @@
             {% endfor %}
         </div>
         {% for doc in signalement.documents %}
-            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-3v">
+            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-3v" style="position: relative;z-index: 1001">
                 <div class="fr-col-10">
                     <a href="{{ asset('_up/'~doc.file) }}" target="_blank" class="fr-link">{{ doc.titre }}</a>
                 </div>
                 <div class="fr-col-2 fr-text--right">
                     <a href="{{ asset('_up/'~doc.file) }}"
-                       class="fr-btn fr-fi-eye-fill fr-btn--icon-left" title="Afficher le document" target="_blank">Consulter</a>
+                       class="fr-btn fr-fi-eye-fill fr-btn--icon-left img-box" title="Afficher le document" target="_blank">Consulter</a>
                 </div>
             </div>
         {% endfor %}
@@ -591,7 +600,7 @@
 {% block javascripts %}
     <script>
         {% if isClosedForMe or signalement.statut is same as(6) %}
-        document?.querySelector('#signalement-{{ signalement.id }}-content').querySelectorAll('button:not(.reopen,.reaffect),.fr-btn:not(.reopen,.reaffect)').forEach(input => {
+        document?.querySelector('#signalement-{{ signalement.id }}-content').querySelectorAll('button:not(.reopen,.reaffect,.img-box),.fr-btn:not(.reopen,.reaffect,.img-box)').forEach(input => {
             input.remove()
         })
         {% endif %}
