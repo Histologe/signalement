@@ -163,7 +163,7 @@ class BackSignalementActionController extends AbstractController
         if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') && !$this->checker->check($signalement, $this->getUser()))
             return $this->json(['status' => 'denied'], 400);
         if ($this->isCsrfTokenValid('signalement_reopen_' . $signalement->getId(), $request->get('_token')) && $response = $request->get('signalement-action')) {
-            if ($this->isGranted('ROLE_ADMIN_TERRITOIRE')) {
+            if ($this->isGranted('ROLE_ADMIN_TERRITOIRE') && $response['reopenAll'] === "1") {
                 $signalement->setStatut(Signalement::STATUS_ACTIVE);
                 $doctrine->getManager()->persist($signalement);
                 $signalement->getAffectations()->filter(function (Affectation $affectation) use ($signalement, $doctrine) {
