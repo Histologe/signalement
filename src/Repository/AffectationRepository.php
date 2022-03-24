@@ -54,7 +54,6 @@ class AffectationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-
     public function findByStatusAndOrCityForUser(User|UserInterface $user = null, $status = null, $city = null, $search = null, $page = null): Paginator
     {
         $pageSize = 50;
