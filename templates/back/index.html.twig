@@ -149,8 +149,8 @@
             strokeWidth: 0.1,
             color: '#000000'
         }
-        let ids = [{% if not is_granted('ROLE_ADMIN_PARTENAIRE') %}{{ signalements.list|map(p => "#{p.signalement.id}")|join(', ') }}{% else %}{{ signalements.list|map(p => "#{p.id}")|join(', ') }}{% endif %}],
-            scores = [{% if not is_granted('ROLE_ADMIN_PARTENAIRE') %}{{ signalements.list|map(p => "#{p.signalement.scoreCreation}")|join(', ') }}{% else %}{{ signalements.list|map(p => "#{p.scoreCreation}")|join(', ') }}{% endif %}];
+        let ids = [{{ signalements.list|map(p => "#{p.id}")|join(', ') }}],
+            scores = [{{ signalements.list|map(p => "#{p.scoreCreation}")|join(', ') }}];
         ids.map((id, index) => {
             gauge = new Gauge(document.getElementById(`gauge-signalement-${id}`)).setOptions(opts);
             gauge.set(scores[index]);

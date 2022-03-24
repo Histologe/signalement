@@ -1,8 +1,5 @@
 
 {% for index,signalement in signalements.list %}
-    {% if not is_granted('ROLE_ADMIN_PARTENAIRE') %}
-        {% set signalement = signalement.signalement %}
-    {% endif %}
     <tr class="{% if signalement.statut is same as(1) or signalement.statut is same as(3) %}fr-background-contrast--orange-terre-battue{% endif %} signalement-row"
         data-score="{{ signalement.scoreCreation }}">
         <td>
@@ -42,7 +39,7 @@
                 En cours
             {% elseif signalement.statut is same as(3) %}
                 <strong class="fr-text-label--red-marianne">En attente</strong>
-            {% elseif signalement.statut is same as(6)%}
+            {% elseif signalement.statut is same as(6) %}
                 Fermé
             {% endif %}
         </td>

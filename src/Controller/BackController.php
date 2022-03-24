@@ -7,7 +7,6 @@ use App\Entity\Cloture;
 use App\Entity\Config;
 use App\Entity\Signalement;
 use App\Form\ConfigType;
-use App\Repository\AffectationRepository;
 use App\Repository\ConfigRepository;
 use App\Repository\SignalementRepository;
 use App\Service\NewsActivitiesSinceLastLoginService;
@@ -28,7 +27,7 @@ class BackController extends AbstractController
 
 
     #[Route('/', name: 'back_index')]
-    public function index(SignalementRepository $signalementRepository, Request $request, AffectationRepository $affectationRepository): Response
+    public function index(SignalementRepository $signalementRepository, Request $request): Response
     {
         $title = 'Administration - Tableau de bord';
         $user = null;
@@ -40,14 +39,26 @@ class BackController extends AbstractController
             'ville' => $request->get('bo-filter-ville') ?? 'all',
             'page' => $request->get('page') ?? 1,
         ];
-        if ($user)
-            $this->req = $affectationRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['page']);
-        else
-            $this->req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['page']);
+        if ($user && $filter['status'] === (string)Signalement::STATUS_CLOSED)
+            $filter['status'] = [Signalement::STATUS_CLOSED, Signalement::STATUS_ACTIVE];
+        $this->req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['page']);
         $this->iterator = $this->req->getIterator()->getArrayCopy();
-        if ($user && $user->getPartenaire())
-            foreach ($this->iterator as $item)
-                $item->getSignalement()->setStatut((int)$filter['status']);
+        if ($user && $this->getUser()->getPartenaire()) {
+            foreach ($this->req as $k => $signalement) {
+                $signalement->getAffectations()->filter(function (Affectation $affectation) use ($signalement, $filter, $k) {
+                    if ($filter['status'] === [Signalement::STATUS_CLOSED, Signalement::STATUS_ACTIVE] && $affectation->getStatut() === Affectation::STATUS_ACCEPTED)
+                        unset($this->iterator[$k]);
+                    elseif ($filter['status'] === (string)Signalement::STATUS_ACTIVE && ($affectation->getStatut() === Affectation::STATUS_REFUSED || $affectation->getStatut() === Affectation::STATUS_CLOSED)) {
+                        unset($this->iterator[$k]);
+                    } else {
+                        if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && $affectation->getStatut() === Affectation::STATUS_WAIT)
+                            $signalement->setStatut(Signalement::STATUS_NEED_PARTNER_RESPONSE);
+                        if ($affectation->getPartenaire()->getId() === $this->getUser()->getPartenaire()->getId() && ($affectation->getStatut() === Affectation::STATUS_CLOSED || $affectation->getStatut() === Affectation::STATUS_REFUSED))
+                            $signalement->setStatut(Signalement::STATUS_CLOSED);
+                    }
+                });
+            }
+        }
         $signalements = [
             'list' => $this->iterator,
             'villes' => $signalementRepository->findCities($user),
@@ -55,16 +66,7 @@ class BackController extends AbstractController
             'page' => (int)$filter['page'],
             'pages' => (int)ceil(count($this->req) / 50)
         ];
-        $signalements['counts'] = $signalementRepository->countByStatus();
-        if ($user){
-            $counts = $affectationRepository->countByStatusForUser($user);
-            $signalements['counts'] = [
-                Signalement::STATUS_NEED_VALIDATION => $counts[0],
-                Signalement::STATUS_ACTIVE => $counts[1],
-                Signalement::STATUS_CLOSED => ['count' => $counts[3]['count'] + $counts[2]['count']],
-            ];
-        }
-//        dd($signalements['counts']);
+        $signalements['counts'] = $signalementRepository->countByStatus($user);
         if (/*$request->isXmlHttpRequest() && */ $request->get('pagination'))
             return $this->render('back/table_result.html.twig', ['filter' => $filter, 'signalements' => $signalements]);
         return $this->render('back/index.html.twig', [
