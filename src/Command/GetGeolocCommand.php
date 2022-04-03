@@ -40,20 +40,15 @@ class GetGeolocCommand extends Command
             ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description');
     }
 
-    protected function setGeolocAndInsee($io, Signalement $signalement)
+    protected function setGeolocAndInsee($io,Signalement $signalement)
     {
         $adresse = $signalement->getAdresseOccupant() . ' ' . $signalement->getCpOccupant() . ' ' . $signalement->getVilleOccupant();
         $io->note($adresse);
         $response = json_decode($this->httpClient->request('GET', 'https://api-adresse.data.gouv.fr/search/?q=' . $adresse)->getContent(), true);
-
-        if (!empty($response['features'][0])) {
-            $coordinates = $response['features'][0]['geometry']['coordinates'];
-            $insee = $response['features'][0]['properties']['citycode'];
-            if ($coordinates)
-                $signalement->setGeoloc(['lat' => $coordinates[0], 'lng' => $coordinates[1]]);
-            if ($insee)
-                $signalement->setInseeOccupant($insee);
-        }
+        $coordinates = $response['features'][0]['geometry']['coordinates'];
+        $insee = $response['features'][0]['properties']['citycode'];
+        $signalement->setGeoloc(['lat' => $coordinates[0], 'lng' => $coordinates[1]]);
+        $signalement->setInseeOccupant($insee);
         return $signalement;
     }
 
@@ -69,24 +64,16 @@ class GetGeolocCommand extends Command
         }
         $signalements = $repo->findAll();
         if ($reference && $signalement = $repo->findOneBy(['reference' => $reference])) {
-           if($signalement->getAdresseOccupant() && !str_contains($signalement->getAdresseOccupant(),'0'))
-           {
-               $this->setGeolocAndInsee($io, $signalement);
-               $em->persist($signalement);
-               $i++;
-           }
+            $this->setGeolocAndInsee($io,$signalement);
+            $em->persist($signalement);
+            $i++;
         } else
-            foreach ($signalements as $signalement) /* if (!$signalement->getGeoloc() || empty($signalement->getGeoloc()['lat']) || empty($signalement->getGeoloc()['lng'])) {*/ {
-                $this->setGeolocAndInsee($io, $signalement);
-                $em->persist($signalement);
-                echo $i++;
-            }
-        if ($i % 50 === 0)
-        {
-            $em->flush();
-            sleep(1);
-        }
-        /*  }*/
+            foreach ($signalements as $signalement)
+                if (!$signalement->getGeoloc() || empty($signalement->getGeoloc()['lat']) || empty($signalement->getGeoloc()['lng'])) {
+                    $this->setGeolocAndInsee($io,$signalement);
+                    $em->persist($signalement);
+                    $i++;
+                }
         $em->flush();
         $io->success($i . ' signalement(s) corrigé(s)');
 
