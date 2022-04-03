@@ -1,6 +1,6 @@
 
 {% for index,signalement in signalements.list %}
-    {% if not is_granted('ROLE_ADMIN_PARTENAIRE') or filter.partenaire is not same as("all")%}
+    {% if not is_granted('ROLE_ADMIN_PARTENAIRE') %}
         {% set signalement = signalement.signalement %}
     {% endif %}
     <tr class="{% if signalement.statut is same as(1) or signalement.statut is same as(3) %}fr-background-contrast--orange-terre-battue{% endif %} signalement-row"
