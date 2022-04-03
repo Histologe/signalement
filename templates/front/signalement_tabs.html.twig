@@ -177,15 +177,9 @@
                                 <div class="fr-col-6 fr-col-md fr-text--center">
                                     <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-instagram-line">
                                         <img class="fr-hidden fr-rounded fr-display-block" width="100">
-                                        <input type="file" accept="image/*" name="signalement[photos]"
-                                               class="fr-hidden photo-file" id="signalement_photos_{{ i }}">
+                                        <input type="file" accept="image/*" name="signalement[photos][{{ i }}]"
+                                               class="fr-hidden photo-file">
                                     </label>
-                                    <small class="fr-text-label--red-marianne fr-icon--sm fr-hidden fr-display-block" id="signalement_photos_error_{{ i }}"></small>
-                                    <div class="fr-grid-row">
-                                        <div class="fr-col">
-                                            <progress max="100" id="progress_signalement_photos_{{ i }}" value="0" class="fr-hidden"></progress>
-                                        </div>
-                                    </div>
                                     <div class="fr-grid-row">
                                         <div class="fr-col fr-text--center">
                                             <button class="fr-mt-2v fr-btn fr-btn--sm fr-btn--danger signalement-uploadedfile-delete fr-hidden">
@@ -210,16 +204,12 @@
                             {% for i in 0..3 %}
                                 <div class="fr-col-6 fr-col-md fr-text--center">
                                     <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-attachment-fill">
-                                        <input type="file" name="signalement[documents]" id="signalement_documents_{{ i }}"
+                                        <input type="file" name="signalement[documents][{{ i }}]"
                                                class="fr-hidden doc-file"
                                                accept=".pdf,.doc,.docx">
                                     </label>
-                                    <small class="fr-text-label--red-marianne fr-icon--sm fr-hidden fr-display-block" id="signalement_documents_error_{{ i }}"></small>
-                                    <div class="fr-grid-row">
-                                        <div class="fr-col">
-                                            <progress max="100" id="progress_signalement_documents_{{ i }}" value="0" class="fr-hidden"></progress>
-                                        </div>
-                                    </div>
+                                    <small class="fr-text-label--red-marianne fr-icon--sm fr-hidden fr-display-block">Le
+                                        document dépasse 2MB</small>
                                     <div class="fr-grid-row">
                                         <div class="fr-col fr-text--center">
                                             <button class="fr-mt-2v fr-btn fr-btn--sm fr-btn--danger signalement-uploadedfile-delete fr-hidden">
