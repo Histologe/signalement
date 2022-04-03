@@ -23,14 +23,14 @@
 
                 {% set classe = '' %}
                 {% if affectation.statut is same as (0) %}
-                    {% set classe = 'fr-text--orange fr-fi-question-fill fr-icon--sm' %}
+                    {% set classe = 'fr-badge fr-badge--info' %}
                 {% elseif affectation.statut is same as (1) %}
-                    {% set classe = 'fr-text-label--green-emeraude fr-fi-checkbox-circle-fill fr-icon--sm' %}
+                    {% set classe = 'fr-badge fr-badge--success' %}
                 {% elseif affectation.statut is same as (2) or affectation.statut is same as (3) %}
-                    {% set classe = 'fr-text-label--red-marianne fr-fi-close-circle-fill fr-icon--sm' %}
+                    {% set classe = 'r-badge fr-badge--error' %}
                 {% endif %}
-                <small class="{{ classe }} fr-display-block fr-ws-nowrap"><span
-                            class="fr-text--black"> {{ affectation.partenaire.nom }}</span></small>
+                <small class="{{ classe }} fr-ws-nowrap fr-badge--sm fr-my-1v fr-text--bold fr-display-block"><span
+                         > {{ affectation.partenaire.nom }}</span></small>
             {% else %}
                 Aucune
             {% endfor %}

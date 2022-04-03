@@ -12,11 +12,13 @@ use App\Repository\SignalementRepository;
 use App\Repository\SituationRepository;
 use App\Service\CriticiteCalculatorService;
 use App\Service\NotificationService;
+use App\Service\UploadHandlerService;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -43,17 +45,29 @@ class FrontSignalementController extends AbstractController
         ]);
     }
 
+    #[Route('/signalement/handle', name: 'handle_upload', methods: "POST")]
+    public function handleUpload(UploadHandlerService $uploadHandlerService, Request $request,RequestStack $requestStack)
+    {
+        if ($files = $request->files->get('signalement'))
+        {
+           foreach ($files as $key => $file)
+               return $this->json($uploadHandlerService->toTempFolder($file[0])->setKey($key));
+        }
+        return $this->json(['error'=>'Aucun fichiers'],400);
+
+    }
+
     /**
      * @throws Exception
      */
     #[Route('/signalement/envoi', name: 'envoi_signalement', methods: "POST")]
-    public function envoi(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger, NotificationService $notificationService): Response
+    public function envoi(Request $request, ManagerRegistry $doctrine, NotificationService $notificationService): Response
     {
         if ($data = $request->get('signalement')) {
             $em = $doctrine->getManager();
             $signalement = new Signalement();
             $files_array = [];
-            if ($files = $request->files->get('signalement')) {
+            /*if ($files = $request->files->get('signalement')) {
                 foreach ($files as $key => $file) {
                     foreach ($file as $file_) {
                         $originalFilename = pathinfo($file_->getClientOriginalName(), PATHINFO_FILENAME);
@@ -79,7 +93,7 @@ class FrontSignalementController extends AbstractController
                     $signalement->setDocuments($files_array['documents']);
                 if (isset($files_array['photos']))
                     $signalement->setPhotos($files_array['photos']);
-            }
+            }*/
             foreach ($data as $key => $value) {
                 $method = 'set' . ucfirst($key);
                 switch ($key) {
