@@ -7,7 +7,9 @@ html, body {
     position: relative;
 }
 
-
+.fr-disabled {
+    pointer-events: none!important;
+}
 .signalement-invalid::before {
     content: '';
     position: absolute;

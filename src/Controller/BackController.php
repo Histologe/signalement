@@ -9,6 +9,7 @@ use App\Entity\Signalement;
 use App\Form\ConfigType;
 use App\Repository\AffectationRepository;
 use App\Repository\ConfigRepository;
+use App\Repository\PartenaireRepository;
 use App\Repository\SignalementRepository;
 use App\Service\NewsActivitiesSinceLastLoginService;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -28,7 +29,7 @@ class BackController extends AbstractController
 
 
     #[Route('/', name: 'back_index')]
-    public function index(SignalementRepository $signalementRepository, Request $request, AffectationRepository $affectationRepository): Response
+    public function index(SignalementRepository $signalementRepository, Request $request, AffectationRepository $affectationRepository, PartenaireRepository $partenaireRepository): Response
     {
         $title = 'Administration - Tableau de bord';
         $user = null;
@@ -38,12 +39,13 @@ class BackController extends AbstractController
             'search' => $request->get('search') ?? null,
             'status' => $request->get('bo-filter-statut') ?? 'all',
             'ville' => $request->get('bo-filter-ville') ?? 'all',
+            'partenaire' => $request->get('bo-filter-partenaire') ?? 'all',
             'page' => $request->get('page') ?? 1,
         ];
         if ($user)
-            $this->req = $affectationRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['page']);
+            $this->req = $affectationRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['partenaire'], $filter['page']);
         else
-            $this->req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['page']);
+            $this->req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['partenaire'], $filter['page']);
         $this->iterator = $this->req->getIterator()->getArrayCopy();
 
         $signalements = [
@@ -78,6 +80,7 @@ class BackController extends AbstractController
         return $this->render('back/index.html.twig', [
             'title' => $title,
             'filter' => $filter,
+            'partenaires' => $partenaireRepository->findAllList(),
             'signalements' => $signalements,
         ]);
     }
