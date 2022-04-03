@@ -12,11 +12,14 @@ use App\Repository\SignalementRepository;
 use App\Repository\SituationRepository;
 use App\Service\CriticiteCalculatorService;
 use App\Service\NotificationService;
+use App\Service\UploadHandlerService;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -43,43 +46,41 @@ class FrontSignalementController extends AbstractController
         ]);
     }
 
+    #[Route('/signalement/handle', name: 'handle_upload', methods: "POST")]
+    public function handleUpload(UploadHandlerService $uploadHandlerService, Request $request, RequestStack $requestStack)
+    {
+        if ($files = $request->files->get('signalement')) {
+            foreach ($files as $key => $file)
+                return $this->json($uploadHandlerService->toTempFolder($file)->setKey($key));
+        }
+        return $this->json(['error' => 'Aucun fichiers'], 400);
+
+    }
+
     /**
      * @throws Exception
      */
     #[Route('/signalement/envoi', name: 'envoi_signalement', methods: "POST")]
-    public function envoi(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger, NotificationService $notificationService): Response
+    public function envoi(Request $request, ManagerRegistry $doctrine, NotificationService $notificationService,UploadHandlerService $uploadHandlerService): Response
     {
         if ($data = $request->get('signalement')) {
             $em = $doctrine->getManager();
             $signalement = new Signalement();
             $files_array = [];
-            if ($files = $request->files->get('signalement')) {
-                foreach ($files as $key => $file) {
-                    foreach ($file as $file_) {
-                        $originalFilename = pathinfo($file_->getClientOriginalName(), PATHINFO_FILENAME);
-                        $titre = $originalFilename . '.' . $file_->guessExtension();
-                        // this is needed to safely include the file name as part of the URL
-                        $safeFilename = $slugger->slug($originalFilename);
-                        $newFilename = $safeFilename . '-' . uniqid() . '.' . $file_->guessExtension();
-                        try {
-                            $file_->move(
-                                $this->getParameter('uploads_dir'),
-                                $newFilename
-                            );
-                        } catch (FileException $e) {
-                            // ... handle exception if something happens during file upload
-                        }
-                        if($newFilename && $newFilename !== '' && $titre && $titre !== '')
-                        {
-                            $files_array[$key][] = ['file' => $newFilename, 'titre' => $titre];
-                        }
+            if (isset($data['files'])) {
+                $dataFiles = $data['files'];
+                foreach ($dataFiles as $key => $files) {
+                    foreach ($files as $titre => $file)
+                    {
+                        $files_array[$key][] =  ['file'=>$uploadHandlerService->toUploadFolder($file),'titre'=>$titre];
                     }
                 }
-                if (isset($files_array['documents']))
-                    $signalement->setDocuments($files_array['documents']);
-                if (isset($files_array['photos']))
-                    $signalement->setPhotos($files_array['photos']);
+                unset($data['files']);
             }
+            if (isset($files_array['documents']))
+                $signalement->setDocuments($files_array['documents']);
+            if (isset($files_array['photos']))
+                $signalement->setPhotos($files_array['photos']);
             foreach ($data as $key => $value) {
                 $method = 'set' . ucfirst($key);
                 switch ($key) {
