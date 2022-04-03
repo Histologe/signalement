@@ -55,7 +55,7 @@ class AffectationRepository extends ServiceEntityRepository
     }
 
 
-    public function findByStatusAndOrCityForUser(User|UserInterface $user = null, $status = null, $city = null, $search = null,$partenaire = null, $page = null): Paginator
+    public function findByStatusAndOrCityForUser(User|UserInterface $user = null, $status = null, $city = null, $search = null, $page = null): Paginator
     {
         $pageSize = 50;
         $firstResult = ($page - 1) * $pageSize;
@@ -82,20 +82,12 @@ class AffectationRepository extends ServiceEntityRepository
         if ($user)
             $qb->andWhere(':partenaire IN (partenaire)')
                 ->setParameter('partenaire', $user->getPartenaire());
-        if ( $partenaire && $partenaire !== 'all')
-            $qb->andWhere(':partenaire IN (partenaire)')
-                ->setParameter('partenaire', $partenaire);
         if ($search) {
             if (preg_match('/([0-9]{4})-[0-9]{0,6}/', $search)) {
                 $qb->andWhere('signalement.reference = :search');
                 $qb->setParameter('search', $search);
             } else {
-                $qb->andWhere('LOWER(signalement.nomOccupant) LIKE :search 
-                OR LOWER(signalement.prenomOccupant) LIKE :search 
-                OR LOWER(signalement.reference) LIKE :search 
-                OR LOWER(signalement.adresseOccupant) LIKE :search 
-                OR LOWER(signalement.villeOccupant) LIKE :search
-                OR LOWER(signalement.nomProprio) LIKE :search');
+                $qb->andWhere('LOWER(signalement.nomOccupant) LIKE :search OR LOWER(signalement.prenomOccupant) LIKE :search OR LOWER(signalement.reference) LIKE :search OR LOWER(signalement.adresseOccupant) LIKE :search OR LOWER(signalement.villeOccupant) LIKE :search');
                 $qb->setParameter('search', "%" . strtolower($search) . "%");
             }
         }
