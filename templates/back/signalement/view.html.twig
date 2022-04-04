@@ -39,7 +39,7 @@
                             <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
                                     name="signalement-affectation-response[accept]" value="1"
                                     {# onclick="return confirm('Êtes-vous certain de vouloir acccepter ce signalement ?')" #}>
-                                J'ai pris connaissance du signalement
+                                Accepter
                             </button>
                             <a href="#" class="fr-btn fr-btn--danger fr-fi-close-circle-fill fr-btn--icon-left"
                                data-fr-opened="false" aria-controls="refus-affectation-modal">Refuser
@@ -456,13 +456,17 @@
             {% endfor %}
         </div>
         {% for doc in signalement.documents %}
-            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-3v" style="position: relative;z-index: 1001">
+            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-3v signalement-file-item" style="position: relative;z-index: 1001">
                 <div class="fr-col-10">
                     <a href="{{ asset('_up/'~doc.file) }}" target="_blank" class="fr-link">{{ doc.titre }}</a>
                 </div>
                 <div class="fr-col-2 fr-text--right">
                     <a href="{{ asset('_up/'~doc.file) }}"
                        class="fr-btn fr-fi-eye-fill fr-btn--icon-left img-box" title="Afficher le document" target="_blank">Consulter</a>
+                    <button title="Supprimer le document"
+                            data-delete="{{ path('back_signalement_delete_file',{uuid:signalement.uuid,type:'documents',file:doc.file}) }}"
+                            data-token="{{ csrf_token('signalement_delete_file_'~signalement.id) }}"
+                            class="fr-btn fr-btn--danger fr-fi-delete-line signalement-file-delete"></button>
                 </div>
             </div>
         {% endfor %}
