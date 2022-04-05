@@ -134,7 +134,6 @@ class BackSignalementController extends AbstractController
         $form = $this->createForm(SignalementType::class, $signalement);
         $form->handleRequest($request);
         if ($form->isSubmitted() /*&& $form->isValid()*/) {
-            //TODO INSEE AP
             $signalement->setModifiedBy($this->getUser());
             $signalement->setModifiedAt(new \DateTimeImmutable());
             $score = new CriticiteCalculatorService($signalement, $doctrine);
