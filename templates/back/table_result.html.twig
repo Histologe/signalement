@@ -1,6 +1,6 @@
 
 {% for index,signalement in signalements.list %}
-    {% if not is_granted('ROLE_ADMIN_PARTENAIRE') or filter.partenaire is not same as("all")%}
+    {% if not is_granted('ROLE_ADMIN_PARTENAIRE') %}
         {% set signalement = signalement.signalement %}
     {% endif %}
     <tr class="{% if signalement.statut is same as(1) or signalement.statut is same as(3) %}fr-background-contrast--orange-terre-battue{% endif %} signalement-row"
@@ -23,14 +23,14 @@
 
                 {% set classe = '' %}
                 {% if affectation.statut is same as (0) %}
-                    {% set classe = 'fr-badge fr-badge--info' %}
+                    {% set classe = 'fr-text--orange fr-fi-question-fill fr-icon--sm' %}
                 {% elseif affectation.statut is same as (1) %}
-                    {% set classe = 'fr-badge fr-badge--success' %}
+                    {% set classe = 'fr-text-label--green-emeraude fr-fi-checkbox-circle-fill fr-icon--sm' %}
                 {% elseif affectation.statut is same as (2) or affectation.statut is same as (3) %}
-                    {% set classe = 'fr-badge fr-badge--error' %}
+                    {% set classe = 'fr-text-label--red-marianne fr-fi-close-circle-fill fr-icon--sm' %}
                 {% endif %}
-                <small class="{{ classe }} fr-ws-nowrap fr-badge--sm fr-my-1v fr-text--bold fr-display-block"><span
-                    > {{ affectation.partenaire.nom }}</span></small>
+                <small class="{{ classe }} fr-display-block fr-ws-nowrap"><span
+                            class="fr-text--black"> {{ affectation.partenaire.nom }}</span></small>
             {% else %}
                 Aucune
             {% endfor %}
