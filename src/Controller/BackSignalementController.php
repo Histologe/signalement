@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 
-use App\Command\GetGeolocCommand;
 use App\Entity\Affectation;
 use App\Entity\Critere;
 use App\Entity\Criticite;
@@ -127,7 +126,7 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/{uuid}/edit', name: 'back_signalement_edit', methods: ['GET', 'POST'])]
-    public function editSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, SituationRepository $situationRepository,HttpClientInterface $httpClient): Response
+    public function editSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, SituationRepository $situationRepository): Response
     {
         $title = 'Administration - Edition signalement #' . $signalement->getReference();
         $etats = ["Etat moyen", "Mauvais état", "Très mauvais état"];
@@ -164,25 +163,13 @@ class BackSignalementController extends AbstractController
             $suivi->setIsPublic(false);
             $suivi->setDescription('Modification du signalement par un partenaire');
             $doctrine->getManager()->persist($suivi);
-            $adresse = $signalement->getAdresseOccupant() . ' ' . $signalement->getCpOccupant() . ' ' . $signalement->getVilleOccupant();
-            $response = json_decode($httpClient->request('GET', 'https://api-adresse.data.gouv.fr/search/?q=' . $adresse)->getContent(), true);
-            if (!empty($response['features'][0])) {
-                $coordinates = $response['features'][0]['geometry']['coordinates'];
-                $insee = $response['features'][0]['properties']['citycode'];
-                if ($coordinates)
-                    $signalement->setGeoloc(['lat' => $coordinates[0], 'lng' => $coordinates[1]]);
-                if ($insee)
-                    $signalement->setInseeOccupant($insee);
-            }
-            $doctrine->getManager()->persist($signalement);
             $doctrine->getManager()->flush();
-            $this->addFlash('success', 'Signalement modifié avec succés !');
+            $this->addFlash('success', 'Signalement modifé avec succés !');
             return $this->json(['response' => 'success_edited']);
         } else if ($form->isSubmitted()) {
             dd($form->getErrors()[0]);
             return $this->json(['response' => 'error']);
         }
-
 
         return $this->render('back/signalement/edit.html.twig', [
             'title' => $title,

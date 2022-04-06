@@ -4,10 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Critere;
 use App\Entity\Criticite;
-use App\Entity\Partenaire;
 use App\Entity\Signalement;
 use App\Entity\Situation;
-use App\Entity\Suivi;
 use App\Entity\User;
 use App\Form\SignalementType;
 use App\Repository\SignalementRepository;
@@ -15,7 +13,6 @@ use App\Repository\SituationRepository;
 use App\Service\CriticiteCalculatorService;
 use App\Service\NotificationService;
 use App\Service\UploadHandlerService;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -160,59 +157,16 @@ class FrontSignalementController extends AbstractController
         return $this->json(['response' => 'error'], 400);
     }
 
-
     #[Route('/suivre-mon-signalement/{code}', name: 'front_suivi_signalement', methods: "GET")]
     public function suiviSignalement(string $code, SignalementRepository $signalementRepository)
     {
-        if ($signalement = $signalementRepository->findOneByCodeForPublic($code)) {
+        if ($signalement = $signalementRepository->findOneBy(['codeSuivi' => $code])) {
             //TODO: Verif info perso pour plus de sécu
             return $this->render('front/suivi_signalement.html.twig', [
                 'signalement' => $signalement
             ]);
         }
         $this->addFlash('error', 'Le lien utilisé est expiré ou invalide, verifier votre saisie.');
-        return $this->redirectToRoute('front_signalement');
-    }
-
-
-
-    #[Route('/suivre-mon-signalement/{code}/response', name: 'front_suivi_signalement_user_response', methods: "POST")]
-    public function postUserResponse(string $code, SignalementRepository $signalementRepository,NotificationService $notificationService,Request $request,EntityManagerInterface$entityManager)
-    {
-        if ($signalement = $signalementRepository->findOneByCodeForPublic($code)) {
-            if($this->isCsrfTokenValid('signalement_front_response_'.$signalement->getUuid(),$request->get('_token')))
-            {
-                $suivi = new Suivi();
-                $suivi->setIsPublic(true);
-                $suivi->setDescription(filter_var($request->get('signalement_front_response')['content'],FILTER_SANITIZE_STRING));
-                $suivi->setSignalement($signalement);
-                $entityManager->persist($suivi);
-                $entityManager->flush();
-                $signalement->getAffectations()->filter(function (Partenaire $partenaire)use($notificationService,$signalement){
-                    if ($partenaire->getEmail()) {
-                        $notificationService->send(NotificationService::TYPE_NOUVEAU_SUIVI, $partenaire->getEmail(), [
-                            'link' => $this->generateUrl('back_signalement_view', [
-                                'uuid' => $signalement->getUuid()
-                            ], 0)
-                        ]);
-                    }
-                    $partenaire->getUsers()->map(function (User $user) use ($signalement, $notificationService) {
-                        if ($user->getIsMailingActive() && $user->getStatut() !== User::STATUS_ARCHIVE) {
-                            $notificationService->send(NotificationService::TYPE_NOUVEAU_SUIVI, $user->getEmail(), [
-                                'link' => $this->generateUrl('back_signalement_view', [
-                                    'uuid' => $signalement->getUuid()
-                                ], 0)
-                            ]);
-                        }
-                    });
-                });
-                $this->addFlash('success', 'Votre message à bien été enregistré, merci.');
-                return $this->render('front/suivi_signalement.html.twig', [
-                    'signalement' => $signalement
-                ]);
-            }
-        }
-        $this->addFlash('error', 'Une erreur est survenue...');
         return $this->redirectToRoute('front_signalement');
     }
 }

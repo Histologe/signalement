@@ -45,17 +45,6 @@ class SignalementRepository extends ServiceEntityRepository
     }
     */
 
-    public function findOneByCodeForPublic($code)
-    {
-        return $this->createQueryBuilder('s')
-            ->leftJoin('s.suivis','suivis','WITH','suivis.isPublic = 1')
-            ->andWhere('s.codeSuivi = :code')
-            ->setParameter('code', $code)
-            ->addSelect('suivis')
-            ->getQuery()
-            ->getOneOrNullResult()
-            ;
-    }
 
     public function findAllWithGeoData()
     {
