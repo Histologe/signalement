@@ -20,7 +20,6 @@
         </td>
         <td>
             {% for affectation in signalement.affectations %}
-
                 {% set classe = '' %}
                 {% if affectation.statut is same as (0) %}
                     {% set classe = 'fr-badge fr-badge--info' %}

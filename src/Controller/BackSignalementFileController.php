@@ -35,6 +35,7 @@ class BackSignalementFileController extends AbstractController
             'margin-left' => 0,
         ];
 
+
         return new Response(
             $knpSnappyPdf->getOutputFromHtml($html, $options),
             200,

@@ -49,3 +49,4 @@ class PartenaireRepository extends ServiceEntityRepository
     }
     */
 }
+

@@ -157,6 +157,7 @@ class FrontSignalementController extends AbstractController
         return $this->json(['response' => 'error'], 400);
     }
 
+
     #[Route('/suivre-mon-signalement/{code}', name: 'front_suivi_signalement', methods: "GET")]
     public function suiviSignalement(string $code, SignalementRepository $signalementRepository)
     {
