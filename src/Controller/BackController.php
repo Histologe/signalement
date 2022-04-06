@@ -47,7 +47,6 @@ class BackController extends AbstractController
         else
             $this->req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['page']);
         $this->iterator = $this->req->getIterator()->getArrayCopy();
-
         $signalements = [
             'list' => $this->iterator,
             'villes' => $signalementRepository->findCities($user),

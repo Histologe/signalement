@@ -156,7 +156,6 @@ class BackSignalementActionController extends AbstractController
         }
         return $this->json(['status' => 'denied'], 400);
     }
-
     #[Route('/{uuid}/reopen', name: 'back_signalement_reopen')]
     public function reopenSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine)
     {
