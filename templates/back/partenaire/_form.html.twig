@@ -42,7 +42,7 @@
             {% endif %}
             {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
                 <option value="ROLE_ADMIN_TERRITOIRE">
-                    Administrateur Territoire
+                    Responsable Territoire
                 </option>
             {% endif %}
             <option value="ROLE_ADMIN_PARTENAIRE">Administrateur</option>
@@ -171,7 +171,7 @@
                 {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
                     <option value="ROLE_ADMIN_TERRITOIRE"
                             {% if 'ROLE_ADMIN_TERRITOIRE' in user.roles %}selected{% endif %}>
-                        Administrateur Territoire
+                        Responsable Territoire
                     </option>
                 {% endif %}
                 <option value="ROLE_ADMIN_PARTENAIRE" {% if 'ROLE_ADMIN_PARTENAIRE' in user.roles %}selected{% endif %}>
@@ -225,6 +225,13 @@
                </div>
            </div>
         </div>
+        <div class="fr-input-group">
+            <label for="partenaire_users_switch_{{ user.id }}" class="fr-label">Edit.</label>
+            <a href="#" class="fr-btn fr-btn--orange fr-fi-edit-fill fr-mt-3v partenaire_users_switch_btn"
+                    id="partenaire_users_switch_{{ user.id }}" aria-controls="fr-modal-user-switcher" data-fr-opened="false" data-username="{{ user.nomComplet }}" data-userid="{{ user.id }}"{#
+                    data-delete="{{ path('back_partenaire_user_delete',{user:user.id}) }}"
+                    data-token="{{ csrf_token('partenaire_user_delete_'~user.id) }}"#}></a>
+        </div> &nbsp;
         <div class="fr-input-group">
             <label for="partenaire_users_delete_{{ user.id }}" class="fr-label">Suppr.</label>
             <button class="fr-btn fr-btn--danger fr-fi-delete-line fr-mt-3v partenaire-user-delete"
