@@ -45,7 +45,7 @@
                     Administrateur Territoire
                 </option>
             {% endif %}
-            <option value="ROLE_ADMIN_PARTENAIRE">Administrateur</option>
+            <option value="ROLE_ADMIN_PARTENAIRE">Responsable partenaire</option>
             <option value="ROLE_USER_PARTENAIRE">Utilisateur</option>
         </select>
         <p class="fr-error-text fr-hidden">
@@ -175,7 +175,7 @@
                     </option>
                 {% endif %}
                 <option value="ROLE_ADMIN_PARTENAIRE" {% if 'ROLE_ADMIN_PARTENAIRE' in user.roles %}selected{% endif %}>
-                    Administrateur
+                    Responsable partenaire
                 </option>
                 <option value="ROLE_USER_PARTENAIRE" {% if 'ROLE_USER_PARTENAIRE' in user.roles %}selected{% endif %}>
                     Utilisateur
