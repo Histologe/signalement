@@ -127,7 +127,7 @@ class BackSignalementActionController extends AbstractController
                         ]);
                     }
                     $partenaire->getUsers()->map(function (User $user) use ($signalement, $notificationService) {
-                        if ($user->getIsMailingActive() && $user->getStatut() === User::STATUS_ACTIVE) {
+                        if ($user->getIsMailingActive() && $user->getStatut() !== User::STATUS_ARCHIVE) {
                             $notificationService->send(NotificationService::TYPE_AFFECTATION, $user->getEmail(), [
                                 'link' => $this->generateUrl('back_signalement_view', [
                                     'uuid' => $signalement->getUuid()
@@ -156,6 +156,7 @@ class BackSignalementActionController extends AbstractController
         }
         return $this->json(['status' => 'denied'], 400);
     }
+
     #[Route('/{uuid}/reopen', name: 'back_signalement_reopen')]
     public function reopenSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine)
     {
