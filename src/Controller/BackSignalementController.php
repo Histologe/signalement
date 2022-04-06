@@ -171,7 +171,6 @@ class BackSignalementController extends AbstractController
             return $this->json(['response' => 'error']);
         }
 
-
         return $this->render('back/signalement/edit.html.twig', [
             'title' => $title,
             'form' => $form->createView(),
