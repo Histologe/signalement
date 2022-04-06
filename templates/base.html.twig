@@ -62,14 +62,13 @@
 <script type="text/javascript" nomodule src={{ asset('dsfr/dsfr.nomodule.min.js') }}></script>
 <script type="text/javascript" src={{ asset('js/screencapture.js') }}></script>
 <script src="{{ asset('js/tinymce/tinymce.min.js') }}"></script>
-<script src="{{ asset('js/app.js?v='~''|date('YW')) }}"></script>
+<script src="{{ asset('js/app.min.js?v='~''|date('YW')) }}"></script>
 <script src={{ asset('js/img_box.js') }}></script>
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
 <script src={{ asset('js/gauge.min.js') }}></script>
 <script>
-
     preload = ()=>{
        document.body.classList.add('load')
     }
