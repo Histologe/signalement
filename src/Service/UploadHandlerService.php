@@ -30,7 +30,6 @@ class UploadHandlerService
         // this is needed to safely include the file name as part of the URL
         $safeFilename = $this->slugger->slug($originalFilename);
         $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
-
 //        return ['error'=>'Erreur lors du téléversement.','message'=>'TEST','status'=>500];
         try {
             $file->move(

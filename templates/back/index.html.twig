@@ -32,7 +32,7 @@
     <section class="fr-col-12 fr-p-5v">
         <form action="#" name="bo-filter-form" method="POST"
               class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
-            <div class="fr-col-12 fr-col-md-3">
+            <div class="fr-col-12 fr-col-md-4">
                 <label class="fr-label" for="filter_ville"><strong>Filtrer par ville</strong></label>
                 <select name="bo-filter-ville" id="filter_ville" class="fr-select">
                     <option value="all">TOUTES</option>
@@ -42,7 +42,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="fr-col-12 fr-col-md-3">
+            <div class="fr-col-12 fr-col-md-4">
                 <label class="fr-label" for="filter_statut"><strong>Filtrer par statut</strong></label>
                 <select name="bo-filter-statut" id="filter_statut" class="fr-select">
                     <option value="all">TOUS</option>
@@ -52,17 +52,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="fr-col-12 fr-col-md-3">
-                <label class="fr-label" for="filter_partenaire"><strong>Filtrer par partenaire</strong></label>
-                <select name="bo-filter-partenaire" id="filter_partenaire" class="fr-select">
-                    <option value="all">TOUS</option>
-                    {% for partenaire in partenaires %}
-                        <option value="{{ partenaire.id }}"
-                                {% if filter.partenaire is same as(""~partenaire.id~"") %}selected{% endif %}>{{ partenaire.nom|upper }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="fr-col-12 fr-col-md-3">
+            <div class="fr-col-12 fr-col-md-4">
                 <label class="fr-label" for="header-search-input"><strong>Rechercher</strong></label>
                 <div class="fr-search-bar fr-mt-2v" id="header-search">
                     <input class="fr-input" placeholder="Rechercher" type="search" id="header-search-input"
@@ -159,8 +149,8 @@
             strokeWidth: 0.1,
             color: '#000000'
         }
-        let ids = [{% if not is_granted('ROLE_ADMIN_PARTENAIRE') or filter.partenaire is not same as("all") %}{{ signalements.list|map(p => "#{p.signalement.id}")|join(', ') }}{% else %}{{ signalements.list|map(p => "#{p.id}")|join(', ') }}{% endif %}],
-            scores = [{% if not is_granted('ROLE_ADMIN_PARTENAIRE') or filter.partenaire is not same as("all") %}{{ signalements.list|map(p => "#{p.signalement.scoreCreation}")|join(', ') }}{% else %}{{ signalements.list|map(p => "#{p.scoreCreation}")|join(', ') }}{% endif %}];
+        let ids = [{% if not is_granted('ROLE_ADMIN_PARTENAIRE') %}{{ signalements.list|map(p => "#{p.signalement.id}")|join(', ') }}{% else %}{{ signalements.list|map(p => "#{p.id}")|join(', ') }}{% endif %}],
+            scores = [{% if not is_granted('ROLE_ADMIN_PARTENAIRE') %}{{ signalements.list|map(p => "#{p.signalement.scoreCreation}")|join(', ') }}{% else %}{{ signalements.list|map(p => "#{p.scoreCreation}")|join(', ') }}{% endif %}];
         ids.map((id, index) => {
             gauge = new Gauge(document.getElementById(`gauge-signalement-${id}`)).setOptions(opts);
             gauge.set(scores[index]);
