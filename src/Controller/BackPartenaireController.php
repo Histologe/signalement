@@ -108,9 +108,30 @@ class BackPartenaireController extends AbstractController
 
         return $this->renderForm('back/partenaire/edit.html.twig', [
             'partenaire' => $partenaire,
+            'partenaires'=> $entityManager->getRepository(Partenaire::class)->findAll(),
             'form' => $form,
         ]);
     }
+
+    #[Route('/switchuser', name: 'back_partenaire_user_switch', methods: ['POST'])]
+    public function switchUser(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
+            return $this->redirectToRoute('back_index');
+        if ($this->isCsrfTokenValid('partenaire_user_switch', $request->request->get('_token')) &&$data = $request->get('user_switch')) {
+            $partenaire = $entityManager->getRepository(Partenaire::class)->find($data['partenaire']);
+            $user = $entityManager->getRepository(User::class)->find($data['user']);
+            $user->setPartenaire($partenaire);
+//            $user->setStatut(User::STATUS_ARCHIVE);
+            $entityManager->persist($user);
+            $entityManager->flush();
+            $this->addFlash('success',$user->getNomComplet().' transféré avec succès !');
+            return $this->redirectToRoute('back_partenaire_edit', ['id'=>$partenaire->getId()], Response::HTTP_SEE_OTHER);
+        }
+        $this->addFlash('error','Une erreur est survenue lors du transfert...');
+        return $this->redirectToRoute('back_partenaire_index', [], Response::HTTP_SEE_OTHER);
+    }
+
 
     #[Route('/{user}/delete', name: 'back_partenaire_user_delete', methods: ['POST'])]
     public function deleteUser(Request $request,User $user, EntityManagerInterface $entityManager): Response
