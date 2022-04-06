@@ -37,6 +37,16 @@ class PartenaireRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findAllList()
+    {
+        return $this->createQueryBuilder('p')
+            ->select('PARTIAL p.{id,nom}')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
     /*
     public function findOneBySomeField($value): ?Partenaire
     {

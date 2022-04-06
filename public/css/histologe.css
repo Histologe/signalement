@@ -32,6 +32,9 @@ pre {
     position: relative;
     z-index: 1001;
 }
+[aria-expanded="true"] .fr-hover-critere {
+    background: rgba(0, 0, 145, 0.15);
+}
 
 .fr-hover-critere:hover {
     background: rgba(0, 0, 145, 0.15);
