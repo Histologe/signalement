@@ -156,6 +156,7 @@ class BackSignalementActionController extends AbstractController
         }
         return $this->json(['status' => 'denied'], 400);
     }
+
     #[Route('/{uuid}/reopen', name: 'back_signalement_reopen')]
     public function reopenSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine)
     {
@@ -233,14 +234,11 @@ class BackSignalementActionController extends AbstractController
             $getMethod = 'get' . $item;
             $setMethod = 'set' . $item;
             $value = $request->get('value');
-            if($item === "DateVisite")
-                $value = new \DateTimeImmutable($value);
             if (!$value)
             {
                 $value = !(int)$signalement->$getMethod() ?? 1;
                 $return = 1;
             }
-
             $signalement->$setMethod($value);
             $entityManager->persist($signalement);
             $entityManager->flush();
