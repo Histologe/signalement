@@ -35,6 +35,10 @@
                 Aucune
             {% endfor %}
         </td>
+        <td>{% set suivi = (signalement.suivis|last) %}
+            <strong>{{ suivi.createdAt|date('d.m.Y') }}</strong> <br>
+            <small>{{ suivi.createdBy ? suivi.createdBy.partenaire.nom|upper : '<small class="fr-badge fr-badge--warning fr-mt-1v">DECLARANT</small>'|raw }}</small>
+        </td>
         <td>
             {% if signalement.statut is same as(1) %}
                 <strong class="fr-text-label--red-marianne">A valider</strong>

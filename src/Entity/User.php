@@ -78,6 +78,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->userReports = new ArrayCollection();
         $this->statut = self::STATUS_INACTIVE;
         $this->jobs = new ArrayCollection();
+        $this->isGenerique = false;
     }
 
     /*public function setId($id): ?self
