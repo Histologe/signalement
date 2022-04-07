@@ -77,6 +77,12 @@
             <a href="{{ path('back_index') }}" class="fr-link fr-link--icon-left fr-fi-close-circle-line">Réinitialiser
                 les résultats</a>
         </div>
+       {# <div class="fr-grid-row">
+            <div class="fr-col-12">
+                {{ form_start(searchForm) }}
+                {{ form_end(searchForm) }}
+            </div>
+        </div>#}
     </section>
     <section class="fr-col-12 fr-table fr-table--bordered">
         <table class="fr-display-inline-table fr-display-md-block sortable">
@@ -168,6 +174,5 @@
             gauge.setMinValue(0);
             gauge.animationSpeed = 32;
         })
-
     </script>
 {% endblock %}

@@ -55,9 +55,10 @@ class AffectationRepository extends ServiceEntityRepository
     }
 
 
-    public function findByStatusAndOrCityForUser(User|UserInterface $user = null, $status = null, $city = null, $search = null, $page = null): Paginator
+    public function findByStatusAndOrCityForUser(User|UserInterface $user = null, $status = null, $city = null, $search = null,$partenaire = null, $page = null): Paginator
     {
         $pageSize = 50;
+        $page = (int)$page;
         $firstResult = ($page - 1) * $pageSize;
         $qb = $this->createQueryBuilder('a')
             ->select('a,PARTIAL signalement.{id,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut,createdAt,scoreCreation}')
@@ -82,6 +83,9 @@ class AffectationRepository extends ServiceEntityRepository
         if ($user)
             $qb->andWhere(':partenaire IN (partenaire)')
                 ->setParameter('partenaire', $user->getPartenaire());
+        if ( $partenaire && $partenaire !== 'all')
+            $qb->andWhere(':partenaire IN (partenaire)')
+                ->setParameter('partenaire', $partenaire);
         if ($search) {
             if (preg_match('/([0-9]{4})-[0-9]{0,6}/', $search)) {
                 $qb->andWhere('signalement.reference = :search');
