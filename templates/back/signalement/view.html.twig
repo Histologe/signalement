@@ -1,7 +1,5 @@
 {% extends 'back/base_bo.html.twig' %}
-{% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ asset('css/jsCalendar.css') }}">
-{% endblock %}
+
 {% set picto_yes = '<p class="fr-badge fr-badge--success value-switcher" data-action="click" data-item="%s" data-url="'~path('back_signalement_switch_value',{uuid:signalement.uuid})~'" data-token="'~csrf_token('signalement_switch_value_'~signalement.uuid)~'">Oui</p>' %}
 {% set picto_no = '<p class="fr-badge fr-badge--error value-switcher" data-action="click" data-item="%s" data-url="'~path('back_signalement_switch_value',{uuid:signalement.uuid})~'" data-token="'~csrf_token('signalement_switch_value_'~signalement.uuid)~'">Non</p>' %}
 {% set procedures = ["RSD" , "Mise en sécurité","Incurie","Insalubrité", "Décence", "ADIL"] %}
@@ -275,29 +273,21 @@
                         <li>
                             <strong>Visite effectuée: </strong>
                             {% if signalement.dateVisite %}
-                                <p class="fr-badge fr-badge--success">{{ signalement.dateVisite|date('d.m.Y') }}</p>
+                                {{ picto_yes|raw }}
                             {% else %}
-                                <p class="fr-badge fr-badge--error fr-mb-3v" id="signalement-toggle-visite-calendar">NON</p>
-                                <form action="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}" method="POST" class="needs-validation" novalidate>
-                                    <div class="fr-display-inline-flex">
-                                        <div class="fr-input-group">
-                                            <input type="date" class="fr-input" name="value" required>
-                                            <p class="fr-error-text fr-hidden">Vous devez saisir une date valide (JJ/MM/AAAA)</p>
-                                        </div>
-                                        <button class="fr-btn fr-fi-check-line" type="submit"></button>
-                                    </div>
-                                    <input type="hidden" name="item" value="DateVisite">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}">
-                                </form>
+                                {{ picto_no|raw }}
                             {% endif %}
                         </li>
                         {% if signalement.dateVisite %}
                             <li>
+                                <strong>Date de visite: </strong> {{ signalement.dateVisite|date('d/m/Y') }}
+                            </li>
+                            <li>
                                 <strong>Occupant présent: </strong>
                                 {% if signalement.isOccupantPresentVisite %}
-                                    {{ picto_yes|format('IsOccupantPresentVisite')|raw }}
+                                    {{ picto_yes|raw }}
                                 {% else %}
-                                    {{ picto_no|format('IsOccupantPresentVisite')|raw }}
+                                    {{ picto_no|raw }}
                                 {% endif %}
                             </li>
                         {% endif %}
@@ -593,8 +583,8 @@
         {% for suivi in signalement.suivis|reverse %}
             <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v">
                 <div class="fr-col-2">
-                    <strong> {{ suivi.createdBy ? (suivi.createdBy.nom|upper~'. '~ suivi.createdBy.prenom|capitalize) : signalement.nomDeclarant ?? signalement.nomOccupant }}</strong> <br>
-                    <small>[{{ suivi.createdBy ? (suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun') : 'DECLARANT' }}]</small> <br>
+                    <strong> {{ suivi.createdBy.nom|upper~'. '~ suivi.createdBy.prenom|capitalize }}</strong> <br>
+                    <small>[{{ suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun' }}]</small> <br>
                     <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
                 </div>
                 <div class="fr-col-9 bloc-suivi-content-row fr-pl-3v">
@@ -612,7 +602,6 @@
     </section>
 {% endblock %}
 {% block javascripts %}
-
     <script>
         {% if isClosedForMe or signalement.statut is same as(6) %}
         document?.querySelector('#signalement-{{ signalement.id }}-content').querySelectorAll('button:not(.reopen,.reaffect,.img-box),.fr-btn:not(.reopen,.reaffect,.img-box)').forEach(input => {
@@ -656,27 +645,11 @@
         L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
             attribution: '&copy;'
         }).addTo(map);
-        var regions = L.geoJSON(null, {
-            pointToLayer: function (pointFeature, latlng) {
-                return L.circleMarker(latlng, {
-                    radius:6,
-                    opacity: .8
-                })
-                    .bindPopup("<p><b> " + pointFeature.properties.EPCI + "</b></p>");
-            }
-        });
-        fetch('{{ asset('test.geojson') }}',{
-            method:'GET',
-        }).then(r=>r.json().then(res=>{
-            res.features.map((feature,index)=>{
-                regions.addData(feature)
-            })
-            regions.addTo(map);
-            map.fitBounds(regions.getBounds());
-        }))
+
         L.marker([{{ signalement.geoloc.lng }}, {{ signalement.geoloc.lat }}]).addTo(map)
             .bindPopup('{{ signalement.adresseOccupant~', '~signalement.cpOccupant~' '~signalement.villeOccupant|upper }}')
             .openPopup();
         {% endif %}
+
     </script>
 {% endblock %}

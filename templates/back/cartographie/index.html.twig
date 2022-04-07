@@ -15,28 +15,9 @@
     </section>
 {% endblock %}
 {% block javascripts %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
     <script>
         let map = L.map('map-signalements-view').setView([{{ signalements|last.geoloc.lng }}, {{ signalements|last.geoloc.lat }}], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(map);
-        var regions = L.geoJSON(null, {
-            pointToLayer: function (pointFeature, latlng) {
-                return L.circleMarker(latlng, {
-                    radius:6,
-                    opacity: .8
-                })
-                    .bindPopup("<p><b> " + pointFeature.properties.EPCI + "</b></p>");
-            }
-        });
-        fetch('{{ asset('test.geojson') }}',{
-            method:'GET',
-        }).then(r=>r.json().then(res=>{
-            res.features.map((feature,index)=>{
-                regions.addData(feature)
-            })
-            regions.addTo(map);
-            map.fitBounds(regions.getBounds());
-        }))
         let markers = L.markerClusterGroup();
         {% for signalement in signalements %}
         {% if signalement.geoloc.lat is defined and signalement.geoloc.lng is defined %}
