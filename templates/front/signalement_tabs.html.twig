@@ -556,22 +556,12 @@
                             Veuillez renseigner la ville du logement
                         </p>
                     </div>
-                    {% if 'back_' in app.request.get('_route') %}
-                        {% set attr = 'type=text class=fr-input' %}
-                        {% set attr_label = 'class=fr-label' %}
-                        {% else %}
-                            {% set attr = 'class=fr-hidden type="hidden"' %}
-                            {% set attr_label = 'class=fr-hidden' %}
-                    {% endif %}
-                    <label for="signalement-geoloc-lat-occupant" {{ attr_label }}>LNG.</label>
-                    <input {{ attr }} name="signalement[geoloc][lat]"
-                           id="signalement-geoloc-lat-occupant" value="{{ signalement.geoloc ? (signalement.geoloc.lat ? signalement.geoloc.lat : ''):''}}">
-                    <label for="signalement-geoloc-lng-occupant" {{ attr_label }}>LAT.</label>
-                    <input {{ attr }} name="signalement[geoloc][lng]"
-                           id="signalement-geoloc-lng-occupant" value="{{ signalement.geoloc ? (signalement.geoloc.lng ? signalement.geoloc.lat : '') : '' }}">
-                    <label for="signalement-insee-occupant" {{ attr_label }}>INSEE</label>
-                    <input {{ attr }} name="signalement[inseeOccupant]"
-                           id="signalement-insee-occupant" value="{{ signalement.inseeOccupant ?? '' }}">
+                    <input type="hidden" name="signalement[geoloc][lat]"
+                           id="signalement-geoloc-lat-occupant">
+                    <input type="hidden" name="signalement[geoloc][lng]"
+                           id="signalement-geoloc-lng-occupant">
+                    <input type="hidden" name="signalement[inseeOccupant]"
+                           id="signalement-insee-occupant">
                 </div>
                 <fieldset class="fr-fieldset fr-col-12 fr-p-0">
                     <legend class="fr-fieldset__legend">
@@ -756,5 +746,6 @@
                 {{ form_widget(form._token) }}
             {% endif %}
         </form>
+
     </section>
 </div>

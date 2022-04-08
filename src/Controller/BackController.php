@@ -7,7 +7,6 @@ use App\Entity\Cloture;
 use App\Entity\Config;
 use App\Entity\Signalement;
 use App\Form\ConfigType;
-use App\Form\SignalementSearchType;
 use App\Repository\AffectationRepository;
 use App\Repository\ConfigRepository;
 use App\Repository\PartenaireRepository;
@@ -48,6 +47,7 @@ class BackController extends AbstractController
         else
             $this->req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter['status'], $filter['ville'], $filter['search'], $filter['page']);
         $this->iterator = $this->req->getIterator()->getArrayCopy();
+
         $signalements = [
             'list' => $this->iterator,
             'villes' => $signalementRepository->findCities($user),
@@ -74,7 +74,6 @@ class BackController extends AbstractController
             foreach ($this->iterator as $item)
                 $item->getSignalement()->setStatut((int)$status[$item->getStatut()]);
         }
-        $searchForm = $this->createForm(SignalementSearchType::class);
 //        dd($signalements['counts']);
         if (/*$request->isXmlHttpRequest() && */ $request->get('pagination'))
             return $this->render('back/table_result.html.twig', ['filter' => $filter, 'signalements' => $signalements]);
@@ -83,7 +82,6 @@ class BackController extends AbstractController
             'filter' => $filter,
             'partenaires' => $partenaireRepository->findAllList(),
             'signalements' => $signalements,
-            'searchForm'=>$searchForm->createView()
         ]);
     }
 }

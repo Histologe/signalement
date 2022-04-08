@@ -34,7 +34,6 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
-    <link rel="stylesheet"  href="https://unpkg.com/tippy.js@6/themes/light-border.css"/>
     {% block stylesheets %}{% endblock %}
     {{ config.get.trackingCode ? config.get.tagManagerCode|raw : '' }}
     {{ config.get.tagManagerCode ? config.get.tagManagerCode|raw :'' }}
@@ -65,15 +64,15 @@
 <script src="{{ asset('js/tinymce/tinymce.min.js') }}"></script>
 <script src="{{ asset('js/app.js?v='~''|date('YW')) }}"></script>
 <script src={{ asset('js/img_box.js') }}></script>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
 <script src={{ asset('js/gauge.min.js') }}></script>
-<script src="https://unpkg.com/@popperjs/core@2"></script>
-<script src="https://unpkg.com/tippy.js@6"></script>
-
-
 <script>
+
+    preload = ()=>{
+       document.body.classList.add('load')
+    }
     tinymce.init({
         selector: 'textarea.editor',
         plugins: 'lists',

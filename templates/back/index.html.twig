@@ -32,7 +32,7 @@
     <section class="fr-col-12 fr-p-5v">
         <form action="#" name="bo-filter-form" method="POST"
               class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
-            <div class="fr-col-12 fr-col-md">
+            <div class="fr-col-12 fr-col-md-3">
                 <label class="fr-label" for="filter_ville"><strong>Filtrer par ville</strong></label>
                 <select name="bo-filter-ville" id="filter_ville" class="fr-select">
                     <option value="all">TOUTES</option>
@@ -42,7 +42,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="fr-col-12 fr-col-md">
+            <div class="fr-col-12 fr-col-md-3">
                 <label class="fr-label" for="filter_statut"><strong>Filtrer par statut</strong></label>
                 <select name="bo-filter-statut" id="filter_statut" class="fr-select">
                     <option value="all">TOUS</option>
@@ -52,19 +52,17 @@
                     {% endfor %}
                 </select>
             </div>
-            {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
-                <div class="fr-col-12 fr-col-md-3">
-                    <label class="fr-label" for="filter_partenaire"><strong>Filtrer par partenaire</strong></label>
-                    <select name="bo-filter-partenaire" id="filter_partenaire" class="fr-select">
-                        <option value="all">TOUS</option>
-                        {% for partenaire in partenaires %}
-                            <option value="{{ partenaire.id }}"
-                                    {% if filter.partenaire is same as(""~partenaire.id~"") %}selected{% endif %}>{{ partenaire.nom|upper }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            {% endif %}
-            <div class="fr-col-12 fr-col-md">
+            <div class="fr-col-12 fr-col-md-3">
+                <label class="fr-label" for="filter_partenaire"><strong>Filtrer par partenaire</strong></label>
+                <select name="bo-filter-partenaire" id="filter_partenaire" class="fr-select">
+                    <option value="all">TOUS</option>
+                    {% for partenaire in partenaires %}
+                        <option value="{{ partenaire.id }}"
+                                {% if filter.partenaire is same as(""~partenaire.id~"") %}selected{% endif %}>{{ partenaire.nom|upper }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="fr-col-12 fr-col-md-3">
                 <label class="fr-label" for="header-search-input"><strong>Rechercher</strong></label>
                 <div class="fr-search-bar fr-mt-2v" id="header-search">
                     <input class="fr-input" placeholder="Rechercher" type="search" id="header-search-input"
@@ -79,12 +77,6 @@
             <a href="{{ path('back_index') }}" class="fr-link fr-link--icon-left fr-fi-close-circle-line">Réinitialiser
                 les résultats</a>
         </div>
-       {# <div class="fr-grid-row">
-            <div class="fr-col-12">
-                {{ form_start(searchForm) }}
-                {{ form_end(searchForm) }}
-            </div>
-        </div>#}
     </section>
     <section class="fr-col-12 fr-table fr-table--bordered">
         <table class="fr-display-inline-table fr-display-md-block sortable">
@@ -99,7 +91,6 @@
                 <th>Occupant</th>
                 <th>Adresse</th>
                 <th>Affectation</th>
-                <th>Dernier suivi</th>
                 <th>Statut</th>
                 <th class="fr-text--right ">Actions</th>
             </tr>
@@ -177,5 +168,6 @@
             gauge.setMinValue(0);
             gauge.animationSpeed = 32;
         })
+
     </script>
 {% endblock %}

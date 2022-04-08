@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 
-use App\Command\GetGeolocCommand;
 use App\Entity\Affectation;
 use App\Entity\Critere;
 use App\Entity\Criticite;
@@ -54,11 +53,11 @@ class BackSignalementController extends AbstractController
     {
         /** @var Signalement $signalement */
         $signalement = $entityManager->getRepository(Signalement::class)->findByUuid($uuid);
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checker->check($signalement, $this->getUser()))
+        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checker->check($signalement,$this->getUser()))
             return $this->redirectToRoute('back_index');
         $title = 'Administration - Signalement #' . $signalement->getReference();
         $isRefused = $isAccepted = null;
-        if ($isAffected = $this->checker->check($signalement, $this->getUser())) {
+        if ($isAffected = $this->checker->check($signalement,$this->getUser())) {
             switch ($isAffected->getStatut()) {
                 case Affectation::STATUS_ACCEPTED:
                     $isAccepted = $isAffected;
@@ -68,7 +67,7 @@ class BackSignalementController extends AbstractController
                     break;
             }
         }
-        $isClosedForMe = $this->checker->checkIfSignalementClosedForUser($this->getUser(), $signalement);
+        $isClosedForMe = $this->checker->checkIfSignalementClosedForUser($this->getUser(),$signalement);
         $newsActivitiesSinceLastLoginService->update($signalement);
         $clotureForm = $this->createForm(ClotureType::class);
         $clotureForm->handleRequest($request);
@@ -89,7 +88,7 @@ class BackSignalementController extends AbstractController
             $motifSuivi = preg_replace('/<p[^>]*>/', '', $motifSuivi); // Remove the start <p> or <p attr="">
             $motifSuivi = str_replace('</p>', '<br>', $motifSuivi); // Replace the end
             $suivi = new Suivi();
-            $suivi->setDescription('Le signalement à été cloturé pour ' . $sujet . ' avec le motif suivant: <br> <strong>' . $motifCloture . '</strong><br><strong>Desc.: </strong>' . $motifSuivi);
+            $suivi->setDescription('Le signalement à été cloturé pour ' . $sujet . ' avec le motif suivant: <br> <strong>' . $motifCloture . '</strong><br><strong>Desc.: </strong>'.$motifSuivi);
             $suivi->setCreatedBy($this->getUser());
             $signalement->addSuivi($suivi);
             /** @var Affectation $isAffected */
@@ -99,8 +98,6 @@ class BackSignalementController extends AbstractController
                 $isAffected->setMotifCloture($motifCloture);
                 $entityManager->persist($isAffected);
             }
-            $calculator = new CriticiteCalculatorService($signalement);
-            $signalement->setScoreCreation($calculator->calculate());
             $entityManager->persist($signalement);
             $entityManager->persist($suivi);
             $entityManager->flush();
@@ -129,7 +126,7 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/{uuid}/edit', name: 'back_signalement_edit', methods: ['GET', 'POST'])]
-    public function editSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, SituationRepository $situationRepository, HttpClientInterface $httpClient): Response
+    public function editSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine, SituationRepository $situationRepository): Response
     {
         $title = 'Administration - Edition signalement #' . $signalement->getReference();
         $etats = ["Etat moyen", "Mauvais état", "Très mauvais état"];
@@ -166,27 +163,13 @@ class BackSignalementController extends AbstractController
             $suivi->setIsPublic(false);
             $suivi->setDescription('Modification du signalement par un partenaire');
             $doctrine->getManager()->persist($suivi);
-            if (!$signalement->getInseeOccupant() || !isset($signalement->getGeoloc()['lat']) || !isset($signalement->getGeoloc()['lat'])) {
-                $adresse = $signalement->getAdresseOccupant() . ' ' . $signalement->getCpOccupant() . ' ' . $signalement->getVilleOccupant();
-                $response = json_decode($httpClient->request('GET', 'https://api-adresse.data.gouv.fr/search/?q=' . $adresse)->getContent(), true);
-                if (!empty($response['features'][0])) {
-                    $coordinates = $response['features'][0]['geometry']['coordinates'];
-                    $insee = $response['features'][0]['properties']['citycode'];
-                    if ($coordinates)
-                        $signalement->setGeoloc(['lat' => $coordinates[0], 'lng' => $coordinates[1]]);
-                    if ($insee)
-                        $signalement->setInseeOccupant($insee);
-                }
-            }
-            $doctrine->getManager()->persist($signalement);
             $doctrine->getManager()->flush();
-            $this->addFlash('success', 'Signalement modifié avec succés !');
+            $this->addFlash('success', 'Signalement modifé avec succés !');
             return $this->json(['response' => 'success_edited']);
         } else if ($form->isSubmitted()) {
             dd($form->getErrors()[0]);
             return $this->json(['response' => 'error']);
         }
-
 
         return $this->render('back/signalement/edit.html.twig', [
             'title' => $title,
@@ -201,7 +184,7 @@ class BackSignalementController extends AbstractController
     #[Route('/{uuid}/delete', name: 'back_signalement_delete', methods: "POST")]
     public function deleteSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checker->check($signalement, $this->getUser()) && !$this->isGranted('ROLE_ADMIN_TERRITOIRE'))
+        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checker->check($signalement,$this->getUser()) && !$this->isGranted('ROLE_ADMIN_TERRITOIRE'))
             return $this->redirectToRoute('back_index');
         if ($this->isCsrfTokenValid('signalement_delete_' . $signalement->getId(), $request->get('_token'))) {
             $signalement->setStatut(Signalement::STATUS_ARCHIVED);
