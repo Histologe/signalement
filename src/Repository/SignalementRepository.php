@@ -3,16 +3,13 @@
 namespace App\Repository;
 
 use App\Entity\Signalement;
-use App\Entity\SignalementUserAffectation;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
-use function Sodium\add;
 
 /**
  * @method Signalement|null find($id, $lockMode = null, $lockVersion = null)
@@ -118,7 +115,8 @@ class SignalementRepository extends ServiceEntityRepository
         $qb->leftJoin('s.affectations', 'affectations');
         $qb->leftJoin('affectations.partenaire', 'partenaire');
         $qb->leftJoin('partenaire.users', 'user');
-        $qb->addSelect('affectations', 'partenaire', 'user');
+        $qb->leftJoin('s.suivis', 'suivis');
+        $qb->addSelect('affectations', 'partenaire', 'user','suivis');
         if ($status && $status !== 'all') {
             $qb->andWhere('s.statut = :statut')
                 ->setParameter('statut', $status);
@@ -169,15 +167,15 @@ class SignalementRepository extends ServiceEntityRepository
     }
 
 
-    /*
-    public function findOneBySomeField($value): ?Signalement
+    public function findOneByCodeForPublic($code): ?Signalement
     {
         return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
+            ->andWhere('s.codeSuivi = :code')
+            ->setParameter('code', $code)
+            ->leftJoin('s.suivis','suivis',Join::WITH,'suivis.isPublic = 1')
             ->getQuery()
             ->getOneOrNullResult()
         ;
     }
-    */
+
 }
