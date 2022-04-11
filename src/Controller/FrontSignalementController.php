@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Affectation;
 use App\Entity\Critere;
 use App\Entity\Criticite;
 use App\Entity\Partenaire;
@@ -188,7 +189,8 @@ class FrontSignalementController extends AbstractController
                 $suivi->setSignalement($signalement);
                 $entityManager->persist($suivi);
                 $entityManager->flush();
-                $signalement->getAffectations()->filter(function (Partenaire $partenaire)use($notificationService,$signalement){
+                $signalement->getAffectations()->filter(function (Affectation $affectation)use($notificationService,$signalement){
+                    $partenaire = $affectation->getPartenaire();
                     if ($partenaire->getEmail()) {
                         $notificationService->send(NotificationService::TYPE_NOUVEAU_SUIVI, $partenaire->getEmail(), [
                             'link' => $this->generateUrl('back_signalement_view', [

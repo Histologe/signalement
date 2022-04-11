@@ -159,7 +159,7 @@ class BackSignalementController extends AbstractController
                     }
                 }
             }
-            $signalement->setJsonContent($data['situation']);
+            !empty($data['situation']) && $signalement->setJsonContent($data['situation']);
             $suivi = new Suivi();
             $suivi->setCreatedBy($this->getUser());
             $suivi->setSignalement($signalement);
