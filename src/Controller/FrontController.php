@@ -19,6 +19,7 @@ use App\Service\CriticiteCalculatorService;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use DoctrineExtensions\Query\Mysql\Date;
 use mysqli;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
@@ -33,8 +34,35 @@ class FrontController extends AbstractController
     #[Route('/replicapi', name: 'replicapi'/*, host: 'localhost'*/)]
     public function replicapi(Request $request, Filesystem $fsObject, SignalementRepository $signalementRepository, ManagerRegistry $doctrine, NotificationService $notificationService)
     {
-
+        $meta = $doctrine->getManager()->getClassMetadata(Signalement::class);
+        echo "<table>";
         $signalements = $signalementRepository->findAll();
+        echo "<thead><tr>";
+        foreach ($meta->getFieldNames() as $fieldName) {
+            echo "<th>" . $fieldName . "</th>";
+        }
+        echo "</tr></thead><tbody>";
+
+        foreach ($signalements as $signalement) {
+            echo "<tr>";
+            foreach ($meta->getFieldNames() as $fieldName) {
+                $method = 'get' . ucfirst($fieldName);
+                if (!is_array($signalement->$method()) && !$signalement->$method() instanceof \DateTimeImmutable)
+                    echo "<td>" . $signalement->$method() . "</td>";
+                if ($signalement->$method() instanceof \DateTimeImmutable)
+                    echo "<td>" . $signalement->$method()->format('d.m.Y h:i:s') . "</td>";
+            }
+            echo "<td>";
+            foreach ($signalement->getCriticites() as $criticite) {
+                echo "<b>".$criticite->getCritere()->getSituation()->getLabel()."</b></br>";
+                echo " - ".$criticite->getCritere()->getLabel()."<br>";
+                echo "&nbsp;&nbsp; - ".$criticite->getLabel()."<hr>";
+            }
+            echo "</td>";
+            echo "</tr>";
+        }
+        echo "</tbody></table>";
+        die;
         foreach ($signalements as $signalement) {
             $details = $signalement->getDetails();
             $signalement->setDetails(str_replace(['/r/n', '\r\n', '<br />'], '<br>', $details));
@@ -383,13 +411,13 @@ class FrontController extends AbstractController
     }
 
     #[Route('/contact', name: 'front_contact')]
-    public function contact(Request $request, NotificationService $notificationService,ConfigurationService $configurationService): Response
+    public function contact(Request $request, NotificationService $notificationService, ConfigurationService $configurationService): Response
     {
         $title = "Conditions Générales d'Utilisation";
         $form = $this->createForm(ContactType::class, []);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $notificationService->send(NotificationService::TYPE_NOTIFICATION_MAIL_FRONT, ['notifications@histologe.fr',$configurationService->get()->getEmailReponse()], [
+            $notificationService->send(NotificationService::TYPE_NOTIFICATION_MAIL_FRONT, ['notifications@histologe.fr', $configurationService->get()->getEmailReponse()], [
                 'nom' => $form->get('nom')->getData(),
                 'mail' => $form->get('email')->getData(),
                 'reply' => $form->get('email')->getData(),
