@@ -1,7 +1,7 @@
 $forAll=$args[0]
 if($forAll -eq "--all")
 {
-    $projects =  (Get-ChildItem -Path ../ -exclude *.idea,DEMO, CDNASSETS).Name
+    $projects =  (Get-ChildItem -Path ../ -exclude *.idea,DEMO, DEMO_TURBO).Name
 }
 elseif($forAll -eq "--bdr")
 {
