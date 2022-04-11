@@ -469,7 +469,7 @@ forms.forEach((form) => {
                     })
                     Object.keys(uploadedFiles).map((f, index) => {
                         let fi = JSON.parse(uploadedFiles[f]);
-                        formData.append(`signalement[files][${fi.key}][${fi.titre}]`, fi.file)
+                        formData.append(`signalement[files][${fi.key}][${fi.titre}]`,fi.file)
                     })
                     fetch(form.action, {
                         method: "POST",

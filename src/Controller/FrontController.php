@@ -31,7 +31,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class FrontController extends AbstractController
 {
 
-    #[Route('/replicapi', name: 'replicapi'/*, host: 'localhost'*/)]
+    #[Route('/replicapi', name: 'replicapi', host: 'localhost')]
     public function replicapi(Request $request, Filesystem $fsObject, SignalementRepository $signalementRepository, ManagerRegistry $doctrine, NotificationService $notificationService)
     {
         $meta = $doctrine->getManager()->getClassMetadata(Signalement::class);
