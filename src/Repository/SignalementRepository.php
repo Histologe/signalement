@@ -173,6 +173,7 @@ class SignalementRepository extends ServiceEntityRepository
             ->andWhere('s.codeSuivi = :code')
             ->setParameter('code', $code)
             ->leftJoin('s.suivis','suivis',Join::WITH,'suivis.isPublic = 1')
+            ->addSelect('suivis')
             ->getQuery()
             ->getOneOrNullResult()
         ;

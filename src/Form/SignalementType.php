@@ -92,7 +92,7 @@ class   SignalementType extends AbstractType
                 'attr' => [
                     'class' => 'fr-select'
                 ],
-                'choices' => [1, 2, 3, 4, '4+'],
+                'choices' => ["0",1, 2, 3, 4, '4+'],
                 'choice_label' => function ($choice, $key, $value) {
                     if (1 === $choice)
                         return $value . ' Enfant';
@@ -113,7 +113,7 @@ class   SignalementType extends AbstractType
                 'attr' => [
                     'class' => 'fr-select'
                 ],
-                'choices' => [1, 2, 3, 4, '4+'],
+                'choices' => ["0",1, 2, 3, 4, '4+'],
                 'choice_label' => function ($choice, $key, $value) {
                     if (1 === $choice)
                         return $value . ' Enfant';
@@ -496,7 +496,6 @@ class   SignalementType extends AbstractType
                 'required' => false
             ]);
     }
-
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

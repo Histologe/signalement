@@ -126,6 +126,7 @@ class Affectation
         return $this;
     }
 
+
     public function getAffectedBy(): ?User
     {
         return $this->affectedBy;

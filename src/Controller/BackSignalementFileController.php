@@ -17,6 +17,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route('/bo/s')]
 class BackSignalementFileController extends AbstractController
 {
+
     #[Route('/{uuid}/pdf', name: 'back_signalement_gen_pdf')]
     public function generatePdfSignalement(Signalement $signalement, Pdf $knpSnappyPdf, EntityManagerInterface $entityManager)
     {

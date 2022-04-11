@@ -53,7 +53,6 @@ class UploadHandlerService
         $this->fs->rename($tempFile,$newFile);
         return $file;
     }
-
     public function setKey(string $key)
     {
         $this->file['key'] = $key;

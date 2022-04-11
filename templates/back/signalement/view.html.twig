@@ -3,6 +3,8 @@
 {% set picto_yes = '<p class="fr-badge fr-badge--success value-switcher" data-action="click" data-item="%s" data-url="'~path('back_signalement_switch_value',{uuid:signalement.uuid})~'" data-token="'~csrf_token('signalement_switch_value_'~signalement.uuid)~'">Oui</p>' %}
 {% set picto_no = '<p class="fr-badge fr-badge--error value-switcher" data-action="click" data-item="%s" data-url="'~path('back_signalement_switch_value',{uuid:signalement.uuid})~'" data-token="'~csrf_token('signalement_switch_value_'~signalement.uuid)~'">Non</p>' %}
 {% set procedures = ["RSD" , "Mise en sécurité","Incurie","Insalubrité", "Décence", "ADIL"] %}
+
+
 {% block content %}
     {% include 'back/signalement/modal_affectation.html.twig' %}
     {% include 'back/signalement/modal_dpe.html.twig' %}
@@ -586,7 +588,6 @@
             </div>
             <hr class=" fr-mt-5v">
         {% endif %}
-
         {% for suivi in signalement.suivis|reverse %}
             <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v">
                 <div class="fr-col-2 {% if suivi.createdBy %}part-infos-hover{% endif %}" {% if suivi.createdBy %}data-user="{{ suivi.createdBy.nomComplet }}" data-mail="{{ suivi.createdBy.email }}"{% endif %}>

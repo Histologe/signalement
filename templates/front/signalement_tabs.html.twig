@@ -177,9 +177,15 @@
                                 <div class="fr-col-6 fr-col-md fr-text--center">
                                     <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-instagram-line">
                                         <img class="fr-hidden fr-rounded fr-display-block" width="100">
-                                        <input type="file" accept="image/*" name="signalement[photos][{{ i }}]"
-                                               class="fr-hidden photo-file">
+                                        <input type="file" accept="image/*" name="signalement[photos]"
+                                               class="fr-hidden photo-file" id="signalement_photos_{{ i }}">
                                     </label>
+                                    <small class="fr-text-label--red-marianne fr-icon--sm fr-hidden fr-display-block" id="signalement_photos_error_{{ i }}"></small>
+                                    <div class="fr-grid-row">
+                                        <div class="fr-col">
+                                            <progress max="100" id="progress_signalement_photos_{{ i }}" value="0" class="fr-hidden"></progress>
+                                        </div>
+                                    </div>
                                     <div class="fr-grid-row">
                                         <div class="fr-col fr-text--center">
                                             <button class="fr-mt-2v fr-btn fr-btn--sm fr-btn--danger signalement-uploadedfile-delete fr-hidden">
@@ -204,12 +210,16 @@
                             {% for i in 0..3 %}
                                 <div class="fr-col-6 fr-col-md fr-text--center">
                                     <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-attachment-fill">
-                                        <input type="file" name="signalement[documents][{{ i }}]"
+                                        <input type="file" name="signalement[documents]" id="signalement_documents_{{ i }}"
                                                class="fr-hidden doc-file"
                                                accept=".pdf,.doc,.docx">
                                     </label>
-                                    <small class="fr-text-label--red-marianne fr-icon--sm fr-hidden fr-display-block">Le
-                                        document dépasse 2MB</small>
+                                    <small class="fr-text-label--red-marianne fr-icon--sm fr-hidden fr-display-block" id="signalement_documents_error_{{ i }}"></small>
+                                    <div class="fr-grid-row">
+                                        <div class="fr-col">
+                                            <progress max="100" id="progress_signalement_documents_{{ i }}" value="0" class="fr-hidden"></progress>
+                                        </div>
+                                    </div>
                                     <div class="fr-grid-row">
                                         <div class="fr-col fr-text--center">
                                             <button class="fr-mt-2v fr-btn fr-btn--sm fr-btn--danger signalement-uploadedfile-delete fr-hidden">
@@ -262,7 +272,7 @@
                         {% endfor %}
                     </div>
                     <p class="fr-error-text fr-hidden">
-                        Veuillez précisez si vous avez pris contact.
+                        Veuillez préciser si vous avez pris contact.
                     </p>
                 </fieldset>
             </div>
@@ -298,7 +308,7 @@
                         {% endfor %}
                     </div>
                     <p class="fr-error-text fr-hidden">
-                        Veuillez précisez si vous êtes allocataire
+                        Veuillez préciser si vous êtes allocataire
                     </p>
                 </fieldset>
                 <div class="fr-form-group fr-mt-5v {% if 'back_' not in app.request.get('_route') or not signalement.isAllocataire %}fr-hidden{% endif %}"
@@ -308,7 +318,7 @@
                         {{ form_help(form.numAllocataire) }}
                         {{ form_widget(form.numAllocataire) }}
                         <p class="fr-error-text fr-hidden">
-                            Veuillez précisez votre numéro d'allocataire
+                            Veuillez préciser votre numéro d'allocataire
                         </p>
                     </div>
                 </div>
@@ -328,7 +338,7 @@
                         {% endfor %}
                     </div>
                     <p class="fr-error-text fr-hidden">
-                        Veuillez précisez si le logement est un logement social ou non.
+                        Veuillez préciser si le logement est un logement social ou non.
                     </p>
                 </fieldset>
             </div>
@@ -347,7 +357,7 @@
                         {% endfor %}
                     </div>
                     <p class="fr-error-text fr-hidden">
-                        Veuillez précisez si vous avez déposé un préavis de départ.
+                        Veuillez préciser si vous avez déposé un préavis de départ.
                     </p>
                 </fieldset>
             </div>
@@ -389,7 +399,7 @@
                         {% endfor %}
                     </div>
                     <p class="fr-error-text fr-hidden">
-                        Veuillez précisez si vous êtes l'occupant du logement.
+                        Veuillez préciser si vous êtes l'occupant du logement.
                     </p>
                 </fieldset>
             </div>
@@ -465,7 +475,7 @@
                             {% endfor %}
                         </div>
                         <p class="fr-error-text fr-hidden">
-                            Veuillez précisez votre lien avec l'occupant.
+                            Veuillez préciser votre lien avec l'occupant.
                         </p>
                     </fieldset>
                 </div>
@@ -556,12 +566,22 @@
                             Veuillez renseigner la ville du logement
                         </p>
                     </div>
-                    <input type="hidden" name="signalement[geoloc][lat]"
-                           id="signalement-geoloc-lat-occupant">
-                    <input type="hidden" name="signalement[geoloc][lng]"
-                           id="signalement-geoloc-lng-occupant">
-                    <input type="hidden" name="signalement[inseeOccupant]"
-                           id="signalement-insee-occupant">
+                    {% if 'back_' in app.request.get('_route') %}
+                        {% set attr = 'type=text class=fr-input' %}
+                        {% set attr_label = 'class=fr-label' %}
+                    {% else %}
+                        {% set attr = 'class=fr-hidden type="hidden"' %}
+                        {% set attr_label = 'class=fr-hidden' %}
+                    {% endif %}
+                    <label for="signalement-geoloc-lat-occupant" {{ attr_label }}>LNG.</label>
+                    <input {{ attr }} name="signalement[geoloc][lat]"
+                                      id="signalement-geoloc-lat-occupant" value="{{ signalement.geoloc ? (signalement.geoloc.lat ? signalement.geoloc.lat : ''):''}}">
+                    <label for="signalement-geoloc-lng-occupant" {{ attr_label }}>LAT.</label>
+                    <input {{ attr }} name="signalement[geoloc][lng]"
+                                      id="signalement-geoloc-lng-occupant" value="{{ signalement.geoloc ? (signalement.geoloc.lng ? signalement.geoloc.lat : '') : '' }}">
+                    <label for="signalement-insee-occupant" {{ attr_label }}>INSEE</label>
+                    <input {{ attr }} name="signalement[inseeOccupant]"
+                                      id="signalement-insee-occupant" value="{{ signalement.inseeOccupant ?? '' }}">
                 </div>
                 <fieldset class="fr-fieldset fr-col-12 fr-p-0">
                     <legend class="fr-fieldset__legend">
@@ -736,7 +756,12 @@
             </div>
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-text--center">
-                    <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-right" type="submit">Confirmer
+                    <progress max="100" id="form_global_file_progress" value="0" class="final-progress"></progress>
+                </div>
+            </div>
+            <div class="fr-grid-row">
+                <div class="fr-col-12 fr-text--center">
+                    <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-right" type="submit" id="form_finish_submit">Confirmer
                     </button>
                 </div>
             </div>
@@ -746,6 +771,5 @@
                 {{ form_widget(form._token) }}
             {% endif %}
         </form>
-
     </section>
 </div>

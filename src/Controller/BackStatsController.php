@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/bo/stats')]
 class BackStatsController extends AbstractController
 {
+
     #[Route('/', name: 'back_statistique')]
     public function index(SignalementRepository $signalementRepository, SituationRepository $situationRepository, EntityManagerInterface $entityManager): Response
     {

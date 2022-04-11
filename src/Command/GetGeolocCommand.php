@@ -51,7 +51,6 @@ class GetGeolocCommand extends Command
         $signalement->setInseeOccupant($insee);
         return $signalement;
     }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $i = 0;

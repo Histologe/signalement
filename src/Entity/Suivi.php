@@ -17,7 +17,7 @@ class Suivi
     private $createdAt;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'suivis')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private $createdBy;
 
     #[ORM\Column(type: 'text')]
