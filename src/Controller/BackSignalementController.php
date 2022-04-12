@@ -99,8 +99,8 @@ class BackSignalementController extends AbstractController
                 $isAffected->setMotifCloture($motifCloture);
                 $entityManager->persist($isAffected);
             }
-            $calculator = new CriticiteCalculatorService($signalement);
-            $signalement->setScoreCreation($calculator->calculate());
+            /*$calculator = new CriticiteCalculatorService($signalement);
+            $signalement->setScoreCreation($calculator->calculate());*/
             $entityManager->persist($signalement);
             $entityManager->persist($suivi);
             $entityManager->flush();
