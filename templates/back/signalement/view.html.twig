@@ -442,7 +442,7 @@
         <div class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters fr-my-3v" style="position: relative;z-index: 1001">
             {% for index,photo in signalement.photos %}
                 <div class="fr-col-6 fr-col-md-2 fr-rounded signalement-file-item">
-                    <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center"
+                    <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center part-infos-hover" data-user="{{ photo.username ?? 'N/R'  }}" data-mail="{{ photo.date ?? 'N/R' }}"
                          style="background: url('{{ asset('_up/'~photo.file) }}')no-repeat center center/cover">
                         <button class="fr-btn fr-btn--sm fr-fi-eye-line img-box" title="Voir la photo"
                                 onclick="img_box('{{ asset('_up/'~photo.file) }}')"></button>
@@ -466,7 +466,7 @@
         {% for doc in signalement.documents %}
             <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-3v signalement-file-item" style="position: relative;z-index: 1001">
                 <div class="fr-col-10">
-                    <a href="{{ asset('_up/'~doc.file) }}" target="_blank" class="fr-link">{{ doc.titre }}</a>
+                    <a href="{{ asset('_up/'~doc.file) }}" target="_blank" class="fr-link part-infos-hover" data-user="{{ doc.username ?? 'N/R'  }}" data-mail="{{ doc.date ?? 'N/R' }}">{{ doc.titre }}</a>
                 </div>
                 <div class="fr-col-2 fr-text--right">
                     <a href="{{ asset('_up/'~doc.file) }}"
