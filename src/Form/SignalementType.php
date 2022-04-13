@@ -232,7 +232,8 @@ class   SignalementType extends AbstractType
                 'label_attr' => [
                     'class' => 'fr-label'
                 ],
-                'label' => "N° téléphone de l'occupant"
+                'label' => "N° téléphone de l'occupant",
+                'required' => false
             ])
 
             ->add('telOccupantBis', TelType::class, [
@@ -253,7 +254,8 @@ class   SignalementType extends AbstractType
                 'label_attr' => [
                     'class' => 'fr-label'
                 ],
-                'label' => "Courriel de l'occupant"
+                'label' => "Courriel de l'occupant",
+                'required' => false
             ])
             ->add('adresseOccupant', TextType::class, [
                 'attr' => [
