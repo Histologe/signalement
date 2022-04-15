@@ -72,17 +72,16 @@
                                    value="{{ csrf_token('signalement_affectation_response_'~signalement.id) }}">
                         </form>
                     {% elseif needValidation and not isClosedForMe and is_granted('ROLE_ADMIN_TERRITOIRE') %}
-                        <form action="{{ path('back_signalement_validation_response',{uuid:signalement.uuid}) }}">
+                        <form id="signalement-validation-response-form" action="{{ path('back_signalement_validation_response',{uuid:signalement.uuid}) }}" class="tinyCheck">
                             <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
                                     name="signalement-validation-response[accept]" value="1"
                                     onclick="return confirm('Êtes-vous certain de vouloir valider ce signalement ?')">
                                 Valider ce signalement
                             </button>
-                            <button class="fr-btn fr-btn--danger fr-fi-close-circle-fill fr-btn--icon-left"
-                                    name="signalement-validation-response[deny]" value="1"
-                                    onclick="return confirm('Êtes-vous certain de vouloir refuser ce signalement ?')">
-                                Refuser ce signalement
-                            </button>
+                            <a href="#" class="fr-btn fr-btn--danger fr-fi-close-fill fr-btn--icon-left" aria-controls="refus-signalement-modal" data-fr-opened="false">
+                               Refuser ce signalement
+                            </a>
+                            {% include 'back/signalement/modal_refus_signalement.html.twig' %}
                             <input type="hidden" name="_token"
                                    value="{{ csrf_token('signalement_validation_response_'~signalement.id) }}">
                         </form>
@@ -589,7 +588,7 @@
             <hr class=" fr-mt-5v">
         {% endif %}
         {% for suivi in signalement.suivis|reverse %}
-            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v">
+            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v {% if not suivi.createdBy %}fr-background-alt--orange-terre-battue{% endif %}">
                 <div class="fr-col-2 {% if suivi.createdBy %}part-infos-hover{% endif %}" {% if suivi.createdBy %}data-user="{{ suivi.createdBy.nomComplet }}" data-mail="{{ suivi.createdBy.email }}"{% endif %}>
                     <strong > {{ suivi.createdBy ? (suivi.createdBy.nom|upper~'. '~ suivi.createdBy.prenom|capitalize) : signalement.nomDeclarant ?? signalement.nomOccupant }}</strong> <br>
                     <small>[{{ suivi.createdBy ? (suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun') : 'DECLARANT' }}]</small> <br>

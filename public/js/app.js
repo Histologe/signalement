@@ -280,7 +280,7 @@ forms.forEach((form) => {
                     fileData.append(event.target.name, file)
                     let request = new XMLHttpRequest();
                     let finish_submit_btn = document.querySelector('#form_finish_submit');
-                    request.open('POST', 'signalement/handle');
+                    request.open('POST', event.target.getAttribute('data-handle-url'));
                     request.upload.addEventListener('progress', function (e) {
                         totalProgress.classList.remove('fr-hidden')
                         finish_submit_btn.disabled = true;
@@ -415,9 +415,13 @@ forms.forEach((form) => {
                 })
                 parent.querySelector('.fr-error-text')?.classList.add('fr-hidden');
             })
-            if (form.name !== 'signalement')
+            if (form.name !== 'signalement') {
+                Object.keys(uploadedFiles).map((f, index) => {
+                    let fi = JSON.parse(uploadedFiles[f]);
+                    form.insertAdjacentHTML('beforeend',`<input type="hidden" name="signalement[files][${fi.key}][${fi.titre}]" value="${fi.file}">`);
+                });
                 form.submit();
-            else {
+            } else {
                 let currentTabBtn = document.querySelector('.fr-tabs__list>li>button[aria-selected="true"]'),
                     nextTabBtn = currentTabBtn.parentElement?.nextElementSibling?.querySelector('button');
                 if (nextTabBtn) {
@@ -469,7 +473,7 @@ forms.forEach((form) => {
                     })
                     Object.keys(uploadedFiles).map((f, index) => {
                         let fi = JSON.parse(uploadedFiles[f]);
-                        formData.append(`signalement[files][${fi.key}][${fi.titre}]`,fi.file)
+                        formData.append(`signalement[files][${fi.key}][${fi.titre}]`, fi.file)
                     })
                     fetch(form.action, {
                         method: "POST",
@@ -672,10 +676,10 @@ document?.querySelectorAll(".fr-pagination__link:not([aria-current])").forEach((
             let p = document.querySelector("#signalements-result");
             p.innerHTML = e, p.querySelectorAll("tr").forEach((e => {
                 gauge = new Gauge(e.querySelector(".gauge-signalement")).setOptions(opts), gauge.set(e.getAttribute("data-score"))
-            })), d.removeAttribute('aria-current'), d.href = "#", t.removeAttribute("href"), t.setAttribute('aria-current','page'), 1 !== o && o !== c ? r = [u, n, i, l] : 1 === o ? (r = [i, l], a = [u, n]) : o === c && (r = [u, n], a = [i, l]), r.forEach((e => {
+            })), d.removeAttribute('aria-current'), d.href = "#", t.removeAttribute("href"), t.setAttribute('aria-current', 'page'), 1 !== o && o !== c ? r = [u, n, i, l] : 1 === o ? (r = [i, l], a = [u, n]) : o === c && (r = [u, n], a = [i, l]), r.forEach((e => {
                 e.removeAttribute("aria-disabled"), e.href = "#"
             })), a && a.forEach((e => {
-                e.removeAttribute("href"), e.setAttribute('aria-disabled',"true")
+                e.removeAttribute("href"), e.setAttribute('aria-disabled', "true")
             }))
         }))))
     }))

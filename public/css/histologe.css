@@ -6,7 +6,9 @@ html, body {
 .signalement-invalid {
     position: relative;
 }
-
+.bloc-suivi-content-row p {
+    margin: 0;
+}
 
 .signalement-invalid::before {
     content: '';

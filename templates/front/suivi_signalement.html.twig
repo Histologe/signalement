@@ -34,13 +34,26 @@
                                     <textarea name="signalement_front_response[content]" id="signalement_front_response_content" rows="10" class="fr-input" required minlength="10"></textarea>
                                     <p class="fr-error-text fr-hidden">Veuillez composez un message d'au moins 10 caratères.</p>
                                 </div>
-                                <button class="fr-btn fr-fi-telegram-fill fr-btn--icon-left" type="submit">Envoyer</button>
+                                {% include 'front/_signalement_upload.html.twig' with {
+                                    limit:1
+                                } %}
+                                <div class="fr-grid-row">
+                                    <div class="fr-col-12 fr-text--center">
+                                        <progress max="100" id="form_global_file_progress" value="0" class="final-progress fr-hidden"></progress>
+                                    </div>
+                                </div>
+                                <div class="fr-grid-row">
+                                    <div class="fr-col-12 fr-text--center">
+                                        <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-right" type="submit" id="form_finish_submit">Confirmer
+                                        </button>
+                                    </div>
+                                </div>
                                 <input type="hidden" name="_token" value="{{ csrf_token('signalement_front_response_'~signalement.uuid) }}">
                             </form>
                         </div>
                     </div>
                 {% endif %}
-                    <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v">
+                    <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v {% if not suivi.createdBy %}fr-background-alt--orange-terre-battue{% endif %}">
                         <div class="fr-col-12 fr-col-md-2">
                             <small>[{{ suivi.createdBy ? (suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun'): 'Vous' }}]</small> <br>
                             <small>{{ suivi.createdAt|date('d/m/Y') }}</small>

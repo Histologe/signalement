@@ -65,18 +65,18 @@ class FrontSignalementController extends AbstractController
      * @throws Exception
      */
     #[Route('/signalement/envoi', name: 'envoi_signalement', methods: "POST")]
-    public function envoi(Request $request, ManagerRegistry $doctrine, NotificationService $notificationService,UploadHandlerService $uploadHandlerService): Response
+    public function envoi(Request $request, ManagerRegistry $doctrine, NotificationService $notificationService, UploadHandlerService $uploadHandlerService): Response
     {
         if ($data = $request->get('signalement')) {
             $em = $doctrine->getManager();
             $signalement = new Signalement();
             $files_array = [];
+
             if (isset($data['files'])) {
                 $dataFiles = $data['files'];
                 foreach ($dataFiles as $key => $files) {
-                    foreach ($files as $titre => $file)
-                    {
-                        $files_array[$key][] =  ['file'=>$uploadHandlerService->toUploadFolder($file),'titre'=>$titre];
+                    foreach ($files as $titre => $file) {
+                        $files_array[$key][] = ['file' => $uploadHandlerService->toUploadFolder($file), 'titre' => $titre, 'date' => (new \DateTimeImmutable())->format('d.m.Y')];
                     }
                 }
                 unset($data['files']);
@@ -176,20 +176,40 @@ class FrontSignalementController extends AbstractController
     }
 
 
-
     #[Route('/suivre-mon-signalement/{code}/response', name: 'front_suivi_signalement_user_response', methods: "POST")]
-    public function postUserResponse(string $code, SignalementRepository $signalementRepository,NotificationService $notificationService,Request $request,EntityManagerInterface$entityManager)
+    public function postUserResponse(string $code, SignalementRepository $signalementRepository, NotificationService $notificationService, UploadHandlerService $uploadHandlerService, Request $request, EntityManagerInterface $entityManager)
     {
         if ($signalement = $signalementRepository->findOneByCodeForPublic($code)) {
-            if($this->isCsrfTokenValid('signalement_front_response_'.$signalement->getUuid(),$request->get('_token')))
-            {
+            if ($this->isCsrfTokenValid('signalement_front_response_' . $signalement->getUuid(), $request->get('_token'))) {
                 $suivi = new Suivi();
                 $suivi->setIsPublic(true);
-                $suivi->setDescription(filter_var($request->get('signalement_front_response')['content'],FILTER_SANITIZE_STRING));
+                $description = nl2br(filter_var($request->get('signalement_front_response')['content'], FILTER_SANITIZE_STRING));
+                $files_array = [
+                    'documents' => $signalement->getDocuments(),
+                    'photos' => $signalement->getPhotos(),
+                ];
+                $list = [];
+                if ($data = $request->get('signalement')) {
+                    if (isset($data['files'])) {
+                        $dataFiles = $data['files'];
+                        foreach ($dataFiles as $key => $files) {
+                            foreach ($files as $titre => $file) {
+                                $files_array[$key][] = ['file' => $uploadHandlerService->toUploadFolder($file), 'titre' => $titre, 'date' => (new \DateTimeImmutable())->format('d.m.Y')];
+                                $list[] = '<li><a class="fr-link" target="_blank" href="'.$this->generateUrl('show_uploaded_file',['folder'=>'_up','file'=>$file]).'&t=___TOKEN___">'.$titre.'</a></li>';
+                            }
+                        }
+                        unset($data['files']);
+                    }
+                    $description .= '<br>Ajout de pièces au signalement<ul>'.implode("",$list).'</ul>';
+                }
+
+                $signalement->setDocuments($files_array['documents']);
+                $signalement->setPhotos($files_array['photos']);
+                $suivi->setDescription($description);
                 $suivi->setSignalement($signalement);
                 $entityManager->persist($suivi);
                 $entityManager->flush();
-                $signalement->getAffectations()->filter(function (Affectation $affectation)use($notificationService,$signalement){
+                $signalement->getAffectations()->filter(function (Affectation $affectation) use ($notificationService, $signalement) {
                     $partenaire = $affectation->getPartenaire();
                     if ($partenaire->getEmail()) {
                         $notificationService->send(NotificationService::TYPE_NOUVEAU_SUIVI, $partenaire->getEmail(), [
@@ -209,12 +229,10 @@ class FrontSignalementController extends AbstractController
                     });
                 });
                 $this->addFlash('success', 'Votre message à bien été enregistré, merci.');
-                return $this->render('front/suivi_signalement.html.twig', [
-                    'signalement' => $signalement
-                ]);
             }
+        } else {
+            $this->addFlash('error', 'Une erreur est survenue...');
         }
-        $this->addFlash('error', 'Une erreur est survenue...');
-        return $this->redirectToRoute('front_signalement');
+        return $this->redirectToRoute('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()]);
     }
 }
