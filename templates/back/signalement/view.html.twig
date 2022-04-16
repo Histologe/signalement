@@ -2,6 +2,7 @@
 
 {% set picto_yes = '<p class="fr-badge fr-badge--success value-switcher" data-action="click" data-item="%s" data-url="'~path('back_signalement_switch_value',{uuid:signalement.uuid})~'" data-token="'~csrf_token('signalement_switch_value_'~signalement.uuid)~'">Oui</p>' %}
 {% set picto_no = '<p class="fr-badge fr-badge--error value-switcher" data-action="click" data-item="%s" data-url="'~path('back_signalement_switch_value',{uuid:signalement.uuid})~'" data-token="'~csrf_token('signalement_switch_value_'~signalement.uuid)~'">Non</p>' %}
+{% set picto_nsp = '<p class="fr-badge fr-badge--warning value-switcher" data-action="click" data-item="%s" data-url="'~path('back_signalement_switch_value',{uuid:signalement.uuid})~'" data-token="'~csrf_token('signalement_switch_value_'~signalement.uuid)~'">NSP</p>' %}
 {% set procedures = ["RSD" , "Mise en sécurité","Incurie","Insalubrité", "Décence", "ADIL"] %}
 
 
@@ -261,9 +262,13 @@
                 <ul class="fr-list--icon-img">
                     <li>
                         <strong>Accord pour visite: </strong>
-                        {% if signalement.isRefusIntervention %}
+                        {% if signalement.dateVisite %}
+                            {{ picto_yes|format('IsRefusIntervention')|raw }}
+                        {% elseif signalement.isRefusIntervention %}
                             {{ picto_no|format('IsRefusIntervention')|raw }}
                             <span class="fr-hint-text"><u><strong>Motif:</strong></u> {{ signalement.raisonRefusIntervention }}</span>
+                        {% elseif signalement.isRefusIntervention is null %}
+                            {{ picto_nsp|format('IsRefusIntervention')|raw }}
                         {% else %}
                             {{ picto_yes|format('IsRefusIntervention')|raw }}
                         {% endif %}

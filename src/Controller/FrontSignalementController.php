@@ -228,7 +228,7 @@ class FrontSignalementController extends AbstractController
                         }
                     });
                 });
-                $this->addFlash('success', 'Votre message à bien été enregistré, merci.');
+                $this->addFlash('success', "Votre message a bien été envoyé ; vous recevrez un email lorsque votre dossier sera mis à jour. N'hésitez pas à consulter votre page de suivi !");
             }
         } else {
             $this->addFlash('error', 'Une erreur est survenue...');
