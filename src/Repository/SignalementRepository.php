@@ -190,7 +190,7 @@ class SignalementRepository extends ServiceEntityRepository
     public function findByStatusAndOrCityForUser(User|UserInterface $user = null, array $options, int|null $export): Paginator|array
     {
 
-        $pageSize = $options['pageSize'] ?? 20;
+        $pageSize = 20;
         $firstResult = (($options['page'] ?? 1) - 1) * $pageSize;
         $qb = $this->createQueryBuilder('s');
         if (!$export)
@@ -207,7 +207,7 @@ class SignalementRepository extends ServiceEntityRepository
         $this->checkOptions($qb, $options);
         $qb->orderBy('s.createdAt', 'DESC')
             ->setFirstResult($firstResult)
-            ->setMaxResults($export ?? $pageSize)
+            ->setMaxResults($pageSize)
             ->getQuery();
         return new Paginator($qb, true);
     }

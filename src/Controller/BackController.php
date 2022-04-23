@@ -32,20 +32,9 @@ class BackController extends AbstractController
     private $req;
     private $iterator;
 
-    #[Route('/', name: 'back_index')]
-    public function index(EntityManagerInterface $em,
-                          CritereRepository      $critereRepository,
-                          UserRepository         $userRepository,
-                          SignalementRepository  $signalementRepository,
-                          Request                $request,
-                          AffectationRepository  $affectationRepository,
-                          PartenaireRepository   $partenaireRepository): Response
+    private function setFilters($request)
     {
-        $title = 'Administration - Tableau de bord';
-        $user = null;
-        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
-            $user = $this->getUser();
-        $filter = [
+        return [
             'search' => $request->get('search') ?? null,
             'statuses' => $request->get('bo-filter-statut') ?? null,
             'cities' => $request->get('bo-filter-ville') ?? null,
@@ -60,16 +49,25 @@ class BackController extends AbstractController
             'dates' => $request->get('bo-filter-dates') ?? null,
             'page' => $request->get('page') ?? 1,
         ];
-        if ($user)
-            $this->req = $affectationRepository->findByStatusAndOrCityForUser($user, $filter);
-        else
-            $this->req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter, $request->get('export'));
-        $this->iterator = $this->req->getIterator()->getArrayCopy();
-        $signalementsCount = $signalementRepository->countByStatus();
-        $criteria = new Criteria();
-        $criteria->where(Criteria::expr()->neq('statut', 7));
-        $signalementsCount['total'] = $signalementRepository->matching($criteria)->count();
+    }
+
+    #[Route('/', name: 'back_index')]
+    public function index(EntityManagerInterface $em,
+                          CritereRepository      $critereRepository,
+                          UserRepository         $userRepository,
+                          SignalementRepository  $signalementRepository,
+                          Request                $request,
+                          AffectationRepository  $affectationRepository,
+                          PartenaireRepository   $partenaireRepository): Response
+    {
+        $title = 'Administration - Tableau de bord';
+        $user = null;
+        if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
+            $user = $this->getUser();
+        $filter = $this->setFilters($request);
         if ($user) {
+            $this->req = $affectationRepository->findByStatusAndOrCityForUser($user, $filter);
+            $this->iterator = $this->req->getIterator()->getArrayCopy();
             $counts = $affectationRepository->countByStatusForUser($user);
             $signalementsCount = [
                 Signalement::STATUS_NEED_VALIDATION => $counts[0] ?? ['count' => 0],
@@ -87,29 +85,37 @@ class BackController extends AbstractController
                 foreach ($this->iterator as $item)
                     $item->getSignalement()->setStatut((int)$status[$item->getStatut()]);
             }
+        } else {
+            $this->req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter, $request->get('export'));
+            $this->iterator = $this->req->getIterator()->getArrayCopy();
+            $signalementsCount = $signalementRepository->countByStatus();
+            $criteria = new Criteria();
+            $criteria->where(Criteria::expr()->neq('statut', 7));
+            $signalementsCount['total'] = $signalementRepository->matching($criteria)->count();
         }
         $signalements = [
             'list' => $this->iterator,
             'total' => count($this->req),
             'page' => (int)$filter['page'],
-            'pages' => (int)ceil(count($this->req) / 50),
+            'pages' => (int)ceil(count($this->req) / 25),
             'counts' => $signalementsCount
         ];
-        $users = [
-            'active' => $userRepository->count(['statut' => 1]),
-            'inactive' => $userRepository->count(['statut' => 0]),
-        ];
+
         if (/*$request->isXmlHttpRequest() && */ $request->get('pagination'))
             return $this->render('back/table_result.html.twig', ['filter' => $filter, 'signalements' => $signalements]);
         $criteres = $critereRepository->findAllList();
 //        dd($criteres);
-        if ($request->get('export') /*&& $this->isCsrfTokenValid('export_token', $request->get('_token'))*/) {
+        if ($this->isGranted('ROLE_ADMIN_TERRITOIRE') && $request->get('export') && $this->isCsrfTokenValid('export_token-'.$this->getUser()->getId(), $request->get('_token'))) {
             return $this->export($this->iterator, $em);
         }
+        $users = [
+            'active' => $userRepository->count(['statut' => 1]),
+            'inactive' => $userRepository->count(['statut' => 0]),
+        ];
         return $this->render('back/index.html.twig', [
             'title' => $title,
             'filter' => $filter,
-            'cities'=> $signalementRepository->findCities($user),
+            'cities' => $signalementRepository->findCities($user),
             'partenaires' => $partenaireRepository->findAllList(),
             'signalements' => $signalements,
             'users' => $users,
@@ -133,10 +139,9 @@ class BackController extends AbstractController
                         $arr = [];
                         foreach ($items as $item)
                             $arr[] = $item['titre'] ?? $item['file'];
-                        $data[] = '"'.implode(",\r\n", $arr).'"';
+                        $data[] = '"' . implode(",\r\n", $arr) . '"';
                     }
-                } elseif ($header === "statut")
-                {
+                } elseif ($header === "statut") {
                     $statut = match ($signalement->$method()) {
                         Signalement::STATUS_NEED_VALIDATION => 'A VALIDER',
                         Signalement::STATUS_ACTIVE => 'EN COURS',
@@ -145,16 +150,14 @@ class BackController extends AbstractController
                         default => $signalement->$method(),
                     };
                     $data[] = $statut;
-                }elseif ($header === "geoloc" && !empty($signalement->$method()['lat']) && !empty($signalement->$method()['lng']))
-                {
-                    $data[] = "LAT: ".$signalement->$method()['lat'].' LNG: '.$signalement->$method()['lng'];
-                }
-                elseif ($signalement->$method() instanceof \DateTimeImmutable)
+                } elseif ($header === "geoloc" && !empty($signalement->$method()['lat']) && !empty($signalement->$method()['lng'])) {
+                    $data[] = "LAT: " . $signalement->$method()['lat'] . ' LNG: ' . $signalement->$method()['lng'];
+                } elseif ($signalement->$method() instanceof \DateTimeImmutable ||$signalement->$method() instanceof \DateTime)
                     $data[] = $signalement->$method()->format('d.m.Y');
                 elseif (is_bool($signalement->$method()))
                     $data[] = $signalement->$method() ? 'OUI' : 'NON';
                 elseif (!is_array($signalement->$method()) && !($signalement->$method() instanceof ArrayCollection))
-                    $data[] = '"'.str_replace(';', '', $signalement->$method()).'"';
+                    $data[] = '"' . str_replace(';', '', $signalement->$method()) . '"';
                 elseif ($signalement->$method() == "")
                     $data[] = "N/R";
                 else
@@ -162,22 +165,22 @@ class BackController extends AbstractController
             }
 
             $situations = $criteres = new ArrayCollection();
-            $signalement->getCriticites()->filter(function (Criticite $criticite)use($situations,$criteres){
-                $labels = ['DANGER','MOYEN','GRAVE','TRES DANGER'];
+            $signalement->getCriticites()->filter(function (Criticite $criticite) use ($situations, $criteres) {
+                $labels = ['DANGER', 'MOYEN', 'GRAVE', 'TRES DANGER'];
                 $critere = $criticite->getCritere();
                 $situation = $criticite->getCritere()->getSituation();
-                $critereAndCriticite = $critere->getLabel().' ('.$labels[$criticite->getScore()].')';
-                if(!$situations->contains($situation->getLabel()))
+                $critereAndCriticite = $critere->getLabel() . ' (' . $labels[$criticite->getScore()] . ')';
+                if (!$situations->contains($situation->getLabel()))
                     $situations->add($situation->getLabel());
-                if(!$criteres->contains($critereAndCriticite))
+                if (!$criteres->contains($critereAndCriticite))
                     $situations->add($critereAndCriticite);
             });
-            $data[] = '"'.implode(",\r\n",$situations->toArray()).'"';
-            $data[] = '"'.implode(",\r\n",$criteres->toArray()).'"';
+            $data[] = '"' . implode(",\r\n", $situations->toArray()) . '"';
+            $data[] = '"' . implode(",\r\n", $criteres->toArray()) . '"';
             $csvContent .= implode(';', $data) . "\r\n";
         }
-        array_push($headers,'situations','criteres');
-        $csvContent = implode(';', $headers) . "\r\n".$csvContent;
+        array_push($headers, 'situations', 'criteres');
+        $csvContent = implode(';', $headers) . "\r\n" . $csvContent;
 //        dd($csvContent);
         $response = new Response($csvContent);
         $response->headers->set('Content-Encoding', 'UTF-8');
