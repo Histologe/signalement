@@ -16,6 +16,7 @@ class Signalement
     const STATUS_NEED_PARTNER_RESPONSE = 3;
     const STATUS_CLOSED = 6;
     const STATUS_ARCHIVED = 7;
+    const STATUS_REFUSED = 8;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

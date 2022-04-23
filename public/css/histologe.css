@@ -1,4 +1,5 @@
 @import "tooltip.css";
+
 html, body {
     scroll-behavior: smooth !important;
 }
@@ -6,6 +7,7 @@ html, body {
 .signalement-invalid {
     position: relative;
 }
+
 .bloc-suivi-content-row p {
     margin: 0;
 }
@@ -76,10 +78,11 @@ pre {
     background-color: rgba(191, 204, 251, 0.37);
 }
 
-.fr-toggle--parent, .fr-accordion, .toggle-criticite, [role="button"], .fr-list--hover li, .fr-btn, .fr-checkbox-affectation__parent, .fr-checkbox-affectation__parent label {
+.fr-toggle--parent, .fr-badge, .fr-accordion, .toggle-criticite, [role="button"], .fr-list--hover li, .fr-btn, .fr-checkbox-affectation__parent, .fr-checkbox-affectation__parent label {
     cursor: pointer !important;
     user-select: none;
 }
+
 
 .fr-toggle--parent:hover, .fr-accordion__title:hover {
     background-color: var(--background-alt-grey);
@@ -110,16 +113,18 @@ label.required::after {
 
 @media (max-width: 1149px) {
     .fr-display-inline-table {
-        display: block!important;
+        display: block !important;
     }
 
 }
+
 @media (min-width: 1150px) {
     .fr-display-inline-table {
         display: inline-table !important;
         display: -moz-inline-table !important;
     }
 }
+
 .fr-display-block {
     display: block;
 }
@@ -199,9 +204,10 @@ small {
 .fr-text--black {
     color: black;
 }
+
 #img_box::after {
     position: absolute;
-    top:0;
+    top: 0;
     right: 0;
     width: 5rem;
     height: 5rem;
@@ -210,6 +216,7 @@ small {
     font-size: 1.5rem;
     line-height: 5rem;
 }
+
 .fr-text--orange {
     color: #FF9940;
 }
@@ -221,9 +228,11 @@ small {
 .fr-text--center {
     text-align: center !important;
 }
+
 .value-switcher:hover {
     cursor: pointer;
 }
+
 .fr-text--right {
     text-align: right !important;
 }

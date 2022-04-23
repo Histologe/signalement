@@ -1,93 +1,65 @@
 {% extends 'back/base_bo.html.twig' %}
-{% set statuts = {
-    1:'Nouveau',
-    2:'En cours',
-    6:'Fermés'
-} %}
+
 {% block content %}
 
     {# {{ dump(signalements.counts) }} #}
-    <section class="fr-col-12 fr-col-md fr-background-alt--blue-france fr-p-5v">
-        <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
-            <div class="fr-col">
-                <div class="fr-rounded fr-p-3v fr-border--bottom--orange fr-background--white">
-                    <span class="fr-display-xs">{% if signalements.counts[1] is defined %}{{ signalements.counts[1].count }}{% else %}0{% endif %}</span><br>
-                    <strong class="text-blue-france">Nouveaux</strong>
-                </div>
-            </div>
-            <div class="fr-col">
-                <div class="fr-rounded fr-p-3v fr-border--bottom--orange fr-background--white">
-                    <span class="fr-display-xs">{% if signalements.counts[2] is defined %}{{ signalements.counts[2].count }}{% else %}0{% endif %}</span><br>
-                    <strong class="text-blue-france">En cours</strong>
-                </div>
-            </div>
-            <div class="fr-col">
-                <div class="fr-col fr-rounded fr-p-3v fr-border--bottom--orange fr-background--white">
-                    <span class="fr-display-xs">{% if signalements.counts[6] is defined %}{{ signalements.counts[6].count }}{% else %}0{% endif %}</span><br>
-                    <strong class="text-blue-france">Fermés</strong>
-                </div>
-            </div>
+    <section class="fr-background-alt--blue-france fr-p-2v">
+        <div class="fr-badge fr-p-2v fr-border--bottom--orange fr-background--white fr-m-1v">
+            <span class="fr-text-default--info">{{ signalements.counts.total }}</span>
+            <strong class="fr-hint-text">&nbsp;SIGNALEMENTS</strong>
+        </div>
+        |
+        <div class="fr-badge fr-p-2v fr-border--bottom--orange fr-background--white fr-m-1v">
+            <span class="fr-text-default--info">{% if signalements.counts[1] is defined %}{{ signalements.counts[1].count }}{% else %}0{% endif %}</span>
+            <strong class="fr-hint-text">&nbsp;Nouveaux</strong>
+        </div>
+        <div class="fr-badge fr-p-2v fr-border--bottom--orange fr-background--white fr-m-1v">
+            <span class="fr-text-default--info">{% if signalements.counts[2] is defined %}{{ signalements.counts[2].count }}{% else %}0{% endif %}</span>
+            <strong class="fr-hint-text">&nbsp;En cours</strong>
+        </div>
+        <div class="fr-badge fr-p-2v fr-border--bottom--orange fr-background--white fr-m-1v">
+            <span class="fr-text-default--info">{% if signalements.counts[6] is defined %}{{ signalements.counts[6].count }}{% else %}0{% endif %}</span>
+            <strong class="fr-hint-text">&nbsp;Fermés</strong>
+        </div>
+        |
+        <div class="fr-badge fr-p-2v fr-border--bottom--orange fr-background--white fr-m-1v">
+            <span class="fr-text-default--info">{{ users.active+users.inactive }}</span>
+            <strong class="fr-hint-text">&nbsp;COMPTES</strong>
+        </div>
+        <div class="fr-badge fr-p-2v fr-border--bottom--orange fr-background--white fr-m-1v">
+            <span class="fr-text-default--info">{{ users.active }}</span>
+            <strong class="fr-hint-text">&nbsp;ACTIFS</strong>
+        </div>
+        <div class="fr-badge fr-p-2v fr-border--bottom--orange fr-background--white fr-m-1v">
+            <span class="fr-text-default--info">{{ users.inactive }}</span>
+            <strong class="fr-hint-text">&nbsp;INACTIFS</strong>
+        </div>
+        |
+        <div class="fr-badge fr-p-2v fr-border--bottom--orange fr-background--white fr-m-1v">
+            <span class="fr-text-default--info">{{ partenaires|filter(v=> v.isCommune == 0)|length }}</span>
+            <strong class="fr-hint-text">&nbsp;PARTENAIRES</strong>
+        </div>
+        <div class="fr-badge fr-p-2v fr-border--bottom--orange fr-background--white fr-m-1v">
+            <span class="fr-text-default--info">{{ partenaires|filter(v=> v.isCommune == 1  and not v.isArchive)|length }}</span>
+            <strong class="fr-hint-text">&nbsp;COMMUNES</strong>
         </div>
     </section>
-    <section class="fr-col-12 fr-p-5v">
-        <form action="#" name="bo-filter-form" method="POST"
-              class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
-            <div class="fr-col-12 fr-col-md">
-                <label class="fr-label" for="filter_ville"><strong>Filtrer par ville</strong></label>
-                <select name="bo-filter-ville" id="filter_ville" class="fr-select">
-                    <option value="all">TOUTES</option>
-                    {% for ville in signalements.villes %}
-                        <option value="{{ ville.ville }}"
-                                {% if filter.ville is same as(ville.ville) %}selected{% endif %}>{{ ville.ville|upper }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="fr-col-12 fr-col-md">
-                <label class="fr-label" for="filter_statut"><strong>Filtrer par statut</strong></label>
-                <select name="bo-filter-statut" id="filter_statut" class="fr-select">
-                    <option value="all">TOUS</option>
-                    {% for statut,wording in statuts %}
-                        <option value="{{ statut }}"
-                                {% if filter.status is same as(""~statut~"") %}selected{% endif %}>{{ wording|upper }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
-                <div class="fr-col-12 fr-col-md-3">
-                    <label class="fr-label" for="filter_partenaire"><strong>Filtrer par partenaire</strong></label>
-                    <select name="bo-filter-partenaire" id="filter_partenaire" class="fr-select">
-                        <option value="all">TOUS</option>
-                        {% for partenaire in partenaires %}
-                            <option value="{{ partenaire.id }}"
-                                    {% if filter.partenaire is same as(""~partenaire.id~"") %}selected{% endif %}>{{ partenaire.nom|upper }}</option>
-                        {% endfor %}
-                    </select>
+    {% include 'back/_filter_form.html.twig' %}
+    <section class="fr-col-12 fr-table fr-table--bordered fr-background-alt--blue-france">
+        <table class="fr-display-inline-table fr-display-md-block sortable fr-mb-0">
+            <caption class="fr-w-100 fr-px-3v fr-pt-3v fr-pb-0">
+                <div class="fr-grid-row">
+                    <div class="fr-col">
+                        {{ signalements.total }} signalement(s)
+                    </div>
+                    <div class="fr-col fr-text--right">
+                        <a href="{{ path('back_index') }}" class="fr-link fr-link--icon-left fr-fi-close-circle-line">Réinitialiser
+                            les résultats</a>
+                        <a href="{{ path('back_index') }}?export={{ signalements.total }}&{{ app.request.content|url_encode }}" class="fr-link fr-link--icon-left fr-fi-download-line">Exporter
+                            les résultats</a>
+                    </div>
                 </div>
-            {% endif %}
-            <div class="fr-col-12 fr-col-md">
-                <label class="fr-label" for="header-search-input"><strong>Rechercher</strong></label>
-                <div class="fr-search-bar fr-mt-2v" id="header-search">
-                    <input class="fr-input" placeholder="Rechercher" type="search" id="header-search-input"
-                           name="search" value="{{ filter.search ?? '' }}">
-                    <button class="fr-btn" title="Rechercher">
-                        Rechercher
-                    </button>
-                </div>
-            </div>
-        </form>
-        <div class="fr-col-12 fr-text--right fr-pt-0">
-            <a href="{{ path('back_index') }}" class="fr-link fr-link--icon-left fr-fi-close-circle-line">Réinitialiser
-                les résultats</a>
-        </div>
-       {# <div class="fr-grid-row">
-            <div class="fr-col-12">
-                {{ form_start(searchForm) }}
-                {{ form_end(searchForm) }}
-            </div>
-        </div>#}
-    </section>
-    <section class="fr-col-12 fr-table fr-table--bordered">
-        <table class="fr-display-inline-table fr-display-md-block sortable">
+            </caption>
             <thead class="fr-background-alt--blue-france">
             <tr>
                 <th>#Ref.</th>
@@ -168,8 +140,8 @@
             strokeWidth: 0.1,
             color: '#000000'
         }
-        let ids = [{% if not is_granted('ROLE_ADMIN_PARTENAIRE') or filter.partenaire is not same as("all") %}{{ signalements.list|map(p => "#{p.signalement.id}")|join(', ') }}{% else %}{{ signalements.list|map(p => "#{p.id}")|join(', ') }}{% endif %}],
-            scores = [{% if not is_granted('ROLE_ADMIN_PARTENAIRE') or filter.partenaire is not same as("all") %}{{ signalements.list|map(p => "#{p.signalement.scoreCreation}")|join(', ') }}{% else %}{{ signalements.list|map(p => "#{p.scoreCreation}")|join(', ') }}{% endif %}];
+        let ids = [{% if not is_granted('ROLE_ADMIN_PARTENAIRE') %}{{ signalements.list|map(p => "#{p.signalement.id}")|join(', ') }}{% else %}{{ signalements.list|map(p => "#{p.id}")|join(', ') }}{% endif %}],
+            scores = [{% if not is_granted('ROLE_ADMIN_PARTENAIRE') %}{{ signalements.list|map(p => "#{p.signalement.scoreCreation}")|join(', ') }}{% else %}{{ signalements.list|map(p => "#{p.scoreCreation}")|join(', ') }}{% endif %}];
         ids.map((id, index) => {
             gauge = new Gauge(document.getElementById(`gauge-signalement-${id}`)).setOptions(opts);
             gauge.set(scores[index]);

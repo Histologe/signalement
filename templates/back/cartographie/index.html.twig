@@ -8,22 +8,33 @@
             <h1 class="fr-h2 fr-mb-0">Géolocalisation des signalements</h1>
         </div>
     </section>#}
+
+    <div style="position: absolute;z-index: 10000;" class="fr-rounded fr-background--white fr-m-2v">
+        {% include 'back/_filter_form.html.twig'  %}
+    </div>
     <section class="fr-grid-row fr-pt-0 fr-h-100">
-        <div class="fr-col-12 fr-p-5v">
-            <div class="fr-rounded fr-h-100 fr-w-100" id="map-signalements-view"></div>
+        <div class="fr-col-12">
+
+            <div class="fr-h-100 fr-w-100" id="map-signalements-view"></div>
         </div>
     </section>
 {% endblock %}
 {% block javascripts %}
     <script>
-        let map = L.map('map-signalements-view').setView([{{ signalements|last.geoloc.lng }}, {{ signalements|last.geoloc.lat }}], 13);
+        let map = L.map('map-signalements-view').setView([43.555739, 7.022147], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(map);
         let markers = L.markerClusterGroup();
         {% for signalement in signalements %}
-        {% if signalement.geoloc.lat is defined and signalement.geoloc.lng is defined %}
+        {% if signalement.geoloc.lat is defined and signalement.geoloc.lat is not null and signalement.geoloc.lng is defined and signalement.geoloc.lng is not null %}
         markers.addLayer(L.marker([{{ signalement.geoloc.lng }}, {{ signalement.geoloc.lat }}]).bindPopup('<a href="{{ path('back_signalement_view',{uuid:signalement.uuid}) }}">#{{ signalement.reference }}</a>'))
         {% endif %}
         {% endfor %}
+        let bound = markers.getBounds();
+            console.log(bound);
         map.addLayer(markers);
+        map.fitBounds([
+           [ bound._northEast.lat, bound._northEast.lng],
+            [ bound._southWest.lat, bound._southWest.lng]
+        ]);
     </script>
 {% endblock %}

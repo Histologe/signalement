@@ -418,7 +418,7 @@ forms.forEach((form) => {
             if (form.name !== 'signalement') {
                 Object.keys(uploadedFiles).map((f, index) => {
                     let fi = JSON.parse(uploadedFiles[f]);
-                    form.insertAdjacentHTML('beforeend',`<input type="hidden" name="signalement[files][${fi.key}][${fi.titre}]" value="${fi.file}">`);
+                    form.insertAdjacentHTML('beforeend', `<input type="hidden" name="signalement[files][${fi.key}][${fi.titre}]" value="${fi.file}">`);
                 });
                 form.submit();
             } else {
@@ -666,8 +666,8 @@ document?.querySelectorAll(".fr-pagination__link:not([aria-current])").forEach((
         u = document.querySelector(".fr-pagination__link--first"),
         l = document.querySelector(".fr-pagination__link--last"), o = 1, c = parseInt(l.getAttribute("data-page"));
     e.addEventListener("click", (e => {
-        let p = new FormData;
-        p.append("pagination", "true"), p.append("search", document.querySelector("#header-search-input").value), p.append("bo-filter-statut", document.querySelector("#filter_statut").value), p.append("bo-filter-ville", document.querySelector("#filter_ville").value);
+        let p = new FormData(document.querySelector('form[name="bo-filter-form"]'));
+        p.append("pagination", "true");
         let d = document?.querySelector(".fr-pagination__link[aria-current]"), g = e.target;
         g !== n && g !== i && g !== u && g !== l ? o = parseInt(g.getAttribute("data-page")) : g === i ? o = parseInt(d.getAttribute("data-page")) + 1 : g === n ? o = parseInt(d.getAttribute("data-page")) - 1 : g === l ? o = parseInt(c) : g === u && (o = parseInt(1)), p.append("page", o), t = document.querySelector('.fr-pagination__link[data-page="' + o + '"]'), fetch("#", {
             method: "POST",
@@ -685,9 +685,58 @@ document?.querySelectorAll(".fr-pagination__link:not([aria-current])").forEach((
     }))
 }));
 
-document?.querySelectorAll('[name="bo-filter-form"]').forEach((filterForm) => {
-    filterForm.addEventListener('change', () => {
-        filterForm.submit();
+const setBadge = (el) => {
+    let container = el.parentElement.querySelector('.selected__value');
+    if (el.value !== '') {
+        let badge = document.createElement('span');
+        badge.classList.add('fr-badge', 'fr-badge--success', 'fr-m-1v')
+        badge.innerText = el.selectedOptions[0].text;
+        let input = document.createElement('input');
+        input.type = "hidden";
+        input.name = `${el.id}[]`;
+        input.value = el.value;
+        container.append(input);
+        badge.setAttribute('data-value', el.value);
+        container.querySelector('.fr-badge:not([data-value])')?.classList?.add('fr-hidden');
+        container.append(badge)
+        el.selectedOptions[0].classList.add('fr-hidden')
+        badge.addEventListener('click', (event) => {
+            removeBadge(badge);
+        })
+    } else {
+        container.querySelectorAll('.fr-badge[data-value]').forEach(badge => {
+            removeBadge(badge);
+        })
+    }
+    return false;
+}
+
+/*const setDefaultBadge = (badge) => {
+    let container = el?.parentElement;
+    let badges = badge.parentElement.querySelectorAll('.fr-badge[data-value]').length > 1;
+    !badges && badges.forEach(badge => {
+        removeBadge(badge)
+    });
+    container.querySelector('.fr-badge:not([data-value])')?.classList?.remove('fr-hidden');
+}*/
+const removeBadge = (badge) => {
+    let val = badge.getAttribute('data-value');
+    let input = badge.parentElement.querySelector(`input[value="${val}"]`);
+    let select = badge?.parentElement?.parentElement?.querySelector(`select`) ?? badge?.parentElement?.parentElement?.querySelector(`input[type="date"]`);
+    select.querySelector(`option[value="${val}"]`)?.classList?.remove('fr-hidden');
+    input?.remove();
+    let badges = badge.parentElement.querySelectorAll('.fr-badge[data-value]').length !== 1;
+    console.log(badge.parentElement.querySelectorAll('.fr-badge[data-value]').length)
+    if (!badges) {
+        badge?.parentElement?.querySelector('.fr-badge:not([data-value])')?.classList?.remove('fr-hidden');
+        if (select.tagName === 'SELECT')
+            select.options[0].selected = true;
+    }
+    badge.remove();
+}
+document?.querySelectorAll('[data-removable="true"]')?.forEach(removale => {
+    removale.addEventListener('click', () => {
+        removeBadge(removale);
     })
 })
 document?.querySelectorAll('[data-fr-select-target]')?.forEach(t => {

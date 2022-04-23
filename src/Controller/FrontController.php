@@ -47,16 +47,19 @@ class FrontController extends AbstractController
             echo "<tr>";
             foreach ($meta->getFieldNames() as $fieldName) {
                 $method = 'get' . ucfirst($fieldName);
+                echo "<td>";
                 if (!is_array($signalement->$method()) && !$signalement->$method() instanceof \DateTimeImmutable)
-                    echo "<td>" . $signalement->$method() . "</td>";
+                    echo $signalement->$method();
+
                 if ($signalement->$method() instanceof \DateTimeImmutable)
-                    echo "<td>" . $signalement->$method()->format('d.m.Y h:i:s') . "</td>";
+                    echo $signalement->$method()->format('d.m.Y h:i:s');
+                echo "</td>";
             }
             echo "<td>";
             foreach ($signalement->getCriticites() as $criticite) {
-                echo "<b>".$criticite->getCritere()->getSituation()->getLabel()."</b></br>";
-                echo " - ".$criticite->getCritere()->getLabel()."<br>";
-                echo "&nbsp;&nbsp; - ".$criticite->getLabel()."<hr>";
+                echo "<b>" . $criticite->getCritere()->getSituation()->getLabel() . "</b></br>";
+                echo " - " . $criticite->getCritere()->getLabel() . "<br>";
+                echo "&nbsp;&nbsp; - " . $criticite->getLabel() . "<hr>";
             }
             echo "</td>";
             echo "</tr>";

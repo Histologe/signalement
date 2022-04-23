@@ -12,7 +12,7 @@
     {% if signalement.statut is not same as(1) and not isClosed and not isClosedForMe and ((isAffected and isAccepted)) or is_granted('ROLE_ADMIN_TERRITOIRE') %}
         {% include 'back/signalement/modal_cloture.html.twig' %}
     {% endif %}
-    <section class="fr-p-5v {{ isClosedForMe or signalement.statut is same as(6) ? 'signalement-invalid':'' }}"
+    <section class="fr-p-5v {{ isClosedForMe or signalement.statut is same as(6) or signalement.statut is same as(8) ? 'signalement-invalid':'' }}"
              id="signalement-{{ signalement.id }}-content">
         <header>
             <div class="fr-grid-row fr-grid-row--middle ">
@@ -87,7 +87,7 @@
                                    value="{{ csrf_token('signalement_validation_response_'~signalement.id) }}">
                         </form>
                         <span class="fr-hint-text">En tant qu'administrateur vous devez <strong><u>valider/refuser</u></strong> ce signalement</span>
-                    {% elseif isClosedForMe or signalement.statut is same as(6) %}
+                    {% elseif isClosedForMe or signalement.statut is same as(6)  or signalement.statut is same as(8) %}
                         <form action="{{ path('back_signalement_reopen',{uuid:signalement.uuid}) }}">
                             {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
                                 <button class="fr-btn fr-btn--success fr-fi-lock-fill fr-btn--icon-left reopen"
