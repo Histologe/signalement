@@ -105,7 +105,7 @@ class BackController extends AbstractController
             return $this->render('back/table_result.html.twig', ['filter' => $filter, 'signalements' => $signalements]);
         $criteres = $critereRepository->findAllList();
 //        dd($criteres);
-        if ($this->isGranted('ROLE_ADMIN_TERRITOIRE') && $request->get('export') && $this->isCsrfTokenValid('export_token-'.$this->getUser()->getId(), $request->get('_token'))) {
+        if ($this->isGranted('ROLE_ADMIN_TERRITOIRE') && $request->get('export') && $this->isCsrfTokenValid('export_token_'.$this->getUser()->getId(), $request->get('_token'))) {
             return $this->export($this->iterator, $em);
         }
         $users = [
