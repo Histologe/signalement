@@ -120,7 +120,9 @@ class SignalementRepository extends ServiceEntityRepository
             ->addSelect('s.uuid')
             ->addSelect('s.reference');
         $this->checkOptions($qb, $options);
-        return $qb->andWhere('s.statut != 7')
+        return $qb->andWhere("JSON_EXTRACT(s.geoloc,'$.lat') != ''")
+            ->andWhere("JSON_EXTRACT(s.geoloc,'$.lng') != ''")
+            ->andWhere('s.statut != 7')
             ->getQuery()
             ->getResult();
     }
