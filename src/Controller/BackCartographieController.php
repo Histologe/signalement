@@ -18,7 +18,7 @@ class BackCartographieController extends AbstractController
     public function index(SignalementRepository $signalementRepository,Request $request, CritereRepository $critereRepository, PartenaireRepository $partenaireRepository): Response
     {
         $title = 'Cartographie';
-        $filter = [
+        $filters = [
             'search' => $request->get('search') ?? null,
             'statuses' => $request->get('bo-filter-statut') ?? null,
             'cities' => $request->get('bo-filter-ville') ?? null,
@@ -32,12 +32,13 @@ class BackCartographieController extends AbstractController
             'visites' => $request->get('bo-filter-visites') ?? null,
             'dates' => $request->get('bo-filter-dates') ?? null,
         ];
-        $signalements = $signalementRepository->findAllWithGeoData($filter);
+        $signalements = $signalementRepository->findAllWithGeoData($filters);
 //        dd($signalements->getQuery()->getResult());
 //        $signalements['cities'] = $signalementRepository->findCities($user ?? null);
+
         return $this->render('back/cartographie/index.html.twig', [
             'title' => $title,
-            'filter' => $filter,
+            'filter' => $filters,
             'cities' => $signalementRepository->findCities($user ?? null),
             'partenaires' => $partenaireRepository->findAllList(),
             'signalements' => $signalements,
