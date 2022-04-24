@@ -22,5 +22,7 @@ doctrine:
                 IFNULL: DoctrineExtensions\Query\Mysql\IfNull
                 JSON_CONTAINS: Scienta\DoctrineJsonFunctions\Query\AST\Functions\Mysql\JsonContains
                 JSON_EXTRACT: Scienta\DoctrineJsonFunctions\Query\AST\Functions\Mysql\JsonExtract
+                JSON_ARRAY: Scienta\DoctrineJsonFunctions\Query\AST\Functions\Mysql\JsonArray
+                JSON_OBJECT: Scienta\DoctrineJsonFunctions\Query\AST\Functions\Mysql\JsonObject
                 IF: DoctrineExtensions\Query\Mysql\IfElse
 

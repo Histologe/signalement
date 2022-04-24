@@ -2,11 +2,16 @@
 
 namespace App\Repository;
 
+use App\Entity\Affectation;
+use App\Entity\Partenaire;
 use App\Entity\Signalement;
+use App\Entity\Suivi;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -26,7 +31,7 @@ class SignalementRepository extends ServiceEntityRepository
 
     public function checkOptions($qb, $options)
     {
-        if (isset($options['search'])) {
+        if (!empty($options['search'])) {
             if (preg_match('/([0-9]{4})-[0-9]{0,6}/', $options['search'])) {
                 $qb->andWhere('s.reference = :search');
                 $qb->setParameter('search', $options['search']);
@@ -186,33 +191,78 @@ class SignalementRepository extends ServiceEntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-
-    public function findByStatusAndOrCityForUser(User|UserInterface $user = null, array $options, int|null $export): Paginator|array
+    public function findByStatusAndOrCityForUser(User|UserInterface $user = null, array $options, int|null $export)
     {
 
-        $pageSize = 20;
+        $pageSize = $export ?? 50;
         $firstResult = (($options['page'] ?? 1) - 1) * $pageSize;
         $qb = $this->createQueryBuilder('s');
         if (!$export)
             $qb->select('PARTIAL s.{id,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut,createdAt,geoloc}');
+
         $qb->where('s.statut != :status')
             ->setParameter('status', Signalement::STATUS_ARCHIVED);
+/*        $qb->addSelect("JSON_ARRAY(JSON_OBJECT('name',p2_.nom,
+           'status',a1_.statut,
+           'date',a1_.createdAt,
+           'answeredAt',a1_.answeredAt)   ) as affectations");*/
+        $qb->leftJoin('s.affectations','affectations');
+        $qb->leftJoin('affectations.partenaire','partenaire');
+
+        $qb2= $this->getEntityManager()->getRepository(Suivi::class)->createQueryBuilder('su')->select('MAX(su.createdAt) as maxDate')->where('su.signalement = s');
+        $qb->leftJoin('s.suivis','suivis');
+        $qb->leftJoin('suivis.createdBy','suivi_creator');
+        $qb->leftJoin('suivi_creator.partenaire','suivi_creator_partenaire');
+//        $qb->leftJoin('suivis.createdBy','suiviCreator');
 //        $qb->leftJoin('s.affectations', 'affectations1');
-        $qb->leftJoin('s.affectations', 'affectations');
+/*        $qb->leftJoin('s.affectations', 'affectations');
         $qb->leftJoin('affectations.partenaire', 'partenaire');
         $qb->leftJoin('partenaire.users', 'user');
         $qb->leftJoin('s.suivis', 'suivis');
-        $qb->leftJoin('s.criteres', 'criteres');
-        $qb->addSelect('affectations', /*'affectations1',*/ 'partenaire', 'user', 'suivis');
+        $qb->leftJoin('s.criteres', 'criteres');*/
+//        $qb->addSelect('affectations', /*'affectations1',*/ 'partenaire', 'user', 'suivis');
+        $qb->addSelect('affectations','partenaire','suivis','suivi_creator');
         $this->checkOptions($qb, $options);
         $qb->orderBy('s.createdAt', 'DESC')
             ->setFirstResult($firstResult)
             ->setMaxResults($pageSize)
             ->getQuery();
-        return new Paginator($qb, true);
+       return new Paginator($qb, true);
     }
 
+    public function findByStatusAndOrCityForUser2(User|UserInterface $user = null, array $options, int|null $export)
+    {
 
+        $pageSize = 50;
+        $firstResult = (($options['page'] ?? 1) - 1) * $pageSize;
+        $req = "
+      JSON_ARRAY(JSON_OBJECT('name',p2_.nom,
+           'status',a1_.statut,
+           'date',a1_.createdAt,
+           'answeredAt',a1_.answeredAt)   )as affectations
+      
+FROM
+    App\Entity\Signalement s
+LEFT OUTER JOIN App\Entity\Affectation a1_ WITH s = a1_.signalement
+LEFT OUTER JOIN App\Entity\Partenaire p2_ WITH a1_.partenaire = p2_
+LEFT OUTER JOIN App\Entity\Suivi s3_ WITH s = s3_.signalement
+LEFT OUTER JOIN App\Entity\Critere criteres";
+        $qb = new QueryBuilder($this->getEntityManager());
+        $qb->add('select',$req);
+
+//        $qb->add('test',$req);
+        self::checkOptions($qb,$options);
+        dd($qb->getQuery()->getSQL());
+        dd($qb->getQuery()->getDQL());
+        $req .= str_replace('SELECT WHERE','AND',$qb->getQuery()->getDQL());
+        $req .= " GROUP BY s0_.id
+ORDER BY
+    s0_.created_at DESC
+LIMIT
+    $pageSize
+OFFSET $firstResult";
+        return $this->getEntityManager()->getConnection()->executeQuery($req)->fetchAllAssociative();
+    }
     public
     function findCities($user = null): array|int|string
     {

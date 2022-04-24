@@ -1,4 +1,6 @@
 {% for index,signalement in signalements.list %}
+    {% set affectations = signalement.affectations %}
+    {# {% set signalement = signalement[0] %} #}
     {% if not is_granted('ROLE_ADMIN_PARTENAIRE') %}
         {% set signalement = signalement.signalement %}
     {% endif %}
@@ -20,26 +22,23 @@
             <small>[{{ signalement.adresseOccupant }}]</small>
         </td>
         <td>
-            {% set newArray = [] %}
             {% for affectation in signalement.affectations %}
-                {% if affectation not in newArray %}
-                    {% set classe = '' %}
-                    {% if affectation.statut is same as (0) %}
-                        {% set classe = 'fr-badge fr-badge--info' %}
-                    {% elseif affectation.statut is same as (1) %}
-                        {% set classe = 'fr-badge fr-badge--success' %}
-                    {% elseif affectation.statut is same as (2) or affectation.statut is same as (3) %}
-                        {% set classe = 'fr-badge fr-badge--error' %}
-                    {% endif %}
-                    <small class="{{ classe }} fr-ws-nowrap fr-badge--sm fr-my-1v fr-text--bold fr-display-block"><span
-                        > {{ affectation.partenaire.nom }}</span></small>
-                    {% set newArray = newArray|merge([affectation]) %}
+                {% set classe = '' %}
+                {% if affectation.statut is same as (0) %}
+                    {% set classe = 'fr-badge fr-badge--info' %}
+                {% elseif affectation.statut is same as (1) %}
+                    {% set classe = 'fr-badge fr-badge--success' %}
+                {% elseif affectation.statut is same as (2) or affectation.statut is same as (3) %}
+                    {% set classe = 'fr-badge fr-badge--error' %}
                 {% endif %}
+                <small class="{{ classe }} fr-ws-nowrap fr-badge--sm fr-my-1v fr-text--bold fr-display-block"><span
+                    > {{ affectation.partenaire.nom }}</span></small>
             {% else %}
                 Aucune
             {% endfor %}
         </td>
-        <td>{% set suivi = (signalement.suivis|last) %}
+        <td>
+            {% set suivi = (signalement.lastSuivi) %}
             {% if suivi %}
                 <strong>{{ suivi.createdAt|date('d.m.Y') }}</strong> <br>
                 <small>{{ suivi.createdBy ? suivi.createdBy.partenaire.nom|upper : '<small class="fr-badge fr-badge--warning">DECLARANT</small>'|raw }}</small>

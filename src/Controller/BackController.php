@@ -18,8 +18,12 @@ use App\Service\NewsActivitiesSinceLastLoginService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
+
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\Exception\UploadException;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -87,26 +91,25 @@ class BackController extends AbstractController
             }
         } else {
             $this->req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter, $request->get('export'));
-            $this->iterator = $this->req->getIterator()->getArrayCopy();
             $signalementsCount = $signalementRepository->countByStatus();
             $criteria = new Criteria();
             $criteria->where(Criteria::expr()->neq('statut', 7));
             $signalementsCount['total'] = $signalementRepository->matching($criteria)->count();
         }
         $signalements = [
-            'list' => $this->iterator,
+            'list' => $this->req,
             'total' => count($this->req),
             'page' => (int)$filter['page'],
-            'pages' => (int)ceil(count($this->req) / 25),
+            'pages' => (int)ceil(count($this->req) / 50),
             'counts' => $signalementsCount
         ];
 
         if (/*$request->isXmlHttpRequest() && */ $request->get('pagination'))
-            return $this->render('back/table_result.html.twig', ['filter' => $filter, 'signalements' => $signalements]);
+            return $this->stream('back/table_result.html.twig', ['filter' => $filter, 'signalements' => $signalements]);
         $criteres = $critereRepository->findAllList();
 //        dd($criteres);
-        if ($this->isGranted('ROLE_ADMIN_TERRITOIRE') && $request->get('export') && $this->isCsrfTokenValid('export_token_'.$this->getUser()->getId(), $request->get('_token'))) {
-            return $this->export($this->iterator, $em);
+        if ($this->isGranted('ROLE_ADMIN_TERRITOIRE') && $request->get('export') && $this->isCsrfTokenValid('export_token_' . $this->getUser()->getId(), $request->get('_token'))) {
+            return $this->export($this->req->getIterator()->getArrayCopy(), $em);
         }
         $users = [
             'active' => $userRepository->count(['statut' => 1]),
@@ -123,13 +126,22 @@ class BackController extends AbstractController
         ]);
     }
 
+
+    //FUnction to get latitude from zipcode
+    function getLatitudeFromZupCode($zipcode){}
+
+
     private function export(array $signalements, EntityManagerInterface $em): Response
     {
+        $tmpFileName = (new Filesystem())->tempnam(sys_get_temp_dir(), 'sb_');
+        $tmpFile = fopen($tmpFileName, 'wb+');
         $headers = $em->getClassMetadata(Signalement::class)->getFieldNames();
-        $csvContent = "";
+//        $csvContent = implode(';', $headers) . "\r\n" . $csvContent;
+        fputcsv($tmpFile, array_merge($headers,['situations', 'criteres']),';');
         foreach ($signalements as $signalement) {
             $data = [];
             foreach ($headers as $header) {
+
                 $method = 'get' . ucfirst($header);
                 if ($header === "documents" || $header === "photos") {
                     $items = $signalement->$method();
@@ -138,8 +150,8 @@ class BackController extends AbstractController
                     else {
                         $arr = [];
                         foreach ($items as $item)
-                            $arr[] = $item['titre'] ?? $item['file'];
-                        $data[] = '"' . implode(",\r\n", $arr) . '"';
+                            $arr[] = $item['titre'] ?? $item['file'] ?? $item;
+                        $data[] =  implode(",\r\n", $arr);
                     }
                 } elseif ($header === "statut") {
                     $statut = match ($signalement->$method()) {
@@ -152,21 +164,20 @@ class BackController extends AbstractController
                     $data[] = $statut;
                 } elseif ($header === "geoloc" && !empty($signalement->$method()['lat']) && !empty($signalement->$method()['lng'])) {
                     $data[] = "LAT: " . $signalement->$method()['lat'] . ' LNG: ' . $signalement->$method()['lng'];
-                } elseif ($signalement->$method() instanceof \DateTimeImmutable ||$signalement->$method() instanceof \DateTime)
+                } elseif ($signalement->$method() instanceof \DateTimeImmutable || $signalement->$method() instanceof \DateTime)
                     $data[] = $signalement->$method()->format('d.m.Y');
                 elseif (is_bool($signalement->$method()))
                     $data[] = $signalement->$method() ? 'OUI' : 'NON';
                 elseif (!is_array($signalement->$method()) && !($signalement->$method() instanceof ArrayCollection))
-                    $data[] = '"' . str_replace(';', '', $signalement->$method()) . '"';
+                    $data[] = str_replace(';', '', $signalement->$method());
                 elseif ($signalement->$method() == "")
                     $data[] = "N/R";
                 else
                     $data[] = "[]";
             }
-
             $situations = $criteres = new ArrayCollection();
             $signalement->getCriticites()->filter(function (Criticite $criticite) use ($situations, $criteres) {
-                $labels = ['DANGER', 'MOYEN', 'GRAVE', 'TRES DANGER'];
+                $labels = ['DANGER', 'MOYEN', 'GRAVE', 'TRES GRAVE'];
                 $critere = $criticite->getCritere();
                 $situation = $criticite->getCritere()->getSituation();
                 $critereAndCriticite = $critere->getLabel() . ' (' . $labels[$criticite->getScore()] . ')';
@@ -175,17 +186,13 @@ class BackController extends AbstractController
                 if (!$criteres->contains($critereAndCriticite))
                     $situations->add($critereAndCriticite);
             });
-            $data[] = '"' . implode(",\r\n", $situations->toArray()) . '"';
-            $data[] = '"' . implode(",\r\n", $criteres->toArray()) . '"';
-            $csvContent .= implode(';', $data) . "\r\n";
+            $data[] = implode(",\r\n", $situations->toArray());
+            $data[] = implode(",\r\n", $criteres->toArray());
+            fputcsv($tmpFile,$data,';');
         }
-        array_push($headers, 'situations', 'criteres');
-        $csvContent = implode(';', $headers) . "\r\n" . $csvContent;
-//        dd($csvContent);
-        $response = new Response($csvContent);
-        $response->headers->set('Content-Encoding', 'UTF-8');
-        $response->headers->set('Content-Type', 'text/csv; charset=UTF-8');
-        $response->headers->set('Content-Disposition', 'attachment; filename=sample.csv');
+        fclose($tmpFile);
+        $response = $this->file($tmpFileName, 'dynamic-csv-file.csv');
+        $response->headers->set('Content-type', 'application/csv');
         return $response;
     }
 }
