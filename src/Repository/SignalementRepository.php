@@ -218,7 +218,7 @@ class SignalementRepository extends ServiceEntityRepository
     public function findByStatusAndOrCityForUser(User|UserInterface $user = null, array $options, int|null $export)
     {
 
-        $pageSize = $export ?? 50;
+        $pageSize = $export ?? 30;
         $firstResult = (($options['page'] ?? 1) - 1) * $pageSize;
         $qb = $this->createQueryBuilder('s');
         if (!$export)

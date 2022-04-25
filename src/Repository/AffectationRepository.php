@@ -6,6 +6,7 @@ use App\Entity\Affectation;
 use App\Entity\Signalement;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -154,9 +155,23 @@ class AffectationRepository extends ServiceEntityRepository
     }
 
 
+    public function findByPartenaire($partenaire){
+        $qb = $this->createQueryBuilder('a')
+        ->select('PARTIAL a.{id,statut}, PARTIAL signalement.{id}, PARTIAL suivis.{id,createdAt}, PARTIAL partenaire.{id,nom}');
+        $qb->leftJoin('a.signalement', 'signalement');
+        $qb->leftJoin('signalement.suivis', 'suivis','WITH','DATEDIFF(NOW(),suivis.createdAt) < 31');
+        $qb->leftJoin('a.partenaire', 'partenaire');
+        $qb->where('a.partenaire = :partenaire')
+            ->setParameter('partenaire',$partenaire);
+//        $qb->setMaxResults(1);
+        $qb->addSelect('signalement','suivis','partenaire');
+        return new ArrayCollection($qb->getQuery()->getResult());
+
+    }
+
     public function findByStatusAndOrCityForUser(User|UserInterface $user = null,array $options,$export = null): Paginator
     {
-        $pageSize = 50;
+        $pageSize = 30;
         $page = (int)$options['page'];
         $firstResult = ($page - 1) * $pageSize;
         $qb = $this->createQueryBuilder('a');

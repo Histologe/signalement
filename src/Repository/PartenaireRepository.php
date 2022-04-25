@@ -50,7 +50,6 @@ class PartenaireRepository extends ServiceEntityRepository
     }
 
 
-
     /*
     public function findOneBySomeField($value): ?Partenaire
     {

@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -57,8 +58,11 @@ class BackController extends AbstractController
                           SignalementRepository  $signalementRepository,
                           Request                $request,
                           AffectationRepository  $affectationRepository,
-                          PartenaireRepository   $partenaireRepository): Response
+                          PartenaireRepository   $partenaireRepository,
+                          RequestStack           $requestStack
+    ): Response
     {
+//        dd($requestStack->getSession()->get('_newsActivitiesSinceLastLogin'));
         $title = 'Administration - Tableau de bord';
         $user = null;
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
@@ -88,7 +92,7 @@ class BackController extends AbstractController
             $this->req = $signalementRepository->findByStatusAndOrCityForUser($user, $filter, $request->get('export'));
             $signalementsCount = $signalementRepository->countByStatus();
         }
-        if(!$user){
+        if (!$user) {
             $criteria = new Criteria();
             $criteria->where(Criteria::expr()->neq('statut', 7));
             $signalementsCount['total'] = $signalementRepository->matching($criteria)->count();
@@ -97,7 +101,7 @@ class BackController extends AbstractController
             'list' => $this->req,
             'total' => count($this->req),
             'page' => (int)$filter['page'],
-            'pages' => (int)ceil(count($this->req) / 50),
+            'pages' => (int)ceil(count($this->req) / 30),
             'counts' => $signalementsCount
         ];
 

@@ -6,6 +6,7 @@ use App\Entity\Affectation;
 use App\Entity\Signalement;
 use App\Entity\SignalementUserAffectation;
 use App\Entity\Suivi;
+use App\Repository\AffectationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -14,28 +15,49 @@ class NewsActivitiesSinceLastLoginService
     private RequestStack $requestStack;
     private array $activities;
 
-    public function __construct(RequestStack $requestStack)
+    public function __construct(RequestStack $requestStack, AffectationRepository $affectationRepository)
     {
         $this->requestStack = $requestStack;
+        $this->affectationRepo = $affectationRepository;
     }
+
+
+    public function getAffectationsAndSuivis($user)
+    {
+        $lastActivity = $this->requestStack->getSession()->get('lastActionTime');
+        $results = $this->affectationRepo->findByPartenaire($user->getPartenaire());
+        $affectations = new ArrayCollection();
+        $suivis = new ArrayCollection();
+        $results->filter(function (Affectation $affectation) use ($affectations, $suivis,$lastActivity) {
+            $signalement = $affectation->getSignalement();
+            if (!$affectations->contains($signalement) && $affectation->getStatut() === Affectation::STATUS_CLOSED)
+                $affectations->add($signalement);
+            $signalement->getSuivis()->filter(function (Suivi $suivi) use ($lastActivity) {
+                return $suivi->getCreatedAt() > $lastActivity;
+            });
+        });
+        return ['affectations'=>$affectations, 'suivis'=>$suivis];
+    }
+
 
     public function set($user)
     {
+//        $this->requestStack->getSession()->remove('lastActionTime');
+//        $suivis = $this->getNewsSuivis($user);
+        dd($this->getAffectationsAndSuivis($user));
         $lastActiviy = $this->requestStack->getSession()->get('lastActionTime');
         $newsActivitiesSinceLastLogin = $this->requestStack->getSession()->get('_newsActivitiesSinceLastLogin') ?? new ArrayCollection();
-        $user->getPartenaire()?->getAffectations()->filter(function (Affectation $affectation) use ($newsActivitiesSinceLastLogin, $user,$activities) {
-            $affectation->getSignalement()->getSuivis()->filter(function (Suivi $suivi) use ($newsActivitiesSinceLastLogin, $user,$activities) {
-                if (!$newsActivitiesSinceLastLogin->contains($suivi) && $suivi->getCreatedAt() > $lastActivity)
-                    $newsActivitiesSinceLastLogin->add($suivi);
+        $activities = [];
+        $newsActivitiesSinceLastLogin->filter(function (Affectation $affectation) use ($activities, $lastActiviy) {
+            $affectation->getSignalement()->getSuivis()->filter(function (Suivi $suivi) use ($activities, $lastActiviy) {
+                if ($suivi->getCreatedAt() > $lastActiviy)
+                    $activities[] = $suivi;
             });
-            if (!$newsActivitiesSinceLastLogin->contains($affectation) && $affectation->getStatut() === Affectation::STATUS_WAIT && $affectation->getPartenaire() && $affectation->getCreatedAt()->diff(new \DateTimeImmutable())->days < 31)
-                $newsActivitiesSinceLastLogin->add($affectation);
         });
-        return $this->requestStack->getSession()->set('_newsActivitiesSinceLastLogin', $newsActivitiesSinceLastLogin);
+        return $activities;
+
     }
 
-  
-    
 
     public function getAll(): bool|ArrayCollection|null
     {
