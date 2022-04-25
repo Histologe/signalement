@@ -196,13 +196,13 @@ class Signalement
     #[ORM\Column(type: 'float', nullable: true)]
     private $scoreCloture;
 
-    #[ORM\Column(type: 'string', length: 25, nullable: true)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $etageOccupant;
 
-    #[ORM\Column(type: 'string', length: 25, nullable: true)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $escalierOccupant;
 
-    #[ORM\Column(type: 'string', length: 25, nullable: true)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $numAppartOccupant;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]

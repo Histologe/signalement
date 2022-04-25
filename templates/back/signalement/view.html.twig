@@ -600,7 +600,7 @@
                     <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
                 </div>
                 <div class="fr-col-9 bloc-suivi-content-row fr-pl-3v">
-                    {{ suivi.description|raw }}
+                    {{ suivi.description|replace({'?t=___TOKEN___':''})|raw }}
                 </div>
                 <div class="fr-col-1 fr-text--right">
                     {% if suivi.isPublic %}
