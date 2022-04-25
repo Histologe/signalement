@@ -424,7 +424,7 @@ class FrontController extends AbstractController
                 'nom' => $form->get('nom')->getData(),
                 'mail' => $form->get('email')->getData(),
                 'reply' => $form->get('email')->getData(),
-                'message' => $form->get('message')->getData(),
+                'message' => nl2br($form->get('message')->getData()),
             ]);
             $this->addFlash('success', 'Votre message à bien été envoyé !');
             return $this->redirectToRoute('front_contact');
