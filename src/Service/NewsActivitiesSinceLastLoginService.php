@@ -21,19 +21,21 @@ class NewsActivitiesSinceLastLoginService
 
     public function set($user)
     {
-        $activities = $this->requestStack->getSession()->get('lastActionTime');
-        $newsActivitiesSinceLastLogin = new ArrayCollection();
+        $lastActiviy = $this->requestStack->getSession()->get('lastActionTime');
+        $newsActivitiesSinceLastLogin = $this->requestStack->getSession()->get('_newsActivitiesSinceLastLogin') ?? new ArrayCollection();
         $user->getPartenaire()?->getAffectations()->filter(function (Affectation $affectation) use ($newsActivitiesSinceLastLogin, $user,$activities) {
             $affectation->getSignalement()->getSuivis()->filter(function (Suivi $suivi) use ($newsActivitiesSinceLastLogin, $user,$activities) {
-                if (!isset($activities[$suivi->getSignalement()->getId()]) && $suivi->getCreatedAt() > $user->getLastLoginAt()
-                    || isset($activities[$suivi->getSignalement()->getId()]) && $activities[$suivi->getSignalement()->getId()] < $suivi->getCreatedAt())
+                if (!$newsActivitiesSinceLastLogin->contains($suivi) && $suivi->getCreatedAt() > $lastActivity)
                     $newsActivitiesSinceLastLogin->add($suivi);
             });
-            if ($affectation->getStatut() === Affectation::STATUS_WAIT && $affectation->getPartenaire() && $affectation->getCreatedAt()->diff(new \DateTimeImmutable())->days < 31)
+            if (!$newsActivitiesSinceLastLogin->contains($affectation) && $affectation->getStatut() === Affectation::STATUS_WAIT && $affectation->getPartenaire() && $affectation->getCreatedAt()->diff(new \DateTimeImmutable())->days < 31)
                 $newsActivitiesSinceLastLogin->add($affectation);
         });
         return $this->requestStack->getSession()->set('_newsActivitiesSinceLastLogin', $newsActivitiesSinceLastLogin);
     }
+
+  
+    
 
     public function getAll(): bool|ArrayCollection|null
     {

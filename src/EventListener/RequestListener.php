@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class RequestListener
 {
@@ -15,7 +16,13 @@ class RequestListener
     private UrlGeneratorInterface $urlGenerator;
     private NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService;
 
-    public function __construct(TokenStorage $tokenStorage, UrlGeneratorInterface $urlGenerator, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService)
+    public function __construct(TokenStorage $tokenStorage, UrlGeneratorInterface $urlGenerator, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService,RequestStack $requestStack)
+    {
+        $this->tokenStorage = $tokenStorage;
+        $this->urlGenerator = $urlGenerator;
+        $this->newsActivitiesSinceLastLoginService = $newsActivitiesSinceLastLoginService;
+        $this->requestStack = $requestStack;
+    }
     {
         $this->tokenStorage = $tokenStorage;
         $this->urlGenerator = $urlGenerator;
@@ -33,4 +40,11 @@ class RequestListener
             }
         }
     }
+
+    public function onKernelController(ControllerEvent $event)
+{
+    $activities = $this->requestStack->getSession()->set('lastActionTime', time());
+}
+    
+
 }
