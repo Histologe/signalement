@@ -45,12 +45,19 @@ class SignalementRepository extends ServiceEntityRepository
                 $qb->setParameter('search', "%" . strtolower($options['search']) . "%");
             }
         }
+        if (isset($options['affectations']) && !isset($options['partners'])) {
+            $qb->andWhere('a.statut IN (:affectations)')
+                ->setParameter('affectations', $options['affectations']);
+        }
         if (isset($options['partners'])) {
             if (in_array('AUCUN', $options['partners']))
                 $qb->andWhere('affectations IS NULL');
-            else
-                $qb->andWhere('partenaire IN (:partners)')
-                    ->setParameter('partners', $options['partners']);
+            else {
+                $qb->andWhere('partenaire IN (:partners)');
+                if (isset($options['affectations']))
+                    $qb->andWhere('a.statut IN (:affectations)')->setParameter('affectations', $options['affectations']);
+                $qb->setParameter('partners', $options['partners']);
+            }
         }
         if (isset($options['statuses'])) {
             $qb->andWhere('s.statut IN (:statuses)')
@@ -60,12 +67,28 @@ class SignalementRepository extends ServiceEntityRepository
             $qb->andWhere('s.villeOccupant IN (:cities)')
                 ->setParameter('cities', $options['cities']);
         }
+        if (isset($options['visites'])) {
+            $qb->andWhere('IF(s.dateVisite IS NOT NULL,1,0) IN (:visites)')
+                ->setParameter('visites', $options['visites']);
+        }
+        if (isset($options['avant1949'])) {
+            $qb->andWhere('s.isConstructionAvant1949 IN (:avant1949)')
+                ->setParameter('avant1949', $options['avant1949']);
+        }
+        if (isset($options['handicaps'])) {
+            $qb->andWhere('s.isSituationHandicap IN (:handicaps)')
+                ->setParameter('handicaps', $options['handicaps']);
+        }
         if (isset($options['dates'])) {
+            $field = 's.createdAt';
+            if (isset($options['visites'])) {
+                $field = 's.dateVisite';
+            }
             if (isset($options['dates']['on'])) {
-                $qb->andWhere('s.createdAt >= :date_in')
+                $qb->andWhere($field . ' >= :date_in')
                     ->setParameter('date_in', $options['dates']['on']);
             } elseif (isset($options['dates']['off'])) {
-                $qb->andWhere('s.createdAt <= :date_off')
+                $qb->andWhere($field . ' <= :date_off')
                     ->setParameter('date_in', $options['dates']['off']);
             }
         }
@@ -93,11 +116,20 @@ class SignalementRepository extends ServiceEntityRepository
             $qb->andWhere('s.isRefusIntervention IN (:interventions)')
                 ->setParameter('interventions', $options['interventions']);
         }
-        if (isset($options['visites'])) {
-            $qb->andWhere('IF(s.dateVisite IS NOT NULL,1,0) IN (:visites)')
-                ->setParameter('visites', $options['visites']);
+        if (isset($options['delays'])) {
+//            dd(max($options['delays']));
+            $qb->andWhere('DATEDIFF(NOW(),suivis.createdAt) >= :delays')
+                ->setParameter('delays', $options['delays']);
         }
+
+        if (isset($options['scores'])) {
+//            dd(max($options['delays']));
+            $qb->andWhere('s.scoreCreation >= :scores')
+                ->setParameter('scores', $options['scores']);
+        }
+
     }
+
 
 
     // /**
@@ -180,14 +212,6 @@ class SignalementRepository extends ServiceEntityRepository
             ->leftJoin('criteres.criticites', 'criticites')
             ->leftJoin('affectations.partenaire', 'partenaire')
             ->addSelect('situations', 'affectations', 'criteres', 'criticites', 'partenaire');
-        /*$qb->leftJoin('s.situations','situations');
-        $qb->leftJoin('situations.criteres','criteres');
-        $qb->leftJoin('criteres.criticites','criticites');
-        $qb->leftJoin('s.affectations','affectations');
-        $qb->leftJoin('affectations.partenaire','partenaire');
-        $qb->leftJoin('partenaire.users','user');
-        $qb->leftJoin('suivis.createdBy','createdBy');
-        $qb->addSelect('affectations','partenaire','user','situations','criteres','criticites','suivis','createdBy');*/
         return $qb->getQuery()->getOneOrNullResult();
     }
 
@@ -202,67 +226,21 @@ class SignalementRepository extends ServiceEntityRepository
 
         $qb->where('s.statut != :status')
             ->setParameter('status', Signalement::STATUS_ARCHIVED);
-/*        $qb->addSelect("JSON_ARRAY(JSON_OBJECT('name',p2_.nom,
-           'status',a1_.statut,
-           'date',a1_.createdAt,
-           'answeredAt',a1_.answeredAt)   ) as affectations");*/
-        $qb->leftJoin('s.affectations','affectations');
-        $qb->leftJoin('affectations.partenaire','partenaire');
-
-        $qb2= $this->getEntityManager()->getRepository(Suivi::class)->createQueryBuilder('su')->select('MAX(su.createdAt) as maxDate')->where('su.signalement = s');
-        $qb->leftJoin('s.suivis','suivis');
-        $qb->leftJoin('suivis.createdBy','suivi_creator');
-        $qb->leftJoin('suivi_creator.partenaire','suivi_creator_partenaire');
-//        $qb->leftJoin('suivis.createdBy','suiviCreator');
-//        $qb->leftJoin('s.affectations', 'affectations1');
-/*        $qb->leftJoin('s.affectations', 'affectations');
+        $qb->leftJoin('s.affectations', 'affectations');
         $qb->leftJoin('affectations.partenaire', 'partenaire');
-        $qb->leftJoin('partenaire.users', 'user');
         $qb->leftJoin('s.suivis', 'suivis');
-        $qb->leftJoin('s.criteres', 'criteres');*/
-//        $qb->addSelect('affectations', /*'affectations1',*/ 'partenaire', 'user', 'suivis');
-        $qb->addSelect('affectations','partenaire','suivis','suivi_creator');
+        $qb->leftJoin('suivis.createdBy', 'suivi_creator');
+        $qb->leftJoin('suivi_creator.partenaire', 'suivi_creator_partenaire');
+        $qb->leftJoin('s.criteres', 'criteres');
+        $qb->addSelect('affectations', 'partenaire', 'suivis', 'suivi_creator');
         $this->checkOptions($qb, $options);
         $qb->orderBy('s.createdAt', 'DESC')
             ->setFirstResult($firstResult)
             ->setMaxResults($pageSize)
             ->getQuery();
-       return new Paginator($qb, true);
+        return new Paginator($qb, true);
     }
 
-    public function findByStatusAndOrCityForUser2(User|UserInterface $user = null, array $options, int|null $export)
-    {
-
-        $pageSize = 50;
-        $firstResult = (($options['page'] ?? 1) - 1) * $pageSize;
-        $req = "
-      JSON_ARRAY(JSON_OBJECT('name',p2_.nom,
-           'status',a1_.statut,
-           'date',a1_.createdAt,
-           'answeredAt',a1_.answeredAt)   )as affectations
-      
-FROM
-    App\Entity\Signalement s
-LEFT OUTER JOIN App\Entity\Affectation a1_ WITH s = a1_.signalement
-LEFT OUTER JOIN App\Entity\Partenaire p2_ WITH a1_.partenaire = p2_
-LEFT OUTER JOIN App\Entity\Suivi s3_ WITH s = s3_.signalement
-LEFT OUTER JOIN App\Entity\Critere criteres";
-        $qb = new QueryBuilder($this->getEntityManager());
-        $qb->add('select',$req);
-
-//        $qb->add('test',$req);
-        self::checkOptions($qb,$options);
-        dd($qb->getQuery()->getSQL());
-        dd($qb->getQuery()->getDQL());
-        $req .= str_replace('SELECT WHERE','AND',$qb->getQuery()->getDQL());
-        $req .= " GROUP BY s0_.id
-ORDER BY
-    s0_.created_at DESC
-LIMIT
-    $pageSize
-OFFSET $firstResult";
-        return $this->getEntityManager()->getConnection()->executeQuery($req)->fetchAllAssociative();
-    }
     public
     function findCities($user = null): array|int|string
     {

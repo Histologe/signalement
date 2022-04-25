@@ -49,6 +49,12 @@
     'MSA':'MSA',
     0:'NON',
 } %}
+{% set statuts_affectation = {
+    0:'EN ATTENTE',
+    1:'ACCEPTEE',
+    2:'REFUSEE',
+    3:'CLOTUREE',
+} %}
 <body{# onbeforeunload="return preload()"#}>
 {% if 'back_' not in app.request.get('_route') %}
     {% include "header.html.twig" %}

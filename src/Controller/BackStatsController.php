@@ -18,15 +18,9 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/bo/stats')]
 class BackStatsController extends AbstractController
 {
-
-    #[Route('/', name: 'back_statistique')]
-    public function index(SignalementRepository $signalementRepository,CritereRepository $critereRepository,PartenaireRepository$partenaireRepository,Request $request, SituationRepository $situationRepository, EntityManagerInterface $entityManager): Response
+    private function setFilters($request): array
     {
-        $title = 'Statistiques';
-        $dates = [];
-        $totaux = ['open' => 0, 'closed' => 0, 'all' => 0];
-        $villes = [];
-        $filters = [
+        return [
             'search' => $request->get('search') ?? null,
             'statuses' => $request->get('bo-filter-statut') ?? null,
             'cities' => $request->get('bo-filter-ville') ?? null,
@@ -37,10 +31,27 @@ class BackStatsController extends AbstractController
             'declarants' => $request->get('bo-filter-declarants') ?? null,
             'proprios' => $request->get('bo-filter-proprios') ?? null,
             'interventions' => $request->get('bo-filter-interventions') ?? null,
+            'avant1949' => $request->get('bo-filter-avant1949') ?? null,
+            'enfantsM6' => $request->get('bo-filter-enfantsM6') ?? null,
+            'handicaps' => $request->get('bo-filter-handicaps') ?? null,
+            'affectations' => $request->get('bo-filter-affectations') ?? null,
             'visites' => $request->get('bo-filter-visites') ?? null,
+            'delays' => $request->get('bo-filter-delays') ?? null,
+            'scores' => $request->get('bo-filter-scores') ?? null,
             'dates' => $request->get('bo-filter-dates') ?? null,
+            'page' => $request->get('page') ?? 1,
         ];
-        $signalements = $signalementRepository->findByStatusAndOrCityForUser($user ?? null,$filters,null)->getQuery()->getArrayResult();
+    }
+
+    #[Route('/', name: 'back_statistique')]
+    public function index(SignalementRepository $signalementRepository, CritereRepository $critereRepository, PartenaireRepository $partenaireRepository, Request $request, SituationRepository $situationRepository, EntityManagerInterface $entityManager): Response
+    {
+        $title = 'Statistiques';
+        $dates = [];
+        $totaux = ['open' => 0, 'closed' => 0, 'all' => 0];
+        $villes = [];
+        $filters = $this->setFilters($request);
+        $signalements = $signalementRepository->findByStatusAndOrCityForUser($user ?? null, $filters, null)->getQuery()->getArrayResult();
         $criteres = $critereRepository->findAllList();
         return $this->render('back/statistique/index.html.twig', [
             'title' => $title,

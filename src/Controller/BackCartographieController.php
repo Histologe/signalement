@@ -14,11 +14,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class BackCartographieController extends AbstractController
 {
 
-    #[Route('/', name: 'back_cartographie')]
-    public function index(SignalementRepository $signalementRepository,Request $request, CritereRepository $critereRepository, PartenaireRepository $partenaireRepository): Response
+    private function setFilters($request)
     {
-        $title = 'Cartographie';
-        $filters = [
+        return [
             'search' => $request->get('search') ?? null,
             'statuses' => $request->get('bo-filter-statut') ?? null,
             'cities' => $request->get('bo-filter-ville') ?? null,
@@ -29,9 +27,23 @@ class BackCartographieController extends AbstractController
             'declarants' => $request->get('bo-filter-declarants') ?? null,
             'proprios' => $request->get('bo-filter-proprios') ?? null,
             'interventions' => $request->get('bo-filter-interventions') ?? null,
+            'avant1949' => $request->get('bo-filter-avant1949') ?? null,
+            'enfantsM6' => $request->get('bo-filter-enfantsM6') ?? null,
+            'handicaps' => $request->get('bo-filter-handicaps') ?? null,
+            'affectations' => $request->get('bo-filter-affectations') ?? null,
             'visites' => $request->get('bo-filter-visites') ?? null,
+            'delays' => $request->get('bo-filter-delays') ?? null,
+            'scores' => $request->get('bo-filter-scores') ?? null,
             'dates' => $request->get('bo-filter-dates') ?? null,
+            'page' => $request->get('page') ?? 1,
         ];
+    }
+
+    #[Route('/', name: 'back_cartographie')]
+    public function index(SignalementRepository $signalementRepository,Request $request, CritereRepository $critereRepository, PartenaireRepository $partenaireRepository): Response
+    {
+        $title = 'Cartographie';
+        $filters = $this->setFilters($request);
         $signalements = $signalementRepository->findAllWithGeoData($filters);
 //        dd($signalements->getQuery()->getResult());
 //        $signalements['cities'] = $signalementRepository->findCities($user ?? null);

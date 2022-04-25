@@ -1,9 +1,10 @@
 {% for index,signalement in signalements.list %}
-    {% set affectations = signalement.affectations %}
+
     {# {% set signalement = signalement[0] %} #}
-    {% if not is_granted('ROLE_ADMIN_PARTENAIRE') %}
+    {% if not is_granted('ROLE_ADMIN_PARTENAIRE') or filter.partners or filter.affectations %}
         {% set signalement = signalement.signalement %}
     {% endif %}
+    {% set affectations = signalement.affectations %}
     <tr class="{% if signalement.statut is same as(1) or signalement.statut is same as(3) %}fr-background-contrast--orange-terre-battue{% endif %} signalement-row"
         data-score="{{ signalement.scoreCreation }}">
         <td>
