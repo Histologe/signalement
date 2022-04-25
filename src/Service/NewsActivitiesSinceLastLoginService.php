@@ -44,7 +44,7 @@ class NewsActivitiesSinceLastLoginService
     {
 //        $this->requestStack->getSession()->remove('lastActionTime');
 //        $suivis = $this->getNewsSuivis($user);
-        dd($this->getAffectationsAndSuivis($user));
+//        dd($this->getAffectationsAndSuivis($user));
         $lastActiviy = $this->requestStack->getSession()->get('lastActionTime');
         $newsActivitiesSinceLastLogin = $this->requestStack->getSession()->get('_newsActivitiesSinceLastLogin') ?? new ArrayCollection();
         $activities = [];
