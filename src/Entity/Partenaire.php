@@ -226,4 +226,5 @@ class Partenaire
 
         return $this;
     }
+
 }

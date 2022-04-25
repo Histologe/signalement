@@ -22,6 +22,7 @@ class BackNewsActivitiesController extends AbstractController
         $this->suivis = [];
     }
 
+
     #[Route('/news', name: 'back_news_activities')]
     public function newsActivitiesSinceLastLogin(NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService, Request $request): Response
     {

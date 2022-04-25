@@ -15,6 +15,7 @@ class NotificationService
     const TYPE_NEW_SIGNALEMENT = 3;
     const TYPE_AFFECTATION = 4;
     const TYPE_SIGNALEMENT_VALIDE = 5;
+    const TYPE_SIGNALEMENT_REFUSE = 99;
     const TYPE_ACCUSE_RECEPTION = 6;
     const TYPE_NOUVEAU_SUIVI = 7;
     const TYPE_NOTIFICATION_MAIL_FRONT = 8;
@@ -62,6 +63,10 @@ class NotificationService
                 'subject' => 'Votre signalement est validé !',
                 'btntext' => "Suivre mon signalement"
             ],
+            NotificationService::TYPE_SIGNALEMENT_REFUSE => [
+                'template' => 'refus_signalement_email',
+                'subject' => 'Votre signalement ne peut pas être traité.',
+            ],
             NotificationService::TYPE_NOTIFICATION_MAIL_FRONT => [
                 'template' => 'nouveau_mail_front',
                 'subject' => 'Vous avez reçu un message depuis la page Histologe',
@@ -81,6 +86,7 @@ class NotificationService
             ]
         };
     }
+
 
     public function send(int $type, string|array $to, array $params): TransportExceptionInterface|\Exception|bool
     {

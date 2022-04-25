@@ -2,7 +2,9 @@
 
 {% set picto_yes = '<p class="fr-badge fr-badge--success value-switcher" data-action="click" data-item="%s" data-url="'~path('back_signalement_switch_value',{uuid:signalement.uuid})~'" data-token="'~csrf_token('signalement_switch_value_'~signalement.uuid)~'">Oui</p>' %}
 {% set picto_no = '<p class="fr-badge fr-badge--error value-switcher" data-action="click" data-item="%s" data-url="'~path('back_signalement_switch_value',{uuid:signalement.uuid})~'" data-token="'~csrf_token('signalement_switch_value_'~signalement.uuid)~'">Non</p>' %}
+{% set picto_nsp = '<p class="fr-badge fr-badge--warning value-switcher" data-action="click" data-item="%s" data-url="'~path('back_signalement_switch_value',{uuid:signalement.uuid})~'" data-token="'~csrf_token('signalement_switch_value_'~signalement.uuid)~'">NSP</p>' %}
 {% set procedures = ["RSD" , "Mise en sécurité","Incurie","Insalubrité", "Décence", "ADIL"] %}
+
 
 {% block content %}
     {% include 'back/signalement/modal_affectation.html.twig' %}
@@ -10,7 +12,7 @@
     {% if signalement.statut is not same as(1) and not isClosed and not isClosedForMe and ((isAffected and isAccepted)) or is_granted('ROLE_ADMIN_TERRITOIRE') %}
         {% include 'back/signalement/modal_cloture.html.twig' %}
     {% endif %}
-    <section class="fr-p-5v {{ isClosedForMe or signalement.statut is same as(6) ? 'signalement-invalid':'' }}"
+    <section class="fr-p-5v {{ isClosedForMe or signalement.statut is same as(6) or signalement.statut is same as(8) ? 'signalement-invalid':'' }}"
              id="signalement-{{ signalement.id }}-content">
         <header>
             <div class="fr-grid-row fr-grid-row--middle ">
@@ -38,7 +40,7 @@
                             <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
                                     name="signalement-affectation-response[accept]" value="1"
                                     {# onclick="return confirm('Êtes-vous certain de vouloir acccepter ce signalement ?')" #}>
-                                J'ai pris connaissance du signalement
+                                Accepter
                             </button>
                             <a href="#" class="fr-btn fr-btn--danger fr-fi-close-circle-fill fr-btn--icon-left"
                                data-fr-opened="false" aria-controls="refus-affectation-modal">Refuser
@@ -71,28 +73,36 @@
                                    value="{{ csrf_token('signalement_affectation_response_'~signalement.id) }}">
                         </form>
                     {% elseif needValidation and not isClosedForMe and is_granted('ROLE_ADMIN_TERRITOIRE') %}
-                        <form action="{{ path('back_signalement_validation_response',{uuid:signalement.uuid}) }}">
+                        <form id="signalement-validation-response-form" action="{{ path('back_signalement_validation_response',{uuid:signalement.uuid}) }}" class="tinyCheck">
                             <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
                                     name="signalement-validation-response[accept]" value="1"
                                     onclick="return confirm('Êtes-vous certain de vouloir valider ce signalement ?')">
                                 Valider ce signalement
                             </button>
-                            <button class="fr-btn fr-btn--danger fr-fi-close-circle-fill fr-btn--icon-left"
-                                    name="signalement-validation-response[deny]" value="1"
-                                    onclick="return confirm('Êtes-vous certain de vouloir refuser ce signalement ?')">
-                                Refuser ce signalement
-                            </button>
+                            <a href="#" class="fr-btn fr-btn--danger fr-fi-close-fill fr-btn--icon-left" aria-controls="refus-signalement-modal" data-fr-opened="false">
+                               Refuser ce signalement
+                            </a>
+                            {% include 'back/signalement/modal_refus_signalement.html.twig' %}
                             <input type="hidden" name="_token"
                                    value="{{ csrf_token('signalement_validation_response_'~signalement.id) }}">
                         </form>
                         <span class="fr-hint-text">En tant qu'administrateur vous devez <strong><u>valider/refuser</u></strong> ce signalement</span>
-                    {% elseif isClosedForMe or signalement.statut is same as(6) %}
+                    {% elseif isClosedForMe or signalement.statut is same as(6)  or signalement.statut is same as(8) %}
                         <form action="{{ path('back_signalement_reopen',{uuid:signalement.uuid}) }}">
-                            <button class="fr-btn fr-fi-lock-fill fr-btn--icon-left reopen"
-                                    name="signalement-action[reopen]" value="1"
-                                    onclick="return confirm('Êtes-vous certain de vouloir rouvrir ce signalement ?')">
-                                Rouvrir ce signalement
-                            </button>
+                            {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
+                                <button class="fr-btn fr-btn--success fr-fi-lock-fill fr-btn--icon-left reopen"
+                                        name="signalement-action[reopenAll]" value="1"
+                                        onclick="return confirm('Êtes-vous certain de vouloir rouvrir ce signalement pour TOUS les partenaires ?')">
+                                    Rouvrir pous tous
+                                </button>
+                            {% endif %}
+                            {% if signalement.statut is not same as(6) or is_granted('ROLE_ADMIN_TERRITOIRE')  %}
+                                <button class="fr-btn fr-fi-lock-fill fr-btn--icon-left reopen"
+                                        name="signalement-action[reopen]" value="1"
+                                        onclick="return confirm('Êtes-vous certain de vouloir rouvrir ce signalement ?')">
+                                    Rouvrir pour {{ app.user.partenaire.nom }}
+                                </button>
+                            {% endif %}
                             <input type="hidden" name="_token"
                                    value="{{ csrf_token('signalement_reopen_'~signalement.id) }}">
                         </form>
@@ -108,7 +118,7 @@
                     l'usager</strong>
                 <span class="fr-hint-text">Ci-dessous le détails du signalement tel que rapporté par l'usager</span>
             </div>
-            {% if signalement.statut is not same as(0) and not isClosedForMe or isAffected and isAccepted %}
+            {#{% if signalement.statut is not same as(0) and not isClosedForMe or isAffected and isAccepted %}
                 <div class="fr-col-12 fr-col-md-3 fr-text--right">
                     <form action="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}" method="POST">
                         <div class="fr-select-group">
@@ -136,7 +146,7 @@
                                value="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}">
                     </form>
                 </div>
-            {% endif %}
+            {% endif %}#}
             <div class="fr-col-12">
                 <ul class="fr-background-alt--blue-france fr-list--icon-img fr-rounded">
                     <li class="fr-p-5v">
@@ -252,9 +262,13 @@
                 <ul class="fr-list--icon-img">
                     <li>
                         <strong>Accord pour visite: </strong>
-                        {% if signalement.isRefusIntervention %}
+                        {% if signalement.dateVisite %}
+                            {{ picto_yes|format('IsRefusIntervention')|raw }}
+                        {% elseif signalement.isRefusIntervention %}
                             {{ picto_no|format('IsRefusIntervention')|raw }}
                             <span class="fr-hint-text"><u><strong>Motif:</strong></u> {{ signalement.raisonRefusIntervention }}</span>
+                        {% elseif signalement.isRefusIntervention is null %}
+                            {{ picto_nsp|format('IsRefusIntervention')|raw }}
                         {% else %}
                             {{ picto_yes|format('IsRefusIntervention')|raw }}
                         {% endif %}
@@ -263,21 +277,29 @@
                         <li>
                             <strong>Visite effectuée: </strong>
                             {% if signalement.dateVisite %}
-                                {{ picto_yes|raw }}
+                                <p class="fr-badge fr-badge--success">{{ signalement.dateVisite|date('d.m.Y') }}</p>
                             {% else %}
-                                {{ picto_no|raw }}
+                                <p class="fr-badge fr-badge--error fr-mb-3v" id="signalement-toggle-visite-calendar">NON</p>
+                                <form action="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}" method="POST" class="needs-validation" novalidate>
+                                    <div class="fr-display-inline-flex">
+                                        <div class="fr-input-group">
+                                            <input type="date" class="fr-input" name="value" required>
+                                            <p class="fr-error-text fr-hidden">Vous devez saisir une date valide (JJ/MM/AAAA)</p>
+                                        </div>
+                                        <button class="fr-btn fr-fi-check-line" type="submit"></button>
+                                    </div>
+                                    <input type="hidden" name="item" value="DateVisite">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}">
+                                </form>
                             {% endif %}
                         </li>
                         {% if signalement.dateVisite %}
                             <li>
-                                <strong>Date de visite: </strong> {{ signalement.dateVisite|date('d/m/Y') }}
-                            </li>
-                            <li>
                                 <strong>Occupant présent: </strong>
                                 {% if signalement.isOccupantPresentVisite %}
-                                    {{ picto_yes|raw }}
+                                    {{ picto_yes|format('IsOccupantPresentVisite')|raw }}
                                 {% else %}
-                                    {{ picto_no|raw }}
+                                    {{ picto_no|format('IsOccupantPresentVisite')|raw }}
                                 {% endif %}
                             </li>
                         {% endif %}
@@ -390,7 +412,7 @@
             </div>
         </div>
         <hr id="documents">
-        <div class="fr-grid-row fr-grid-row--middle">
+        <div class="fr-grid-row fr-grid-row--middle" style="position: relative;z-index: 1001">
             <div class="fr-col-12 fr-col-md-6">
                 <strong class="fr-fi-upload-2-fill fr-icon--sm fr-text-label--blue-france"> Photos et documents</strong>
                 <span class="fr-hint-text">Ci-dessous les photos et documents fournis par le déclarant et/ou les partenaires.</span>
@@ -421,12 +443,12 @@
                 </div>
             {% endif %}
         </div>
-        <div class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters fr-my-3v">
+        <div class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters fr-my-3v" style="position: relative;z-index: 1001">
             {% for index,photo in signalement.photos %}
                 <div class="fr-col-6 fr-col-md-2 fr-rounded signalement-file-item">
-                    <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center"
+                    <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center part-infos-hover" data-user="{{ photo.username ?? 'N/R'  }}" data-mail="{{ photo.date ?? 'N/R' }}"
                          style="background: url('{{ asset('_up/'~photo.file) }}')no-repeat center center/cover">
-                        <button class="fr-btn fr-btn--sm fr-fi-eye-line" title="Voir la photo"
+                        <button class="fr-btn fr-btn--sm fr-fi-eye-line img-box" title="Voir la photo"
                                 onclick="img_box('{{ asset('_up/'~photo.file) }}')"></button>
                         {% if is_granted('ROLE_ADMIN_PARTENAIRE') or (isAffected and isAccepted) %}
                             {% if photo.user is not defined or photo.user is same as(app.user.id) %}
@@ -437,26 +459,30 @@
                             {% endif %}
                         {% endif %}
                     </div>
-                    <div class="fr-grid-row">
+                   {# <div class="fr-grid-row">
                         <div class="fr-col-12 fr-text--center">
                             {{ photo.titre ?? 'image' }}
                         </div>
-                    </div>
+                    </div>#}
                 </div>
             {% endfor %}
         </div>
         {% for doc in signalement.documents %}
-            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-3v">
+            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-3v signalement-file-item" style="position: relative;z-index: 1001">
                 <div class="fr-col-10">
-                    <a href="{{ asset('_up/'~doc.file) }}" target="_blank" class="fr-link">{{ doc.titre }}</a>
+                    <a href="{{ asset('_up/'~doc.file) }}" target="_blank" class="fr-link part-infos-hover" data-user="{{ doc.username ?? 'N/R'  }}" data-mail="{{ doc.date ?? 'N/R' }}">{{ doc.titre }}</a>
                 </div>
                 <div class="fr-col-2 fr-text--right">
                     <a href="{{ asset('_up/'~doc.file) }}"
                        class="fr-btn fr-fi-eye-fill fr-btn--icon-left" title="Afficher le document" target="_blank">Consulter</a>
+                    <button title="Supprimer le document"
+                            data-delete="{{ path('back_signalement_delete_file',{uuid:signalement.uuid,type:'documents',file:doc.file}) }}"
+                            data-token="{{ csrf_token('signalement_delete_file_'~signalement.id) }}"
+                            class="fr-btn fr-btn--danger fr-fi-delete-line signalement-file-delete"></button>
                 </div>
             </div>
         {% endfor %}
-        {% if not isClosed and not needValidation %}
+        {% if not needValidation %}
             <hr class="fr-mt-5v" id="affectations">
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-col-md-6">
@@ -478,39 +504,39 @@
                     {% if affectation.statut is same as(0) %}
                         {# STATUT EN ATTENTE #}
                         <div class="fr-col-md-2">
-                            <div class="fr-background-contrast--info fr-rounded fr-p-2v">
-                                <small>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]
+                            <div class="fr-background-contrast--info fr-rounded fr-p-2v fr-input-wrap fr-fi-refresh-line">
+                                <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]</strong>
                                     <br>En attente.</small>
-                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} par {{ affectation.affectedBy.nom|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
+                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} <br>par <span class="part-infos-hover" data-user="{{ affectation.affectedBy.nomComplet }}" data-mail="{{ affectation.affectedBy.email }}">{{ affectation.affectedBy.nomComplet }}</span></span>
                             </div>
                         </div>
                     {% elseif affectation.statut is same as(1) %}
                         {# STATUT ACCEPTE #}
                         <div class="fr-col-md-2">
-                            <div class="fr-background-contrast--success fr-rounded fr-p-2v">
-                                <small>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]
+                            <div class="fr-background-contrast--success fr-rounded fr-p-2v fr-input-wrap fr-fi-check-line">
+                                <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]</strong>
                                     <br>Accepté.</small>
-                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} par {{ affectation.affectedBy.nom|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
-                                <span class="fr-hint-text"><strong>Accepté le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} par {{ affectation.answeredBy.nom|upper~'. '~affectation.answeredBy.prenom|capitalize }}</span>
+                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} <br>par <span class="part-infos-hover" data-user="{{ affectation.affectedBy.nomComplet }}" data-mail="{{ affectation.affectedBy.email }}">{{ affectation.affectedBy.nomComplet }}</span></span>
+                                <span class="fr-hint-text"><strong>Accepté le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} <br>par <span class="part-infos-hover" data-user="{{ affectation.answeredBy.nomComplet }}" data-mail="{{ affectation.answeredBy.email }}">{{ affectation.answeredBy.nomComplet }}</span></span>
                             </div>
                         </div>
                     {% elseif affectation.statut is same as(2) %}
                         {# STATUT REFUSE #}
                         <div class="fr-col-md-2">
-                            <div class="fr-background-contrast--error fr-rounded fr-p-2v">
-                                <small>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]
+                            <div class="fr-background-contrast--error fr-rounded fr-p-2v fr-input-wrap fr-fi-close-line">
+                                <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]</strong>
                                     <br>Refusé.</small>
-                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} par {{ affectation.affectedBy.nom|upper~'. '~affectation.affectedBy.prenom|capitalize }}</span>
-                                <span class="fr-hint-text"><strong>Refusé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} par {{ affectation.answeredBy.nom|upper~'. '~affectation.answeredBy.prenom|capitalize }}</span>
+                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} <br>par <span class="part-infos-hover" data-user="{{ affectation.affectedBy.nomComplet }}" data-mail="{{ affectation.affectedBy.email }}">{{ affectation.affectedBy.nomComplet }}</span></span>
+                                <span class="fr-hint-text"><strong>Refusé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} <br>par <span class="part-infos-hover" data-user="{{ affectation.answeredBy.nomComplet }}" data-mail="{{ affectation.answeredBy.email }}">{{ affectation.answeredBy.nomComplet }}</span></span>
                             </div>
                         </div>
                     {% elseif affectation.statut is same as(3) %}
                         {# STATUT REFUSE #}
                         <div class="fr-col-md-2">
-                            <div class="fr-background-contrast--error fr-rounded fr-p-2v">
-                                <small>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]
+                            <div class="fr-background-contrast--error fr-rounded fr-p-2v fr-input-wrap fr-fi-lock-fill">
+                                <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]</strong>
                                     <br>Cloturé.</small>
-                                <span class="fr-hint-text"><strong>Cloturé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }}</span>
+                                <span class="fr-hint-text"><strong>Cloturé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }}<br>par <span class="part-infos-hover" data-user="{{ affectation.answeredBy ? affectation.answeredBy.nomComplet }}" data-mail="{{ affectation.answeredBy ? affectation.answeredBy.email }}">{{ affectation.answeredBy ? affectation.answeredBy.nomComplet }}</span></span>
                             </div>
                         </div>
                     {% endif %}
@@ -567,10 +593,10 @@
             <hr class=" fr-mt-5v">
         {% endif %}
         {% for suivi in signalement.suivis|reverse %}
-            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v">
-                <div class="fr-col-2">
-                    <strong> {{ suivi.createdBy.nom|upper~'. '~ suivi.createdBy.prenom|capitalize }}</strong> <br>
-                    <small>[{{ suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun' }}]</small> <br>
+            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v {% if not suivi.createdBy %}fr-background-alt--orange-terre-battue{% endif %}">
+                <div class="fr-col-2 {% if suivi.createdBy %}part-infos-hover{% endif %}" {% if suivi.createdBy %}data-user="{{ suivi.createdBy.nomComplet }}" data-mail="{{ suivi.createdBy.email }}"{% endif %}>
+                    <strong > {{ suivi.createdBy ? (suivi.createdBy.nom|upper~'. '~ suivi.createdBy.prenom|capitalize) : signalement.nomDeclarant ?? signalement.nomOccupant }}</strong> <br>
+                    <small>[{{ suivi.createdBy ? (suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun') : 'DECLARANT' }}]</small> <br>
                     <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
                 </div>
                 <div class="fr-col-9 bloc-suivi-content-row fr-pl-3v">
@@ -589,8 +615,19 @@
 {% endblock %}
 {% block javascripts %}
     <script>
+        tippy('.part-infos-hover', {
+            content:(reference) => '<strong style="white-space: nowrap">'+reference.getAttribute('data-user')+'</strong>' + '<hr class="fr-pb-1v"><span style="white-space: nowrap">'+reference.getAttribute('data-mail')+'</span>',
+            allowHTML: true,
+            interactive: true,
+            theme: 'light-border',
+            arrow: true,
+            followCursor: true,
+            maxWidth:"100%"
+        });
+    </script>
+    <script>
         {% if isClosedForMe or signalement.statut is same as(6) %}
-        document?.querySelector('#signalement-{{ signalement.id }}-content').querySelectorAll('button:not(.reopen,.reaffect),.fr-btn:not(.reopen,.reaffect)').forEach(input => {
+        document?.querySelector('#signalement-{{ signalement.id }}-content').querySelectorAll('button:not(.reopen,.reaffect,.img-box),.fr-btn:not(.reopen,.reaffect,.img-box)').forEach(input => {
             input.remove()
         })
         {% endif %}
@@ -631,11 +668,27 @@
         L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
             attribution: '&copy;'
         }).addTo(map);
-
+        /*var regions = L.geoJSON(null, {
+            pointToLayer: function (pointFeature, latlng) {
+                return L.circleMarker(latlng, {
+                    radius:6,
+                    opacity: .8
+                })
+                    .bindPopup("<p><b> " + pointFeature.properties.EPCI + "</b></p>");
+            }
+        });
+        fetch('{{ asset('test.geojson') }}',{
+            method:'GET',
+        }).then(r=>r.json().then(res=>{
+            res.features.map((feature,index)=>{
+                regions.addData(feature)
+            })
+            regions.addTo(map);
+            map.fitBounds(regions.getBounds());
+        }))*/
         L.marker([{{ signalement.geoloc.lng }}, {{ signalement.geoloc.lat }}]).addTo(map)
             .bindPopup('{{ signalement.adresseOccupant~', '~signalement.cpOccupant~' '~signalement.villeOccupant|upper }}')
             .openPopup();
         {% endif %}
-
     </script>
 {% endblock %}

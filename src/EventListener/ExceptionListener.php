@@ -3,7 +3,12 @@
 namespace App\EventListener;
 
 use App\Service\NotificationService;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use function PHPUnit\Framework\isEmpty;
 
 class ExceptionListener
 {

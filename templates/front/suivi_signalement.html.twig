@@ -3,8 +3,9 @@
 {% block title %}Suivre mon signalement #{{ signalement.reference }}{% endblock %}
 
 {% block body %}
+
     <main class="fr-container--fluid">
-        <section class="fr-container fr-p-5w">
+        <section class="fr-container fr-p-5v fr-p-md-5w">
             <header>
                 <div class="fr-grid-row fr-grid-row--middle">
                     <div class="fr-col-12 fr-col-md-6">
@@ -23,17 +24,44 @@
             </header>
             <hr>
             {% for suivi in signalement.suivis|reverse %}
-                {% if suivi.isPublic %}
-                    <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v">
-                        <div class="fr-col-2">
-                            <small>[{{ suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun' }}]</small> <br>
-                            <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
-                        </div>
-                        <div class="fr-col-10">
-                            {{ suivi.description|raw }}
+                {% if loop.first and suivi.createdBy %}
+                    <div class="fr-grid-row fr-grid-row--middle fr-rounded fr-p-5v">
+                        <div class="fr-col-12">
+                            <form action="{{ path('front_suivi_signalement_user_response',{code:signalement.codeSuivi}) }}" class="needs-validation" novalidate method="POST">
+                                <div class="fr-input-group">
+                                    <label for="signalement_front_response_content" class="fr-label">Votre message:</label>
+                                    <p class="fr-hint-text">Dix (10) caractères minimum</p>
+                                    <textarea name="signalement_front_response[content]" id="signalement_front_response_content" rows="10" class="fr-input" required minlength="10"></textarea>
+                                    <p class="fr-error-text fr-hidden">Veuillez composez un message d'au moins 10 caratères.</p>
+                                </div>
+                                {% include 'front/_signalement_upload.html.twig' with {
+                                    limit:1
+                                } %}
+                                <div class="fr-grid-row">
+                                    <div class="fr-col-12 fr-text--center">
+                                        <progress max="100" id="form_global_file_progress" value="0" class="final-progress fr-hidden"></progress>
+                                    </div>
+                                </div>
+                                <div class="fr-grid-row">
+                                    <div class="fr-col-12 fr-text--center">
+                                        <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-right" type="submit" id="form_finish_submit">Confirmer
+                                        </button>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="_token" value="{{ csrf_token('signalement_front_response_'~signalement.uuid) }}">
+                            </form>
                         </div>
                     </div>
                 {% endif %}
+                    <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v {% if not suivi.createdBy %}fr-background-alt--orange-terre-battue{% endif %}">
+                        <div class="fr-col-12 fr-col-md-2">
+                            <small>[{{ suivi.createdBy ? (suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun'): 'Vous' }}]</small> <br>
+                            <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
+                        </div>
+                        <div class="fr-col-12 fr-col-md-10">
+                            {{ suivi.description|replace({'___TOKEN___':csrf_token('suivi_signalement_ext_file_view')})|raw }}
+                        </div>
+                    </div>
             {% endfor %}
             <hr>
             <h2 class="fr-mb-0">Photo(s) liée(s) à votre signalement</h2>
@@ -44,7 +72,7 @@
                         Photos N°{{ loop.index }}
                     </div>
                     <div class="fr-col-2 fr-text--right">
-                        <a href="{{ asset('_up/'~photo.file) }}?t={{ csrf_token('suivi_signalement_'~''|date('dmy')) }}" class="fr-btn fr-fi-eye-fill fr-btn--icon-left" title="Afficher la photos">Afficher</a>
+                        <a href="{{ asset('_up/'~photo.file) }}?t={{ csrf_token('suivi_signalement_ext_file_view') }}" class="fr-btn fr-fi-eye-fill fr-btn--icon-left" title="Afficher la photos">Afficher</a>
                     </div>
                 </div>
             {% else %}

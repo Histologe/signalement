@@ -92,7 +92,7 @@ class   SignalementType extends AbstractType
                 'attr' => [
                     'class' => 'fr-select'
                 ],
-                'choices' => [1, 2, 3, 4, '4+'],
+                'choices' => ["0",1, 2, 3, 4, '4+'],
                 'choice_label' => function ($choice, $key, $value) {
                     if (1 === $choice)
                         return $value . ' Enfant';
@@ -113,7 +113,7 @@ class   SignalementType extends AbstractType
                 'attr' => [
                     'class' => 'fr-select'
                 ],
-                'choices' => [1, 2, 3, 4, '4+'],
+                'choices' => ["0",1, 2, 3, 4, '4+'],
                 'choice_label' => function ($choice, $key, $value) {
                     if (1 === $choice)
                         return $value . ' Enfant';
@@ -232,7 +232,8 @@ class   SignalementType extends AbstractType
                 'label_attr' => [
                     'class' => 'fr-label'
                 ],
-                'label' => "N° téléphone de l'occupant"
+                'label' => "N° téléphone de l'occupant",
+                'required' => false
             ])
 
             ->add('telOccupantBis', TelType::class, [
@@ -253,7 +254,8 @@ class   SignalementType extends AbstractType
                 'label_attr' => [
                     'class' => 'fr-label'
                 ],
-                'label' => "Courriel de l'occupant"
+                'label' => "Courriel de l'occupant",
+                'required' => false
             ])
             ->add('adresseOccupant', TextType::class, [
                 'attr' => [
@@ -496,7 +498,6 @@ class   SignalementType extends AbstractType
                 'required' => false
             ]);
     }
-
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

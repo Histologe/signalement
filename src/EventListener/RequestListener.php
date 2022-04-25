@@ -21,7 +21,6 @@ class RequestListener
         $this->urlGenerator = $urlGenerator;
         $this->newsActivitiesSinceLastLoginService = $newsActivitiesSinceLastLoginService;
     }
-
     public function onKernelRequest(RequestEvent $event)
     {
         if ($token = $this->tokenStorage->getToken()) {

@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -28,6 +29,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $roles = [];
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 8, max: 200, minMessage: "Votre mot de passe doit contenir au moins {{ limit }} caratères")]
+    #[Assert\NotCompromisedPassword(message: "Ce mot de passe est compromis, veuillez en choisir un autre.")]
+    #[Assert\NotEqualTo(propertyPath: 'email',message: "Votre mot de passe ne doit pas contenir votre email.")]
+    #[Assert\NotEqualTo(propertyPath: 'histologe',message: "Votre mot de passe ne doit pas contenir 'histologe'")]
     private $password;
 
     #[ORM\OneToMany(mappedBy: 'modifiedBy', targetEntity: Signalement::class)]

@@ -167,64 +167,7 @@
                 </p>
             </div>
             {% if 'back_' not in app.request.get('_route') %}
-                <div class="fr-form-group">
-                    <fieldset class="fr-fieldset fr-fieldset--inline">
-                        <legend class="fr-label fr-pl-0">Joindre des photos du/des problème(s)</legend>
-                        <span class="fr-hint-text">Les photos <u>ne doivent pas contenir de vues de personnes ou d'objets personnels</u>. <br> Pour les photos des parties communes, <u
-                                    role="button" aria-controls="modal-photos-restrictions" data-fr-opened="false">certaines restrictions sont à respecter</u>.</span>
-                        <div class="fr-fieldset__content fr-grid-row fr-grid-row--gutters">
-                            {% for i in 0..5 %}
-                                <div class="fr-col-6 fr-col-md fr-text--center">
-                                    <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-instagram-line">
-                                        <img class="fr-hidden fr-rounded fr-display-block" width="100">
-                                        <input type="file" accept="image/*" name="signalement[photos][{{ i }}]"
-                                               class="fr-hidden photo-file">
-                                    </label>
-                                    <div class="fr-grid-row">
-                                        <div class="fr-col fr-text--center">
-                                            <button class="fr-mt-2v fr-btn fr-btn--sm fr-btn--danger signalement-uploadedfile-delete fr-hidden">
-                                                Supprimer
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                            <small class="fr-col-12 fr-fi-information-fill fr-text-label--blue-france fr-display-block">
-                                Cliquez
-                                sur l'icone
-                                photo pour joindre une photo.</small>
-                        </div>
-                    </fieldset>
-                </div>
-                <div class="fr-form-group">
-                    <fieldset class="fr-fieldset fr-fieldset--inline">
-                        <legend class="fr-label fr-pl-0">Joindre des documents complémentaires</legend>
-                        <span class="fr-hint-text">Les documents ne doivent pas excéder <u>10Mo par document</u></span>
-                        <div class="fr-fieldset__content fr-grid-row fr-grid-row--gutters">
-                            {% for i in 0..3 %}
-                                <div class="fr-col-6 fr-col-md fr-text--center">
-                                    <label class="fr-btn fr-btn--secondary fr-btn--lg fr-rounded fr-fi-attachment-fill">
-                                        <input type="file" name="signalement[documents][{{ i }}]"
-                                               class="fr-hidden doc-file"
-                                               accept=".pdf,.doc,.docx">
-                                    </label>
-                                    <small class="fr-text-label--red-marianne fr-icon--sm fr-hidden fr-display-block">Le
-                                        document dépasse 2MB</small>
-                                    <div class="fr-grid-row">
-                                        <div class="fr-col fr-text--center">
-                                            <button class="fr-mt-2v fr-btn fr-btn--sm fr-btn--danger signalement-uploadedfile-delete fr-hidden">
-                                                Supprimer
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                            <small class="fr-fi-information-fill fr-text-label--blue-france fr-display-block fr-col-12">
-                                Cliquez
-                                sur l'icone pour joindre un document.</small>
-                        </div>
-                    </fieldset>
-                </div>
+                {% include 'front/_signalement_upload.html.twig' %}
             {% endif %}
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-text--center">
@@ -262,7 +205,7 @@
                         {% endfor %}
                     </div>
                     <p class="fr-error-text fr-hidden">
-                        Veuillez précisez si vous avez pris contact.
+                        Veuillez préciser si vous avez pris contact.
                     </p>
                 </fieldset>
             </div>
@@ -298,7 +241,7 @@
                         {% endfor %}
                     </div>
                     <p class="fr-error-text fr-hidden">
-                        Veuillez précisez si vous êtes allocataire
+                        Veuillez préciser si vous êtes allocataire
                     </p>
                 </fieldset>
                 <div class="fr-form-group fr-mt-5v {% if 'back_' not in app.request.get('_route') or not signalement.isAllocataire %}fr-hidden{% endif %}"
@@ -308,7 +251,7 @@
                         {{ form_help(form.numAllocataire) }}
                         {{ form_widget(form.numAllocataire) }}
                         <p class="fr-error-text fr-hidden">
-                            Veuillez précisez votre numéro d'allocataire
+                            Veuillez préciser votre numéro d'allocataire
                         </p>
                     </div>
                 </div>
@@ -328,7 +271,7 @@
                         {% endfor %}
                     </div>
                     <p class="fr-error-text fr-hidden">
-                        Veuillez précisez si le logement est un logement social ou non.
+                        Veuillez préciser si le logement est un logement social ou non.
                     </p>
                 </fieldset>
             </div>
@@ -347,7 +290,7 @@
                         {% endfor %}
                     </div>
                     <p class="fr-error-text fr-hidden">
-                        Veuillez précisez si vous avez déposé un préavis de départ.
+                        Veuillez préciser si vous avez déposé un préavis de départ.
                     </p>
                 </fieldset>
             </div>
@@ -389,7 +332,7 @@
                         {% endfor %}
                     </div>
                     <p class="fr-error-text fr-hidden">
-                        Veuillez précisez si vous êtes l'occupant du logement.
+                        Veuillez préciser si vous êtes l'occupant du logement.
                     </p>
                 </fieldset>
             </div>
@@ -465,7 +408,7 @@
                             {% endfor %}
                         </div>
                         <p class="fr-error-text fr-hidden">
-                            Veuillez précisez votre lien avec l'occupant.
+                            Veuillez préciser votre lien avec l'occupant.
                         </p>
                     </fieldset>
                 </div>
@@ -556,12 +499,22 @@
                             Veuillez renseigner la ville du logement
                         </p>
                     </div>
-                    <input type="hidden" name="signalement[geoloc][lat]"
-                           id="signalement-geoloc-lat-occupant">
-                    <input type="hidden" name="signalement[geoloc][lng]"
-                           id="signalement-geoloc-lng-occupant">
-                    <input type="hidden" name="signalement[inseeOccupant]"
-                           id="signalement-insee-occupant">
+                    {% if 'back_' in app.request.get('_route') %}
+                        {% set attr = 'type=text class=fr-input' %}
+                        {% set attr_label = 'class=fr-label' %}
+                    {% else %}
+                        {% set attr = 'class=fr-hidden type="hidden"' %}
+                        {% set attr_label = 'class=fr-hidden' %}
+                    {% endif %}
+                    <label for="signalement-geoloc-lat-occupant" {{ attr_label }}>LNG.</label>
+                    <input {{ attr }} name="signalement[geoloc][lat]"
+                                      id="signalement-geoloc-lat-occupant" value="{{ signalement.geoloc ? (signalement.geoloc.lat ? signalement.geoloc.lat : ''):''}}">
+                    <label for="signalement-geoloc-lng-occupant" {{ attr_label }}>LAT.</label>
+                    <input {{ attr }} name="signalement[geoloc][lng]"
+                                      id="signalement-geoloc-lng-occupant" value="{{ signalement.geoloc ? (signalement.geoloc.lng ? signalement.geoloc.lat : '') : '' }}">
+                    <label for="signalement-insee-occupant" {{ attr_label }}>INSEE</label>
+                    <input {{ attr }} name="signalement[inseeOccupant]"
+                                      id="signalement-insee-occupant" value="{{ signalement.inseeOccupant ?? '' }}">
                 </div>
                 <fieldset class="fr-fieldset fr-col-12 fr-p-0">
                     <legend class="fr-fieldset__legend">
@@ -645,7 +598,7 @@
                         <p>
                             <span id="recap-signalement_adresseOccupant"></span> <br>
                             <span id="recap-signalement_cpOccupant"></span>, <span
-                                    id="recap-signalement_ville0ccupant"></span>
+                                    id="recap-signalement_villeOccupant"></span>
                         </p>
                     </li>
                 </ul>
@@ -736,7 +689,12 @@
             </div>
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-text--center">
-                    <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-right" type="submit">Confirmer
+                    <progress max="100" id="form_global_file_progress" value="0" class="final-progress"></progress>
+                </div>
+            </div>
+            <div class="fr-grid-row">
+                <div class="fr-col-12 fr-text--center">
+                    <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-right" type="submit" id="form_finish_submit">Confirmer
                     </button>
                 </div>
             </div>
@@ -746,6 +704,5 @@
                 {{ form_widget(form._token) }}
             {% endif %}
         </form>
-
     </section>
 </div>

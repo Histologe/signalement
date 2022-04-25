@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Signalement;
+use App\Entity\Suivi;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Snappy\Pdf;
@@ -17,6 +18,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route('/bo/s')]
 class BackSignalementFileController extends AbstractController
 {
+
     #[Route('/{uuid}/pdf', name: 'back_signalement_gen_pdf')]
     public function generatePdfSignalement(Signalement $signalement, Pdf $knpSnappyPdf, EntityManagerInterface $entityManager)
     {
@@ -55,6 +57,7 @@ class BackSignalementFileController extends AbstractController
                 $type = 'photos';
             $setMethod = 'set' . ucfirst($type);
             $getMethod = 'get' . ucfirst($type);
+            $list = [];
             $$type = $signalement->$getMethod();
             foreach ($files[$type] as $file) {
                 $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
@@ -69,9 +72,21 @@ class BackSignalementFileController extends AbstractController
                 } catch (Exception $e) {
                     dd($e);
                 }
-                array_push($$type, ['file' => $newFilename, 'titre' => $titre, 'user' => $this->getUser()->getId()]);
+                $list[] = '<li><a class="fr-link" target="_blank" href="'.$this->generateUrl('show_uploaded_file',['folder'=>'_up','file'=>$newFilename]).'">'.$titre.'</a></li>';
+                array_push($$type, [
+                    'file' => $newFilename,
+                    'titre' => $titre,
+                    'user' => $this->getUser()->getId(),
+                    'username' => $this->getUser()->getNomComplet(),
+                    'date' => (new \DateTimeImmutable())->format('d.m.Y')
+                    ]);
             }
+            $suivi = new Suivi();
+            $suivi->setCreatedBy($this->getUser());
+            $suivi->setDescription('Ajout de '.$type.' au signalement<ul>'.implode("",$list).'</ul>');
+            $suivi->setSignalement($signalement);
             $signalement->$setMethod($$type);
+            $doctrine->getManager()->persist($suivi);
             $doctrine->getManager()->persist($signalement);
             $doctrine->getManager()->flush();
             $this->addFlash('success', 'Envoi de ' . ucfirst($type) . ' effectué avec succès !');

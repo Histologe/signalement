@@ -82,4 +82,5 @@ class PartenaireType extends AbstractType
             'allow_extra_fields' => true
         ]);
     }
+    
 }

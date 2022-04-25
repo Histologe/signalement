@@ -48,8 +48,13 @@ class BackSignalementActionController extends AbstractController
                 ]);
 
             } else {
-                $statut = Signalement::STATUS_CLOSED;
-                $description = 'cloturé car non-valide';
+                $statut = Signalement::STATUS_REFUSED;
+                $description = 'cloturé car non-valide avec le motif suivant :<br>'.$response['suivi'];
+                $notificationService->send(NotificationService::TYPE_SIGNALEMENT_REFUSE, [$signalement->getMailDeclarant(), $signalement->getMailOccupant()], [
+                    'signalement' => $signalement,
+                    'motif' => $response['suivi']
+                ]);
+
             }
             $suivi = new Suivi();
             $suivi->setSignalement($signalement);
@@ -156,14 +161,13 @@ class BackSignalementActionController extends AbstractController
         }
         return $this->json(['status' => 'denied'], 400);
     }
-
     #[Route('/{uuid}/reopen', name: 'back_signalement_reopen')]
     public function reopenSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine)
     {
         if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') && !$this->checker->check($signalement, $this->getUser()))
             return $this->json(['status' => 'denied'], 400);
         if ($this->isCsrfTokenValid('signalement_reopen_' . $signalement->getId(), $request->get('_token')) && $response = $request->get('signalement-action')) {
-            if ($this->isGranted('ROLE_ADMIN_TERRITOIRE')) {
+            if ($this->isGranted('ROLE_ADMIN_TERRITOIRE') && isset($response['reopenAll'])) {
                 $signalement->setStatut(Signalement::STATUS_ACTIVE);
                 $doctrine->getManager()->persist($signalement);
                 $signalement->getAffectations()->filter(function (Affectation $affectation) use ($signalement, $doctrine) {
@@ -234,11 +238,16 @@ class BackSignalementActionController extends AbstractController
             $getMethod = 'get' . $item;
             $setMethod = 'set' . $item;
             $value = $request->get('value');
+            if($item === "DateVisite") {
+                $value = new \DateTimeImmutable($value);
+                $item = 'La date de visite';
+            }
             if (!$value)
             {
                 $value = !(int)$signalement->$getMethod() ?? 1;
                 $return = 1;
             }
+
             $signalement->$setMethod($value);
             $entityManager->persist($signalement);
             $entityManager->flush();
@@ -251,5 +260,4 @@ class BackSignalementActionController extends AbstractController
         }
         return $this->json(['response' => 'error'], 400);
     }
-
 }
