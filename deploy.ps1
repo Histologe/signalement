@@ -1,7 +1,7 @@
 $forAll=$args[0]
 if($forAll -eq "--all")
 {
-    $projects =  (Get-ChildItem -Path ../ -exclude *.idea,DEMO, DEMO_TURBO,CRZ).Name
+    $projects =  (Get-ChildItem -Path ../ -exclude *.idea,DEMO, DEMO_TURBO).Name
 }
 elseif($forAll -eq "--bdr")
 {
@@ -15,7 +15,7 @@ $date = Get-Date -Format "dd-MM-yyyy"
 foreach($project in $projects)
 {
     Write-Output ("Update $project...")
-    foreach($file in $cmdOutput)
+    <# foreach($file in $cmdOutput)
     {
         if(Test-Path -Path "./$file")
             {
@@ -24,7 +24,7 @@ foreach($project in $projects)
             } else {
                 Remove-Item -Path "../$project/$file" -force
             }
-    }
+    } #>
     Write-Output ("Push $project updates to server...")
     Set-Location ../$project
     git add .;git commit -m "Update/Deploy - $date";git ftp push;
@@ -33,7 +33,7 @@ foreach($project in $projects)
 }
 if($forAll -eq "--all")
 {
-    git push
+    git ftp push
 }
 # cd ../AM && sudo php bin/console cache:clear;
 # cd ../AHP && sudo php bin/console cache:clear;

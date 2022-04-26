@@ -45,13 +45,10 @@ class GetGeolocCommand extends Command
         $adresse = $signalement->getAdresseOccupant() . ' ' . $signalement->getCpOccupant() . ' ' . $signalement->getVilleOccupant();
         $io->note($adresse);
         $response = json_decode($this->httpClient->request('GET', 'https://api-adresse.data.gouv.fr/search/?q=' . $adresse)->getContent(), true);
-        if(!empty($response['features'][0]))
-        {
-            $coordinates = $response['features'][0]['geometry']['coordinates'];
-            $insee = $response['features'][0]['properties']['citycode'];
-            $signalement->setGeoloc(['lat' => $coordinates[0], 'lng' => $coordinates[1]]);
-            $signalement->setInseeOccupant($insee);
-        }
+        $coordinates = $response['features'][0]['geometry']['coordinates'];
+        $insee = $response['features'][0]['properties']['citycode'];
+        $signalement->setGeoloc(['lat' => $coordinates[0], 'lng' => $coordinates[1]]);
+        $signalement->setInseeOccupant($insee);
         return $signalement;
     }
     protected function execute(InputInterface $input, OutputInterface $output): int

@@ -16,6 +16,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route('/bo/report')]
 class BackUserReportController extends AbstractController
 {
+
     #[Route('/',name:'back_user_report_index')]
     public function index(UserReportRepository $userReportRepository): Response
     {
