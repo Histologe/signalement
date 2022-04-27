@@ -48,7 +48,7 @@ class BackSignalementActionController extends AbstractController
                 ]);
 
             } else {
-                $statut = Signalement::STATUS_CLOSED;
+                $statut = Signalement::STATUS_REFUSED;
                 $description = 'cloturé car non-valide avec le motif suivant :<br>'.$response['suivi'];
                 $notificationService->send(NotificationService::TYPE_SIGNALEMENT_REFUSE, [$signalement->getMailDeclarant(), $signalement->getMailOccupant()], [
                     'signalement' => $signalement,
