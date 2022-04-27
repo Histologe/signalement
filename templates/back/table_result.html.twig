@@ -1,16 +1,20 @@
-
 {% for index,signalement in signalements.list %}
-    {% if not is_granted('ROLE_ADMIN_PARTENAIRE') or filter.partenaire is not same as("all")%}
+
+    {# {% set signalement = signalement[0] %} #}
+    {% if not is_granted('ROLE_ADMIN_PARTENAIRE') or filter.partners or filter.affectations %}
         {% set signalement = signalement.signalement %}
     {% endif %}
+    {% set affectations = signalement.affectations %}
     <tr class="{% if signalement.statut is same as(1) or signalement.statut is same as(3) %}fr-background-contrast--orange-terre-battue{% endif %} signalement-row"
         data-score="{{ signalement.scoreCreation }}">
         <td>
-            <a href="{{ path('back_signalement_view',{uuid:signalement.uuid}) }}" class="fr-ws-nowrap">{{ signalement.reference }}</a>
+            <a href="{{ path('back_signalement_view',{uuid:signalement.uuid}) }}"
+               class="fr-ws-nowrap">{{ signalement.reference }}</a>
         </td>
         <td>{{ signalement.createdAt|date('d/m/Y') }}</td>
         <td>
-            <canvas id="gauge-signalement-{{ signalement.id }}" class="fr-col-12 fr-col-md-10 fr-col-lg-6 gauge-signalement"></canvas>
+            <canvas id="gauge-signalement-{{ signalement.id }}"
+                    class="fr-col-12 fr-col-md-10 fr-col-lg-6 gauge-signalement"></canvas>
         </td>
         <td>
             {{ signalement.nomOccupant|upper }}<br>{{ signalement.prenomOccupant|capitalize }}
@@ -20,7 +24,6 @@
         </td>
         <td>
             {% for affectation in signalement.affectations %}
-
                 {% set classe = '' %}
                 {% if affectation.statut is same as (0) %}
                     {% set classe = 'fr-badge fr-badge--info' %}
@@ -35,14 +38,15 @@
                 Aucune
             {% endfor %}
         </td>
-        <td>{% set suivi = (signalement.suivis|last) %}
+        <td>
+            {% set suivi = (signalement.lastSuivi) %}
             {% if suivi %}
                 <strong>{{ suivi.createdAt|date('d.m.Y') }}</strong> <br>
                 <small>{{ suivi.createdBy ? suivi.createdBy.partenaire.nom|upper : '<small class="fr-badge fr-badge--warning">DECLARANT</small>'|raw }}</small>
-                {% else %}
+            {% else %}
                 Aucun
             {% endif %}
-         </td>
+        </td>
         <td>
             {% if signalement.statut is same as(1) %}
                 <strong class="fr-text-label--red-marianne">A valider</strong>
@@ -50,7 +54,7 @@
                 En cours
             {% elseif signalement.statut is same as(3) %}
                 <strong class="fr-text-label--red-marianne">En attente</strong>
-            {% elseif signalement.statut is same as(6)%}
+            {% elseif signalement.statut is same as(6) %}
                 Fermé
             {% endif %}
         </td>

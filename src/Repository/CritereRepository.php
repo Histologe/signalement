@@ -50,6 +50,19 @@ class CritereRepository extends ServiceEntityRepository
             ->getSingleScalarResult()
             ;
     }
+
+
+    public function findAllList()
+    {
+        return $this->createQueryBuilder('c')
+            ->select('PARTIAL c.{id,label}')
+            ->where('c.isArchive != 1')
+            ->indexBy('c','c.id')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
     /*
     public function findOneBySomeField($value): ?Critere
     {

@@ -27,6 +27,7 @@ class BackNewsActivitiesController extends AbstractController
     public function newsActivitiesSinceLastLogin(NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService, Request $request): Response
     {
         $title = 'Administration - Nouveaux suivis';
+//        dd($newsActivitiesSinceLastLoginService->getAll());
         $newsActivitiesSinceLastLoginService->getAll()->filter(function ($activity){
             $class =  substr(get_class($activity), strrpos(get_class($activity), '\\') + 1);
             if($class === "Suivi")

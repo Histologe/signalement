@@ -40,5 +40,4 @@ class CriticiteCalculatorService
             $score = 100;
         return $score;
     }
-
 }
