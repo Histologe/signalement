@@ -112,38 +112,13 @@
             </div>
         </header>
         <hr class="fr-pb-1v">
-        <div class="fr-grid-row fr-grid-row--middle fr-my-5v">
-            <div class="fr-col-12 fr-col-md-9">
-                <strong class="fr-fi-information-fill fr-icon--sm fr-text-label--blue-france"> Etiquettes</strong>
-                <span class="fr-hint-text">Ci-dessous la liste des étiquettes attribuées à ce signalement. Vous pouvez en ajouter au besoin</span>
-            </div>
-            <div class="fr-col-12">
-                <span class="fr-badge fr-badge--beige-gris-galet">PROPRIETAIRE</span>
-                <span class="fr-badge fr-badge--blue-cumulus">PROVENANCE ARS</span>
-                <span class="fr-badge fr-badge--blue-ecume">LOCATAIRE MECHANT</span>
-                <span class="fr-badge fr-badge--brown-cafe-creme">COQUILLAGES</span>
-                <span class="fr-badge fr-badge--brown-opera">CRUSTACés</span>
-                <span class="fr-badge fr-badge--brown-caramel">LOREM</span>
-                <span class="fr-badge fr-badge--green-archipel">RSD</span>
-                <span class="fr-badge fr-badge--green-bourgeon">IPSUM</span>
-                <span class="fr-badge fr-badge--green-emeraude">IPSUM</span>
-                <span class="fr-badge fr-badge--green-menthe">IPSUM</span>
-                <span class="fr-badge fr-badge--green-tilleul-verveine">IPSUM</span>
-                <span class="fr-badge fr-badge--orange-terre-battue">IPSUM</span>
-                <span class="fr-badge fr-badge--pink-macaron">IPSUM</span>
-                <span class="fr-badge fr-badge--pink-tuile">IPSUM</span>
-                <span class="fr-badge fr-badge--purple-glycine">IPSUM</span>
-                <span class="fr-badge fr-badge--yellow-moutarde">IPSUM</span>
-                <span class="fr-badge fr-badge--yellow-tournesol">IPSUM</span>
-            </div>
-        </div>
         <div class="fr-grid-row fr-grid-row--middle">
             <div class="fr-col-12 fr-col-md-9">
                 <strong class="fr-fi-chat-quote-fill fr-icon--sm fr-text-label--blue-france"> Description par
                     l'usager</strong>
                 <span class="fr-hint-text">Ci-dessous le détails du signalement tel que rapporté par l'usager</span>
             </div>
-            {% if signalement.statut is not same as(0) and not isClosedForMe or isAffected and isAccepted %}
+            {#{% if signalement.statut is not same as(0) and not isClosedForMe or isAffected and isAccepted %}
                 <div class="fr-col-12 fr-col-md-3 fr-text--right">
                     <form action="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}" method="POST">
                         <div class="fr-select-group">
@@ -171,7 +146,7 @@
                                value="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}">
                     </form>
                 </div>
-            {% endif %}
+            {% endif %}#}
             <div class="fr-col-12">
                 <ul class="fr-background-alt--blue-france fr-list--icon-img fr-rounded">
                     <li class="fr-p-5v">
@@ -620,7 +595,7 @@
         {% for suivi in signalement.suivis|reverse %}
             <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v {% if not suivi.createdBy %}fr-background-alt--orange-terre-battue{% endif %}">
                 <div class="fr-col-2 {% if suivi.createdBy %}part-infos-hover{% endif %}" {% if suivi.createdBy %}data-user="{{ suivi.createdBy.nomComplet }}" data-mail="{{ suivi.createdBy.email }}"{% endif %}>
-                    <strong > {{ suivi.createdBy ? (suivi.createdBy.nom|upper~'. '~ suivi.createdBy.prenom|capitalize) : signalement.nomDeclarant ?? signalement.nomOccupant|upper~' '~signalemet.prenomOccupant|capitalize }}</strong> <br>
+                    <strong > {{ suivi.createdBy ? (suivi.createdBy.nom|upper~'. '~ suivi.createdBy.prenom|capitalize) : signalement.nomDeclarant ?? signalement.nomOccupant }}</strong> <br>
                     <small>[{{ suivi.createdBy ? (suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun') : 'DECLARANT' }}]</small> <br>
                     <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
                 </div>
@@ -693,6 +668,24 @@
         L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
             attribution: '&copy;'
         }).addTo(map);
+        /*var regions = L.geoJSON(null, {
+            pointToLayer: function (pointFeature, latlng) {
+                return L.circleMarker(latlng, {
+                    radius:6,
+                    opacity: .8
+                })
+                    .bindPopup("<p><b> " + pointFeature.properties.EPCI + "</b></p>");
+            }
+        });
+        fetch('{{ asset('test.geojson') }}',{
+            method:'GET',
+        }).then(r=>r.json().then(res=>{
+            res.features.map((feature,index)=>{
+                regions.addData(feature)
+            })
+            regions.addTo(map);
+            map.fitBounds(regions.getBounds());
+        }))*/
         L.marker([{{ signalement.geoloc.lng }}, {{ signalement.geoloc.lat }}]).addTo(map)
             .bindPopup('{{ signalement.adresseOccupant~', '~signalement.cpOccupant~' '~signalement.villeOccupant|upper }}')
             .openPopup();

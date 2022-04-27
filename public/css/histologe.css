@@ -10,7 +10,7 @@ html, body {
 .bloc-suivi-content-row p {
     margin: 0;
 }
-img.huechange { filter: hue-rotate(120deg); }
+
 .signalement-invalid::before {
     content: '';
     position: absolute;
