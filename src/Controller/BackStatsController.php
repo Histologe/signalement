@@ -4,62 +4,62 @@ namespace App\Controller;
 
 use App\Entity\Signalement;
 use App\Entity\Situation;
+use App\Repository\CritereRepository;
+use App\Repository\PartenaireRepository;
 use App\Repository\SignalementRepository;
 use App\Repository\SituationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/bo/stats')]
 class BackStatsController extends AbstractController
 {
+    private function setFilters($request): array
+    {
+        return [
+            'search' => $request->get('search') ?? null,
+            'statuses' => $request->get('bo-filter-statut') ?? null,
+            'cities' => $request->get('bo-filter-ville') ?? null,
+            'partners' => $request->get('bo-filter-partenaires') ?? null,
+            'criteres' => $request->get('bo-filter-criteres') ?? null,
+            'allocs' => $request->get('bo-filter-allocs') ?? null,
+            'housetypes' => $request->get('bo-filter-housetypes') ?? null,
+            'declarants' => $request->get('bo-filter-declarants') ?? null,
+            'proprios' => $request->get('bo-filter-proprios') ?? null,
+            'interventions' => $request->get('bo-filter-interventions') ?? null,
+            'avant1949' => $request->get('bo-filter-avant1949') ?? null,
+            'enfantsM6' => $request->get('bo-filter-enfantsM6') ?? null,
+            'handicaps' => $request->get('bo-filter-handicaps') ?? null,
+            'affectations' => $request->get('bo-filter-affectations') ?? null,
+            'visites' => $request->get('bo-filter-visites') ?? null,
+            'delays' => $request->get('bo-filter-delays') ?? null,
+            'scores' => $request->get('bo-filter-scores') ?? null,
+            'dates' => $request->get('bo-filter-dates') ?? null,
+            'page' => $request->get('page') ?? 1,
+        ];
+    }
 
     #[Route('/', name: 'back_statistique')]
-    public function index(SignalementRepository $signalementRepository, SituationRepository $situationRepository, EntityManagerInterface $entityManager): Response
+    public function index(SignalementRepository $signalementRepository, CritereRepository $critereRepository, PartenaireRepository $partenaireRepository, Request $request, SituationRepository $situationRepository, EntityManagerInterface $entityManager): Response
     {
         $title = 'Statistiques';
         $dates = [];
         $totaux = ['open' => 0, 'closed' => 0, 'all' => 0];
         $villes = [];
-        $signalements = $entityManager->createQuery("SELECT s.id,s.statut,s.createdAt,s.villeOccupant,s.closedAt FROM App\Entity\Signalement AS s WHERE s.statut != 7")->getResult();
-        foreach ($signalements as $signalement) {
-            $dates[strtotime($signalement['createdAt']->format('M Y'))]['open'] ?? $dates[strtotime($signalement['createdAt']->format('M Y'))]['open'] = 0;
-            if ($signalement['statut'] === Signalement::STATUS_CLOSED && !empty($signalement['closedAt'])) {
-                $dates[strtotime($signalement['closedAt']->format('M Y'))]['close'] ?? $dates[strtotime($signalement['closedAt']->format('M Y'))]['close'] = 0;
-                $dates[strtotime($signalement['closedAt']->format('M Y'))]['close']++;
-                $totaux['closed']++;
-            } else {
-                $dates[strtotime($signalement['createdAt']->format('M Y'))]['open']++;
-                $totaux['open']++;
-            }
-            true === !isset($villes[mb_strtoupper($signalement['villeOccupant'])]) ?
-                $villes[mb_strtoupper($signalement['villeOccupant'])] = 1 : $villes[mb_strtoupper($signalement['villeOccupant'])]++;
-            $totaux['all']++;
-        }
-        $criteres = $entityManager->getConnection()
-            ->createQueryBuilder()
-            ->select("c.label,COUNT(critere_id) as count")
-            ->from("signalement_critere")
-            ->leftJoin('signalement_critere', 'critere', 'c', 'signalement_critere.critere_id = c.id')
-            ->groupBy('c.id')->fetchAllAssociativeIndexed();
-        $situations= $entityManager->getConnection()
-            ->createQueryBuilder()
-            ->select("s.label,COUNT(situation_id) as count")
-            ->from("signalement_situation")
-            ->leftJoin('signalement_situation', 'situation', 's', 'signalement_situation.situation_id = s.id')
-            ->groupBy('s.id')->fetchAllAssociativeIndexed();
-
-
-        arsort($criteres);
-        arsort($villes);
-        ksort($dates);
+        $filters = $this->setFilters($request);
+        $signalements = $signalementRepository->findByStatusAndOrCityForUser($user ?? null, $filters, null)->getQuery()->getArrayResult();
+        $criteres = $critereRepository->findAllList();
         return $this->render('back/statistique/index.html.twig', [
             'title' => $title,
             'dates' => $dates,
+            'filter' => $filters,
             'totaux' => $totaux,
-            'situations' => $situations,
+            'cities' => $signalementRepository->findCities($user ?? null),
+            'partenaires' => $partenaireRepository->findAllList(),
             'criteres' => $criteres,
             'villes' => $villes
         ]);
