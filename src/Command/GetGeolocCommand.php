@@ -43,16 +43,12 @@ class GetGeolocCommand extends Command
     protected function setGeolocAndInsee($io,Signalement $signalement)
     {
         $adresse = $signalement->getAdresseOccupant() . ' ' . $signalement->getCpOccupant() . ' ' . $signalement->getVilleOccupant();
-
+        $io->note($adresse);
         $response = json_decode($this->httpClient->request('GET', 'https://api-adresse.data.gouv.fr/search/?q=' . $adresse)->getContent(), true);
-        if(!empty($response['features'][0]))
-        {
-            $io->note($adresse);
-            $coordinates = $response['features'][0]['geometry']['coordinates'];
-            $insee = $response['features'][0]['properties']['citycode'];
-            $signalement->setGeoloc(['lat' => $coordinates[0], 'lng' => $coordinates[1]]);
-            $signalement->setInseeOccupant($insee);
-        }
+        $coordinates = $response['features'][0]['geometry']['coordinates'];
+        $insee = $response['features'][0]['properties']['citycode'];
+        $signalement->setGeoloc(['lat' => $coordinates[0], 'lng' => $coordinates[1]]);
+        $signalement->setInseeOccupant($insee);
         return $signalement;
     }
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -69,7 +65,6 @@ class GetGeolocCommand extends Command
         if ($reference && $signalement = $repo->findOneBy(['reference' => $reference])) {
             $this->setGeolocAndInsee($io,$signalement);
             $em->persist($signalement);
-            $em->flush();
             $i++;
         } else
             foreach ($signalements as $signalement)
@@ -77,10 +72,8 @@ class GetGeolocCommand extends Command
                     $this->setGeolocAndInsee($io,$signalement);
                     $em->persist($signalement);
                     $i++;
-                    if($i % 100 === 0){
-                        $em->flush();
-                    }
                 }
+        $em->flush();
         $io->success($i . ' signalement(s) corrigé(s)');
 
         return Command::SUCCESS;

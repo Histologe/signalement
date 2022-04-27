@@ -41,14 +41,11 @@ class PartenaireRepository extends ServiceEntityRepository
     public function findAllList()
     {
         return $this->createQueryBuilder('p')
-            ->select('PARTIAL p.{id,nom,isCommune}')
-            ->where('p.isArchive != 1')
-            ->indexBy('p','p.id')
+            ->select('PARTIAL p.{id,nom}')
             ->getQuery()
             ->getResult()
             ;
     }
-
 
     /*
     public function findOneBySomeField($value): ?Partenaire

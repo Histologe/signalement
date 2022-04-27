@@ -61,9 +61,6 @@ class Config
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $esaboraToken;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $telContact;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -245,18 +242,6 @@ class Config
     public function setEsaboraToken(?string $esaboraToken): self
     {
         $this->esaboraToken = $esaboraToken;
-
-        return $this;
-    }
-
-    public function getTelContact(): ?string
-    {
-        return $this->telContact;
-    }
-
-    public function setTelContact(?string $telContact): self
-    {
-        $this->telContact = $telContact;
 
         return $this;
     }
