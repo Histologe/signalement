@@ -5,7 +5,9 @@ namespace App\Repository;
 use App\Entity\Affectation;
 use App\Entity\Signalement;
 use App\Entity\User;
+use App\Service\SearchFilterService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -16,29 +18,18 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @method Affectation[]    findAll()
  * @method Affectation[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
+
+
 class AffectationRepository extends ServiceEntityRepository
 {
+    const ARRAY_LIST_PAGE_SIZE = 30;
+    private SearchFilterService $searchFilterService;
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Affectation::class);
+        $this->searchFilterService = new SearchFilterService();
     }
 
-    // /**
-    //  * @return Affectation[] Returns an array of Affectation objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
     public function countByStatusForUser($user)
     {
         return $this->createQueryBuilder('a')
@@ -54,67 +45,50 @@ class AffectationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-
-    public function findByStatusAndOrCityForUser(User|UserInterface $user = null, $status = null, $city = null, $search = null, $partenaire = null, $page = null): Paginator
+    public function findByStatusAndOrCityForUser(User|UserInterface $user = null, array $options, $export = null): Paginator
     {
-        $pageSize = 50;
-        $page = (int)$page;
-        $firstResult = ($page - 1) * $pageSize;
-        $qb = $this->createQueryBuilder('a')
-            ->select('PARTIAL signalement.{id,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut,createdAt,scoreCreation}')
-            ->addSelect('a')
-            ->where('signalement.statut != :status')
-            ->setParameter('status', Signalement::STATUS_ARCHIVED);
-        $qb->leftJoin('a.signalement', 'signalement');
-        $qb->leftJoin('a.partenaire', 'partenaire');
-        $qb->leftJoin('signalement.affectations', 'affectations');
-        $qb->leftJoin('signalement.suivis', 'suivis');
-        $qb->leftJoin('suivis.createdBy', 'createdBy');
-        $qb->addSelect(  'affectations','suivis','createdBy');
-        if ($status && $status !== 'all') {
-            if ($status === (string)Signalement::STATUS_CLOSED) {
-                $qb->andWhere('a.statut = ' . Affectation::STATUS_CLOSED)
-                    ->orWhere('a.statut = ' . Affectation::STATUS_REFUSED);
-            } else if ($status === (string)Signalement::STATUS_ACTIVE)
-                $qb->andWhere('a.statut = ' . Affectation::STATUS_ACCEPTED);
-            else if ($status === (string)Signalement::STATUS_NEED_VALIDATION)
-                $qb->andWhere('a.statut = ' . Affectation::STATUS_WAIT);
+
+        $page = (int)$options['page'];
+        $firstResult = ($page - 1) * self::ARRAY_LIST_PAGE_SIZE;
+        $qb = $this->createQueryBuilder('a');
+        if (!$export)
+            $qb->select('a,PARTIAL s.{id,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut,createdAt,geoloc}');
+
+        $qb->where('s.statut != :status')
+            ->setParameter('status', Signalement::STATUS_ARCHIVED)
+            ->leftJoin('a.signalement', 's')
+            ->leftJoin('s.affectations', 'affectations')
+            ->leftJoin('a.partenaire', 'partenaire')
+            ->leftJoin('s.suivis', 'suivis')
+            ->leftJoin('s.criteres', 'criteres')
+            ->addSelect('s', 'partenaire', 'suivis');
+        $stat = $statOr = null;
+        $qb = $this->searchFilterService->applyFilters($qb, $options);
+        if ($options['statuses']) {
+            foreach ($options['statuses'] as $k => $statu) {
+                if ($statu === (string)Signalement::STATUS_CLOSED) {
+                    $options['statuses'][$k] = Affectation::STATUS_CLOSED;
+                    $options['statuses'][count($options['statuses'])] = Affectation::STATUS_REFUSED;
+                } else if ($statu === (string)Signalement::STATUS_ACTIVE)
+                    $options['statuses'][$k] = Affectation::STATUS_ACCEPTED;
+                else if ($statu === (string)Signalement::STATUS_NEED_VALIDATION)
+                    $options['statuses'][$k] = Affectation::STATUS_WAIT;
+            }
+            $qb->andWhere('a.statut IN (:statuses)');
+            if ($statOr)
+                $qb->orWhere('a.statut IN (:statuses)');
+            $qb->setParameter('statuses', $options['statuses']);
         }
-        if ($city && $city !== 'all')
-            $qb->andWhere('signalement.villeOccupant =:city')
-                ->setParameter('city', $city);
         if ($user)
             $qb->andWhere(':partenaire IN (partenaire)')
                 ->setParameter('partenaire', $user->getPartenaire());
-        if ($partenaire && $partenaire !== 'all')
-            $qb->andWhere(':partenaire IN (partenaire)')
-                ->setParameter('partenaire', $partenaire);
-        if ($search) {
-            if (preg_match('/([0-9]{4})-[0-9]{0,6}/', $search)) {
-                $qb->andWhere('signalement.reference = :search');
-                $qb->setParameter('search', $search);
-            } else {
-                $qb->andWhere('LOWER(signalement.nomOccupant) LIKE :search OR LOWER(signalement.prenomOccupant) LIKE :search OR LOWER(signalement.reference) LIKE :search OR LOWER(signalement.adresseOccupant) LIKE :search OR LOWER(signalement.villeOccupant) LIKE :search');
-                $qb->setParameter('search', "%" . strtolower($search) . "%");
-            }
-        }
-        $qb->orderBy('signalement.createdAt', 'DESC')
+
+        $qb->orderBy('s.createdAt', 'DESC')
             ->setFirstResult($firstResult)
-            ->setMaxResults($pageSize)
+            ->setMaxResults(self::ARRAY_LIST_PAGE_SIZE)
             ->getQuery();
 
         return new Paginator($qb, true);
     }
 
-    /*
-    public function findOneBySomeField($value): ?Affectation
-    {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

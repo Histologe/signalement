@@ -69,7 +69,7 @@ class BackSignalementController extends AbstractController
             }
         }
         $isClosedForMe = $this->checker->checkIfSignalementClosedForUser($this->getUser(), $signalement);
-        //$newsActivitiesSinceLastLoginService->update($signalement);
+//        $newsActivitiesSinceLastLoginService->update($signalement);
         $clotureForm = $this->createForm(ClotureType::class);
         $clotureForm->handleRequest($request);
         if ($clotureForm->isSubmitted() && $clotureForm->isValid()) {

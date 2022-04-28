@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Affectation;
 use App\Entity\Signalement;
 use App\Entity\Suivi;
+use App\Entity\Tags;
 use App\Entity\User;
 use App\Repository\PartenaireRepository;
 use App\Service\AffectationCheckerService;
@@ -48,8 +49,8 @@ class BackSignalementActionController extends AbstractController
                 ]);
 
             } else {
-                $statut = Signalement::STATUS_CLOSED;
-                $description = 'cloturé car non-valide avec le motif suivant :<br>'.$response['suivi'];
+                $statut = Signalement::STATUS_REFUSED;
+                $description = 'cloturé car non-valide avec le motif suivant :<br>' . $response['suivi'];
                 $notificationService->send(NotificationService::TYPE_SIGNALEMENT_REFUSE, [$signalement->getMailDeclarant(), $signalement->getMailOccupant()], [
                     'signalement' => $signalement,
                     'motif' => $response['suivi']
@@ -161,6 +162,7 @@ class BackSignalementActionController extends AbstractController
         }
         return $this->json(['status' => 'denied'], 400);
     }
+
     #[Route('/{uuid}/reopen', name: 'back_signalement_reopen')]
     public function reopenSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine)
     {
@@ -233,30 +235,40 @@ class BackSignalementActionController extends AbstractController
         if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') && !$this->checker->check($signalement, $this->getUser()))
             return $this->json(['status' => 'denied'], 400);
         if ($this->isCsrfTokenValid('signalement_switch_value_' . $signalement->getUuid(), $request->get('_token'))) {
-            $return =0;
+            $return = 0;
             $item = $request->get('item');
             $getMethod = 'get' . $item;
             $setMethod = 'set' . $item;
             $value = $request->get('value');
-            if($item === "DateVisite") {
-                $value = new \DateTimeImmutable($value);
-                $item = 'La date de visite';
-            }
-            if (!$value)
-            {
-                $value = !(int)$signalement->$getMethod() ?? 1;
-                $return = 1;
-            }
+            if ($item === "Tag") {
+                $signalement->getTags()->filter(function (Tags $tag) use ($value, $signalement,$entityManager) {
+                    if ($tag->getId() === (int)$value) {
+                        $tag->removeSignalement($signalement);
+                        $entityManager->persist($tag);
+                    }
+                });
 
-            $signalement->$setMethod($value);
+            } else {
+                if ($item === "DateVisite") {
+                    $value = new \DateTimeImmutable($value);
+                    $item = 'La date de visite';
+                }
+                if (!$value) {
+                    $value = !(int)$signalement->$getMethod() ?? 1;
+                    $return = 1;
+                }
+
+                $signalement->$setMethod($value);
+
+            }
             $entityManager->persist($signalement);
             $entityManager->flush();
-            if($item === 'CodeProcedure')
+            if ($item === 'CodeProcedure')
                 $item = 'Le type de procédure';
-            if(is_bool($value))
+            if (is_bool($value) || $item === 'Tag')
                 return $this->json(['response' => 'success', 'return' => $return]);
-            $this->addFlash('success',$item.' a bien été enregistré !');
-            return $this->redirectToRoute('back_signalement_view',['uuid'=>$signalement->getUuid()]);
+            $this->addFlash('success', $item . ' a bien été enregistré !');
+            return $this->redirectToRoute('back_signalement_view', ['uuid' => $signalement->getUuid()]);
         }
         return $this->json(['response' => 'error'], 400);
     }

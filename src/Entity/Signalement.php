@@ -323,6 +323,9 @@ class Signalement
     #[ORM\Column(type: 'string', length: 15, nullable: true)]
     private $telOccupantBis;
 
+    #[ORM\ManyToMany(targetEntity: Tags::class, mappedBy: 'signalement')]
+    private $tags;
+
 
     public function __construct()
     {
@@ -338,6 +341,7 @@ class Signalement
         $this->scoreCreation = 0;
         $this->clotures = new ArrayCollection();
         $this->affectations = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
 
@@ -1637,5 +1641,32 @@ class Signalement
     //This function return the last suivis
     public function getLastSuivi(){
         return $this->suivis->last();
+    }
+
+    /**
+     * @return Collection|Tags[]
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tags $tag): self
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags[] = $tag;
+            $tag->addSignalement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tags $tag): self
+    {
+        if ($this->tags->removeElement($tag)) {
+            $tag->removeSignalement($this);
+        }
+
+        return $this;
     }
 }

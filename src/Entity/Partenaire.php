@@ -51,6 +51,7 @@ class Partenaire
         $this->affectations = new ArrayCollection();
     }
 
+
     public function setId($id): ?int
     {
         return $this->id = $id;
@@ -225,4 +226,5 @@ class Partenaire
 
         return $this;
     }
+
 }

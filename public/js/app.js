@@ -1,114 +1,22 @@
-Node.prototype.addEventListeners = function (eventNames, eventFunction) {
-    for (let eventName of eventNames.split(' '))
-        this.addEventListener(eventName, eventFunction);
-}
-// const fileData = new FormData();
-const forms = document.querySelectorAll('form.needs-validation:not([name="bug-report"])');
-const localStorage = window.localStorage;
-const uploadedFiles = [];
+let invalid, tables = document.querySelectorAll("table.sortable"),
+    table,
+    thead,
+    headers,
+    i,
+    j;
+for (i = 0; i < tables.length; i++) {
+    table = tables[i];
 
-checkUserMail = (el) => {
-    let formData = new FormData();
-    formData.append('email', el.value)
-    formData.append('_token', el.getAttribute('data-token'))
-    fetch('../checkmail', {
-        method: 'POST',
-        body: formData
-    }).then(r => {
-        if (!r.ok) {
-            el.classList.add('fr-input--error');
-            el.parentElement.classList.add('fr-input-group--error');
-            el.parentElement.querySelector('p.fr-error-text').classList.remove('fr-hidden');
-            document.querySelector('#submit_btn_partenaire').disabled = true;
-        } else {
-            el.classList.remove('fr-input--error');
-            el.parentElement.classList.remove('fr-input-group--error');
-            el.parentElement.querySelector('p.fr-error-text').classList.add('fr-hidden');
-            document.querySelector('#submit_btn_partenaire').disabled = false;
+    if (thead = table.querySelector("thead")) {
+        headers = thead.querySelectorAll("th");
+
+        for (j = 0; j < headers.length; j++) {
+            headers[j].innerHTML = "<a href='#'>" + headers[j].innerText + "</a>";
         }
-    })
-}
-serializeArray = (form) => {
-    return Array.from(new FormData(form)
-        .entries())
-        .reduce(function (response, current) {
-            response[current[0]] = current[1];
-            return response
-        }, {})
-};
-checkFirstStep = (form) => {
-    return !(form.id === "signalement-step-1" && null === form.querySelector('[type="radio"]:checked') || form.id === "signalement-step-1" && form.querySelectorAll('[type="checkbox"]:checked').length !== form.querySelectorAll('[type="radio"]:checked').length);
-}
-checkFieldset = (form) => {
-    let field = form.querySelector('fieldset[aria-required="true"]')
-    if (field) {
-        if (null === field.querySelector('[type="checkbox"]:checked')) {
-            field.classList.add('fr-fieldset--error');
-            field?.querySelector('.fr-error-text')?.classList.remove('fr-hidden');
-            invalid = field.parentElement;
-            return false;
-        } else {
-            field.classList.remove('fr-fieldset--error');
-            field?.querySelector('.fr-error-text')?.classList.add('fr-hidden');
-            return true;
-        }
-    } else
-        return true;
-}
-goToStep = (step) => {
-    document.querySelector('#signalement-step-' + step).click();
-}
-resizeImage = function (image, ratio) {
-    return new Promise(function (resolve, reject) {
-        const reader = new FileReader();
 
-        // Read the file
-        reader.readAsDataURL(image);
-
-        // Manage the `load` event
-        reader.addEventListener('load', function (e) {
-            // Create new image element
-            const ele = new Image();
-            ele.addEventListener('load', function () {
-                // Create new canvas
-                const canvas = document.createElement('canvas');
-
-                // Draw the image that is scaled to `ratio`
-                const context = canvas.getContext('2d');
-                const w = ele.width * ratio;
-                const h = ele.height * ratio;
-                canvas.width = w;
-                canvas.height = h;
-                context.drawImage(ele, 0, 0, w, h);
-
-                // Get the data of resized image
-                'toBlob' in canvas
-                    ? canvas.toBlob(function (blob) {
-                        resolve(blob);
-                    })
-                    : resolve(dataUrlToBlob(canvas.toDataURL()));
-            });
-
-            // Set the source
-            ele.src = e.target.result;
-        });
-
-        reader.addEventListener('error', function (e) {
-            reject();
-        });
-    });
-};
-dataUrlToBlob = function (url) {
-    const arr = url.split(',');
-    const mime = arr[0].match(/:(.*?);/)[1];
-    const str = atob(arr[1]);
-    let length = str.length;
-    const uintArr = new Uint8Array(length);
-    while (length--) {
-        uintArr[length] = str.charCodeAt(length);
+        thead.addEventListener("click", sortTableFunction(table));
     }
-    return new Blob([uintArr], {type: mime});
-};
+}
 forms.forEach((form) => {
     form?.querySelectorAll('.toggle-criticite input[type="radio"]')?.forEach((criticite) => {
         criticite.addEventListener('change', (event) => {
@@ -546,120 +454,6 @@ document?.querySelector('#signalement-step-1-panel')?.addEventListener('dsfr.dis
         }
     })
 }))
-
-
-const sortTableFunction = (table) => {
-    return function (ev) {
-        if (ev.target.tagName.toLowerCase() == 'a') {
-            sortRows(table, siblingIndex(ev.target.parentNode));
-            ev.preventDefault();
-        }
-    };
-}
-const siblingIndex = (node) => {
-    let count = 0;
-
-    while (node = node.previousElementSibling) {
-        count++;
-    }
-
-    return count;
-}
-const sortRows = (table, columnIndex) => {
-    let rows = table.querySelectorAll("tbody tr"),
-        sel = "thead th:nth-child(" + (columnIndex + 1) + ")",
-        sel2 = "td:nth-child(" + (columnIndex + 1) + ")",
-        classList = table.querySelector(sel).classList,
-        values = [],
-        cls = "",
-        allNum = true,
-        val,
-        index,
-        node;
-
-    if (classList) {
-        if (classList.contains("date")) {
-            cls = "date";
-        } else if (classList.contains("number")) {
-            cls = "number";
-        }
-    }
-
-    for (index = 0; index < rows.length; index++) {
-        node = rows[index].querySelector(sel2);
-        val = node.innerText;
-
-        if (isNaN(val)) {
-            allNum = false;
-        } else {
-            val = parseFloat(val);
-        }
-
-        values.push({value: val, row: rows[index]});
-    }
-
-    if (cls == "" && allNum) {
-        cls = "number";
-    }
-
-    if (cls == "number") {
-        values.sort(sortNumberVal);
-        values = values.reverse();
-    } else if (cls == "date") {
-        values.sort(sortDateVal);
-    } else {
-        values.sort(sortTextVal);
-    }
-
-    for (let idx = 0; idx < values.length; idx++) {
-        table.querySelector("tbody").appendChild(values[idx].row);
-    }
-}
-const sortNumberVal = (a, b) => {
-    return sortNumber(a.value, b.value);
-}
-const sortNumber = (a, b) => {
-    return a - b;
-}
-const sortDateVal = (a, b) => {
-    let dateA = Date.parse(a.value),
-        dateB = Date.parse(b.value);
-
-    return sortNumber(dateA, dateB);
-}
-const sortTextVal = (a, b) => {
-    let textA = (a.value + "").toUpperCase();
-    let textB = (b.value + "").toUpperCase();
-
-    if (textA < textB) {
-        return -1;
-    }
-
-    if (textA > textB) {
-        return 1;
-    }
-
-    return 0;
-}
-let invalid, tables = document.querySelectorAll("table.sortable"),
-    table,
-    thead,
-    headers,
-    i,
-    j;
-for (i = 0; i < tables.length; i++) {
-    table = tables[i];
-
-    if (thead = table.querySelector("thead")) {
-        headers = thead.querySelectorAll("th");
-
-        for (j = 0; j < headers.length; j++) {
-            headers[j].innerHTML = "<a href='#'>" + headers[j].innerText + "</a>";
-        }
-
-        thead.addEventListener("click", sortTableFunction(table));
-    }
-}
 document?.querySelectorAll(".fr-pagination__link:not([aria-current])").forEach((e => {
     let t, r, a, n = document.querySelector(".fr-pagination__link--prev"),
         i = document.querySelector(".fr-pagination__link--next"),
@@ -684,56 +478,6 @@ document?.querySelectorAll(".fr-pagination__link:not([aria-current])").forEach((
         }))))
     }))
 }));
-
-const setBadge = (el) => {
-    let container = el.parentElement.querySelector('.selected__value');
-    if (el.value !== '') {
-        let badge = document.createElement('span');
-        badge.classList.add('fr-badge', 'fr-badge--success', 'fr-m-1v')
-        badge.innerText = el.selectedOptions[0].text;
-        let input = document.createElement('input');
-        input.type = "hidden";
-        input.name = `${el.id}[]`;
-        input.value = el.value;
-        container.append(input);
-        badge.setAttribute('data-value', el.value);
-        container.querySelector('.fr-badge:not([data-value])')?.classList?.add('fr-hidden');
-        container.append(badge)
-        el.selectedOptions[0].classList.add('fr-hidden')
-        badge.addEventListener('click', (event) => {
-            removeBadge(badge);
-        })
-    } else {
-        container.querySelectorAll('.fr-badge[data-value]').forEach(badge => {
-            removeBadge(badge);
-        })
-    }
-    return false;
-}
-
-/*const setDefaultBadge = (badge) => {
-    let container = el?.parentElement;
-    let badges = badge.parentElement.querySelectorAll('.fr-badge[data-value]').length > 1;
-    !badges && badges.forEach(badge => {
-        removeBadge(badge)
-    });
-    container.querySelector('.fr-badge:not([data-value])')?.classList?.remove('fr-hidden');
-}*/
-const removeBadge = (badge) => {
-    let val = badge.getAttribute('data-value');
-    let input = badge.parentElement.querySelector(`input[value="${val}"]`);
-    let select = badge?.parentElement?.parentElement?.querySelector(`select`) ?? badge?.parentElement?.parentElement?.querySelector(`input[type="date"]`);
-    select.querySelector(`option[value="${val}"]`)?.classList?.remove('fr-hidden');
-    input?.remove();
-    let badges = badge.parentElement.querySelectorAll('.fr-badge[data-value]').length !== 1;
-    console.log(badge.parentElement.querySelectorAll('.fr-badge[data-value]').length)
-    if (!badges) {
-        badge?.parentElement?.querySelector('.fr-badge:not([data-value])')?.classList?.remove('fr-hidden');
-        if (select.tagName === 'SELECT')
-            select.options[0].selected = true;
-    }
-    badge.remove();
-}
 document?.querySelectorAll('[data-removable="true"]')?.forEach(removale => {
     removale.addEventListener('click', () => {
         removeBadge(removale);
@@ -805,7 +549,7 @@ document?.querySelector('#partenaire_add_user,#situation_add_critere')?.addEvent
     row.appendChild(template);
     container.appendChild(row);
 })
-document?.querySelectorAll('[data-delete]')?.forEach(deleteBtn => {
+document?.querySelectorAll('[data-delete],[data-tag-delete]')?.forEach(deleteBtn => {
     deleteBtn.addEventListeners('click touchdown', event => {
         event.preventDefault();
         let className;
@@ -819,50 +563,27 @@ document?.querySelectorAll('[data-delete]')?.forEach(deleteBtn => {
             className = '.signalement-row';
         else if (event.target.classList.contains('partenaire-row-delete'))
             className = '.partenaire-row';
+        else if (event.target.classList.contains('fr-badge'))
+            className = null;
         if (confirm('Voulez-vous vraiment supprimer cet élément ?')) {
             let formData = new FormData;
             formData.append('_token', deleteBtn.getAttribute('data-token'))
-            fetch(deleteBtn.getAttribute('data-delete'), {
+            let value = deleteBtn.getAttribute('data-value') ?? null;
+            if (value)
+                formData.append('item', 'Tag'),formData.append('value', value);
+            fetch(deleteBtn.getAttribute('data-delete') ?? deleteBtn.getAttribute('data-tag-delete'), {
                 method: 'POST',
                 body: formData,
             }).then(r => {
                 if (r.ok) {
-                    console.log(className)
-                    deleteBtn.closest(className).remove();
+                    if(className)
+                        deleteBtn.closest(className).remove()
+                    else
+                        event.target.remove();
                 }
             })
         }
     })
-})
-document?.querySelector('#fr-bug-report-modal').addEventListeners('dsfr.disclose dsfr.conceal', (event) => {
-    let form = event.target.querySelector('form[name="bug-report"]');
-    let formData = new FormData(form);
-    if (event.type === 'dsfr.disclose') {
-        event.target.querySelector('#bug-report-success').classList.add('fr-hidden')
-        form.classList.remove('fr-hidden');
-        event.target.querySelector('#bug-report-submit').disabled = false;
-        html2canvas(document.body).then(function (canvas) {
-            canvas.toBlob(blob => {
-                formData.append('capture', blob, 'capture.png');
-            });
-        });
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            event.target.querySelector('#bug-report-submit').disabled = true;
-            fetch(form.action, {
-                method: 'POST',
-                body: formData
-            }).then(r => r.text().then(res => {
-                //console.log(res)
-                form.classList.add('fr-hidden');
-                event.target.querySelector('#bug-report-success').classList.remove('fr-hidden')
-            }))
-        })
-    } else {
-        formData = null;
-        event.target.querySelector('textarea').value = '';
-    }
 })
 document?.querySelectorAll('.fr-password-toggle')?.forEach(pwdToggle => {
     pwdToggle.addEventListeners('click touchdown', (event) => {
@@ -900,38 +621,6 @@ document?.querySelector('form[name="login-creation-mdp-form"]')?.querySelectorAl
         }
     })
 })
-
-function searchAddress(form, autocomplete) {
-
-    if (autocomplete.value.length > 10) {
-        autocomplete.removeEventListener('keyup', searchAddress)
-        fetch('https://api-adresse.data.gouv.fr/search/?q=' + autocomplete.value).then((res) => {
-            res.json().then((r) => {
-                let container = form.querySelector('#signalement-adresse-suggestion')
-                container.innerHTML = '';
-                for (let feature of r.features) {
-                    let suggestion = document.createElement('div');
-                    suggestion.classList.add('fr-col-12', 'fr-p-3v', 'fr-text-label--blue-france', 'fr-adresse-suggestion');
-                    suggestion.innerHTML = feature.properties.label;
-                    suggestion.addEventListener('click', () => {
-                        // console.log(feature.geometry.coordinates)
-                        form.querySelector('#signalement_adresseOccupant').value = feature.properties.name;
-                        form.querySelector('#signalement_cpOccupant').value = feature.properties.postcode;
-                        form.querySelector('#signalement_villeOccupant').value = feature.properties.city;
-                        form.querySelector('#signalement-insee-occupant').value = feature.properties.citycode;
-                        form.querySelector('#signalement-geoloc-lat-occupant').value = feature.geometry.coordinates[0];
-                        form.querySelector('#signalement-geoloc-lng-occupant').value = feature.geometry.coordinates[1];
-                        container.innerHTML = '';
-                    })
-                    container.appendChild(suggestion)
-
-                }
-            })
-        })
-        return false;
-    }
-}
-
 document.querySelector('#modal-dpe-opener')?.addEventListener('click', (event) => {
     let urlDpe = event.target.getAttribute('data-dpe-url');
     fetch(urlDpe).then(r => {
