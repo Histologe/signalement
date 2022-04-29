@@ -25,7 +25,7 @@ class SearchFilterService
     {
         $request = $this->getRequest();
         $this->filters = [
-            'searchterms' => $request->get('bo-filter-searchterms') ?? null,
+            'searchterms' => $request->get('bo-filters-searchterms') ?? null,
             'statuses' => $request->get('bo-filters-statuses') ?? null,
             'cities' => $request->get('bo-filters-cities') ?? null,
             'partners' => $request->get('bo-filters-partners') ?? null,
