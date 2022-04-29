@@ -92,7 +92,7 @@ class SearchFilterService
             } else {
                 $qb->andWhere('LOWER(s.nomOccupant) LIKE :searchterms 
                 OR LOWER(s.prenomOccupant) LIKE :searchterms 
-                OR LOWER(s.reference) LIKE :search 
+                OR LOWER(s.reference) LIKE :searchterms 
                 OR LOWER(s.adresseOccupant) LIKE :searchterms
                 OR LOWER(s.villeOccupant) LIKE :searchterms
                 OR LOWER(s.nomProprio) LIKE :searchterms');
