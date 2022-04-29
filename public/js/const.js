@@ -190,7 +190,6 @@ const removeBadge = (badge) => {
     badge.remove();
 }
 const searchAddress = (form, autocomplete) =>{
-
     if (autocomplete.value.length > 10) {
         autocomplete.removeEventListener('keyup', searchAddress)
         fetch('https://api-adresse.data.gouv.fr/search/?q=' + autocomplete.value).then((res) => {
