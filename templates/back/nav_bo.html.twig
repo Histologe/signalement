@@ -81,12 +81,12 @@
                                        {% if 'back_situation_critere_criticite' in app.request.get('_route') %}aria-current="page"{% endif %}>Editeur
                                         de grille</a>
                                 </li>
-                                <li class="fr-sidemenu__item {% if 'back_user_report' in app.request.get('_route') %}fr-sidemenu__item--active{% endif %}">
+{#                                <li class="fr-sidemenu__item {% if 'back_user_report' in app.request.get('_route') %}fr-sidemenu__item--active{% endif %}">
                                     <a class="fr-sidemenu__link" href="{{ path('back_user_report_index') }}"
                                        target="_self"
                                        {% if 'back_user_report' in app.request.get('_route') %}aria-current="page"{% endif %}>Bugs
                                         & Retours</a>
-                                </li>
+                                </li>#}
                             {% endif %}
                             {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
                                 <li class="fr-sidemenu__item {% if 'back_config' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
