@@ -194,7 +194,7 @@
                                 <input type="hidden" name="bo-filters-proprios[]" value="{{ proprio }}">
                                 <span class="fr-badge fr-badge--success fr-m-1v"
                                       data-value="{{ proprio }}" data-removable="true"
-                                      data-value="{{ proprio }}">{{ proprio }}</span>
+                                      data-value="{{ proprio }}">{{ proprio ? 'OUI':'NON'}}</span>
                             {% else %}
                                 {% set visible = 0 %}
                             {% endfor %}
