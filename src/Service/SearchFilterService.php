@@ -85,7 +85,7 @@ class SearchFilterService
 
     public function applyFilters(QueryBuilder $qb, array $filters): QueryBuilder
     {
-        if (!empty($filters['search'])) {
+        if (!empty($filters['searchterms'])) {
             if (preg_match('/([0-9]{4})-[0-9]{0,6}/', $filters['search'])) {
                 $qb->andWhere('s.reference = :search');
                 $qb->setParameter('search', $filters['search']);
