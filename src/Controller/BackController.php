@@ -44,7 +44,7 @@ class BackController extends AbstractController
             $user = $this->getUser();
         $searchService = new SearchFilterService();
         $filters =  $searchService->setRequest($request)->setFilters()->getFilters();
-        if ($user || $filters['partners']) {
+        if ($user || $filters['partners']|| $filters['affectations']) {
             $this->req = $affectationRepository->findByStatusAndOrCityForUser($user, $filters);
             $this->iterator = $this->req->getIterator()->getArrayCopy();
             if ($user && $user->getPartenaire()) {

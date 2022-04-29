@@ -123,13 +123,13 @@ class SignalementRepository extends ServiceEntityRepository
 
         $qb->where('s.statut != :status')
             ->setParameter('status', Signalement::STATUS_ARCHIVED);
-        $qb->leftJoin('s.affectations', 'a');
-        $qb->leftJoin('a.partenaire', 'partenaire');
+        $qb->leftJoin('s.affectations', 'affectations');
+        $qb->leftJoin('affectations.partenaire', 'partenaire');
         $qb->leftJoin('s.suivis', 'suivis');
         $qb->leftJoin('suivis.createdBy', 'suivi_creator');
         $qb->leftJoin('suivi_creator.partenaire', 'suivi_creator_partenaire');
         $qb->leftJoin('s.criteres', 'criteres');
-        $qb->addSelect('a', 'partenaire', 'suivis', 'suivi_creator');
+        $qb->addSelect('affectations', 'partenaire', 'suivis', 'suivi_creator');
         $qb = $this->searchFilterService->applyFilters($qb, $options);
         $qb->orderBy('s.createdAt', 'DESC')
             ->setFirstResult($firstResult)
