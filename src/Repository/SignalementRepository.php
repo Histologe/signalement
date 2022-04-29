@@ -142,8 +142,7 @@ class SignalementRepository extends ServiceEntityRepository
     function findCities($user = null): array|int|string
     {
         $qb = $this->createQueryBuilder('s')
-            ->select('s.villeOccupant ville')
-            ->where('s.statut != :status')
+            ->select('s.villeOccupant city')
             ->setParameter('status', Signalement::STATUS_ARCHIVED);
         if ($user)
             $qb->leftJoin('s.affectations', 'affectations')
