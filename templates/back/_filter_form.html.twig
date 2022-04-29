@@ -57,9 +57,9 @@
             </div>
             {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
                 <div class="fr-col-12 fr-col-md-4 fr-col-lg-3">
-                    <label class="fr-label" for="bo-filters-partenaires"><strong>Filtrer par
+                    <label class="fr-label" for="bo-filters-partners"><strong>Filtrer par
                             partenaire</strong></label>
-                    <select id="bo-filters-partenaires" class="fr-select" onchange="setBadge(this)">
+                    <select id="bo-filters-partners" class="fr-select" onchange="setBadge(this)">
                         <option value="">TOUS</option>
                         <option value="AUCUN">AUCUN</option>
                         <optgroup label="COMMUNES">
@@ -77,10 +77,10 @@
                     <div class="selected__value">
                         <div class="fr-pb-1v fr-border--bottom--orange"></div>
                         {% set visible = 'fr-hidden' %}
-                        {% for partenaire in filters.partners %}
-                            <input type="hidden" name="bo-filters-partners[]" value="{{ partenaire }}">
-                            <span class="fr-badge fr-badge--success fr-m-1v" data-value="{{ partenaire }}"
-                                  data-removable="true">{{ partenaires[partenaire] is defined ? partenaires[partenaire].nom : 'AUCUN' }}</span>
+                        {% for partner in filters.partners %}
+                            <input type="hidden" name="bo-filters-partners[]" value="{{ partner }}">
+                            <span class="fr-badge fr-badge--success fr-m-1v" data-value="{{ partner }}"
+                                  data-removable="true">{{ partenaires[partner] is defined ? partenaires[partner].nom : 'AUCUN' }}</span>
                         {% else %}
                             {% set visible = 0 %}
                         {% endfor %}
@@ -263,7 +263,7 @@
                             <div class="fr-pb-1v fr-border--bottom--orange"></div>
                             {% set visible = 'fr-hidden' %}
                             {% for enfantsM6 in filters.enfantsM6 %}
-                                <input type="hidden" name="bo-filters-visites[]" value="{{ enfantsM6 }}">
+                                <input type="hidden" name="bo-filters-enfantsM6[]" value="{{ enfantsM6 }}">
                                 <span class="fr-badge fr-badge--success fr-m-1v"
                                       data-value="{{ enfantsM6 }}" data-removable="true"
                                       data-value="{{ enfantsM6 }}">{{ enfantsM6 ? 'OUI':'NON' }}</span>
