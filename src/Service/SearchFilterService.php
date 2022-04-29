@@ -125,6 +125,10 @@ class SearchFilterService
             $qb->andWhere('IF(s.dateVisite IS NOT NULL,1,0) IN (:visites)')
                 ->setParameter('visites', $filters['visites']);
         }
+        if (!empty($filters['enfantsM6'])) {
+            $qb->andWhere('IF(s.nbEnfantsM6 IS NOT NULL AND s.nbEnfantsM6 != 0,1,0) IN (:enfantsM6)')
+                ->setParameter('enfantsM6', $filters['enfantsM6']);
+        }
         if (!empty($filters['avant1949'])) {
             $qb->andWhere('s.isConstructionAvant1949 IN (:avant1949)')
                 ->setParameter('avant1949', $filters['avant1949']);
