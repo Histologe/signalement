@@ -86,17 +86,17 @@ class SearchFilterService
     public function applyFilters(QueryBuilder $qb, array $filters): QueryBuilder
     {
         if (!empty($filters['searchterms'])) {
-            if (preg_match('/([0-9]{4})-[0-9]{0,6}/', $filters['search'])) {
-                $qb->andWhere('s.reference = :search');
-                $qb->setParameter('search', $filters['search']);
+            if (preg_match('/([0-9]{4})-[0-9]{0,6}/', $filters['searchterms'])) {
+                $qb->andWhere('s.reference = :searchterms');
+                $qb->setParameter('searchterms', $filters['searchterms']);
             } else {
-                $qb->andWhere('LOWER(s.nomOccupant) LIKE :search 
-                OR LOWER(s.prenomOccupant) LIKE :search 
+                $qb->andWhere('LOWER(s.nomOccupant) LIKE :searchterms 
+                OR LOWER(s.prenomOccupant) LIKE :searchterms 
                 OR LOWER(s.reference) LIKE :search 
-                OR LOWER(s.adresseOccupant) LIKE :search 
-                OR LOWER(s.villeOccupant) LIKE :search
-                OR LOWER(s.nomProprio) LIKE :search');
-                $qb->setParameter('search', "%" . strtolower($filters['search']) . "%");
+                OR LOWER(s.adresseOccupant) LIKE :searchterms
+                OR LOWER(s.villeOccupant) LIKE :searchterms
+                OR LOWER(s.nomProprio) LIKE :searchterms');
+                $qb->setParameter('searchterms', "%" . strtolower($filters['searchterms']) . "%");
             }
         }
         if (!empty($filters['affectations']) && !!empty($filters['partners'])) {
