@@ -52,8 +52,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $prenom;
 
-    #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: UserReport::class)]
-    private $userReports;
 
     #[ORM\Column(type: 'integer')]
     private $statut;
@@ -75,7 +73,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->suivis = new ArrayCollection();
-        $this->userReports = new ArrayCollection();
         $this->statut = self::STATUS_INACTIVE;
         $this->jobs = new ArrayCollection();
     }
@@ -256,36 +253,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getNomComplet()
     {
         return mb_strtoupper($this->nom) . ' ' . ucfirst($this->prenom);
-    }
-
-    /**
-     * @return Collection|UserReport[]
-     */
-    public function getUserReports(): Collection
-    {
-        return $this->userReports;
-    }
-
-    public function addUserReport(UserReport $userReport): self
-    {
-        if (!$this->userReports->contains($userReport)) {
-            $this->userReports[] = $userReport;
-            $userReport->setCreatedBy($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUserReport(UserReport $userReport): self
-    {
-        if ($this->userReports->removeElement($userReport)) {
-            // set the owning side to null (unless already changed)
-            if ($userReport->getCreatedBy() === $this) {
-                $userReport->setCreatedBy(null);
-            }
-        }
-
-        return $this;
     }
 
     public function getStatut(): ?int
