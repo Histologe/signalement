@@ -340,7 +340,7 @@ class   SignalementType extends AbstractType
                 'label_attr' => [
                     'class' => 'fr-label'
                 ],
-                'label' => "Autre",
+                'label' => "Autre (ex: Residence, lieu-dit,...)",
                 'required' => false
             ])
             ->add('nomProprio', TextType::class, [
