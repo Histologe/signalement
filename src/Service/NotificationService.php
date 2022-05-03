@@ -24,6 +24,7 @@ class NotificationService
     const TYPE_SIGNALEMENT_REFUSE = 99;
     const TYPE_ACCUSE_RECEPTION = 6;
     const TYPE_NOUVEAU_SUIVI = 7;
+    const TYPE_NOUVEAU_SUIVI_BACK = 10;
     const TYPE_NOTIFICATION_MAIL_FRONT = 8;
     const TYPE_ERREUR_SIGNALEMENT = 9;
 
@@ -86,6 +87,11 @@ class NotificationService
                 'template' => 'nouveau_suivi_signalement_email',
                 'subject' => 'Nouvelle mise à jour de votre signalement !',
                 'btntext' => "Suivre mon signalement"
+            ],
+            NotificationService::TYPE_NOUVEAU_SUIVI_BACK => [
+                'template' => 'new_signalement_email',
+                'subject' => 'Nouveau suivi sur un signalement',
+                'btntext' => "Consulter le suivi"
             ],
             NotificationService::TYPE_ERREUR_SIGNALEMENT => [
                 'template' => 'erreur_signalement_email',

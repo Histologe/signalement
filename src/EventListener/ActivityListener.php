@@ -52,7 +52,7 @@ class ActivityListener implements EventSubscriberInterface
             if ($entity instanceof Suivi) {
                 $entity->getSignalement()->getAffectations()->filter(function (Affectation $affectation) use ($entity) {
                     $partenaire = $affectation->getPartenaire();
-                    $this->notifyPartner($partenaire,$entity,Notification::TYPE_SUIVI,NotificationService::TYPE_NOUVEAU_SUIVI);
+                    $this->notifyPartner($partenaire,$entity,Notification::TYPE_SUIVI,NotificationService::TYPE_NOUVEAU_SUIVI_BACK);
                 });
                 if($entity->getIsPublic())
                 {
