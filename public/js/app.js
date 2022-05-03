@@ -492,7 +492,7 @@ document?.querySelectorAll('[data-fr-select-target]')?.forEach(t => {
         })
     })
 })
-/*document?.querySelector('#signalement-affectation-form-submit')?.addEventListeners('click touchdown', (e) => {
+document?.querySelector('#signalement-affectation-form-submit')?.addEventListeners('click touchdown', (e) => {
     e.preventDefault();
     e.target.disabled = true;
     e.target?.form?.querySelectorAll('option').forEach(o => {
@@ -508,13 +508,13 @@ document?.querySelectorAll('[data-fr-select-target]')?.forEach(t => {
         body: formData
     }).then(r => {
         if (r.ok) {
-            /!*r.json().then(res => {*!/
+            /*r.json().then(res => {*/
             window.location.reload(true)
-            /!*})*!/
+            /*})*/
         }
     })
     //console.log(e.target.form);
-})*/
+})
 document?.querySelectorAll('.fr-input--file-signalement').forEach(inputFile => {
     inputFile.addEventListener('change', evt => {
         evt.target.form.submit();

@@ -46,7 +46,7 @@
                                         data-fr-select-target="signalement-affectation-select-affecte"></button>
                             </div>
                             <div class="fr-col-5">
-                                <form method="POST" name="signalement-affectation" id="signalement-affectation-form" action="{{ path('back_signalement_toggle_affectation',{uuid:signalement.uuid}) }}">
+                                <form method="POST" name="signalement-affectation" id="signalement-affectation-form">
                                     <label for="signalement-affectation-select-affecte" class="fr-label fr-text--bold">Partenaire(s)
                                         affecté(s)</label>
                                     <select id="signalement-affectation-select-affecte" multiple
@@ -68,7 +68,7 @@
                             <li>
                                 <button class="fr-btn fr-fi-checkbox-line" type="submit"
                                         form="signalement-affectation-form" id="signalement-affectation-form-submit"
-                                        f{#ormaction=""#}>
+                                        formaction="{{ path('back_signalement_toggle_affectation',{uuid:signalement.uuid}) }}">
                                     Affecter partenaire(s)
                                 </button>
                             </li>
