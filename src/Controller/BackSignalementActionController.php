@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Affectation;
+use App\Entity\Notification;
 use App\Entity\Signalement;
 use App\Entity\Suivi;
 use App\Entity\Tags;
@@ -91,12 +92,6 @@ class BackSignalementActionController extends AbstractController
             $doctrine->getManager()->persist($suivi);
             $doctrine->getManager()->flush();
             $this->addFlash('success', 'Suivi publié avec succès !');
-            //TODO: Mail Sendinblue
-            if ($suivi->getIsPublic())
-                $notificationService->send(NotificationService::TYPE_NOUVEAU_SUIVI, [$signalement->getMailDeclarant(), $signalement->getMailOccupant()], [
-                    'signalement' => $signalement,
-                    'lien_suivi' => $urlGenerator->generate('front_suivi_signalement', ['code' => $signalement->getCodeSuivi()], 0)
-                ]);
         } else
             $this->addFlash('error', 'Une erreur est survenu lors de la publication');
         return $this->redirect($this->generateUrl('back_signalement_view', ['uuid' => $signalement->getUuid()]) . '#suivis');
@@ -125,23 +120,6 @@ class BackSignalementActionController extends AbstractController
                     $doctrine->getManager()->persist($affectation);
                     if ($partenaire->getEsaboraToken() && $partenaire->getEsaboraUrl())
                         $esaboraService->post($affectation);
-                    if ($partenaire->getEmail()) {
-                        $notificationService->send(NotificationService::TYPE_AFFECTATION, $partenaire->getEmail(), [
-                            'link' => $this->generateUrl('back_signalement_view', [
-                                'uuid' => $signalement->getUuid()
-                            ], 0)
-                        ]);
-                    }
-                    $partenaire->getUsers()->map(function (User $user) use ($signalement, $notificationService) {
-                        if ($user->getIsMailingActive() && $user->getStatut() !== User::STATUS_ARCHIVE) {
-                            $notificationService->send(NotificationService::TYPE_AFFECTATION, $user->getEmail(), [
-                                'link' => $this->generateUrl('back_signalement_view', [
-                                    'uuid' => $signalement->getUuid()
-                                ], 0)
-                            ]);
-                        }
-                    });
-
                 }
                 foreach ($partenairesToRemove as $partenaireIdToRemove) {
                     $partenaire = $partenaireRepository->find($partenaireIdToRemove);
@@ -221,6 +199,10 @@ class BackSignalementActionController extends AbstractController
             $affectation->setStatut($statut);
             $affectation->setAnsweredAt(new \DateTimeImmutable());
             $affectation->setAnsweredBy($this->getUser());
+            $this->getUser()->getNotifications()->filter(function (Notification $notification) use ($doctrine, $affectation, $signalement) {
+                if($notification->getSignalement()->getId() === $signalement->getId() && $notification->getAffectation()->getId() === $affectation->getId())
+                    $doctrine->getManager()->remove($notification);
+            });
             $doctrine->getManager()->persist($affectation);
             $doctrine->getManager()->flush();
             $this->addFlash('success', 'Affectation mise à jour avec succès !');

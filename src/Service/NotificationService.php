@@ -2,10 +2,16 @@
 
 namespace App\Service;
 
+use App\Entity\Affectation;
+use App\Entity\Notification;
+use App\Entity\Signalement;
+use App\Entity\Suivi;
+use App\Entity\User;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\NotificationEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Address;
 
 class NotificationService
 {
@@ -24,10 +30,11 @@ class NotificationService
     private MailerInterface $mailer;
     private ConfigurationService $configuration;
 
-    public function __construct(MailerInterface $mailer, ConfigurationService $configurationService)
+    public function __construct(MailerInterface $mailer, ConfigurationService $configurationService, EntityManagerInterface $entityManager)
     {
         $this->mailer = $mailer;
         $this->configuration = $configurationService;
+        $this->em = $entityManager;
     }
 
     private function config(int $type): array
@@ -90,7 +97,7 @@ class NotificationService
 
     public function send(int $type, string|array $to, array $params): TransportExceptionInterface|\Exception|bool
     {
-        $params['url'] =  $_SERVER['SERVER_NAME'] ?? null;
+        $params['url'] = $_SERVER['SERVER_NAME'] ?? null;
         $message = $this->renderMailContentWithParamsByType($type, $params);
         is_array($to) ? $emails = $to : $emails = [$to];
         foreach ($emails as $email)
@@ -115,7 +122,8 @@ class NotificationService
         $notification->markAsPublic();
         return $notification->htmlTemplate('emails/' . $config['template'] . '.html.twig')
             ->context(array_merge($params, $config))
-            ->subject('HISTOLOGE '.mb_strtoupper($this->configuration->get()->getNomTerritoire()).' - ' . $config['subject']);
+            ->subject('HISTOLOGE ' . mb_strtoupper($this->configuration->get()->getNomTerritoire()) . ' - ' . $config['subject']);
     }
+
 
 }

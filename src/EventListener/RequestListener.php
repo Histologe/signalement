@@ -3,7 +3,6 @@
 namespace App\EventListener;
 
 use App\Entity\User;
-use App\Service\NewsActivitiesSinceLastLoginService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -15,13 +14,11 @@ class RequestListener
 {
     private TokenStorage $tokenStorage;
     private UrlGeneratorInterface $urlGenerator;
-    private NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService;
 
-    public function __construct(TokenStorage $tokenStorage, UrlGeneratorInterface $urlGenerator, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService, RequestStack $requestStack)
+    public function __construct(TokenStorage $tokenStorage, UrlGeneratorInterface $urlGenerator,RequestStack $requestStack)
     {
         $this->tokenStorage = $tokenStorage;
         $this->urlGenerator = $urlGenerator;
-        $this->newsActivitiesSinceLastLoginService = $newsActivitiesSinceLastLoginService;
         $this->requestStack = $requestStack;
     }
 
@@ -43,7 +40,6 @@ class RequestListener
         if ($token = $this->tokenStorage->getToken()) {
             if ($event->getRequest()->get('_route') !== 'login_creation_pass') {
                 $this->requestStack->getSession()->set('lastActionTime', time());
-                $this->newsActivitiesSinceLastLoginService->set($token->getUser());
 //                die('TESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT');
             }
         }

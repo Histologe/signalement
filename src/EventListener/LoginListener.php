@@ -3,7 +3,6 @@
 namespace App\EventListener;
 
 use App\Entity\User;
-use App\Service\NewsActivitiesSinceLastLoginService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
@@ -11,12 +10,10 @@ use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 class LoginListener
 {
     private EntityManagerInterface $em;
-    private NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService;
 
-    public function __construct(EntityManagerInterface $em,NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService,RequestStack $requestStack)
+    public function __construct(EntityManagerInterface $em,RequestStack $requestStack)
     {
         $this->em = $em;
-        $this->newsActivitiesSinceLastLoginService = $newsActivitiesSinceLastLoginService;
         $this->requestStack = $requestStack;
     }
 
@@ -24,12 +21,6 @@ class LoginListener
     {
         /** @var User $user */
         $user = $event->getAuthenticationToken()->getUser();
-        $this->newsActivitiesSinceLastLoginService->clear();
-        if($user->getLastLoginAt())
-        {
-            $this->requestStack->getSession()->set('lastActionTime',$user->getLastLoginAt());
-            $this->newsActivitiesSinceLastLoginService->set($user);
-        }
         $user->setLastLoginAt(new \DateTimeImmutable());
 
         // Persist the data to database.
