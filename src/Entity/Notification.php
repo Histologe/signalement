@@ -33,11 +33,12 @@ class Notification
     #[ORM\ManyToOne(targetEntity: suivi::class)]
     private ?suivi $suivi;
 
-    #[ORM\ManyToOne(targetEntity: Affectation::class)]
-    private ?Affectation $affectation;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $createdAt;
+
+    #[ORM\ManyToOne(targetEntity: Affectation::class, inversedBy: 'notifications')]
+    private $affectation;
 
     public function __construct()
     {
@@ -134,6 +135,7 @@ class Notification
 
         return $this;
     }
+
 
 
 }

@@ -28,6 +28,7 @@ class ActivityListener implements EventSubscriberInterface
     {
         return [
             Events::onFlush,
+            Events::preRemove,
         ];
     }
 
@@ -62,6 +63,16 @@ class ActivityListener implements EventSubscriberInterface
                     ]);
                 }
             }
+        }
+    }
+
+    public function preRemove(LifecycleEventArgs $args){
+        $entity = $args->getObject();
+        if($entity instanceof Affectation){
+            $entity->getNotifications()->filter(function (Notification $notification) use ($args) {
+                $args->getObjectManager()->remove($notification);
+            });
+            $args->getObjectManager()->flush();
         }
     }
 
