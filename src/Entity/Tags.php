@@ -21,7 +21,7 @@ class Tags
     #[ORM\Column(type: 'string', length: 255)]
     private $label;
 
-    #[ORM\Column(type: 'string', length: 6)]
+    #[ORM\Column(type: 'string', length: 25)]
     private $color;
 
     public function __construct()

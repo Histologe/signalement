@@ -14,6 +14,7 @@ use App\Form\ClotureType;
 use App\Form\SignalementType;
 use App\Repository\PartenaireRepository;
 use App\Repository\SituationRepository;
+use App\Repository\TagsRepository;
 use App\Service\AffectationCheckerService;
 use App\Service\CriticiteCalculatorService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,7 +37,7 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/{uuid}', name: 'back_signalement_view')]
-    public function viewSignalement($uuid, Request $request, EntityManagerInterface $entityManager, PartenaireRepository $partenaireRepository): Response
+    public function viewSignalement($uuid, Request $request, EntityManagerInterface $entityManager,TagsRepository$tagsRepository,PartenaireRepository $partenaireRepository): Response
     {
         /** @var Signalement $signalement */
         $signalement = $entityManager->getRepository(Signalement::class)->findByUuid($uuid);
@@ -115,7 +116,8 @@ class BackSignalementController extends AbstractController
             'isRefused' => $isRefused,
             'signalement' => $signalement,
             'partenaires' => $partenaireRepository->findAllOrByInseeIfCommune($signalement->getInseeOccupant()),
-            'clotureForm' => $clotureForm->createView()
+            'clotureForm' => $clotureForm->createView(),
+            'tags'=>$tagsRepository->findAll()
         ]);
     }
 

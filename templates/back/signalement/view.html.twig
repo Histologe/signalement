@@ -114,12 +114,21 @@
         <hr class="fr-pb-1v">
         <div class="fr-grid-row fr-grid-row--middle fr-my-5v">
             <div class="fr-col-12 fr-col-md-9">
+                <strong class="fr-fi-information-fill fr-icon--sm fr-text-label--blue-france"> Gestion des étiquettes (admin)</strong>
+                <span class="fr-hint-text">Ci-dessous la liste des étiquettes existante à ce signalement. Vous pouvez en ajouter et en créer au besoin</span>
+            </div>
+            <div class="fr-col-12">
+                {% for tag in tags %}
+                    <span class="fr-badge fr-badge--{{ tag.color }}" data-value="{{ tag.id }}" data-tag-add="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}" data-token="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}">{{ tag.label }}E</span>
+                {% endfor %}
+            </div>
+            <div class="fr-col-12 fr-col-md-9">
                 <strong class="fr-fi-information-fill fr-icon--sm fr-text-label--blue-france"> Etiquettes</strong>
                 <span class="fr-hint-text">Ci-dessous la liste des étiquettes attribuées à ce signalement. Vous pouvez en ajouter au besoin</span>
             </div>
             <div class="fr-col-12">
                 {% for tag in signalement.tags %}
-                    <span class="fr-badge fr-badge--beige-gris-galet" data-value="{{ tag.id }}" data-tag-delete="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}" data-token="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}">{{ tag.label }}E</span>
+                    <span class="fr-badge fr-badge--{{ tag.color }}" data-value="{{ tag.id }}" data-tag-delete="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}" data-token="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}">{{ tag.label }}E</span>
                 {% endfor %}
                 <span class="fr-badge fr-badge--blue-cumulus">PROVENANCE ARS</span>
                 <span class="fr-badge fr-badge--blue-ecume">LOCATAIRE MECHANT</span>
