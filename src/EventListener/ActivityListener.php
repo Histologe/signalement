@@ -11,6 +11,7 @@ use App\Entity\User;
 use App\Service\NotificationService;
 use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
@@ -51,6 +52,7 @@ class ActivityListener implements EventSubscriberInterface
                 $this->notifyPartner($partenaire,$entity,Notification::TYPE_AFFECTATION,NotificationService::TYPE_AFFECTATION);
             }
             if ($entity instanceof Suivi) {
+                $this->notifyAdmins($entity,Notification::TYPE_SUIVI);
                 $entity->getSignalement()->getAffectations()->filter(function (Affectation $affectation) use ($entity) {
                     $partenaire = $affectation->getPartenaire();
                     $this->notifyPartner($partenaire,$entity,Notification::TYPE_SUIVI,NotificationService::TYPE_NOUVEAU_SUIVI_BACK);
@@ -76,6 +78,19 @@ class ActivityListener implements EventSubscriberInterface
         }
     }
 
+    private function notifyAdmins($entity,$inAppType){
+        $admins = $this->em->getRepository(User::class)->createQueryBuilder('u')
+            ->andWhere('JSON_CONTAINS(u.roles, :role) = 1')
+            ->orWhere('JSON_CONTAINS(u.roles, :role2) = 1')
+            ->setParameter('role', '"ROLE_ADMIN"')
+            ->setParameter('role2', '"ROLE_ADMIN_TERRITOIRE"')
+            ->getQuery()->getResult();
+        foreach ($admins as $admin){
+            $this->createInAppNotification($admin, $entity, $inAppType);
+            $this->tos[] = $admin->getEmail();
+        }
+    }
+
     private function notifyPartner($partner,$entity,$inAppType,$mailType){
         if ($partner->getEmail()) {
             $this->tos->add($partner->getEmail());
@@ -89,7 +104,7 @@ class ActivityListener implements EventSubscriberInterface
         });
         if(!$this->tos->isEmpty())
         {
-            $this->notifier->send($mailType, $this->tos->toArray(), [
+            $this->notifier->send($mailType, array_unique($this->tos->toArray()), [
                 'link' => $this->urlGenerator->generate('back_signalement_view', [
                     'uuid' => $entity->getSignalement()->getUuid()
                 ], 0)
