@@ -5,7 +5,7 @@
 {% block content %}
     <section class="fr-grid-row fr-grid-row--middle fr-p-5v ">
         <div class="fr-col-6">
-            <h1 class="fr-h2 fr-mb-0">Affectation(s) en attente</h1>
+            <h1 class="fr-h2 fr-mb-0">Notification(s)</h1>
         </div>
     </section>
     <section class="fr-col-12 fr-table fr-table--bordered fr-pt-0">
@@ -20,6 +20,25 @@
             </tr>
             </thead>
             <tbody>
+            <tr style="background: white!important">
+                <td colspan="5" class="fr-text--bold">{{ signalements|length}} Nouveau(x) signalement(s)</td>
+            </tr>
+            {% for notification in signalements %}
+                <tr class="partenaire-row">
+                    <td>{{ notification.signalement.reference }}</td>
+                    <td>{{ notification.createdAt|date('d/m/Y à H:i') }}</td>
+                    <td>Un nouveau signalement vou attend</td>
+                    <td>{{ notification.signalement.nomOccupant|upper~' '~notification.signalement.prenomOccupant|capitalize }}</td>
+                    <td class="fr-text--right"><a href="{{ path('back_signalement_view',{uuid:notification.signalement.uuid}) }}" class="fr-btn {{ notification.isSeen ? 'fr-fi-check-line fr-btn--success':'fr-fi-eye-fill' }}"></a></td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5" class="fr-text--center">Aucun signalement en attente</td>
+                </tr>
+            {% endfor %}
+            <tr style="background: white!important">
+                <td colspan="5" class="fr-text--bold">{{ affectations|length }} Nouvelle(s) affectation(s)</td>
+            </tr>
             {% for notification in affectations %}
                 <tr class="partenaire-row">
                     <td>{{ notification.affectation.signalement.reference }}</td>
@@ -33,34 +52,9 @@
                     <td colspan="5" class="fr-text--center">Aucune affectation en attente</td>
                 </tr>
             {% endfor %}
-            </tbody>
-        </table>
-    </section>
-
-    <section class="fr-grid-row fr-grid-row--middle fr-p-5v ">
-        <div class="fr-col-6">
-            <h1 class="fr-h2 fr-mb-0">Nouveau(x) suivi(s)</h1>
-        </div>
-{#        <div class="fr-col-6 fr-text--right">
-            <form action="{{ path('back_news_activities') }}" method="POST">
-                <button class="fr-btn fr-btn--icon-left fr-fi-check-line" href="#">Marquer tous comme lus</button>
-                <input type="hidden" name="_token" value="{{ csrf_token('clear_news_'~app.user.id) }}">
-            </form>
-        </div>#}
-    </section>
-    <section class="fr-col-12 fr-table fr-table--bordered fr-pt-0">
-        <table class="fr-display-inline-table">
-            <thead>
-            <tr>
-                <th>Signalement</th>
-                <th>Date</th>
-                <td>Desc.</td>
-                <th>Par</th>
-                <th class="fr-text--right">actions</th>
+            <tr style="background: white!important">
+                <td colspan="5" class="fr-text--bold">{{ suivis|length }} Nouveau(x) suivi(s)</td>
             </tr>
-            </thead>
-
-            <tbody>
             {% for notification in suivis %}
                 <tr class="partenaire-row">
                     <td>{{ notification.suivi.signalement.reference }}</td>

@@ -20,6 +20,7 @@ class BackNewsActivitiesController extends AbstractController
     {
         $this->suivis = new ArrayCollection();
         $this->affectations = new ArrayCollection();
+        $this->signalements = new ArrayCollection();
     }
 
     #[Route('/news', name: 'back_news_activities')]
@@ -33,11 +34,14 @@ class BackNewsActivitiesController extends AbstractController
                 $this->affectations->add($notification);
             elseif($notification->getType() === Notification::TYPE_SUIVI && $notification->getSuivi())
                 $this->suivis->add($notification);
+            elseif($notification->getType() === Notification::TYPE_NEW_SIGNALEMENT && $notification->getSignalement())
+                $this->signalements->add($notification);
         });
         return $this->render('back/news_activities/index.html.twig', [
             'title' => $title,
             'suivis'=>$this->suivis,
-            'affectations'=>$this->affectations
+            'affectations'=>$this->affectations,
+            'signalements'=>$this->signalements,
         ]);
     }
 }
