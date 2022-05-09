@@ -36,7 +36,6 @@ class TagRepository extends ServiceEntityRepository
     }
     */
 
-
     public function findAllActive()
     {
         return $this->createQueryBuilder('t')

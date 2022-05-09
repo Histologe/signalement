@@ -43,6 +43,7 @@ class Tag
         return $this->signalement;
     }
 
+
     public function addSignalement(Signalement $signalement): self
     {
         if (!$this->signalement->contains($signalement)) {

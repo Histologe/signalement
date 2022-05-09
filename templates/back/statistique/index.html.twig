@@ -3,10 +3,32 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-{#    {{ dump(dates) }}#}
-    {#{{ dump(situations) }} {{ dump(totaux) }}{{ dump(criteres) }}{{ dump(villes) }}#}
-{#    {{ dump(dates) }}#}
-    <section class="fr-grid-row fr-pt-0 fr-grid-row--center">
+    {# {{ dump(dates) }} #}
+    {# {{ dump(situations) }} {{ dump(totaux) }}{{ dump(criteres) }}{{ dump(villes) }} #}
+    {# {{ dump(dates) }} #}
+    <div class="fr-background--white">
+        {% include 'back/_filter_form.html.twig' %}
+    </div>
+    <section class="fr-background-alt--blue-france fr-p-5v">
+        {% for k,f in filter|filter(f=> f is not empty) %}
+            {% if k is not same as ('dates') %}
+                <div class="fr-grid-row fr-grid-row--gutters {#fr-p-5v#}">
+                    <div class="fr-col-12">
+                       <h3 class="fr-mb-0 fr-border--bottom--orange">{{ k|capitalize }}</h3>
+                    </div>
+                    {% for val in f %}
+                        <div class="fr-col">
+                            <div class="fr-grid-row fr-rounded fr-background--white fr-p-5v">
+                                <div class="fr-col"><small class="fr-badge fr-badge--success">{{ filter[k] }}</small></div>
+                                <div class="fr-col fr-text--right">TEST</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </section>
+    {# <section class="fr-grid-row fr-pt-0 fr-grid-row--center">
         <div class="fr-col-12 fr-p-5v">
             <canvas id="sign-cloture" width="100%" height="25%" aria-label="Hello ARIA World" role="img"></canvas>
         </div>
@@ -25,10 +47,10 @@
         <div class="fr-col-12 fr-p-5v">
             <canvas id="villes" width="100%" height="25%" aria-label="Hello ARIA World" role="img"></canvas>
         </div>
-    </section>
+    </section> #}
 {% endblock %}
 {% block javascripts %}
-    <script>
+    {# <script>
         const labelsCloture = [{% for k,date in dates %}(new Date({{ k*1000 }})).toLocaleString('default', { month: 'short' }) +' '+ (new Date({{ k*1000 }})).getUTCFullYear(),{% endfor %}];
         const ctxCloture = document.getElementById('sign-cloture');
         const chartCloture = new Chart(ctxCloture, {
@@ -140,5 +162,5 @@
                 }
             }
         );
-    </script>
+    </script> #}
 {% endblock %}

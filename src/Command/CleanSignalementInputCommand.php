@@ -21,6 +21,7 @@ class CleanSignalementInputCommand extends Command
 
     private EntityManagerInterface $em;
 
+
     public function __construct(EntityManagerInterface $entityManager)
     {
         // best practices recommend to call the parent constructor first and

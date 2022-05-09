@@ -124,6 +124,7 @@ class Notification
         return $this;
     }
 
+
     public function getAffectation(): ?Affectation
     {
         return $this->affectation;

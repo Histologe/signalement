@@ -24,7 +24,14 @@
                 <button class="fr-btn fr-rounded fr-fi-mail-fill fr-btn--icon-left" form="front_contact"> Envoyer le message</button>
             </div>
             <div class="fr-col-12 fr-text--center fr-py-5w">
-                Par téléphone: {{ config.get.telTerritoire ?? 'Indisponible' }}
+                <strong>Par téléphone</strong>
+                <br>
+                <br>
+                {% if config.get.telContact %}
+                    <a href="tel:{{ config.get.telContact|replace({'.':''}) }}" class="fr-badge fr-badge--success fr-badge fr-p-3v fr-text--md" rel="noreferrer noopener">{{ config.get.telContact }}</a>
+                    {% else %}
+                    <span class="fr-badge fr-badge--error fr-badge fr-p-3v fr-text--md">indisponible</span>
+                {% endif %}
             </div>
         </section>
     </main>

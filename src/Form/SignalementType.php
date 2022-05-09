@@ -48,7 +48,7 @@ class   SignalementType extends AbstractType
                     'class' => 'fr-label'
                 ],
                 'label' => 'Avez-vous informé le propriétaire ou gestionnaire de ces nuisances ?',
-                'help' => 'Le cas échéant merci de précisez la ou les méthodes de contact.',
+                'help' => 'Le cas échéant merci de préciser la ou les méthodes de contact.',
                 'help_attr' => [
                     'class' => 'fr-hint-text'
                 ]
@@ -340,7 +340,7 @@ class   SignalementType extends AbstractType
                 'label_attr' => [
                     'class' => 'fr-label'
                 ],
-                'label' => "Autre",
+                'label' => "Autre (ex: Residence, lieu-dit,...)",
                 'required' => false
             ])
             ->add('nomProprio', TextType::class, [

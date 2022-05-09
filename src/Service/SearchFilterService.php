@@ -84,6 +84,7 @@ class SearchFilterService
         return $this->filters;
     }
 
+
     public function applyFilters(QueryBuilder $qb, array $filters): QueryBuilder
     {
         if (!empty($filters['searchterms'])) {

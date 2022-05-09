@@ -3,10 +3,10 @@
 namespace App\Controller;
 
 
-use App\Command\GetGeolocCommand;
 use App\Entity\Affectation;
 use App\Entity\Critere;
 use App\Entity\Criticite;
+use App\Entity\Notification;
 use App\Entity\Signalement;
 use App\Entity\Situation;
 use App\Entity\Suivi;
@@ -15,27 +15,16 @@ use App\Form\ClotureType;
 use App\Form\SignalementType;
 use App\Repository\PartenaireRepository;
 use App\Repository\SituationRepository;
-
+use App\Repository\TagRepository;
 use App\Service\AffectationCheckerService;
 use App\Service\CriticiteCalculatorService;
-use App\Service\NewsActivitiesSinceLastLoginService;
-use App\Service\NotificationService;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
-use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
-use Knp\Snappy\Pdf;
-use PHPUnit\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Component\Validator\Constraints\Positive;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[Route('/bo/s')]
@@ -50,13 +39,21 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/{uuid}', name: 'back_signalement_view')]
-    public function viewSignalement($uuid, Request $request, EntityManagerInterface $entityManager, PartenaireRepository $partenaireRepository, NewsActivitiesSinceLastLoginService $newsActivitiesSinceLastLoginService): Response
+    public function viewSignalement($uuid, Request $request, EntityManagerInterface $entityManager, TagRepository $tagsRepository, PartenaireRepository $partenaireRepository): Response
     {
         /** @var Signalement $signalement */
         $signalement = $entityManager->getRepository(Signalement::class)->findByUuid($uuid);
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checker->check($signalement, $this->getUser()))
             return $this->redirectToRoute('back_index');
         $title = 'Administration - Signalement #' . $signalement->getReference();
+        $this->getUser()->getNotifications()->filter(function (Notification $notification) use ($signalement, $entityManager) {
+            if($notification->getSignalement()->getId() === $signalement->getId()) {
+                $notification->setIsSeen(true);
+                $entityManager->persist($notification);
+            }
+        });
+        $entityManager->flush();
+
         $isRefused = $isAccepted = null;
         if ($isAffected = $this->checker->check($signalement, $this->getUser())) {
             switch ($isAffected->getStatut()) {
@@ -69,7 +66,6 @@ class BackSignalementController extends AbstractController
             }
         }
         $isClosedForMe = $this->checker->checkIfSignalementClosedForUser($this->getUser(), $signalement);
-        //$newsActivitiesSinceLastLoginService->update($signalement);
         $clotureForm = $this->createForm(ClotureType::class);
         $clotureForm->handleRequest($request);
         if ($clotureForm->isSubmitted() && $clotureForm->isValid()) {
@@ -83,6 +79,7 @@ class BackSignalementController extends AbstractController
                 $sujet = 'tous les partenaires';
                 $signalement->getAffectations()->map(function (Affectation $affectation) use ($entityManager) {
                     $affectation->setStatut(Affectation::STATUS_CLOSED);
+                 /*   $entityManager->getConnection()->connect();*/
                     $entityManager->persist($affectation);
                 });
             }
@@ -99,8 +96,6 @@ class BackSignalementController extends AbstractController
                 $isAffected->setMotifCloture($motifCloture);
                 $entityManager->persist($isAffected);
             }
-            /*$calculator = new CriticiteCalculatorService($signalement);
-            $signalement->setScoreCreation($calculator->calculate());*/
             $entityManager->persist($signalement);
             $entityManager->persist($suivi);
             $entityManager->flush();
@@ -124,7 +119,8 @@ class BackSignalementController extends AbstractController
             'isRefused' => $isRefused,
             'signalement' => $signalement,
             'partenaires' => $partenaireRepository->findAllOrByInseeIfCommune($signalement->getInseeOccupant()),
-            'clotureForm' => $clotureForm->createView()
+            'clotureForm' => $clotureForm->createView(),
+            'tags'=>$tagsRepository->findAllActive()
         ]);
     }
 
@@ -166,7 +162,7 @@ class BackSignalementController extends AbstractController
             $suivi->setIsPublic(false);
             $suivi->setDescription('Modification du signalement par un partenaire');
             $doctrine->getManager()->persist($suivi);
-            if (!$signalement->getInseeOccupant() || !isset($signalement->getGeoloc()['lat']) || !isset($signalement->getGeoloc()['lat'])) {
+            /*if (!$signalement->getInseeOccupant() || !isset($signalement->getGeoloc()['lat']) || !isset($signalement->getGeoloc()['lat'])) {
                 $adresse = $signalement->getAdresseOccupant() . ' ' . $signalement->getCpOccupant() . ' ' . $signalement->getVilleOccupant();
                 $response = json_decode($httpClient->request('GET', 'https://api-adresse.data.gouv.fr/search/?q=' . $adresse)->getContent(), true);
                 if (!empty($response['features'][0])) {
@@ -177,7 +173,7 @@ class BackSignalementController extends AbstractController
                     if ($insee)
                         $signalement->setInseeOccupant($insee);
                 }
-            }
+            }*/
             $doctrine->getManager()->persist($signalement);
             $doctrine->getManager()->flush();
             $this->addFlash('success', 'Signalement modifié avec succés !');

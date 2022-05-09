@@ -3,13 +3,21 @@
 namespace App\EventListener;
 
 use App\Entity\Affectation;
+use App\Entity\Notification;
+use App\Entity\Partenaire;
 use App\Entity\Signalement;
-use App\Entity\SignalementUserAffectation;
+use App\Entity\Suivi;
 use App\Entity\User;
 use App\Service\NotificationService;
 use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
+use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\PersistentCollection;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ActivityListener implements EventSubscriberInterface
@@ -20,7 +28,8 @@ class ActivityListener implements EventSubscriberInterface
     public function getSubscribedEvents(): array
     {
         return [
-            Events::postFlush,
+            Events::onFlush,
+            Events::preRemove,
         ];
     }
 
@@ -28,54 +37,118 @@ class ActivityListener implements EventSubscriberInterface
     {
         $this->notifier = $notificationService;
         $this->urlGenerator = $urlGenerator;
+        $this->tos = new ArrayCollection();
+        $this->uow = null;
+        $this->em = null;
     }
 
-    public function postFlush(PostFlushEventArgs $args): void
+    public function onFlush(OnFlushEventArgs $args): void
     {
-        $entityManager = $args->getEntityManager();
-        foreach ($entityManager->getUnitOfWork()->getIdentityMap() as $entities) {
-            foreach ($entities as $entity) {
-                $changeSet = $entityManager->getUnitOfWork()->getEntityChangeSet($entity);
-                if ($entity instanceof Signalement) {
-                    /* if (!$entityManager->contains($entity)) {
-                         $emails = [$entity->getMailDeclarant() ?? null, $entity->getMailOccupant() ?? null];
-                         array_map(function ($email) use ($entity) {
-                             null !== $this->notifier->send(NotificationService::TYPE_ACCUSE_RECEPTION, $email, ['signalement' => $entity]);
-                         }, $emails);
-                     } elseif(!empty($changeSet['statut'])) {
-                         if ($changeSet['statut'][1] === Signalement::STATUS_ACTIVE) {
-                             $emails = [$entity->getMailDeclarant() ?? null, $entity->getMailOccupant() ?? null];
-                             array_map(function ($email) use ($entity) {
-                                 null !== $email && $this->notifier->send(NotificationService::TYPE_SIGNALEMENT_VALIDE, $email, [
-                                     'signalement' => $entity,
-                                     'lien_suivi' => $this->urlGenerator->generate('front_suivi_signalement', ['code' => $entity->getCodeSuivi()], $this->urlGenerator::ABSOLUTE_URL)
-                                 ]);
-                             }, $emails);
-                         }
-                     }*/
-                }
-                if ($entity instanceof Affectation) {
-                    if ($entity->getStatut() === Affectation::STATUS_WAIT) {
-                        /*$entity->getPartenaire()->getUsers()->map(function (User $user) use ($entity) {
-                            if ($user->getIsMailingActive() && $user->getStatut() === User::STATUS_ACTIVE) {
-                                $this->notifier->send(NotificationService::TYPE_AFFECTATION, $user->getEmail(), [
-                                    'link' => $this->urlGenerator->generate('back_signalement_view', [
-                                        'uuid' => $entity->getSignalement()->getUuid()
-                                    ], $this->urlGenerator::ABSOLUTE_PATH)
-                                ]);
-                            }
-                        }) ;*/
-                    }
-                }
-                if ($entity instanceof User) {
-                  /*  if (!$entity->getLastLoginAt() && !$entity->getPassword()) {
-                        $this->notifier->send(NotificationService::TYPE_ACTIVATION, $entity->getEmail(), [
-                            'link' => $this->urlGenerator->generate('login_activation', [], $this->urlGenerator::ABSOLUTE_PATH)
-                        ]);
-                    }*/
+        $this->em = $args->getEntityManager();
+        $this->uow = $this->em->getUnitOfWork();
+        foreach ($this->uow->getScheduledEntityInsertions() as $entity) {
+            if ($entity instanceof Signalement) {
+                $this->notifyAdmins($entity, Notification::TYPE_NEW_SIGNALEMENT);
+                $this->sendMail($entity, NotificationService::TYPE_NEW_SIGNALEMENT);
+            }
+            if ($entity instanceof Affectation) {
+                $partenaire = $entity->getPartenaire();
+                $this->notifyPartner($partenaire, $entity, Notification::TYPE_AFFECTATION, NotificationService::TYPE_AFFECTATION);
+            }
+            if ($entity instanceof Suivi) {
+                $this->notifyAdmins($entity, Notification::TYPE_SUIVI);
+                $entity->getSignalement()->getAffectations()->filter(function (Affectation $affectation) use ($entity) {
+                    $partenaire = $affectation->getPartenaire();
+                    $this->notifyPartner($partenaire, $entity, Notification::TYPE_SUIVI, NotificationService::TYPE_NOUVEAU_SUIVI_BACK);
+                });
+                if ($entity->getIsPublic()) {
+                    $this->notifier->send(NotificationService::TYPE_NOUVEAU_SUIVI, [$entity->getSignalement()->getMailDeclarant(), $entity->getSignalement()->getMailOccupant()], [
+                        'signalement' => $entity->getSignalement(),
+                        'lien_suivi' => $this->urlGenerator->generate('front_suivi_signalement', ['code' => $entity->getSignalement()->getCodeSuivi()], 0)
+                    ]);
                 }
             }
         }
+    }
+
+    public function preRemove(LifecycleEventArgs $args)
+    {
+        $entity = $args->getObject();
+        if ($entity instanceof Affectation) {
+            $entity->getNotifications()->filter(function (Notification $notification) use ($args) {
+                $args->getObjectManager()->remove($notification);
+            });
+            $args->getObjectManager()->flush();
+        }
+    }
+
+    private function notifyAdmins($entity, $inAppType)
+    {
+        $admins = $this->em->getRepository(User::class)->createQueryBuilder('u')
+            ->andWhere('JSON_CONTAINS(u.roles, :role) = 1')
+            ->orWhere('JSON_CONTAINS(u.roles, :role2) = 1')
+            ->setParameter('role', '"ROLE_ADMIN"')
+            ->setParameter('role2', '"ROLE_ADMIN_TERRITOIRE"')
+            ->getQuery()->getResult();
+        foreach ($admins as $admin) {
+            $this->createInAppNotification($admin, $entity, $inAppType);
+            $this->tos[] = $admin->getEmail();
+        }
+    }
+
+    private function notifyPartner($partner, $entity, $inAppType, $mailType)
+    {
+        if ($partner->getEmail()) {
+            $this->tos->add($partner->getEmail());
+        }
+        $partner->getUsers()->filter(function (User $user) use ($inAppType, $entity) {
+            if ($user->getStatut() !== User::STATUS_ARCHIVE) {
+                $this->createInAppNotification($user, $entity, $inAppType);
+                if ($user->getIsMailingActive())
+                    $this->tos->add($user->getEmail());
+            }
+        });
+        $this->sendMail($entity, $mailType);
+    }
+
+    private function sendMail($entity, $mailType)
+    {
+        if (!$this->tos->isEmpty()) {
+            if ($entity instanceof Signalement)
+                $uuid = $entity->getUuid();
+            else
+                $uuid = $entity->getSignalement()->getUuid();
+            $this->notifier->send($mailType, array_unique($this->tos->toArray()), [
+                'link' => $this->urlGenerator->generate('back_signalement_view', [
+                    'uuid' => $uuid
+                ], 0)
+            ]);
+        }
+    }
+
+    private function createInAppNotification($user, $entity, $type)
+    {
+        $notification = new Notification();
+        $notification->setUser($user);
+        switch ($type) {
+            case Notification::TYPE_SUIVI:
+                $notification->setSuivi($entity);
+                $notification->setSignalement($entity->getSignalement());
+                break;
+            case Notification::TYPE_NEW_SIGNALEMENT:
+                $notification->setSignalement($entity);
+                break;
+            default:
+                $notification->setAffectation($entity);
+                $notification->setSignalement($entity->getSignalement());
+                break;
+        }
+        $notification->setType($type);
+        $this->em->persist($notification);
+        $this->uow->computeChangeSet(
+            $this->em->getClassMetadata(Notification::class),
+            $notification
+        );
     }
 
 }

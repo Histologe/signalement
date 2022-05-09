@@ -34,6 +34,7 @@ class ExceptionListener
                 'url' => $_SERVER['SERVER_NAME'],
                 'code' => $event->getThrowable()->getCode(),
                 'error' => $event->getThrowable()->getMessage(),
+                'req' => $event->getRequest(),
                 'signalement' => $event->getRequest()->get('signalement'),
                 'attachment' => $attachment
             ]);

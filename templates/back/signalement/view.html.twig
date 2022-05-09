@@ -12,8 +12,9 @@
     {% if signalement.statut is not same as(1) and not isClosed and not isClosedForMe and ((isAffected and isAccepted)) or is_granted('ROLE_ADMIN_TERRITOIRE') %}
         {% include 'back/signalement/modal_cloture.html.twig' %}
     {% endif %}
-    <section class="fr-p-5v {{ isClosedForMe or signalement.statut is same as(6) or signalement.statut is same as(8) ? 'signalement-invalid':'' }}"
-             id="signalement-{{ signalement.id }}-content">
+    <section
+            class="fr-p-5v {{ isClosedForMe or signalement.statut is same as(6) or signalement.statut is same as(8) ? 'signalement-invalid':'' }}"
+            id="signalement-{{ signalement.id }}-content">
         <header>
             <div class="fr-grid-row fr-grid-row--middle ">
                 <div class="fr-col-12 fr-col-md-6">
@@ -73,14 +74,17 @@
                                    value="{{ csrf_token('signalement_affectation_response_'~signalement.id) }}">
                         </form>
                     {% elseif needValidation and not isClosedForMe and is_granted('ROLE_ADMIN_TERRITOIRE') %}
-                        <form id="signalement-validation-response-form" action="{{ path('back_signalement_validation_response',{uuid:signalement.uuid}) }}" class="tinyCheck">
+                        <form id="signalement-validation-response-form"
+                              action="{{ path('back_signalement_validation_response',{uuid:signalement.uuid}) }}"
+                              class="tinyCheck">
                             <button class="fr-btn fr-fi-checkbox-circle-fill fr-btn--icon-left"
                                     name="signalement-validation-response[accept]" value="1"
                                     onclick="return confirm('Êtes-vous certain de vouloir valider ce signalement ?')">
                                 Valider ce signalement
                             </button>
-                            <a href="#" class="fr-btn fr-btn--danger fr-fi-close-fill fr-btn--icon-left" aria-controls="refus-signalement-modal" data-fr-opened="false">
-                               Refuser ce signalement
+                            <a href="#" class="fr-btn fr-btn--danger fr-fi-close-fill fr-btn--icon-left"
+                               aria-controls="refus-signalement-modal" data-fr-opened="false">
+                                Refuser ce signalement
                             </a>
                             {% include 'back/signalement/modal_refus_signalement.html.twig' %}
                             <input type="hidden" name="_token"
@@ -96,7 +100,7 @@
                                     Rouvrir pous tous
                                 </button>
                             {% endif %}
-                            {% if signalement.statut is not same as(6) or is_granted('ROLE_ADMIN_TERRITOIRE')  %}
+                            {% if signalement.statut is not same as(6) or is_granted('ROLE_ADMIN_TERRITOIRE') %}
                                 <button class="fr-btn fr-fi-lock-fill fr-btn--icon-left reopen"
                                         name="signalement-action[reopen]" value="1"
                                         onclick="return confirm('Êtes-vous certain de vouloir rouvrir ce signalement ?')">
@@ -112,13 +116,98 @@
             </div>
         </header>
         <hr class="fr-pb-1v">
-        <div class="fr-grid-row fr-grid-row--middle">
+        <template id="tags_tooltip_template">
+            <div class="fr-grid-row fr-grid-row--middle fr-background-alt--grey fr-p-3v fr-rounded fr-text--left fr-my-1v">
+                <div class="fr-col-12">
+                    <strong class="fr-fi-information-fill fr-icon--sm fr-text-label--blue-france"> Gestion des
+                        étiquettes</strong>
+                    <span class="fr-hint-text">Ci-dessous la liste des étiquettes existantes.</span>
+                </div>
+                {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
+                    <div class="fr-col-12">
+                        <form action="{{ path('back_tag_create') }}" method="POST" name="new-tag-form">
+                            <div class="fr-grid-row fr-grid-row--no-gutters">
+                                <label class="fr-col-11">
+                                    <input type="text" class="fr-input " name="new-tag-label" required minlength="2">
+                                    <span class="fr-error-text fr-hidden">Veuillez saisir un label</span>
+                                </label>
+                                <button class="fr-btn fr-col-1 fr-fi-add-line" type="submit"></button>
+                            </div>
+                            <input type="hidden" name="_token" value="{{ csrf_token('signalement_create_tag') }}">
+                        </form>
+                    </div>
+                {% endif %}
+                <div class="fr-col-12" id="tags_inactive_container">
+                    <template id="tag_template">
+                        <span class="fr-badge fr-badge--blue-ecume fr-fi-add-line fr-m-1v"
+                              data-value="__ID__"
+                              data-tag-add="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}"
+                              data-token="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}"
+                              data-remove-url="{{ path('back_tag_delete') }}/__ID__?_token={{ csrf_token('signalement_delete_tag') }}">__LABEL__
+                        </span>
+                    </template>
+                    {% for tag in tags|filter(t=>t not in signalement.tags) %}
+                        <span class="fr-badge fr-badge--blue-ecume fr-fi-add-line fr-m-1v"
+                              data-value="{{ tag.id }}"
+                              data-tag-add="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}"
+                              data-token="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}"
+                              data-remove-url="{{ path('back_tag_delete',{id:tag.id}) }}?_token={{ csrf_token('signalement_delete_tag') }}">{{ tag.label }}
+                            {% if is_granted('ROLE_ADMIN_TERRITOIRE') %}
+                                &nbsp;&nbsp;<span
+                                    class="fr-fi-delete-line fr-icon--sm fr-mt-2v fr-text-label--red-marianne tag--deleter"></span>
+                            {% endif %}
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </template>
+        <div class="fr-grid-row fr-grid-row--middle fr-my-3v">
+            {# <div class="fr-col-12 fr-col-md-9">
+                <strong class="fr-fi-information-fill fr-icon--sm fr-text-label--blue-france"> Etiquettes</strong>
+                <span class="fr-hint-text">Ci-dessous la liste des étiquettes attribuées à ce signalement. Vous pouvez en ajouter au besoin</span>
+            </div> #}
+
+            <div class="fr-col-10 fr-col-md-11" id="tags_active_container">
+                {% set visible = 'fr-hidden' %}
+                {% for tag in signalement.tags %}
+                    <span class="fr-badge fr-badge--blue-ecume fr-fi-close-line fr-m-1v" data-value="{{ tag.id }}"
+                          data-tag-delete="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}"
+                          data-token="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}"
+                          data-remove-url="{{ path('back_tag_delete',{id:tag.id}) }}?_token={{ csrf_token('signalement_delete_tag') }}">{{ tag.label }}&nbsp;&nbsp;<span
+                                class="fr-fi-delete-line fr-icon--sm fr-mt-2v fr-text-label--red-marianne tag--deleter fr-hidden"></span></span>
+                {% else %}
+                    {% set visible = '' %}
+                {% endfor %}
+                <em class="fr-text-default--warning fr-fi-close-line fr-icon--xs {{ visible }}"> <small>Aucune étiquette
+                        attribuée à ce signalement.</small></em>
+                {# <span class="fr-badge fr-badge--blue-cumulus">PROVENANCE ARS</span>
+                <span class="fr-badge fr-badge--blue-ecume">LOCATAIRE MECHANT</span>
+                <span class="fr-badge fr-badge--brown-cafe-creme">COQUILLAGES</span>
+                <span class="fr-badge fr-badge--brown-opera">CRUSTACés</span>
+                <span class="fr-badge fr-badge--brown-caramel">LOREM</span>
+                <span class="fr-badge fr-badge--green-archipel">RSD</span>
+                <span class="fr-badge fr-badge--green-bourgeon">IPSUM</span>
+                <span class="fr-badge fr-badge--green-emeraude">IPSUM</span>
+                <span class="fr-badge fr-badge--green-menthe">IPSUM</span>
+                <span class="fr-badge fr-badge--green-tilleul-verveine">IPSUM</span>
+                <span class="fr-badge fr-badge--orange-terre-battue">IPSUM</span>
+                <span class="fr-badge fr-badge--pink-macaron">IPSUM</span>
+                <span class="fr-badge fr-badge--pink-tuile">IPSUM</span>
+                <span class="fr-badge fr-badge--purple-glycine">IPSUM</span>
+                <span class="fr-badge fr-badge--yellow-moutarde">IPSUM</span>
+                <span class="fr-badge fr-badge--yellow-tournesol">IPSUM</span> #}
+            </div>
+            <div class="fr-col-2 fr-col-md-1 fr-text--right">
+                <button class="fr-btn fr-fi-equalizer-line" id="tags_select_tooltip_btn"></button>
+            </div>
+        </div>
+        <div class="fr-grid-row fr-grid-row--middle fr-mb-3v">
             <div class="fr-col-12 fr-col-md-9">
                 <strong class="fr-fi-chat-quote-fill fr-icon--sm fr-text-label--blue-france"> Description par
                     l'usager</strong>
                 <span class="fr-hint-text">Ci-dessous le détails du signalement tel que rapporté par l'usager</span>
             </div>
-            {#{% if signalement.statut is not same as(0) and not isClosedForMe or isAffected and isAccepted %}
+            {# {% if signalement.statut is not same as(0) and not isClosedForMe or isAffected and isAccepted %}
                 <div class="fr-col-12 fr-col-md-3 fr-text--right">
                     <form action="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}" method="POST">
                         <div class="fr-select-group">
@@ -146,7 +235,7 @@
                                value="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}">
                     </form>
                 </div>
-            {% endif %}#}
+            {% endif %} #}
             <div class="fr-col-12">
                 <ul class="fr-background-alt--blue-france fr-list--icon-img fr-rounded">
                     <li class="fr-p-5v">
@@ -155,7 +244,7 @@
                 </ul>
             </div>
         </div>
-        <hr>
+
         {# {{ dump(signalement) }} #}
         <div class="fr-grid-row">
             <div class="fr-col-12 fr-col-md-6">
@@ -279,17 +368,21 @@
                             {% if signalement.dateVisite %}
                                 <p class="fr-badge fr-badge--success">{{ signalement.dateVisite|date('d.m.Y') }}</p>
                             {% else %}
-                                <p class="fr-badge fr-badge--error fr-mb-3v" id="signalement-toggle-visite-calendar">NON</p>
-                                <form action="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}" method="POST" class="needs-validation" novalidate>
+                                <p class="fr-badge fr-badge--error fr-mb-3v" id="signalement-toggle-visite-calendar">
+                                    NON</p>
+                                <form action="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}"
+                                      method="POST" class="needs-validation" novalidate>
                                     <div class="fr-display-inline-flex">
                                         <div class="fr-input-group">
                                             <input type="date" class="fr-input" name="value" required>
-                                            <p class="fr-error-text fr-hidden">Vous devez saisir une date valide (JJ/MM/AAAA)</p>
+                                            <p class="fr-error-text fr-hidden">Vous devez saisir une date valide
+                                                (JJ/MM/AAAA)</p>
                                         </div>
                                         <button class="fr-btn fr-fi-check-line" type="submit"></button>
                                     </div>
                                     <input type="hidden" name="item" value="DateVisite">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}">
+                                    <input type="hidden" name="_token"
+                                           value="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}">
                                 </form>
                             {% endif %}
                         </li>
@@ -443,10 +536,12 @@
                 </div>
             {% endif %}
         </div>
-        <div class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters fr-my-3v" style="position: relative;z-index: 1001">
+        <div class="fr-grid-row fr-grid-row--middle fr-grid-row--gutters fr-my-3v"
+             style="position: relative;z-index: 1001">
             {% for index,photo in signalement.photos %}
                 <div class="fr-col-6 fr-col-md-2 fr-rounded signalement-file-item">
-                    <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center part-infos-hover" data-user="{{ photo.username ?? 'N/R'  }}" data-mail="{{ photo.date ?? 'N/R' }}"
+                    <div class="fr-px-5w fr-py-10w fr-rounded fr-border fr-text--center part-infos-hover"
+                         data-user="{{ photo.username ?? 'N/R' }}" data-mail="{{ photo.date ?? 'N/R' }}"
                          style="background: url('{{ asset('_up/'~photo.file) }}')no-repeat center center/cover">
                         <button class="fr-btn fr-btn--sm fr-fi-eye-line img-box" title="Voir la photo"
                                 onclick="img_box('{{ asset('_up/'~photo.file) }}')"></button>
@@ -459,18 +554,20 @@
                             {% endif %}
                         {% endif %}
                     </div>
-                   {# <div class="fr-grid-row">
+                    {# <div class="fr-grid-row">
                         <div class="fr-col-12 fr-text--center">
                             {{ photo.titre ?? 'image' }}
                         </div>
-                    </div>#}
+                    </div> #}
                 </div>
             {% endfor %}
         </div>
         {% for doc in signalement.documents %}
-            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-3v signalement-file-item" style="position: relative;z-index: 1001">
+            <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-3v signalement-file-item"
+                 style="position: relative;z-index: 1001">
                 <div class="fr-col-10">
-                    <a href="{{ asset('_up/'~doc.file) }}" target="_blank" class="fr-link part-infos-hover" data-user="{{ doc.username ?? 'N/R'  }}" data-mail="{{ doc.date ?? 'N/R' }}">{{ doc.titre }}</a>
+                    <a href="{{ asset('_up/'~doc.file) }}" target="_blank" class="fr-link part-infos-hover"
+                       data-user="{{ doc.username ?? 'N/R' }}" data-mail="{{ doc.date ?? 'N/R' }}">{{ doc.titre }}</a>
                 </div>
                 <div class="fr-col-2 fr-text--right">
                     <a href="{{ asset('_up/'~doc.file) }}"
@@ -505,38 +602,55 @@
                         {# STATUT EN ATTENTE #}
                         <div class="fr-col-md-2">
                             <div class="fr-background-contrast--info fr-rounded fr-p-2v fr-input-wrap fr-fi-refresh-line">
-                                <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]</strong>
+                                <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}
+                                        ]</strong>
                                     <br>En attente.</small>
-                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} <br>par <span class="part-infos-hover" data-user="{{ affectation.affectedBy.nomComplet }}" data-mail="{{ affectation.affectedBy.email }}">{{ affectation.affectedBy.nomComplet }}</span></span>
+                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} <br>par <span
+                                            class="part-infos-hover" data-user="{{ affectation.affectedBy.nomComplet }}"
+                                            data-mail="{{ affectation.affectedBy.email }}">{{ affectation.affectedBy.nomComplet }}</span></span>
                             </div>
                         </div>
                     {% elseif affectation.statut is same as(1) %}
                         {# STATUT ACCEPTE #}
                         <div class="fr-col-md-2">
                             <div class="fr-background-contrast--success fr-rounded fr-p-2v fr-input-wrap fr-fi-check-line">
-                                <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]</strong>
+                                <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}
+                                        ]</strong>
                                     <br>Accepté.</small>
-                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} <br>par <span class="part-infos-hover" data-user="{{ affectation.affectedBy.nomComplet }}" data-mail="{{ affectation.affectedBy.email }}">{{ affectation.affectedBy.nomComplet }}</span></span>
-                                <span class="fr-hint-text"><strong>Accepté le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} <br>par <span class="part-infos-hover" data-user="{{ affectation.answeredBy.nomComplet }}" data-mail="{{ affectation.answeredBy.email }}">{{ affectation.answeredBy.nomComplet }}</span></span>
+                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} <br>par <span
+                                            class="part-infos-hover" data-user="{{ affectation.affectedBy.nomComplet }}"
+                                            data-mail="{{ affectation.affectedBy.email }}">{{ affectation.affectedBy.nomComplet }}</span></span>
+                                <span class="fr-hint-text"><strong>Accepté le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} <br>par <span
+                                            class="part-infos-hover" data-user="{{ affectation.answeredBy.nomComplet }}"
+                                            data-mail="{{ affectation.answeredBy.email }}">{{ affectation.answeredBy.nomComplet }}</span></span>
                             </div>
                         </div>
                     {% elseif affectation.statut is same as(2) %}
                         {# STATUT REFUSE #}
                         <div class="fr-col-md-2">
                             <div class="fr-background-contrast--error fr-rounded fr-p-2v fr-input-wrap fr-fi-close-line">
-                                <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]</strong>
+                                <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}
+                                        ]</strong>
                                     <br>Refusé.</small>
-                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} <br>par <span class="part-infos-hover" data-user="{{ affectation.affectedBy.nomComplet }}" data-mail="{{ affectation.affectedBy.email }}">{{ affectation.affectedBy.nomComplet }}</span></span>
-                                <span class="fr-hint-text"><strong>Refusé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} <br>par <span class="part-infos-hover" data-user="{{ affectation.answeredBy.nomComplet }}" data-mail="{{ affectation.answeredBy.email }}">{{ affectation.answeredBy.nomComplet }}</span></span>
+                                <span class="fr-hint-text"><strong>Affecté le :</strong> {{ affectation.createdAt|date('d/m/Y') }} <br>par <span
+                                            class="part-infos-hover" data-user="{{ affectation.affectedBy.nomComplet }}"
+                                            data-mail="{{ affectation.affectedBy.email }}">{{ affectation.affectedBy.nomComplet }}</span></span>
+                                <span class="fr-hint-text"><strong>Refusé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }} <br>par <span
+                                            class="part-infos-hover" data-user="{{ affectation.answeredBy.nomComplet }}"
+                                            data-mail="{{ affectation.answeredBy.email }}">{{ affectation.answeredBy.nomComplet }}</span></span>
                             </div>
                         </div>
                     {% elseif affectation.statut is same as(3) %}
                         {# STATUT REFUSE #}
                         <div class="fr-col-md-2">
                             <div class="fr-background-contrast--error fr-rounded fr-p-2v fr-input-wrap fr-fi-lock-fill">
-                                <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}]</strong>
+                                <small><strong>[{{ affectation.partenaire ? affectation.partenaire.nom : 'AUCUN' }}
+                                        ]</strong>
                                     <br>Cloturé.</small>
-                                <span class="fr-hint-text"><strong>Cloturé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }}<br>par <span class="part-infos-hover" data-user="{{ affectation.answeredBy ? affectation.answeredBy.nomComplet }}" data-mail="{{ affectation.answeredBy ? affectation.answeredBy.email }}">{{ affectation.answeredBy ? affectation.answeredBy.nomComplet }}</span></span>
+                                <span class="fr-hint-text"><strong>Cloturé le :</strong> {{ affectation.answeredAt|date('d/m/Y') }}<br>par <span
+                                            class="part-infos-hover"
+                                            data-user="{{ affectation.answeredBy ? affectation.answeredBy.nomComplet }}"
+                                            data-mail="{{ affectation.answeredBy ? affectation.answeredBy.email }}">{{ affectation.answeredBy ? affectation.answeredBy.nomComplet }}</span></span>
                             </div>
                         </div>
                     {% endif %}
@@ -570,10 +684,14 @@
                         <div class="fr-grid-row">
                             <div class="fr-col-6">
                                 <button type="submit" class="fr-btn fr-fi-eye-off-fill fr-btn--icon-left"
-                                        name="signalement-add-suivi[isPublic]" value="0" form="signalement-add-suivi-form" disabled> Enregistrer
+                                        name="signalement-add-suivi[isPublic]" value="0"
+                                        form="signalement-add-suivi-form" disabled> Enregistrer
                                 </button>
                                 <button type="submit" class="fr-btn fr-btn--secondary fr-fi-eye-fill fr-btn--icon-left"
-                                        name="signalement-add-suivi[isPublic]"  form="signalement-add-suivi-form" disabled value="1" onclick="return confirm('Attention, ce suivi sera visible par l\'usager.\nVoulez-vous vraiment envoyer ce message de suivi ?')"> Enregistrer et envoyer à
+                                        name="signalement-add-suivi[isPublic]" form="signalement-add-suivi-form"
+                                        disabled value="1"
+                                        onclick="return confirm('Attention, ce suivi sera visible par l\'usager.\nVoulez-vous vraiment envoyer ce message de suivi ?')">
+                                    Enregistrer et envoyer à
                                     l'usager
                                 </button>
                             </div>
@@ -594,13 +712,17 @@
         {% endif %}
         {% for suivi in signalement.suivis|reverse %}
             <div class="fr-grid-row fr-grid-row--middle fr-stripped fr-rounded fr-p-5v {% if not suivi.createdBy %}fr-background-alt--orange-terre-battue{% endif %}">
-                <div class="fr-col-2 {% if suivi.createdBy %}part-infos-hover{% endif %}" {% if suivi.createdBy %}data-user="{{ suivi.createdBy.nomComplet }}" data-mail="{{ suivi.createdBy.email }}"{% endif %}>
-                    <strong > {{ suivi.createdBy ? (suivi.createdBy.nom|upper~'. '~ suivi.createdBy.prenom|capitalize) : signalement.nomDeclarant ?? signalement.nomOccupant }}</strong> <br>
-                    <small>[{{ suivi.createdBy ? (suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun') : 'DECLARANT' }}]</small> <br>
+                <div class="fr-col-2 {% if suivi.createdBy %}part-infos-hover{% endif %}"
+                     {% if suivi.createdBy %}data-user="{{ suivi.createdBy.nomComplet }}"
+                     data-mail="{{ suivi.createdBy.email }}"{% endif %}>
+                    <strong> {{ suivi.createdBy ? (suivi.createdBy.nom|upper~'. '~ suivi.createdBy.prenom|capitalize) : signalement.nomDeclarant ?? signalement.nomOccupant|upper~' '~signalement.prenomOccupant|capitalize }}</strong>
+                    <br>
+                    <small>[{{ suivi.createdBy ? (suivi.createdBy.partenaire ? suivi.createdBy.partenaire.nom : 'Aucun') : 'DECLARANT' }}
+                        ]</small> <br>
                     <small>{{ suivi.createdAt|date('d/m/Y') }}</small>
                 </div>
                 <div class="fr-col-9 bloc-suivi-content-row fr-pl-3v">
-                     {{ suivi.description|replace({'&t=___TOKEN___':''})|replace({'?t=___TOKEN___':''})|raw }}
+                    {{ suivi.description|replace({'&t=___TOKEN___':''})|replace({'?t=___TOKEN___':''})|raw }}
                 </div>
                 <div class="fr-col-1 fr-text--right">
                     {% if suivi.isPublic %}
@@ -616,14 +738,61 @@
 {% block javascripts %}
     <script>
         tippy('.part-infos-hover', {
-            content:(reference) => '<strong style="white-space: nowrap">'+reference.getAttribute('data-user')+'</strong>' + '<hr class="fr-pb-1v"><span style="white-space: nowrap">'+reference.getAttribute('data-mail')+'</span>',
+            content: (reference) => '<strong style="white-space: nowrap">' + reference.getAttribute('data-user') + '</strong>' + '<hr class="fr-pb-1v"><span style="white-space: nowrap">' + reference.getAttribute('data-mail') + '</span>',
             allowHTML: true,
             interactive: true,
             theme: 'light-border',
             arrow: true,
             followCursor: true,
-            maxWidth:"100%"
+            maxWidth: "100%"
         });
+        tippy('#tags_select_tooltip_btn', {
+            content: (reference) => {
+                let template = document.querySelector('template#tags_tooltip_template');
+                let newEl = document.importNode(template.content, true);
+                newEl.querySelectorAll('[data-tag-add]').forEach(el => {
+                    el.addEventListener('click', addTagEvent)
+                });
+                newEl.querySelector('form[name="new-tag-form"]')?.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    let form = event.target;
+                    let data = new FormData(form);
+                    fetch(form.getAttribute('action'), {
+                        method: 'POST',
+                        body: data
+                    }).then(r => {
+                        r.json().then(res => {
+                            form.reset();
+                            let container = document.querySelector(`#tags_inactive_container`);
+                            let template = document.querySelector(`template#tag_template`).content;
+                            let tag = template.querySelector('span:first-child').cloneNode(true);
+                            tag.setAttribute('data-value', res.tag.id);
+                            tag.innerHTML = res.tag.label + '&nbsp;&nbsp;';
+                            let deleter = document.createElement('span');
+                            deleter.classList.add('fr-fi-delete-line','fr-mt-2v','fr-text-label--red-marianne','fr-icon--sm')
+                            deleter.addEventListener('click', persistRemoveTagEvent);
+                            tag.appendChild(deleter);
+                            tag.addEventListener('click', addTagEvent);
+                            container.appendChild(tag);
+                        });
+                    }).catch(e => {
+                    });
+                });
+                /*console.log(template.firstChild);*/
+                newEl?.querySelectorAll('span.tag--deleter')?.forEach(tagDeleter => {
+                    tagDeleter.addEventListener('click', persistRemoveTagEvent);
+                });
+                return newEl;
+            },
+            trigger: 'click',
+            hideOnClick: 'toggle',
+            allowHTML: true,
+            interactive: true,
+            theme: 'light-border',
+            placement: "left",
+            maxWidth: "500px",
+            arrow: false,
+        })
     </script>
     <script>
         {% if isClosedForMe or signalement.statut is same as(6) %}
@@ -668,24 +837,6 @@
         L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
             attribution: '&copy;'
         }).addTo(map);
-        /*var regions = L.geoJSON(null, {
-            pointToLayer: function (pointFeature, latlng) {
-                return L.circleMarker(latlng, {
-                    radius:6,
-                    opacity: .8
-                })
-                    .bindPopup("<p><b> " + pointFeature.properties.EPCI + "</b></p>");
-            }
-        });
-        fetch('{{ asset('test.geojson') }}',{
-            method:'GET',
-        }).then(r=>r.json().then(res=>{
-            res.features.map((feature,index)=>{
-                regions.addData(feature)
-            })
-            regions.addTo(map);
-            map.fitBounds(regions.getBounds());
-        }))*/
         L.marker([{{ signalement.geoloc.lng }}, {{ signalement.geoloc.lat }}]).addTo(map)
             .bindPopup('{{ signalement.adresseOccupant~', '~signalement.cpOccupant~' '~signalement.villeOccupant|upper }}')
             .openPopup();

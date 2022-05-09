@@ -2,11 +2,17 @@
 
 namespace App\Repository;
 
+use App\Entity\Affectation;
+use App\Entity\Partenaire;
 use App\Entity\Signalement;
+use App\Entity\Suivi;
 use App\Entity\User;
+use App\Service\SearchFilterService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -19,41 +25,40 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class SignalementRepository extends ServiceEntityRepository
 {
+    const ARRAY_LIST_PAGE_SIZE = 30;
+    const MARKERS_PAGE_SIZE = 300;
+
+    private SearchFilterService $searchFilterService;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Signalement::class);
+        $this->searchFilterService = new SearchFilterService();
     }
 
-
-    // /**
-    //  * @return Signalement[] Returns an array of Signalement objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function findAllWithGeoData($user, $options, int $offset)
     {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('s.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $firstResult = ($offset !== 0 ? $offset : self::MARKERS_PAGE_SIZE) - self::MARKERS_PAGE_SIZE;
+        $qb = $this->createQueryBuilder('s');
+        $qb->select('PARTIAL s.{id,details,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut,createdAt,geoloc},
+            PARTIAL a.{id,partenaire,createdAt},
+            PARTIAL criteres.{id,label},
+            PARTIAL partenaire.{id,nom}');
 
-
-    public function findAllWithGeoData()
-    {
-        return $this->createQueryBuilder('s')
-            ->select('s.geoloc')
-            ->addSelect('s.uuid')
-            ->addSelect('s.reference')
-            ->where("JSON_EXTRACT(s.geoloc,'$.lat') != ''")
+        $qb->leftJoin('s.affectations', 'a');
+        $qb->leftJoin('s.criteres', 'criteres')
+            ->leftJoin('a.partenaire', 'partenaire');
+        if ($user)
+            $qb->andWhere('partenaire = :partenaire')->setParameter('partenaire', $user->getPartenaire());
+        $qb = $this->searchFilterService->applyFilters($qb, $options);
+        $qb->addSelect('a', 'partenaire',  'criteres');
+        $qb->groupBy('s.id');
+        return $qb->andWhere("JSON_EXTRACT(s.geoloc,'$.lat') != ''")
             ->andWhere("JSON_EXTRACT(s.geoloc,'$.lng') != ''")
             ->andWhere('s.statut != 7')
-            ->getQuery()
-            ->getResult();
+            ->setFirstResult($firstResult)
+            ->setMaxResults(self::MARKERS_PAGE_SIZE)
+            ->getQuery()->getArrayResult();
     }
 
     public function findAllWithAffectations($year)
@@ -78,6 +83,17 @@ class SignalementRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function countByCity()
+    {
+        $qb = $this->createQueryBuilder('s');
+        $qb->select('COUNT(s.id) as count')
+            ->addSelect('s.villeOccupant');
+        $qb->indexBy('s', 's.villeOccupant');
+        $qb->groupBy('s.villeOccupant');
+        return $qb->getQuery()
+            ->getResult();
+    }
+
     /**
      * @throws NonUniqueResultException
      */
@@ -88,72 +104,47 @@ class SignalementRepository extends ServiceEntityRepository
             ->setParameter('uuid', $uuid);
         $qb
             ->leftJoin('s.situations', 'situations')
+            ->leftJoin('s.tags', 'tags')
             ->leftJoin('s.affectations', 'affectations')
             ->leftJoin('situations.criteres', 'criteres')
             ->leftJoin('criteres.criticites', 'criticites')
             ->leftJoin('affectations.partenaire', 'partenaire')
             ->addSelect('situations', 'affectations', 'criteres', 'criticites', 'partenaire');
-        /*$qb->leftJoin('s.situations','situations');
-        $qb->leftJoin('situations.criteres','criteres');
-        $qb->leftJoin('criteres.criticites','criticites');
-        $qb->leftJoin('s.affectations','affectations');
-        $qb->leftJoin('affectations.partenaire','partenaire');
-        $qb->leftJoin('partenaire.users','user');
-        $qb->leftJoin('suivis.createdBy','createdBy');
-        $qb->addSelect('affectations','partenaire','user','situations','criteres','criticites','suivis','createdBy');*/
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findByStatusAndOrCityForUser(User|UserInterface $user = null, $status = null, $city = null, $search = null, $page = null): Paginator
+    public function findByStatusAndOrCityForUser(User|UserInterface $user = null, array $options, int|null $export)
     {
-        $pageSize = 50;
-        $firstResult = ($page - 1) * $pageSize;
-        $qb = $this->createQueryBuilder('s')
-            ->select('PARTIAL s.{id,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut,createdAt}')
-            ->where('s.statut != :status')
+
+        $pageSize = $export ?? self::ARRAY_LIST_PAGE_SIZE;
+        $firstResult = (($options['page'] ?? 1) - 1) * $pageSize;
+        $qb = $this->createQueryBuilder('s');
+        if (!$export)
+            $qb->select('PARTIAL s.{id,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut,createdAt,geoloc}');
+
+        $qb->where('s.statut != :status')
             ->setParameter('status', Signalement::STATUS_ARCHIVED);
         $qb->leftJoin('s.affectations', 'affectations');
+        $qb->leftJoin('s.tags', 'tags');
         $qb->leftJoin('affectations.partenaire', 'partenaire');
-        $qb->leftJoin('partenaire.users', 'user');
         $qb->leftJoin('s.suivis', 'suivis');
-        $qb->addSelect('affectations', 'partenaire', 'user','suivis');
-        if ($status && $status !== 'all') {
-            $qb->andWhere('s.statut = :statut')
-                ->setParameter('statut', $status);
-        }
-        if ($city && $city !== 'all')
-            $qb->andWhere('s.villeOccupant =:city')
-                ->setParameter('city', $city);
-        if ($user)
-            $qb->andWhere(':partenaire IN (partenaire)')
-                ->setParameter('partenaire', $user->getPartenaire());
-        if ($search) {
-            if (preg_match('/([0-9]{4})-[0-9]{0,6}/', $search)) {
-                $qb->andWhere('s.reference = :search');
-                $qb->setParameter('search', $search);
-            } else {
-                $qb->andWhere('LOWER(s.nomOccupant) LIKE :search 
-                OR LOWER(s.prenomOccupant) LIKE :search 
-                OR LOWER(s.reference) LIKE :search 
-                OR LOWER(s.adresseOccupant) LIKE :search 
-                OR LOWER(s.villeOccupant) LIKE :search
-                OR LOWER(s.nomProprio) LIKE :search');
-                $qb->setParameter('search', "%" . strtolower($search) . "%");
-            }
-        }
+        $qb->leftJoin('suivis.createdBy', 'suivi_creator');
+        $qb->leftJoin('suivi_creator.partenaire', 'suivi_creator_partenaire');
+        $qb->leftJoin('s.criteres', 'criteres');
+        $qb->addSelect('affectations', 'partenaire', 'suivis', 'suivi_creator');
+        $qb = $this->searchFilterService->applyFilters($qb, $options);
         $qb->orderBy('s.createdAt', 'DESC')
             ->setFirstResult($firstResult)
             ->setMaxResults($pageSize)
             ->getQuery();
-
         return new Paginator($qb, true);
     }
 
-
-    public function findCities($user = null): array|int|string
+    public
+    function findCities($user = null): array|int|string
     {
         $qb = $this->createQueryBuilder('s')
-            ->select('s.villeOccupant ville')
+            ->select('s.villeOccupant city')
             ->where('s.statut != :status')
             ->setParameter('status', Signalement::STATUS_ARCHIVED);
         if ($user)
@@ -167,16 +158,16 @@ class SignalementRepository extends ServiceEntityRepository
     }
 
 
-    public function findOneByCodeForPublic($code): ?Signalement
+    public
+    function findOneByCodeForPublic($code): ?Signalement
     {
         return $this->createQueryBuilder('s')
             ->andWhere('s.codeSuivi = :code')
             ->setParameter('code', $code)
-            ->leftJoin('s.suivis','suivis',Join::WITH,'suivis.isPublic = 1')
+            ->leftJoin('s.suivis', 'suivis', Join::WITH, 'suivis.isPublic = 1')
             ->addSelect('suivis')
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
     }
 
 }

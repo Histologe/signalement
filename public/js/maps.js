@@ -93,7 +93,7 @@ async function getMarkers(offset) {
                 markers.addLayer(marker);
             })
             map.addLayer(markers);
-            if (!res.signalements.length > MAP_MARKERS_PAGE_SIZE - 1)
+            if (res.signalements.length > MAP_MARKERS_PAGE_SIZE - 1)
                 getMarkers(offset + MAP_MARKERS_PAGE_SIZE)
             else {
                 markers.getLayers().forEach((layer, index) => {
@@ -124,9 +124,6 @@ async function getMarkers(offset) {
                     });
                 })
             }
-
-
-
             let bound = markers.getBounds();
             map.fitBounds([
                 [bound._northEast.lat, bound._northEast.lng],
