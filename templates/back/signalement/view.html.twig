@@ -120,25 +120,23 @@
             <div class="fr-grid-row fr-grid-row--middle fr-background-alt--grey fr-p-3v fr-rounded fr-text--left fr-my-1v">
                 <div class="fr-col-12">
                     <strong class="fr-fi-information-fill fr-icon--sm fr-text-label--blue-france"> Gestion des
-                        étiquettes (admin)</strong>
-                    <span class="fr-hint-text">Ci-dessous la liste des étiquettes existante à ce signalement.</span>
+                        étiquettes</strong>
+                    <span class="fr-hint-text">Ci-dessous la liste des étiquettes existantes.</span>
                 </div>
-                <div class="fr-col-12">
-                    <form action="{{ path('back_tag_create') }}" method="POST" name="new-tag-form">
-                        <div class="fr-grid-row fr-grid-row--no-gutters">
-                            <label class="fr-col-11">
-                                <input type="text" class="fr-input " name="new-tag-label" required minlength="2">
-                                <span class="fr-error-text fr-hidden">Veuillez saisir un label</span>
-                            </label>
-                            <button class="fr-btn fr-col-1 fr-fi-add-line" type="submit"></button>
-                        </div>
-                        <input type="hidden" name="_token" value="{{ csrf_token('signalement_create_tag') }}">
-                    </form>
-                </div>
-                <div class="fr-col-12 fr-my-2v">
-                    <strong>Etiquettes existantes</strong> <small>(Cliquez pour ajouter)</small>
-                    <hr class="fr-pb-1v">
-                </div>
+                {% if is_granted('ROLE_AMDIN_TERRITOIRE') %}
+                    <div class="fr-col-12">
+                        <form action="{{ path('back_tag_create') }}" method="POST" name="new-tag-form">
+                            <div class="fr-grid-row fr-grid-row--no-gutters">
+                                <label class="fr-col-11">
+                                    <input type="text" class="fr-input " name="new-tag-label" required minlength="2">
+                                    <span class="fr-error-text fr-hidden">Veuillez saisir un label</span>
+                                </label>
+                                <button class="fr-btn fr-col-1 fr-fi-add-line" type="submit"></button>
+                            </div>
+                            <input type="hidden" name="_token" value="{{ csrf_token('signalement_create_tag') }}">
+                        </form>
+                    </div>
+                {% endif %}
                 <div class="fr-col-12" id="tags_inactive_container">
                     <template id="tag_template">
                         <span class="fr-badge fr-badge--blue-ecume fr-fi-add-line fr-m-1v"
