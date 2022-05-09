@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Repository\CritereRepository;
 use App\Repository\PartenaireRepository;
 use App\Repository\SignalementRepository;
+use App\Repository\TagRepository;
 use App\Service\SearchFilterService;
 use http\Encoding\Stream;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,7 +18,7 @@ class BackCartographieController extends AbstractController
 {
 
     #[Route('/', name: 'back_cartographie')]
-    public function index(SignalementRepository $signalementRepository, Request $request, CritereRepository $critereRepository, PartenaireRepository $partenaireRepository): Response
+    public function index(SignalementRepository $signalementRepository,TagRepository $tagsRepository, Request $request, CritereRepository $critereRepository, PartenaireRepository $partenaireRepository): Response
     {
         $title = 'Cartographie';
         $searchService = new SearchFilterService();
@@ -43,7 +44,8 @@ class BackCartographieController extends AbstractController
             'cities' => $signalementRepository->findCities($user ?? null),
             'partenaires' => $partenaireRepository->findAllList(),
             'signalements' => [/*$signalements*/],
-            'criteres' => $critereRepository->findAllList()
+            'criteres' => $critereRepository->findAllList(),
+            'tags'=>$tagsRepository->findAllActive()
         ]);
     }
 }

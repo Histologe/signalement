@@ -111,6 +111,28 @@
                 </div>
             </div>
             <div class="fr-col-12 fr-col-md-4 fr-col-lg-3">
+                <label class="fr-label" for="bo-filters-criteres"><strong>Etiquettes</strong></label>
+                <select id="bo-filters-tags" class="fr-select" onchange="setBadge(this)">
+                    <option value="">TOUS</option>
+                    {% for tag in tags %}
+                        <option value="{{ tag.id }}"
+                                class="{% if tag.id in filters.tags %}fr-hidden{% endif %}">{{ tag.label|upper }}</option>
+                    {% endfor %}
+                </select>
+                <div class="selected__value">
+                    <div class="fr-pb-1v fr-border--bottom--orange"></div>
+                    {% set visible = 'fr-hidden' %}
+                    {% for tag in filters.tags%}
+                        <input type="hidden" name="bo-filters-tags[]" value="{{ tag }}">
+                        <span class="fr-badge fr-badge--success fr-m-1v" data-value="{{ tag }}"
+                              data-removable="true">{{ tags[tag].label }}</span>
+                    {% else %}
+                        {% set visible = 0 %}
+                    {% endfor %}
+                    <span class="fr-badge fr-badge--info fr-m-1v {{ visible ?? '' }}">TOUS</span>
+                </div>
+            </div>
+            <div class="fr-col-12 fr-col-md-4 fr-col-lg-3">
                 <div class="fr-grid-row fr-grid-row--gutters">
                     <div class="fr-col-6">
                         <label class="fr-label" for="bo-filters-allocs"><strong>Bénéficiaire</strong></label>

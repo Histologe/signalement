@@ -9,6 +9,7 @@ use App\Repository\AffectationRepository;
 use App\Repository\CritereRepository;
 use App\Repository\PartenaireRepository;
 use App\Repository\SignalementRepository;
+use App\Repository\TagRepository;
 use App\Repository\UserRepository;
 use App\Service\SearchFilterService;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -35,7 +36,7 @@ class BackController extends AbstractController
                           Request                $request,
                           AffectationRepository  $affectationRepository,
                           PartenaireRepository   $partenaireRepository,
-                          RequestStack           $requestStack
+                          TagRepository $tagsRepository
     ): Response
     {
         $title = 'Administration - Tableau de bord';
@@ -73,6 +74,7 @@ class BackController extends AbstractController
             $criteria->where(Criteria::expr()->neq('statut', 7));
             $signalementsCount['total'] = $signalementRepository->matching($criteria)->count();
         }
+
         $signalements = [
             'list' => $this->req,
             'total' => count($this->req),
@@ -91,6 +93,7 @@ class BackController extends AbstractController
             'active' => $userRepository->count(['statut' => 1]),
             'inactive' => $userRepository->count(['statut' => 0]),
         ];
+
         return $this->render('back/index.html.twig', [
             'title' => $title,
             'filters' => $filters,
@@ -98,7 +101,8 @@ class BackController extends AbstractController
             'partenaires' => $partenaireRepository->findAllList(),
             'signalements' => $signalements,
             'users' => $users,
-            'criteres' => $criteres
+            'criteres' => $criteres,
+            'tags'=>$tagsRepository->findAllActive()
         ]);
     }
 

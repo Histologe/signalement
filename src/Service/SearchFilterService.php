@@ -43,6 +43,7 @@ class SearchFilterService
             'delays' => $request->get('bo-filters-delays') ?? null,
             'scores' => $request->get('bo-filters-scores') ?? null,
             'dates' => $request->get('bo-filters-dates') ?? null,
+            'tags' => $request->get('bo-filters-tags') ?? null,
             'page' => $request->get('page') ?? 1
         ];
 
@@ -115,6 +116,11 @@ class SearchFilterService
                 if (!empty($filters['affectations']))
                     $qb->andWhere('a.statut IN (:affectations)')->setParameter('affectations', $filters['affectations']);
                 $qb->setParameter('partners', $filters['partners']);
+            }
+        }
+        if(!empty($filters['tags'])) {
+            foreach ($filters['tags'] as $tag) {
+                $qb->andWhere(':tag IN (tags)')->setParameter('tag', $tag);
             }
         }
         if (!empty($filters['statuses'])) {

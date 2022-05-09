@@ -57,6 +57,7 @@ class AffectationRepository extends ServiceEntityRepository
         $qb->where('s.statut != :status')
             ->setParameter('status', Signalement::STATUS_ARCHIVED)
             ->leftJoin('a.signalement', 's')
+            ->leftJoin('s.tags', 'tags')
             ->leftJoin('s.affectations', 'affectations')
             ->leftJoin('a.partenaire', 'partenaire')
             ->leftJoin('s.suivis', 'suivis')
