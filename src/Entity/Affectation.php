@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\AffectationRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AffectationRepository::class)]
@@ -45,14 +43,10 @@ class Affectation
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $motifCloture;
 
-    #[ORM\OneToMany(mappedBy: 'affectation', targetEntity: Notification::class)]
-    private $notifications;
-
     public function __construct()
     {
         $this->statut = Affectation::STATUS_WAIT;
         $this->createdAt = new \DateTimeImmutable();
-        $this->notifications = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -153,36 +147,6 @@ class Affectation
     public function setMotifCloture(?string $motifCloture): self
     {
         $this->motifCloture = $motifCloture;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Notification[]
-     */
-    public function getNotifications(): Collection
-    {
-        return $this->notifications;
-    }
-
-    public function addNotification(Notification $notification): self
-    {
-        if (!$this->notifications->contains($notification)) {
-            $this->notifications[] = $notification;
-            $notification->setAffectation($this);
-        }
-
-        return $this;
-    }
-
-    public function removeNotification(Notification $notification): self
-    {
-        if ($this->notifications->removeElement($notification)) {
-            // set the owning side to null (unless already changed)
-            if ($notification->getAffectation() === $this) {
-                $notification->setAffectation(null);
-            }
-        }
 
         return $this;
     }

@@ -15,10 +15,12 @@
                 <li class="fr-sidemenu__item">
                     <a class="fr-sidemenu__link" href="{{ path('back_index') }}">Accueil</a>
                 </li>
+                {% if newsActivitiesSinceLastLogin.count %}
                     <li class="fr-sidemenu__item">
-                        <a class="fr-sidemenu__link" href="{{ path('back_news_activities') }}">Notifications<span
-                                    class="fr-puce fr-puce--danger">{{ app.user.notifications|filter(n=> n.isSeen != 1)|length }}</span></a>
+                        <a class="fr-sidemenu__link" href="{{ path('back_news_activities') }}">Nouveauté(s)<span
+                                    class="fr-puce fr-puce--danger">{{ newsActivitiesSinceLastLogin.count }}</span></a>
                     </li>
+                {% endif %}
                 <button class="fr-sidemenu__btn"
                         aria-expanded="{% if 'back_index' in app.request.get('_route') or 'back_signalement' in app.request.get('_route') %}true{% else %}false{% endif %}"
                         aria-controls="fr-sidemenu-signalement">Signalements

@@ -7,6 +7,5 @@
     <p>Message erreur: {{ error }}</p>
     <p>Documents: {{ attachment.documents }}</p>
     <p>Photos: {{ attachment.photos }}</p>
-    <p>{{ req|json_encode() }}</p>
     <p>{{ signalement|json_encode()|replace({',':',<br>'})|raw }}</p>
 {% endblock %}

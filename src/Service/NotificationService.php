@@ -2,16 +2,10 @@
 
 namespace App\Service;
 
-use App\Entity\Affectation;
-use App\Entity\Notification;
-use App\Entity\Signalement;
-use App\Entity\Suivi;
-use App\Entity\User;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\NotificationEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 
 class NotificationService
 {
@@ -24,18 +18,16 @@ class NotificationService
     const TYPE_SIGNALEMENT_REFUSE = 99;
     const TYPE_ACCUSE_RECEPTION = 6;
     const TYPE_NOUVEAU_SUIVI = 7;
-    const TYPE_NOUVEAU_SUIVI_BACK = 10;
     const TYPE_NOTIFICATION_MAIL_FRONT = 8;
     const TYPE_ERREUR_SIGNALEMENT = 9;
 
     private MailerInterface $mailer;
     private ConfigurationService $configuration;
 
-    public function __construct(MailerInterface $mailer, ConfigurationService $configurationService, EntityManagerInterface $entityManager)
+    public function __construct(MailerInterface $mailer, ConfigurationService $configurationService)
     {
         $this->mailer = $mailer;
         $this->configuration = $configurationService;
-        $this->em = $entityManager;
     }
 
     private function config(int $type): array
@@ -88,11 +80,6 @@ class NotificationService
                 'subject' => 'Nouvelle mise à jour de votre signalement !',
                 'btntext' => "Suivre mon signalement"
             ],
-            NotificationService::TYPE_NOUVEAU_SUIVI_BACK => [
-                'template' => 'new_signalement_email',
-                'subject' => 'Nouveau suivi sur un signalement',
-                'btntext' => "Consulter le suivi"
-            ],
             NotificationService::TYPE_ERREUR_SIGNALEMENT => [
                 'template' => 'erreur_signalement_email',
                 'subject' => 'Une erreur est survenue lors de la création d\'un signalement !',
@@ -103,7 +90,7 @@ class NotificationService
 
     public function send(int $type, string|array $to, array $params): TransportExceptionInterface|\Exception|bool
     {
-        $params['url'] = $_SERVER['SERVER_NAME'] ?? null;
+        $params['url'] =  $_SERVER['SERVER_NAME'] ?? null;
         $message = $this->renderMailContentWithParamsByType($type, $params);
         is_array($to) ? $emails = $to : $emails = [$to];
         foreach ($emails as $email)
@@ -128,8 +115,7 @@ class NotificationService
         $notification->markAsPublic();
         return $notification->htmlTemplate('emails/' . $config['template'] . '.html.twig')
             ->context(array_merge($params, $config))
-            ->subject('HISTOLOGE ' . mb_strtoupper($this->configuration->get()->getNomTerritoire()) . ' - ' . $config['subject']);
+            ->subject('HISTOLOGE '.mb_strtoupper($this->configuration->get()->getNomTerritoire()).' - ' . $config['subject']);
     }
-
 
 }

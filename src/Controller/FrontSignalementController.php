@@ -112,12 +112,9 @@ class FrontSignalementController extends AbstractController
                         $signalement->setGeoloc(["lat" => $data[$key]['lat'], "lng" => $data[$key]['lng']]);
                         break;
                     default:
-                        if($method !== 'setSignalement')
-                        {
-                            if ($value === "" || $value === " ")
-                                $value = null;
-                            $signalement->$method($value);
-                        }
+                        if ($value === "" || $value === " ")
+                            $value = null;
+                        $signalement->$method($value);
                 }
             }
             if (!$signalement->getIsNotOccupant()) {
