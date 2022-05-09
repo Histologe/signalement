@@ -6,6 +6,7 @@ use App\Entity\Config;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
@@ -91,6 +92,15 @@ class ConfigType extends AbstractType
                 'row_attr'=>[
                     'class'=> 'fr-input-group'
                 ],'label'=>'Courriel de réponse'
+            ])
+            ->add('telContact', TelType::class, [
+                'attr' => [
+                    'class' => 'fr-input'
+                ],
+                'row_attr'=>[
+                    'class'=> 'fr-input-group'
+                ],'label'=>'Téléphone (page contact)',
+                'required'=>false
             ])
             ->add('trackingCode',TextareaType::class,[
                 'attr' => [

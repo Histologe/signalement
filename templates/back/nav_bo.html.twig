@@ -52,7 +52,8 @@
                                {% if 'back_cartographie' is same as(app.request.get('_route')) %}aria-current="page"{% endif %}>Cartographie</a>
                         </li>
                         <li class="fr-sidemenu__item {% if 'back_statistique' is same as(app.request.get('_route')) %}fr-sidemenu__item--active{% endif %}">
-                            <a class="fr-sidemenu__link" href="{{ path('back_statistique') }}" target="_self">Statistiques</a>
+                            <a class="fr-sidemenu__link" href="#" disabled="" target="_self"><s>Statistiques</s>
+                                <br> <small class="fr-text-default--warning">&nbsp;(maintenance)</small></a>
                         </li>
                     </ul>
                 </div>
