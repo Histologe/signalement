@@ -111,7 +111,7 @@
                 </div>
             </div>
             <div class="fr-col-12 fr-col-md-4 fr-col-lg-3">
-                <label class="fr-label" for="bo-filters-criteres"><strong>Etiquettes</strong></label>
+                <label class="fr-label" for="bo-filters-tags"><strong>Etiquettes</strong></label>
                 <select id="bo-filters-tags" class="fr-select" onchange="setBadge(this)">
                     <option value="">TOUS</option>
                     {% for tag in tags %}
@@ -122,7 +122,7 @@
                 <div class="selected__value">
                     <div class="fr-pb-1v fr-border--bottom--orange"></div>
                     {% set visible = 'fr-hidden' %}
-                    {% for tag in filters.tags%}
+                    {% for tag in filters.tags %}
                         <input type="hidden" name="bo-filters-tags[]" value="{{ tag }}">
                         <span class="fr-badge fr-badge--success fr-m-1v" data-value="{{ tag }}"
                               data-removable="true">{{ tags[tag].label }}</span>

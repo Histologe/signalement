@@ -41,8 +41,9 @@ class TagRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('t')
             ->andWhere('t.isArchive != 1')
+            ->indexBy('t', 't.id')
             ->getQuery()
-            ->getResult()
+            ->getResult();
         ;
     }
 
