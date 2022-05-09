@@ -492,6 +492,7 @@ document?.querySelectorAll('[data-fr-select-target]')?.forEach(t => {
         })
     })
 })
+
 document?.querySelector('#signalement-affectation-form-submit')?.addEventListeners('click touchdown', (e) => {
     e.preventDefault();
     e.target.disabled = true;
@@ -549,8 +550,16 @@ document?.querySelector('#partenaire_add_user,#situation_add_critere')?.addEvent
     row.appendChild(template);
     container.appendChild(row);
 })
-document?.querySelectorAll('[data-delete],[data-tag-delete]')?.forEach(deleteBtn => {
-    deleteBtn.addEventListeners('click touchdown', event => {
+
+
+/*document?.querySelectorAll('[data-tag-add]')?.forEach(addBtn => {
+    addBtn.addEventListener('click', addTagEvent)
+});*/
+document?.querySelectorAll('[data-tag-delete]')?.forEach(delBtn => {
+    delBtn.addEventListener('click', deleteTagEvent)
+});
+document?.querySelectorAll('[data-delete]')?.forEach(actionBtn => {
+    actionBtn.addEventListeners('click touchdown', event => {
         event.preventDefault();
         let className;
         if (event.target.classList.contains('partenaire-user-delete'))
@@ -563,28 +572,22 @@ document?.querySelectorAll('[data-delete],[data-tag-delete]')?.forEach(deleteBtn
             className = '.signalement-row';
         else if (event.target.classList.contains('partenaire-row-delete'))
             className = '.partenaire-row';
-        else if (event.target.classList.contains('fr-badge'))
-            className = null;
         if (confirm('Voulez-vous vraiment supprimer cet élément ?')) {
             let formData = new FormData;
-            formData.append('_token', deleteBtn.getAttribute('data-token'))
-            let value = deleteBtn.getAttribute('data-value') ?? null;
+            formData.append('_token', actionBtn.getAttribute('data-token'))
+            let value = actionBtn.getAttribute('data-value') ?? null;
             if (value)
-                formData.append('item', 'Tag'),formData.append('value', value);
-            fetch(deleteBtn.getAttribute('data-delete') ?? deleteBtn.getAttribute('data-tag-delete'), {
+                formData.append('item', 'Tag'), formData.append('value', value);
+            fetch(actionBtn.getAttribute('data-delete'), {
                 method: 'POST',
                 body: formData,
             }).then(r => {
-                if (r.ok) {
-                    if(className)
-                        deleteBtn.closest(className).remove()
-                    else
-                        event.target.remove();
-                }
+                if (r.ok)
+                    actionBtn.closest(className).remove()
             })
         }
     })
-})
+});
 document?.querySelectorAll('.fr-password-toggle')?.forEach(pwdToggle => {
     pwdToggle.addEventListeners('click touchdown', (event) => {
         ['fr-fi-eye-off-fill', 'fr-fi-eye-fill'].map(c => {

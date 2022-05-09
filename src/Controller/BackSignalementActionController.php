@@ -3,10 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Affectation;
-use App\Entity\Notification;
 use App\Entity\Signalement;
 use App\Entity\Suivi;
-use App\Entity\Tags;
+use App\Entity\Tag;
 use App\Entity\User;
 use App\Repository\PartenaireRepository;
 use App\Service\AffectationCheckerService;
@@ -142,7 +141,7 @@ class BackSignalementActionController extends AbstractController
     }
 
     #[Route('/{uuid}/reopen', name: 'back_signalement_reopen')]
-    public function reopenSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine)
+    public function reopenSignalement(Signalement $signalement, Request $request, ManagerRegistry $doctrine): RedirectResponse|JsonResponse
     {
         if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') && !$this->checker->check($signalement, $this->getUser()))
             return $this->json(['status' => 'denied'], 400);
@@ -199,10 +198,6 @@ class BackSignalementActionController extends AbstractController
             $affectation->setStatut($statut);
             $affectation->setAnsweredAt(new \DateTimeImmutable());
             $affectation->setAnsweredBy($this->getUser());
-            $this->getUser()->getNotifications()->filter(function (Notification $notification) use ($doctrine, $affectation, $signalement) {
-                if($notification->getSignalement()->getId() === $signalement->getId() && $notification->getAffectation()->getId() === $affectation->getId())
-                    $doctrine->getManager()->remove($notification);
-            });
             $doctrine->getManager()->persist($affectation);
             $doctrine->getManager()->flush();
             $this->addFlash('success', 'Affectation mise à jour avec succès !');
@@ -212,7 +207,7 @@ class BackSignalementActionController extends AbstractController
     }
 
     #[Route('/{uuid}/switch', name: "back_signalement_switch_value", methods: "POST")]
-    public function switchValue(Signalement $signalement, Request $request, EntityManagerInterface $entityManager)
+    public function switchValue(Signalement $signalement, Request $request, EntityManagerInterface $entityManager): RedirectResponse|JsonResponse
     {
         if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') && !$this->checker->check($signalement, $this->getUser()))
             return $this->json(['status' => 'denied'], 400);
@@ -223,13 +218,12 @@ class BackSignalementActionController extends AbstractController
             $setMethod = 'set' . $item;
             $value = $request->get('value');
             if ($item === "Tag") {
-                $signalement->getTags()->filter(function (Tags $tag) use ($value, $signalement,$entityManager) {
-                    if ($tag->getId() === (int)$value) {
-                        $tag->removeSignalement($signalement);
-                        $entityManager->persist($tag);
-                    }
-                });
-
+                $tag = $entityManager->getRepository(Tag::class)->find((int)$value);
+                if ($signalement->getTags()->contains($tag))
+                    $signalement->removeTag($tag);
+                else {
+                    $signalement->addTag($tag);
+                }
             } else {
                 if ($item === "DateVisite") {
                     $value = new \DateTimeImmutable($value);
@@ -253,5 +247,32 @@ class BackSignalementActionController extends AbstractController
             return $this->redirectToRoute('back_signalement_view', ['uuid' => $signalement->getUuid()]);
         }
         return $this->json(['response' => 'error'], 400);
+    }
+
+    //this function create a new tag
+    //use Request to get label of the new tag
+    #[Route('/newtag', name: "back_tag_create", methods: "POST")]
+    public function createTag(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') || !$this->isCsrfTokenValid('signalement_create_tag', $request->get('_token')))
+            return $this->redirectToRoute('back_index');
+        $label = $request->get('new-tag-label');
+        $tag = new Tag();
+        $tag->setLabel($label);
+        $entityManager->persist($tag);
+        $entityManager->flush();
+        return $this->json(['response' => 'success', 'tag' => $tag]);
+    }
+    //this function create a new tag
+    //use Request to get label of the new tag
+    #[Route('/deltag/{id}', name: "back_tag_delete", methods: "POST")]
+    public function deleteTag(Tag $tag,Request $request, EntityManagerInterface $entityManager): Response
+    {
+        if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') || !$this->isCsrfTokenValid('signalement_delete_tag', $request->get('_token')))
+            return $this->redirectToRoute('back_index');
+        $tag->setIsArchive(true);
+        $entityManager->persist($tag);
+        $entityManager->flush();
+        return $this->json(['response' => 'success']);
     }
 }

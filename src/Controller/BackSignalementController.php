@@ -15,7 +15,7 @@ use App\Form\ClotureType;
 use App\Form\SignalementType;
 use App\Repository\PartenaireRepository;
 use App\Repository\SituationRepository;
-use App\Repository\TagsRepository;
+use App\Repository\TagRepository;
 use App\Service\AffectationCheckerService;
 use App\Service\CriticiteCalculatorService;
 use Doctrine\Common\Collections\Criteria;
@@ -39,7 +39,7 @@ class BackSignalementController extends AbstractController
     }
 
     #[Route('/{uuid}', name: 'back_signalement_view')]
-    public function viewSignalement($uuid, Request $request, EntityManagerInterface $entityManager,TagsRepository$tagsRepository,PartenaireRepository $partenaireRepository): Response
+    public function viewSignalement($uuid, Request $request, EntityManagerInterface $entityManager, TagRepository $tagsRepository, PartenaireRepository $partenaireRepository): Response
     {
         /** @var Signalement $signalement */
         $signalement = $entityManager->getRepository(Signalement::class)->findByUuid($uuid);
@@ -53,7 +53,7 @@ class BackSignalementController extends AbstractController
             }
         });
         $entityManager->flush();
-        $entityManager->close();
+
         $isRefused = $isAccepted = null;
         if ($isAffected = $this->checker->check($signalement, $this->getUser())) {
             switch ($isAffected->getStatut()) {
@@ -79,6 +79,7 @@ class BackSignalementController extends AbstractController
                 $sujet = 'tous les partenaires';
                 $signalement->getAffectations()->map(function (Affectation $affectation) use ($entityManager) {
                     $affectation->setStatut(Affectation::STATUS_CLOSED);
+                 /*   $entityManager->getConnection()->connect();*/
                     $entityManager->persist($affectation);
                 });
             }
@@ -161,7 +162,7 @@ class BackSignalementController extends AbstractController
             $suivi->setIsPublic(false);
             $suivi->setDescription('Modification du signalement par un partenaire');
             $doctrine->getManager()->persist($suivi);
-            if (!$signalement->getInseeOccupant() || !isset($signalement->getGeoloc()['lat']) || !isset($signalement->getGeoloc()['lat'])) {
+            /*if (!$signalement->getInseeOccupant() || !isset($signalement->getGeoloc()['lat']) || !isset($signalement->getGeoloc()['lat'])) {
                 $adresse = $signalement->getAdresseOccupant() . ' ' . $signalement->getCpOccupant() . ' ' . $signalement->getVilleOccupant();
                 $response = json_decode($httpClient->request('GET', 'https://api-adresse.data.gouv.fr/search/?q=' . $adresse)->getContent(), true);
                 if (!empty($response['features'][0])) {
@@ -172,7 +173,7 @@ class BackSignalementController extends AbstractController
                     if ($insee)
                         $signalement->setInseeOccupant($insee);
                 }
-            }
+            }*/
             $doctrine->getManager()->persist($signalement);
             $doctrine->getManager()->flush();
             $this->addFlash('success', 'Signalement modifié avec succés !');

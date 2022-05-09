@@ -47,6 +47,10 @@ class ActivityListener implements EventSubscriberInterface
         $this->em = $args->getEntityManager();
         $this->uow = $this->em->getUnitOfWork();
         foreach ($this->uow->getScheduledEntityInsertions() as $entity) {
+            if ($entity instanceof Signalement) {
+                $this->notifyAdmins($entity,Notification::TYPE_NEW_SIGNALEMENT);
+                $this->sendMail($entity,NotificationService::TYPE_NEW_SIGNALEMENT);
+            }
             if ($entity instanceof Affectation) {
                 $partenaire = $entity->getPartenaire();
                 $this->notifyPartner($partenaire,$entity,Notification::TYPE_AFFECTATION,NotificationService::TYPE_AFFECTATION);
@@ -102,6 +106,10 @@ class ActivityListener implements EventSubscriberInterface
                     $this->tos->add($user->getEmail());
             }
         });
+        $this->sendMail($entity,$mailType);
+    }
+
+    private function sendMail($entity,$mailType){
         if(!$this->tos->isEmpty())
         {
             $this->notifier->send($mailType, array_unique($this->tos->toArray()), [

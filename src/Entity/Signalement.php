@@ -323,7 +323,7 @@ class Signalement
     #[ORM\Column(type: 'string', length: 15, nullable: true)]
     private $telOccupantBis;
 
-    #[ORM\ManyToMany(targetEntity: Tags::class, mappedBy: 'signalement')]
+    #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'signalement')]
     private $tags;
 
 
@@ -1644,14 +1644,14 @@ class Signalement
     }
 
     /**
-     * @return Collection|Tags[]
+     * @return Collection|Tag[]
      */
     public function getTags(): Collection
     {
         return $this->tags;
     }
 
-    public function addTag(Tags $tag): self
+    public function addTag(Tag $tag): self
     {
         if (!$this->tags->contains($tag)) {
             $this->tags[] = $tag;
@@ -1661,7 +1661,7 @@ class Signalement
         return $this;
     }
 
-    public function removeTag(Tags $tag): self
+    public function removeTag(Tag $tag): self
     {
         if ($this->tags->removeElement($tag)) {
             $tag->removeSignalement($this);

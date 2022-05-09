@@ -2,6 +2,55 @@ Node.prototype.addEventListeners = function (eventNames, eventFunction) {
     for (let eventName of eventNames.split(' '))
         this.addEventListener(eventName, eventFunction);
 }
+
+const addTagEvent = (event) => {
+    event.target.removeEventListener('click', addTagEvent, true);
+    let formData = new FormData;
+    formData.append('_token', event.target.getAttribute('data-token'))
+    formData.append('item', 'Tag');
+    formData.append('value', event.target.getAttribute('data-value'));
+    event.target.getAttribute('data-tag-add') && fetch(event.target.getAttribute('data-tag-add'), {
+        method: 'POST',
+        body: formData,
+    }).then(r => {
+        if (r.ok) {
+            let container = document.querySelector(`#tags_active_container`);
+            ['fr-fi-close-line', 'fr-fi-add-line'].forEach(c => {
+                event.target.classList.toggle(c)
+            })
+            event.target.setAttribute('data-tag-delete', event.target.getAttribute('data-tag-add'));
+            event.target.removeAttribute('data-tag-add')
+            container.querySelector('em').classList.add('fr-hidden');
+            container.appendChild(event.target);
+            event.target.addEventListener('click', deleteTagEvent);
+        }
+    })
+}
+const deleteTagEvent = (event) => {
+    event.target.removeEventListener('click', deleteTagEvent, true);
+    let formData = new FormData;
+    formData.append('_token', event.target.getAttribute('data-token'))
+    formData.append('item', 'Tag');
+    formData.append('value', event.target.getAttribute('data-value'));
+    event.target.getAttribute('data-tag-delete') && fetch(event.target.getAttribute('data-tag-delete'), {
+        method: 'POST',
+        body: formData,
+    }).then(r => {
+        if (r.ok) {
+            document.querySelector('#tags_select_tooltip_btn')._tippy.show();
+            let container = document.querySelector(`#tags_inactive_container`);
+            ['fr-fi-close-line', 'fr-fi-add-line'].forEach(c => {
+                event.target.classList.toggle(c)
+            })
+            event.target.setAttribute('data-tag-add', event.target.getAttribute('data-tag-delete'));
+            event.target.removeAttribute('data-tag-delete')
+            container.appendChild(event.target);
+            if (!document.querySelector(`#tags_active_container`).querySelector('.fr-badge'))
+                document.querySelector(`#tags_active_container`).querySelector('em').classList.remove('fr-hidden');
+            event.target.addEventListener('click', addTagEvent);
+        }
+    })
+}
 const forms = document.querySelectorAll('form.needs-validation:not([name="bug-report"])');
 const localStorage = window.localStorage;
 const uploadedFiles = [];
