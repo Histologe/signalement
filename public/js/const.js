@@ -21,6 +21,9 @@ const addTagEvent = (event) => {
             event.target.setAttribute('data-tag-delete', event.target.getAttribute('data-tag-add'));
             event.target.removeAttribute('data-tag-add')
             container.querySelector('em').classList.add('fr-hidden');
+            let deleterBtn = event.target?.querySelector('span.tag--deleter.fr-hidden');
+            deleterBtn?.classList?.add('fr-hidden');
+            deleterBtn?.removeEventListener('click', persistRemoveTagEvent,true);
             container.appendChild(event.target);
             event.target.addEventListener('click', deleteTagEvent);
         }
