@@ -49,6 +49,7 @@ class BackSignalementController extends AbstractController
             $this->addFlash("error", "Ce signalement à été archivé et n'est pas consultable.");
             return $this->redirectToRoute('back_index');
         }
+
         $title = 'Administration - Signalement #' . $signalement->getReference();
         $this->getUser()->getNotifications()->filter(function (Notification $notification) use ($signalement, $entityManager) {
             if ($notification->getSignalement()->getId() === $signalement->getId()) {
