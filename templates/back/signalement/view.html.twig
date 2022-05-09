@@ -137,6 +137,10 @@
                         </form>
                     </div>
                 {% endif %}
+                <div class="fr-col-12 fr-py-2v">
+                    <strong>Etiquettes existantes</strong> <small>(Cliquez pour ajouter)</small>
+                    <hr class="fr-pb-1v">
+                </div>
                 <div class="fr-col-12" id="tags_inactive_container">
                     <template id="tag_template">
                         <span class="fr-badge fr-badge--blue-ecume fr-fi-add-line fr-m-1v"
@@ -769,6 +773,7 @@
                             tag.setAttribute('data-value', res.tag.id);
                             tag.innerHTML = res.tag.label + '&nbsp;&nbsp;';
                             let deleter = document.createElement('span');
+
                             deleter.classList.add('fr-fi-delete-line','fr-mt-2v','fr-text-label--red-marianne','fr-icon--sm')
                             deleter.addEventListener('click', persistRemoveTagEvent);
                             tag.appendChild(deleter);
