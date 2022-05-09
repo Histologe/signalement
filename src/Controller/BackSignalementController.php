@@ -120,7 +120,7 @@ class BackSignalementController extends AbstractController
             'signalement' => $signalement,
             'partenaires' => $partenaireRepository->findAllOrByInseeIfCommune($signalement->getInseeOccupant()),
             'clotureForm' => $clotureForm->createView(),
-            'tags'=>$tagsRepository->findAll()
+            'tags'=>$tagsRepository->findAllActive()
         ]);
     }
 

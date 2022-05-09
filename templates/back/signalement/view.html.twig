@@ -144,14 +144,17 @@
                         <span class="fr-badge fr-badge--blue-ecume fr-fi-add-line fr-m-1v"
                               data-value="__ID__"
                               data-tag-add="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}"
-                              data-token="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}">__LABEL__
+                              data-token="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}"
+                              data-remove-url="{{ path('back_tag_delete') }}/__ID__?_token={{ csrf_token('signalement_delete_tag') }}">__LABEL__
                         </span>
                     </template>
                     {% for tag in tags|filter(t=>t not in signalement.tags) %}
                         <span class="fr-badge fr-badge--blue-ecume fr-fi-add-line fr-m-1v"
                               data-value="{{ tag.id }}"
                               data-tag-add="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}"
-                              data-token="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}">{{ tag.label }}</span>
+                              data-token="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}"
+                              data-remove-url="{{ path('back_tag_delete',{id:tag.id}) }}?_token={{ csrf_token('signalement_delete_tag') }}">{{ tag.label }}&nbsp;&nbsp;<span
+                                    class="fr-fi-delete-line fr-icon--sm fr-mt-2v fr-text-label--red-marianne tag--deleter"></span></span>
                     {% endfor %}
                 </div>
             </div>
@@ -165,9 +168,11 @@
             <div class="fr-col-10 fr-col-md-11" id="tags_active_container">
                 {% set visible = 'fr-hidden' %}
                 {% for tag in signalement.tags %}
-                    <span class="fr-badge fr-badge--{{ tag.color }}  fr-fi-close-line fr-m-1v" data-value="{{ tag.id }}"
+                    <span class="fr-badge fr-badge--blue-ecume fr-fi-close-line fr-m-1v" data-value="{{ tag.id }}"
                           data-tag-delete="{{ path('back_signalement_switch_value',{uuid:signalement.uuid}) }}"
-                          data-token="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}">{{ tag.label }}E</span>
+                          data-token="{{ csrf_token('signalement_switch_value_'~signalement.uuid) }}"
+                          data-remove-url="{{ path('back_tag_delete',{id:tag.id}) }}?_token={{ csrf_token('signalement_delete_tag') }}">{{ tag.label }}&nbsp;&nbsp;<span
+                                class="fr-fi-delete-line fr-icon--sm fr-mt-2v fr-text-label--red-marianne tag--deleter fr-hidden"></span></span>
                 {% else %}
                     {% set visible = '' %}
                 {% endfor %}
@@ -759,15 +764,21 @@
                             let container = document.querySelector(`#tags_inactive_container`);
                             let template = document.querySelector(`template#tag_template`).content;
                             let tag = template.querySelector('span:first-child').cloneNode(true);
-
-                            tag.setAttribute('data-value',res.tag.id);
-                            tag.innerHTML = res.tag.label+'&nbsp;&nbsp;<span class="fr-fi-delete-line fr-icon--sm fr-pt-2v fr-text-label--red-marianne"></span>';
+                            tag.setAttribute('data-value', res.tag.id);
+                            tag.innerHTML = res.tag.label + '&nbsp;&nbsp;';
+                            let deleter = document.createElement('span');
+                            deleter.classList.add('fr-fi-delete-line fr-mt-2v');
+                            deleter.addEventListener('click', persistRemoveTagEvent);
+                            tag.addEventListener('click', addTagEvent);
                             container.appendChild(tag);
                         });
                     }).catch(e => {
                     });
                 });
                 /*console.log(template.firstChild);*/
+                newEl.querySelectorAll('span.tag--deleter').forEach(tagDeleter => {
+                    tagDeleter.addEventListener('click', persistRemoveTagEvent);
+                });
                 return newEl;
             },
             trigger: 'click',

@@ -43,7 +43,10 @@ const deleteTagEvent = (event) => {
                 event.target.classList.toggle(c)
             })
             event.target.setAttribute('data-tag-add', event.target.getAttribute('data-tag-delete'));
-            event.target.removeAttribute('data-tag-delete')
+            event.target.removeAttribute('data-tag-delete');
+            let deleterBtn = event.target?.querySelector('span.tag--deleter.fr-hidden');
+            deleterBtn?.classList?.remove('fr-hidden');
+            deleterBtn?.addEventListener('click', persistRemoveTagEvent);
             container.appendChild(event.target);
             if (!document.querySelector(`#tags_active_container`).querySelector('.fr-badge'))
                 document.querySelector(`#tags_active_container`).querySelector('em').classList.remove('fr-hidden');
@@ -51,6 +54,19 @@ const deleteTagEvent = (event) => {
         }
     })
 }
+const persistRemoveTagEvent = (event) => {
+    let tag = event.target.parentElement;
+    let id = tag.getAttribute('data-value');
+    let url = tag.getAttribute('data-remove-url').replace('__ID__', id);
+    if(confirm('Êtes-vous certains de vouloir supprimer ce tag ?\nCette action est irréversible.')) {
+        fetch(url).then(r => {
+            if (r.ok) {
+                tag.remove();
+            }
+        })
+    }
+}
+
 const forms = document.querySelectorAll('form.needs-validation:not([name="bug-report"])');
 const localStorage = window.localStorage;
 const uploadedFiles = [];
@@ -238,7 +254,7 @@ const removeBadge = (badge) => {
     }
     badge.remove();
 }
-const searchAddress = (form, autocomplete) =>{
+const searchAddress = (form, autocomplete) => {
     if (autocomplete.value.length > 10) {
         autocomplete.removeEventListener('keyup', searchAddress)
         fetch('https://api-adresse.data.gouv.fr/search/?q=' + autocomplete.value).then((res) => {

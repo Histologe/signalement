@@ -265,7 +265,7 @@ class BackSignalementActionController extends AbstractController
     }
     //this function create a new tag
     //use Request to get label of the new tag
-    #[Route('/deltag/{id}', name: "back_tag_delete", methods: "POST")]
+    #[Route('/deltag/{id}', name: "back_tag_delete", defaults: ["id"=>null], methods: "GET")]
     public function deleteTag(Tag $tag,Request $request, EntityManagerInterface $entityManager): Response
     {
         if (!$this->isGranted('ROLE_ADMIN_TERRITOIRE') || !$this->isCsrfTokenValid('signalement_delete_tag', $request->get('_token')))
