@@ -45,9 +45,13 @@ class BackSignalementController extends AbstractController
         $signalement = $entityManager->getRepository(Signalement::class)->findByUuid($uuid);
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE') && !$this->checker->check($signalement, $this->getUser()))
             return $this->redirectToRoute('back_index');
+        if ($signalement->getStatut() === Signalement::STATUS_ARCHIVED) {
+            $this->addFlash("error", "Ce signalement à été archivé et n'est pas consultable.");
+            return $this->redirectToRoute('back_index');
+        }
         $title = 'Administration - Signalement #' . $signalement->getReference();
         $this->getUser()->getNotifications()->filter(function (Notification $notification) use ($signalement, $entityManager) {
-            if($notification->getSignalement()->getId() === $signalement->getId()) {
+            if ($notification->getSignalement()->getId() === $signalement->getId()) {
                 $notification->setIsSeen(true);
                 $entityManager->persist($notification);
             }
@@ -79,7 +83,7 @@ class BackSignalementController extends AbstractController
                 $sujet = 'tous les partenaires';
                 $signalement->getAffectations()->map(function (Affectation $affectation) use ($entityManager) {
                     $affectation->setStatut(Affectation::STATUS_CLOSED);
-                 /*   $entityManager->getConnection()->connect();*/
+                    /*   $entityManager->getConnection()->connect();*/
                     $entityManager->persist($affectation);
                 });
             }
@@ -120,7 +124,7 @@ class BackSignalementController extends AbstractController
             'signalement' => $signalement,
             'partenaires' => $partenaireRepository->findAllOrByInseeIfCommune($signalement->getInseeOccupant()),
             'clotureForm' => $clotureForm->createView(),
-            'tags'=>$tagsRepository->findAllActive()
+            'tags' => $tagsRepository->findAllActive()
         ]);
     }
 
