@@ -89,9 +89,9 @@ class NotificationService
                 'btntext' => "Suivre mon signalement"
             ],
             NotificationService::TYPE_NOUVEAU_SUIVI_BACK => [
-                'template' => 'new_signalement_email',
+                'template' => 'nouveau_suivi_signalement_email',
                 'subject' => 'Nouveau suivi sur un signalement',
-                'btntext' => "Consulter le suivi"
+                'btntext' => "Suivre le signalement"
             ],
             NotificationService::TYPE_ERREUR_SIGNALEMENT => [
                 'template' => 'erreur_signalement_email',

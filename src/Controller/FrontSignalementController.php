@@ -155,10 +155,10 @@ class FrontSignalementController extends AbstractController
                 $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $signalement->getMailOccupant(), ['signalement' => $signalement, 'attach' => $attachment ?? null]);
             if ($signalement->getMailDeclarant())
                 $notificationService->send(NotificationService::TYPE_ACCUSE_RECEPTION, $signalement->getMailDeclarant(), ['signalement' => $signalement, 'attach' => $attachment ?? null]);
-            foreach ($doctrine->getRepository(User::class)->findAdmins() as $admin) {
+            /*foreach ($doctrine->getRepository(User::class)->findAdmins() as $admin) {
                 if ($admin->getIsMailingActive())
                     $notificationService->send(NotificationService::TYPE_NEW_SIGNALEMENT, $admin->getEmail(), ['link' => $this->generateUrl('back_signalement_view', ['uuid' => $signalement->getUuid()], 0)]);
-            }
+            }*/
             return $this->json(['response' => 'success']);
         }
         return $this->json(['response' => 'error'], 400);
@@ -212,7 +212,7 @@ class FrontSignalementController extends AbstractController
                 $suivi->setSignalement($signalement);
                 $entityManager->persist($suivi);
                 $entityManager->flush();
-                $signalement->getAffectations()->filter(function (Affectation $affectation) use ($notificationService, $signalement) {
+                /*$signalement->getAffectations()->filter(function (Affectation $affectation) use ($notificationService, $signalement) {
                     $partenaire = $affectation->getPartenaire();
                     if ($partenaire->getEmail()) {
                         $notificationService->send(NotificationService::TYPE_NOUVEAU_SUIVI, $partenaire->getEmail(), [
@@ -230,7 +230,7 @@ class FrontSignalementController extends AbstractController
                             ]);
                         }
                     });
-                });
+                });*/
                 $this->addFlash('success', "Votre message a bien été envoyé ; vous recevrez un email lorsque votre dossier sera mis à jour. N'hésitez pas à consulter votre page de suivi !");
             }
         } else {
