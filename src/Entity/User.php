@@ -373,6 +373,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+
     public function isAdmin(): bool
     {
         return count(array_intersect(['ROLE_ADMIN','ROLE_ADMIN_TERRITOIRE'], $this->roles)) > 0;

@@ -1,11 +1,15 @@
 $forAll=$args[0]
 if($forAll -eq "--all")
 {
-    $projects =  (Get-ChildItem -Path ../ -exclude *.idea,DEMO, DEMO_TURBO,CRZ).Name
+    $projects =  (Get-ChildItem -Path ../ -exclude *.idea,DEMO, DEMO_TURBO).Name
 }
 elseif($forAll -eq "--bdr")
 {
    $projects =  @('BDR')
+  }
+elseif($forAll -eq "--crz")
+{
+   $projects =  @('CRZ')
 } else {
     $projects =  (Get-ChildItem -Path ../ -exclude *.idea,DEMO, BDR, DEMO_TURBO,AM,CRZ).Name
 }

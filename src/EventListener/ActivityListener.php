@@ -127,6 +127,7 @@ class ActivityListener implements EventSubscriberInterface
         }
     }
 
+
     private function createInAppNotification($user, $entity, $type)
     {
         $notification = new Notification();
