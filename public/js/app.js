@@ -460,7 +460,7 @@ document?.querySelectorAll(".fr-pagination__link:not([aria-current])").forEach((
         u = document.querySelector(".fr-pagination__link--first"),
         l = document.querySelector(".fr-pagination__link--last"), o = 1, c = parseInt(l.getAttribute("data-page"));
     e.addEventListener("click", (e => {
-        let p = new FormData(document.querySelector('form[name="bo-filter-form"]'));
+        let p = new FormData(document.querySelector('form[name="bo-filters-form"]'));
         p.append("pagination", "true");
         let d = document?.querySelector(".fr-pagination__link[aria-current]"), g = e.target;
         g !== n && g !== i && g !== u && g !== l ? o = parseInt(g.getAttribute("data-page")) : g === i ? o = parseInt(d.getAttribute("data-page")) + 1 : g === n ? o = parseInt(d.getAttribute("data-page")) - 1 : g === l ? o = parseInt(c) : g === u && (o = parseInt(1)), p.append("page", o), t = document.querySelector('.fr-pagination__link[data-page="' + o + '"]'), fetch("#", {

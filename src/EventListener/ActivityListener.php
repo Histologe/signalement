@@ -49,18 +49,20 @@ class ActivityListener implements EventSubscriberInterface
         foreach ($this->uow->getScheduledEntityInsertions() as $entity) {
             if ($entity instanceof Signalement) {
                 $this->notifyAdmins($entity, Notification::TYPE_NEW_SIGNALEMENT);
-                //$this->sendMail($entity, NotificationService::TYPE_NEW_SIGNALEMENT);
+                $this->sendMail($entity, NotificationService::TYPE_NEW_SIGNALEMENT);
             }
             elseif ($entity instanceof Affectation) {
                 $partenaire = $entity->getPartenaire();
-                $this->notifyPartner($partenaire, $entity, Notification::TYPE_AFFECTATION, NotificationService::TYPE_AFFECTATION);
+                $this->notifyPartner($partenaire, $entity, Notification::TYPE_AFFECTATION);
+                $this->sendMail($entity, NotificationService::TYPE_AFFECTATION);
             }
             elseif ($entity instanceof Suivi) {
                 $this->notifyAdmins($entity, Notification::TYPE_SUIVI);
                 $entity->getSignalement()->getAffectations()->filter(function (Affectation $affectation) use ($entity) {
                     $partenaire = $affectation->getPartenaire();
-                    $this->notifyPartner($partenaire, $entity, Notification::TYPE_SUIVI, NotificationService::TYPE_NOUVEAU_SUIVI_BACK);
+                    $this->notifyPartner($partenaire, $entity, Notification::TYPE_SUIVI);
                 });
+                $this->sendMail($entity, NotificationService::TYPE_NOUVEAU_SUIVI_BACK);
                 if ($entity->getIsPublic()) {
                     $this->notifier->send(NotificationService::TYPE_NOUVEAU_SUIVI, [$entity->getSignalement()->getMailDeclarant(), $entity->getSignalement()->getMailOccupant()], [
                         'signalement' => $entity->getSignalement(),
@@ -96,19 +98,18 @@ class ActivityListener implements EventSubscriberInterface
         }
     }
 
-    private function notifyPartner($partner, $entity, $inAppType, $mailType)
+    private function notifyPartner($partner, $entity, $inAppType)
     {
         if ($partner->getEmail()) {
             $this->tos->add($partner->getEmail());
         }
         $partner->getUsers()->filter(function (User $user) use ($inAppType, $entity) {
-            if ($user->getStatut() !== User::STATUS_ARCHIVE) {
+            if ($user->getStatut() === User::STATUS_ACTIVE && !$user->isAdmin()) {
                 $this->createInAppNotification($user, $entity, $inAppType);
                 if ($user->getIsMailingActive())
                     $this->tos->add($user->getEmail());
             }
         });
-        //$this->sendMail($entity, $mailType);
     }
 
     private function sendMail($entity, $mailType)
