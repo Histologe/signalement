@@ -95,7 +95,9 @@ class ActivityListener implements EventSubscriberInterface
             ->getQuery()->getResult();
         foreach ($admins as $admin) {
             $this->createInAppNotification($admin, $entity, $inAppType);
-            $this->tos[] = $admin->getEmail();
+            if($admin->getIsMailingActive() === 1) {
+                $this->tos[] = $admin->getEmail();
+            }
         }
     }
 
@@ -107,11 +109,12 @@ class ActivityListener implements EventSubscriberInterface
         $partner->getUsers()->filter(function (User $user) use ($inAppType, $entity) {
             if ($user->getStatut() === User::STATUS_ACTIVE && $user->getRoles()[0] !== 'ROLE_ADMIN' && $user->getRoles()[0] !== 'ROLE_ADMIN_TERRITOIRE') {
                 $this->createInAppNotification($user, $entity, $inAppType);
-                if ($user->getIsMailingActive())
+                if ($user->getIsMailingActive() === 1)
                     $this->tos->add($user->getEmail());
             }
         });
     }
+
 
     private function sendMail($entity, $mailType)
     {
