@@ -49,13 +49,13 @@ class ActivityListener implements EventSubscriberInterface
         foreach ($this->uow->getScheduledEntityInsertions() as $entity) {
             if ($entity instanceof Signalement) {
                 $this->notifyAdmins($entity, Notification::TYPE_NEW_SIGNALEMENT);
-                $this->sendMail($entity, NotificationService::TYPE_NEW_SIGNALEMENT);
+                //$this->sendMail($entity, NotificationService::TYPE_NEW_SIGNALEMENT);
             }
-            if ($entity instanceof Affectation) {
+            elseif ($entity instanceof Affectation) {
                 $partenaire = $entity->getPartenaire();
                 $this->notifyPartner($partenaire, $entity, Notification::TYPE_AFFECTATION, NotificationService::TYPE_AFFECTATION);
             }
-            if ($entity instanceof Suivi) {
+            elseif ($entity instanceof Suivi) {
                 $this->notifyAdmins($entity, Notification::TYPE_SUIVI);
                 $entity->getSignalement()->getAffectations()->filter(function (Affectation $affectation) use ($entity) {
                     $partenaire = $affectation->getPartenaire();
