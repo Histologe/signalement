@@ -108,7 +108,7 @@ class ActivityListener implements EventSubscriberInterface
                     $this->tos->add($user->getEmail());
             }
         });
-        $this->sendMail($entity, $mailType);
+        //$this->sendMail($entity, $mailType);
     }
 
     private function sendMail($entity, $mailType)
