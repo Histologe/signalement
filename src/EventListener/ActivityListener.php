@@ -87,6 +87,7 @@ class ActivityListener implements EventSubscriberInterface
     private function notifyAdmins($entity, $inAppType)
     {
         $admins = $this->em->getRepository(User::class)->createQueryBuilder('u')
+            ->where('u.isMailingActive = 1')
             ->andWhere('JSON_CONTAINS(u.roles, :role) = 1')
             ->orWhere('JSON_CONTAINS(u.roles, :role2) = 1')
             ->setParameter('role', '"ROLE_ADMIN"')
