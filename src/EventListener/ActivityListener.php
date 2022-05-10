@@ -93,6 +93,7 @@ class ActivityListener implements EventSubscriberInterface
             ->setParameter('role', '"ROLE_ADMIN"')
             ->setParameter('role2', '"ROLE_ADMIN_TERRITOIRE"')
             ->getQuery()->getResult();
+
         foreach ($admins as $admin) {
             $this->createInAppNotification($admin, $entity, $inAppType);
             $this->tos[] = $admin->getEmail();
