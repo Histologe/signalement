@@ -171,7 +171,7 @@
                             {% for housetype in filters.housetypes %}
                                 <input type="hidden" name="bo-filters-housetypes[]" value="{{ housetype }}">
                                 <span class="fr-badge fr-badge--success fr-m-1v" data-removable="true"
-                                      data-value="{{ housetype }}">{{ housetype ? 'PRIVE':'PUBLIC' }}</span>
+                                      data-value="{{ housetype }}">{{ housetype ? 'PUBLIC':'PRIVE' }}</span>
                             {% else %}
                                 {% set visible = 0 %}
                             {% endfor %}

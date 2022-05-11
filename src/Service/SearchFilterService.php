@@ -166,7 +166,7 @@ class SearchFilterService
                 ->setParameter('criteres', $filters['criteres']);
         }
         if (!empty($filters['housetypes'])) {
-            $qb->andWhere('s.isLogementSocial IN (:housetypes)')
+            $qb->andWhere('s.isLogementSocial =IN (:housetypes)')
                 ->setParameter('housetypes', $filters['housetypes']);
         }
         if (!empty($filters['allocs'])) {
