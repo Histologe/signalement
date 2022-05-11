@@ -23,7 +23,7 @@
             <tr style="background: white!important">
                 <td colspan="5" class="fr-text--bold">{{ signalements|length}} Nouveau(x) signalement(s)</td>
             </tr>
-            {% for notification in signalements %}
+            {% for notification in signalements|reverse %}
                 <tr class="partenaire-row">
                     <td>{{ notification.signalement.reference }}</td>
                     <td>{{ notification.createdAt|date('d/m/Y à H:i') }}</td>
@@ -39,7 +39,7 @@
             <tr style="background: white!important">
                 <td colspan="5" class="fr-text--bold">{{ affectations|length }} Nouvelle(s) affectation(s)</td>
             </tr>
-            {% for notification in affectations %}
+            {% for notification in affectations|reverse %}
                 <tr class="partenaire-row">
                     <td>{{ notification.affectation.signalement.reference }}</td>
                     <td>{{ notification.affectation.createdAt|date('d/m/Y à H:i') }}</td>
@@ -55,7 +55,7 @@
             <tr style="background: white!important">
                 <td colspan="5" class="fr-text--bold">{{ suivis|length }} Nouveau(x) suivi(s)</td>
             </tr>
-            {% for notification in suivis %}
+            {% for notification in suivis|reverse %}
                 <tr class="partenaire-row">
                     <td>{{ notification.suivi.signalement.reference }}</td>
                     <td>{{ notification.suivi.createdAt|date('d/m/Y à H:i') }}</td>
