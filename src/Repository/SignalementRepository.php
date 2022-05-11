@@ -119,25 +119,27 @@ class SignalementRepository extends ServiceEntityRepository
         $pageSize = $export ?? self::ARRAY_LIST_PAGE_SIZE;
         $firstResult = (($options['page'] ?? 1) - 1) * $pageSize;
         $qb = $this->createQueryBuilder('s');
-        if (!$export)
-            $qb->select('PARTIAL s.{id,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut,createdAt,geoloc}');
-
         $qb->where('s.statut != :status')
             ->setParameter('status', Signalement::STATUS_ARCHIVED);
-        $qb->leftJoin('s.affectations', 'affectations');
-        $qb->leftJoin('s.tags', 'tags');
-        $qb->leftJoin('affectations.partenaire', 'partenaire');
-        $qb->leftJoin('s.suivis', 'suivis');
-        $qb->leftJoin('suivis.createdBy', 'suivi_creator');
-        $qb->leftJoin('suivi_creator.partenaire', 'suivi_creator_partenaire');
-        $qb->leftJoin('s.criteres', 'criteres');
-        $qb->addSelect('affectations', 'partenaire', 'suivis', 'suivi_creator');
-        $qb = $this->searchFilterService->applyFilters($qb, $options);
-        $qb->orderBy('s.createdAt', 'DESC')
-            ->setFirstResult($firstResult)
-            ->setMaxResults($pageSize)
-            ->getQuery();
-        return new Paginator($qb, true);
+        if (!$export) {
+            $qb->select('PARTIAL s.{id,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut,createdAt,geoloc}');
+            $qb->leftJoin('s.affectations', 'affectations');
+            $qb->leftJoin('s.tags', 'tags');
+            $qb->leftJoin('affectations.partenaire', 'partenaire');
+            $qb->leftJoin('s.suivis', 'suivis');
+            $qb->leftJoin('s.criteres', 'criteres');
+            $qb->addSelect('affectations', 'partenaire', 'suivis');
+            $qb = $this->searchFilterService->applyFilters($qb, $options);
+        }
+        $qb->orderBy('s.createdAt', 'DESC');
+        if(!$export)
+        {
+            $qb->setFirstResult($firstResult)
+                ->setMaxResults($pageSize);
+            $qb->getQuery();
+            return new Paginator($qb, true);
+        }
+        return  $qb->getQuery()->getResult();
     }
 
     public

@@ -18,12 +18,11 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @method Affectation[]    findAll()
  * @method Affectation[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-
-
 class AffectationRepository extends ServiceEntityRepository
 {
     const ARRAY_LIST_PAGE_SIZE = 30;
     private SearchFilterService $searchFilterService;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Affectation::class);
@@ -45,18 +44,19 @@ class AffectationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findByStatusAndOrCityForUser(User|UserInterface $user = null, array $options, $export = null): Paginator
+    public function findByStatusAndOrCityForUser(User|UserInterface $user = null, array $options, $export = null): Paginator|array
     {
 
         $page = (int)$options['page'];
-        $firstResult = ($page - 1) * self::ARRAY_LIST_PAGE_SIZE;
+        $pageSize = $export ?? self::ARRAY_LIST_PAGE_SIZE;
+        $firstResult = (($options['page'] ?? 1) - 1) * $pageSize;
         $qb = $this->createQueryBuilder('a');
-        if (!$export)
-            $qb->select('a,PARTIAL s.{id,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut,createdAt,geoloc}');
-
         $qb->where('s.statut != :status')
-            ->setParameter('status', Signalement::STATUS_ARCHIVED)
-            ->leftJoin('a.signalement', 's')
+            ->setParameter('status', Signalement::STATUS_ARCHIVED);
+        if (!$export) {
+            $qb->select('a,PARTIAL s.{id,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut,createdAt,geoloc}');
+        }
+        $qb->leftJoin('a.signalement', 's')
             ->leftJoin('s.tags', 'tags')
             ->leftJoin('s.affectations', 'affectations')
             ->leftJoin('a.partenaire', 'partenaire')
@@ -84,12 +84,15 @@ class AffectationRepository extends ServiceEntityRepository
             $qb->andWhere(':partenaire IN (partenaire)')
                 ->setParameter('partenaire', $user->getPartenaire());
 
-        $qb->orderBy('s.createdAt', 'DESC')
-            ->setFirstResult($firstResult)
-            ->setMaxResults(self::ARRAY_LIST_PAGE_SIZE)
-            ->getQuery();
+        $qb->orderBy('s.createdAt', 'DESC');
+        if (!$export) {
+            $qb->setFirstResult($firstResult)
+                ->setMaxResults($pageSize)
+                ->getQuery();
 
-        return new Paginator($qb, true);
+            return new Paginator($qb, true);
+        }
+        return $qb->getQuery()->getResult();
     }
 
 }

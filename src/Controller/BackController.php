@@ -14,6 +14,7 @@ use App\Repository\UserRepository;
 use App\Service\SearchFilterService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
@@ -36,7 +37,7 @@ class BackController extends AbstractController
                           Request                $request,
                           AffectationRepository  $affectationRepository,
                           PartenaireRepository   $partenaireRepository,
-                          TagRepository $tagsRepository
+                          TagRepository          $tagsRepository
     ): Response
     {
         $title = 'Administration - Tableau de bord';
@@ -44,10 +45,11 @@ class BackController extends AbstractController
         if (!$this->isGranted('ROLE_ADMIN_PARTENAIRE'))
             $user = $this->getUser();
         $searchService = new SearchFilterService();
-        $filters =  $searchService->setRequest($request)->setFilters()->getFilters();
-        if ($user || $filters['partners']|| $filters['affectations']) {
-            $this->req = $affectationRepository->findByStatusAndOrCityForUser($user, $filters);
-            $this->iterator = $this->req->getIterator()->getArrayCopy();
+        $filters = $searchService->setRequest($request)->setFilters()->getFilters();
+        if ($user || $filters['partners'] || $filters['affectations']) {
+            $this->req = $affectationRepository->findByStatusAndOrCityForUser($user, $filters, $request->get('export'));
+            if (!$request->get('export'))
+                $this->iterator = $this->req->getIterator()->getArrayCopy();
             if ($user && $user->getPartenaire()) {
                 $counts = $affectationRepository->countByStatusForUser($user);
                 $signalementsCount = [
@@ -87,7 +89,7 @@ class BackController extends AbstractController
             return $this->stream('back/table_result.html.twig', ['filters' => $filters, 'signalements' => $signalements]);
         $criteres = $critereRepository->findAllList();
         if ($this->isGranted('ROLE_ADMIN_TERRITOIRE') && $request->get('export') && $this->isCsrfTokenValid('export_token_' . $this->getUser()->getId(), $request->get('_token'))) {
-            return $this->export($this->req->getIterator()->getArrayCopy(), $em);
+            return $this->export($this->req, $em);
         }
         $users = [
             'active' => $userRepository->count(['statut' => 1]),
@@ -102,26 +104,28 @@ class BackController extends AbstractController
             'signalements' => $signalements,
             'users' => $users,
             'criteres' => $criteres,
-            'tags'=>$tagsRepository->findAllActive()
+            'tags' => $tagsRepository->findAllActive()
         ]);
     }
 
     #[Route('/_json', name: 'back_json_convert')]
-    public function jsonToEntity(Request $request){
-        if($request->isMethod('POST'))
-            return $this->forward('App\Controller\FrontSignalementController::envoi',['signalement'=>json_decode($request->get('json'),true)]);
+    public function jsonToEntity(Request $request)
+    {
+        if ($request->isMethod('POST'))
+            return $this->forward('App\Controller\FrontSignalementController::envoi', ['signalement' => json_decode($request->get('json'), true)]);
         return new Response('<form method="POST" style="width: 100%;height: calc(100vh - 50px)"><textarea name="json" id="" style="width: 100%;height: calc(100% - 50px)"></textarea><hr><button style="width: 100%;height: 50px;">OK</button></form>');
     }
 
 
-    private function export(array $signalements, EntityManagerInterface $em): Response
+    private function export($signalements, EntityManagerInterface $em): Response
     {
-
         $tmpFileName = (new Filesystem())->tempnam(sys_get_temp_dir(), 'sb_');
         $tmpFile = fopen($tmpFileName, 'wb+');
         $headers = $em->getClassMetadata(Signalement::class)->getFieldNames();
         fputcsv($tmpFile, array_merge($headers, ['situations', 'criteres']), ';');
         foreach ($signalements as $signalement) {
+            if ($signalement instanceof Affectation)
+                $signalement = $signalement->getSignalement();
             $data = [];
             foreach ($headers as $header) {
 
