@@ -116,6 +116,7 @@ class BackController extends AbstractController
 
     private function export(array $signalements, EntityManagerInterface $em): Response
     {
+
         $tmpFileName = (new Filesystem())->tempnam(sys_get_temp_dir(), 'sb_');
         $tmpFile = fopen($tmpFileName, 'wb+');
         $headers = $em->getClassMetadata(Signalement::class)->getFieldNames();
