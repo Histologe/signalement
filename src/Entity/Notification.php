@@ -30,8 +30,8 @@ class Notification
     #[ORM\ManyToOne(targetEntity: Signalement::class)]
     private ?Signalement $signalement;
 
-    #[ORM\ManyToOne(targetEntity: suivi::class)]
-    private ?suivi $suivi;
+    #[ORM\ManyToOne(targetEntity: Suivi::class)]
+    private ?Suivi $suivi;
 
 
     #[ORM\Column(type: 'datetime_immutable')]
@@ -112,12 +112,12 @@ class Notification
         return $this;
     }
 
-    public function getSuivi(): ?suivi
+    public function getSuivi(): ?Suivi
     {
         return $this->suivi;
     }
 
-    public function setSuivi(?suivi $suivi): self
+    public function setSuivi(?Suivi $suivi): self
     {
         $this->suivi = $suivi;
 

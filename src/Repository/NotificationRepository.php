@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Notification;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -47,4 +48,19 @@ class NotificationRepository extends ServiceEntityRepository
         ;
     }
     */
+    public function findAllForUser(User $user)
+    {
+        return $this->createQueryBuilder('n')
+            ->andWhere('n.user = :user')
+            ->setParameter('user', $user)
+            ->leftJoin('n.user','user')
+            ->leftJoin('n.suivi','suivi')
+            ->leftJoin('suivi.createdBy','createdBy')
+            ->leftJoin('n.signalement','signalement')
+            ->leftJoin('n.affectation','affectation')
+            ->addSelect('suivi','signalement','affectation','user','createdBy')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 }
