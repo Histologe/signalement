@@ -26,7 +26,7 @@
             {% for notification in signalements|reverse %}
                 <tr class="partenaire-row">
                     <td>{{ notification.signalement.reference }}</td>
-                    <td>{{ notification.createdAt|date('d/m/Y H:i')|format_datetime(locale='fr')  }}</td>
+                    <td>{{ notification.createdAt|format_datetime(locale='fr')  }}</td>
                     <td>Un nouveau signalement vous attend</td>
                     <td>{{ notification.signalement.nomOccupant|upper~' '~notification.signalement.prenomOccupant|capitalize }}</td>
                     <td class="fr-text--right"><a href="{{ path('back_signalement_view',{uuid:notification.signalement.uuid}) }}" class="fr-btn {{ notification.isSeen ? 'fr-fi-check-line fr-btn--success':'fr-fi-eye-fill' }}"></a></td>
@@ -42,7 +42,7 @@
             {% for notification in affectations|reverse %}
                 <tr class="partenaire-row">
                     <td>{{ notification.affectation.signalement.reference }}</td>
-                    <td>{{ notification.affectation.createdAt|date('d/m/Y H:i')|format_datetime(locale='fr')  }}</td>
+                    <td>{{ notification.affectation.createdAt|format_datetime(locale='fr')  }}</td>
                     <td>Vous avez été affecté</td>
                     <td>{{ notification.affectation.affectedBy.nomComplet }}</td>
                     <td class="fr-text--right"><a href="{{ path('back_signalement_view',{uuid:notification.affectation.signalement.uuid}) }}" class="fr-btn {{ notification.isSeen ? 'fr-fi-check-line fr-btn--success':'fr-fi-eye-fill' }}"></a></td>
@@ -58,7 +58,7 @@
             {% for notification in suivis|reverse %}
                 <tr class="partenaire-row">
                     <td>{{ notification.suivi.signalement.reference }}</td>
-                    <td>{{ notification.suivi.createdAt|date('d/m/Y H:i')|format_datetime(locale='fr')  }}</td>
+                    <td>{{ notification.suivi.createdAt|format_datetime(locale='fr')  }}</td>
                     <td>{{ notification.suivi.description|replace({'&t=___TOKEN___':''})|replace({'?t=___TOKEN___':''})|raw }}</td>
                     <td>{{ notification.suivi.createdBy ? notification.suivi.createdBy.nomComplet : notification.signalement.nomOccupant|upper~' '~notification.signalement.prenomOccupant|capitalize  }}</td>
                     <td class="fr-text--right"><a href="{{ path('back_signalement_view',{uuid:notification.suivi.signalement.uuid}) }}#suivis" class="fr-btn {{ notification.isSeen ? 'fr-fi-check-line fr-btn--success':'fr-fi-eye-fill' }}"></a></td>
