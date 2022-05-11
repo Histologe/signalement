@@ -129,8 +129,8 @@ class SignalementRepository extends ServiceEntityRepository
             $qb->leftJoin('s.suivis', 'suivis');
             $qb->leftJoin('s.criteres', 'criteres');
             $qb->addSelect('affectations', 'partenaire', 'suivis');
-            $qb = $this->searchFilterService->applyFilters($qb, $options);
         }
+        $qb = $this->searchFilterService->applyFilters($qb, $options);
         $qb->orderBy('s.createdAt', 'DESC');
         if(!$export)
         {
