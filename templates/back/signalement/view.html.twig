@@ -31,7 +31,7 @@
                         <small class="fr-background-alt--blue-france fr-text-label--blue-france fr-rounded fr-p-1v fr-text--bold{# fr-fi-information-fill fr-icon--sm #} fr-pr-3v">&nbsp;
                             Signalement par l'occupant</small>
                     {% endif %}
-                    <text><strong>Déposé le:</strong> {{ signalement.createdAt|date('d/m/Y à H:i') }}</text>
+                    <text><strong>Déposé le:</strong> {{ signalement.createdAt|date('d/m/Y H:i')|format_datetime(locale='fr')  }}</text>
                 </div>
                 <div class="fr-col-12 fr-col-md-6 fr-text--right">
                     {% if isAffected and not isAccepted and not isRefused and not needValidation and  not isClosed and not isClosedForMe %}
