@@ -88,16 +88,14 @@ class ActivityListener implements EventSubscriberInterface
     {
         $admins = $this->em->getRepository(User::class)->createQueryBuilder('u')
             ->where('u.isMailingActive = 1')
-            ->andWhere('JSON_CONTAINS(u.roles, :role) = 1')
-            ->orWhere('JSON_CONTAINS(u.roles, :role2) = 1')
+            ->andWhere('u.statut = 1')
+            ->andWhere('JSON_CONTAINS(u.roles, :role) = 1 OR JSON_CONTAINS(u.roles, :role2) = 1')
             ->setParameter('role', '"ROLE_ADMIN"')
             ->setParameter('role2', '"ROLE_ADMIN_TERRITOIRE"')
             ->getQuery()->getResult();
         foreach ($admins as $admin) {
             $this->createInAppNotification($admin, $entity, $inAppType);
-            if($admin->getIsMailingActive() === 1) {
                 $this->tos[] = $admin->getEmail();
-            }
         }
     }
 
@@ -109,7 +107,7 @@ class ActivityListener implements EventSubscriberInterface
         $partner->getUsers()->filter(function (User $user) use ($inAppType, $entity) {
             if ($user->getStatut() === User::STATUS_ACTIVE && $user->getRoles()[0] !== 'ROLE_ADMIN' && $user->getRoles()[0] !== 'ROLE_ADMIN_TERRITOIRE') {
                 $this->createInAppNotification($user, $entity, $inAppType);
-                if ($user->getIsMailingActive() === 1)
+                if (true === $user->getIsMailingActive())
                     $this->tos->add($user->getEmail());
             }
         });

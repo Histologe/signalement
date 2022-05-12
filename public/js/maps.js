@@ -93,8 +93,8 @@ async function getMarkers(offset) {
                 markers.addLayer(marker);
             })
             map.addLayer(markers);
-            console.log(offset,res.signalements.length)
-            if (res.signalements.length > MAP_MARKERS_PAGE_SIZE - 1)
+            // console.log(offset,res.signalements.length)
+            if (res.signalements.length === MAP_MARKERS_PAGE_SIZE)
                 getMarkers(offset + MAP_MARKERS_PAGE_SIZE)
             else {
                 markers.getLayers().forEach((layer, index) => {
