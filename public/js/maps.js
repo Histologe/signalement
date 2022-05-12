@@ -93,6 +93,7 @@ async function getMarkers(offset) {
                 markers.addLayer(marker);
             })
             map.addLayer(markers);
+            console.log(offset,res.signalements.length)
             if (res.signalements.length > MAP_MARKERS_PAGE_SIZE - 1)
                 getMarkers(offset + MAP_MARKERS_PAGE_SIZE)
             else {
@@ -129,7 +130,7 @@ async function getMarkers(offset) {
                 [bound._northEast.lat, bound._northEast.lng],
                 [bound._southWest.lat, bound._southWest.lng]
             ]);
-            document.querySelector('#container.signalement-invalid').classList.remove('signalement-invalid')
+            document?.querySelector('#container.signalement-invalid')?.classList?.remove('signalement-invalid')
         } else {
             alert('Erreur lors du chargement des signalements...')
         }

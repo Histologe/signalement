@@ -38,7 +38,7 @@ class SignalementRepository extends ServiceEntityRepository
 
     public function findAllWithGeoData($user, $options, int $offset)
     {
-        $firstResult = ($offset !== 0 ? $offset : self::MARKERS_PAGE_SIZE) - self::MARKERS_PAGE_SIZE;
+        $firstResult = $offset;
         $qb = $this->createQueryBuilder('s');
         $qb->select('PARTIAL s.{id,details,uuid,reference,nomOccupant,prenomOccupant,adresseOccupant,cpOccupant,villeOccupant,scoreCreation,statut,createdAt,geoloc},
             PARTIAL a.{id,partenaire,createdAt},
