@@ -70,6 +70,7 @@ class ActivityListener implements EventSubscriberInterface
                     ]);
                 }
             }
+
         }
     }
 
@@ -107,7 +108,7 @@ class ActivityListener implements EventSubscriberInterface
         $partner->getUsers()->filter(function (User $user) use ($inAppType, $entity) {
             if ($user->getStatut() === User::STATUS_ACTIVE && $user->getRoles()[0] !== 'ROLE_ADMIN' && $user->getRoles()[0] !== 'ROLE_ADMIN_TERRITOIRE') {
                 $this->createInAppNotification($user, $entity, $inAppType);
-                if (true === $user->getIsMailingActive())
+                if ($user->getIsMailingActive())
                     $this->tos->add($user->getEmail());
             }
         });
