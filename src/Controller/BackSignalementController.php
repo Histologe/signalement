@@ -179,6 +179,8 @@ class BackSignalementController extends AbstractController
                         $signalement->setInseeOccupant($insee);
                 }
             }*/
+            $signalement->setGeoloc($form->getExtraData()['geoloc']);
+            $signalement->setInseeOccupant($form->getExtraData()['inseeOccupant']);
             $doctrine->getManager()->persist($signalement);
             $doctrine->getManager()->flush();
             $this->addFlash('success', 'Signalement modifié avec succés !');
