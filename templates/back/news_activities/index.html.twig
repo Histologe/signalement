@@ -7,6 +7,10 @@
         <div class="fr-col-6">
             <h1 class="fr-h2 fr-mb-0">Notification(s)</h1>
         </div>
+        <div class="fr-col-6 fr-text--right">
+            <a href="{{ path('back_news_activities') }}?mark_as_read={{ csrf_token('mark_as_read_'~app.user.id) }}" class="fr-btn fr-fi-check-line fr-btn--icon-left">Marquer comme lus (tous)</a>
+            <a href="{{ path('back_news_activities') }}?delete_all_notifications={{ csrf_token('delete_all_notifications_'~app.user.id) }}" class="fr-btn fr-fi-delete-line fr-btn--danger fr-btn--icon-left">Vider</a>
+        </div>
     </section>
     <section class="fr-col-12 fr-table fr-table--bordered fr-pt-0">
         <table class="fr-display-inline-table">
@@ -29,7 +33,9 @@
                     <td>{{ notification.createdAt|format_datetime(locale='fr')  }}</td>
                     <td>Un nouveau signalement vous attend</td>
                     <td>{{ notification.signalement.nomOccupant|upper~' '~notification.signalement.prenomOccupant|capitalize }}</td>
-                    <td class="fr-text--right"><a href="{{ path('back_signalement_view',{uuid:notification.signalement.uuid}) }}" class="fr-btn {{ notification.isSeen ? 'fr-fi-check-line fr-btn--success':'fr-fi-eye-fill' }}"></a></td>
+                    <td class="fr-text--right"><a href="{{ path('back_signalement_view',{uuid:notification.signalement.uuid}) }}" class="fr-btn fr-btn--sm {{ notification.isSeen ? 'fr-fi-check-line fr-btn--success':'fr-fi-eye-fill' }}"></a>
+                        <a href="{{ path('back_news_activities_delete_notification',{id:notification.id}) }}?_token={{ csrf_token('back_delete_notification_'~notification.id) }}" class="fr-btn fr-btn--sm fr-btn--danger fr-fi-delete-line"></a>
+                    </td>
                 </tr>
             {% else %}
                 <tr>
@@ -45,7 +51,10 @@
                     <td>{{ notification.affectation.createdAt|format_datetime(locale='fr')  }}</td>
                     <td>Vous avez été affecté</td>
                     <td>{{ notification.affectation.affectedBy.nomComplet }}</td>
-                    <td class="fr-text--right"><a href="{{ path('back_signalement_view',{uuid:notification.affectation.signalement.uuid}) }}" class="fr-btn {{ notification.isSeen ? 'fr-fi-check-line fr-btn--success':'fr-fi-eye-fill' }}"></a></td>
+                    <td class="fr-text--right">
+                        <a href="{{ path('back_signalement_view',{uuid:notification.affectation.signalement.uuid}) }}" class="fr-btn fr-btn--sm {{ notification.isSeen ? 'fr-fi-check-line fr-btn--success':'fr-fi-eye-fill' }}"></a>
+                        <a href="{{ path('back_news_activities_delete_notification',{id:notification.id}) }}?_token={{ csrf_token('back_delete_notification_'~notification.id) }}" class="fr-btn fr-btn--sm fr-btn--danger fr-fi-delete-line"></a>
+                    </td>
                 </tr>
             {% else %}
                 <tr>
@@ -61,7 +70,10 @@
                     <td>{{ notification.suivi.createdAt|format_datetime(locale='fr')  }}</td>
                     <td>{{ notification.suivi.description|replace({'&t=___TOKEN___':''})|replace({'?t=___TOKEN___':''})|raw }}</td>
                     <td>{{ notification.suivi.createdBy ? notification.suivi.createdBy.nomComplet : notification.signalement.nomOccupant|upper~' '~notification.signalement.prenomOccupant|capitalize  }}</td>
-                    <td class="fr-text--right"><a href="{{ path('back_signalement_view',{uuid:notification.suivi.signalement.uuid}) }}#suivis" class="fr-btn {{ notification.isSeen ? 'fr-fi-check-line fr-btn--success':'fr-fi-eye-fill' }}"></a></td>
+                    <td class="fr-text--right">
+                        <a href="{{ path('back_signalement_view',{uuid:notification.suivi.signalement.uuid}) }}#suivis" class="fr-btn fr-btn--sm {{ notification.isSeen ? 'fr-fi-check-line fr-btn--success':'fr-fi-eye-fill' }}"></a>
+                        <a href="{{ path('back_news_activities_delete_notification',{id:notification.id}) }}?_token={{ csrf_token('back_delete_notification_'~notification.id) }}" class="fr-btn fr-btn--sm fr-btn--danger fr-fi-delete-line"></a>
+                    </td>
                 </tr>
             {% else %}
                 <tr>
