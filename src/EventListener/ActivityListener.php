@@ -50,13 +50,11 @@ class ActivityListener implements EventSubscriberInterface
             if ($entity instanceof Signalement) {
                 $this->notifyAdmins($entity, Notification::TYPE_NEW_SIGNALEMENT);
                 $this->sendMail($entity, NotificationService::TYPE_NEW_SIGNALEMENT);
-            }
-            elseif ($entity instanceof Affectation) {
+            } elseif ($entity instanceof Affectation) {
                 $partenaire = $entity->getPartenaire();
                 $this->notifyPartner($partenaire, $entity, Notification::TYPE_AFFECTATION);
                 $this->sendMail($entity, NotificationService::TYPE_AFFECTATION);
-            }
-            elseif ($entity instanceof Suivi) {
+            } elseif ($entity instanceof Suivi) {
                 $this->notifyAdmins($entity, Notification::TYPE_SUIVI);
                 $entity->getSignalement()->getAffectations()->filter(function (Affectation $affectation) use ($entity) {
                     $partenaire = $affectation->getPartenaire();
@@ -88,7 +86,6 @@ class ActivityListener implements EventSubscriberInterface
     private function notifyAdmins($entity, $inAppType)
     {
         $admins = $this->em->getRepository(User::class)->createQueryBuilder('u')
-            ->where('u.isMailingActive = 1')
             ->andWhere('u.statut = 1')
             ->andWhere('JSON_CONTAINS(u.roles, :role) = 1 OR JSON_CONTAINS(u.roles, :role2) = 1')
             ->setParameter('role', '"ROLE_ADMIN"')
@@ -96,6 +93,7 @@ class ActivityListener implements EventSubscriberInterface
             ->getQuery()->getResult();
         foreach ($admins as $admin) {
             $this->createInAppNotification($admin, $entity, $inAppType);
+            if ($admin->getIsMailingActive())
                 $this->tos[] = $admin->getEmail();
         }
     }
@@ -115,18 +113,20 @@ class ActivityListener implements EventSubscriberInterface
     }
 
 
-    private function sendMail($entity, $mailType)
+    private function sendMail($entity, $mailType, $options = [])
     {
+        $options['entity'] = $entity;
         if (!$this->tos->isEmpty()) {
             if ($entity instanceof Signalement)
                 $uuid = $entity->getUuid();
             else
                 $uuid = $entity->getSignalement()->getUuid();
-            $this->notifier->send($mailType, array_unique($this->tos->toArray()), [
+            $options = array_merge($options, [
                 'link' => $this->urlGenerator->generate('back_signalement_view', [
                     'uuid' => $uuid
                 ], 0)
             ]);
+            $this->notifier->send($mailType, array_unique($this->tos->toArray()), $options);
         }
     }
 

@@ -91,7 +91,7 @@ class NotificationService
             NotificationService::TYPE_NOUVEAU_SUIVI_BACK => [
                 'template' => 'nouveau_suivi_signalement_back_email',
                 'subject' => 'Nouveau suivi sur un signalement',
-                'btntext' => "Consulter le suivi"
+                'btntext' => "Consulter sur la plateforme"
             ],
             NotificationService::TYPE_ERREUR_SIGNALEMENT => [
                 'template' => 'erreur_signalement_email',
