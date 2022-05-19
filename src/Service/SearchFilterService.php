@@ -161,6 +161,7 @@ class SearchFilterService
                     ->setParameter('date_off', $filters['dates']['off']);
             }
         }
+
         if (!empty($filters['criteres'])) {
             $qb->andWhere('criteres IN (:criteres)')
                 ->setParameter('criteres', $filters['criteres']);
