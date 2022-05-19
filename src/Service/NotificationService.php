@@ -2,12 +2,6 @@
 
 namespace App\Service;
 
-use App\Entity\Affectation;
-use App\Entity\Notification;
-use App\Entity\Signalement;
-use App\Entity\Suivi;
-use App\Entity\User;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\NotificationEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;

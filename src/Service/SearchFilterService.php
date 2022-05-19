@@ -158,7 +158,7 @@ class SearchFilterService
                     ->setParameter('date_in', $filters['dates']['on']);
             } elseif (!empty($filters['dates']['off'])) {
                 $qb->andWhere($field . ' <= :date_off')
-                    ->setParameter('date_in', $filters['dates']['off']);
+                    ->setParameter('date_off', $filters['dates']['off']);
             }
         }
         if (!empty($filters['criteres'])) {
