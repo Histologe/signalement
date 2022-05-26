@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\NotificationEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 
 class NotificationService
 {
@@ -101,7 +102,7 @@ class NotificationService
         is_array($to) ? $emails = $to : $emails = [$to];
         foreach ($emails as $email)
             $email && $message->addTo($email);
-        /*$message->from(new Address('notifications@histologe.fr','HISTOLOGE'));*/
+        $message->from(new Address('histologe-'.str_replace(' ','-',mb_strtolower($this->configuration->get()->getNomTerritoire())).'@histologe.fr','HISTOLOGE - '.mb_strtoupper($this->configuration->get()->getNomTerritoire())));
         if (!empty($params['attach']))
             $message->attachFromPath($params['attach']);
         if ($this->configuration->get()->getEmailReponse() ?? isset($params['reply']))

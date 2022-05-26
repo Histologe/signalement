@@ -271,7 +271,7 @@ class   SignalementType extends AbstractType
                     'class' => 'fr-hint-text'
                 ]
             ])
-            ->add('cpOccupant', NumberType::class, [
+            ->add('cpOccupant', TextType::class, [
                 'attr' => [
                     'class' => 'fr-input',
                     'pattern' => "[0-9]{5}"
@@ -280,7 +280,6 @@ class   SignalementType extends AbstractType
                     'class' => 'fr-label'
                 ],
                 'label' => "Code postal du logement",
-                'html5' => true,
             ])
             ->add('villeOccupant', TextType::class, [
                 'attr' => [
