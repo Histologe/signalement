@@ -117,6 +117,7 @@ class NotificationService
 
     private function renderMailContentWithParamsByType(int $type, array $params): NotificationEmail
     {
+
         $config = $this->config($type);
         $notification = new NotificationEmail();
         $notification->markAsPublic();
@@ -124,6 +125,4 @@ class NotificationService
             ->context(array_merge($params, $config))
             ->subject('HISTOLOGE ' . mb_strtoupper($this->configuration->get()->getNomTerritoire()) . ' - ' . $config['subject']);
     }
-
-
 }
