@@ -31,7 +31,6 @@ class ClearNotificationCommand extends Command
         parent::__construct();
     }
 
-
     protected function configure(): void
     {
         $this
@@ -50,7 +49,7 @@ class ClearNotificationCommand extends Command
         }
         $this->em->flush();
 
-        $io->success(count($notifications).' supprimmée(s)');
+        $io->success(count($notifications).' notification(s) deleted !');
 
         return Command::SUCCESS;
     }
