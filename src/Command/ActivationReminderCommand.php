@@ -51,9 +51,9 @@ class ActivationReminderCommand extends Command
         $users = $em->getRepository(User::class)->findAllInactive();
         foreach ($users as $user) {
             $loginLinkDetails = $this->loginLinkHandler->createLoginLink($user);
-            $this->notificationService->send(NotificationService::TYPE_RAPPEL_ACTIVATION, $user->getEmail(), [
+            $this->notificationService->send(NotificationService::TYPE_ACTIVATION, $user->getEmail(), [
                 'link' => $loginLinkDetails->getUrl(),
-                'reminder' => true
+//                'reminder' => true
             ]);
             $i++;
         }
