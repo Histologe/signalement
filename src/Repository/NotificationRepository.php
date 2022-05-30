@@ -63,4 +63,13 @@ class NotificationRepository extends ServiceEntityRepository
             ->getResult()
             ;
     }
+    public function findOlderThan(int $diff){
+        return $this->createQueryBuilder('n')
+            ->andWhere('n.createdAt <= :date')
+            ->setParameter('date', new \DateTime('-'.$diff.' days'))
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
 }
